@@ -221,6 +221,13 @@
 <span id="221">221</span>
 <span id="222">222</span>
 <span id="223">223</span>
+<span id="224">224</span>
+<span id="225">225</span>
+<span id="226">226</span>
+<span id="227">227</span>
+<span id="228">228</span>
+<span id="229">229</span>
+<span id="230">230</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// Polkadot is free software: you can redistribute it and/or modify</span>
 <span class="comment">// it under the terms of the GNU General Public License as published by</span>
@@ -305,6 +312,13 @@
 	<span class="kw">let</span> <span class="ident">span</span> <span class="op">=</span> <span class="ident">Span::new</span>(<span class="ident">candidate_hash</span>, <span class="string">&quot;fetch-large-statement&quot;</span>)
 		.<span class="ident">with_relay_parent</span>(<span class="ident">relay_parent</span>)
 		.<span class="ident">with_stage</span>(<span class="ident">Stage::StatementDistribution</span>);
+
+	<span class="macro">gum::debug!</span>(
+		<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
+		<span class="question-mark">?</span><span class="ident">candidate_hash</span>,
+		<span class="question-mark">?</span><span class="ident">relay_parent</span>,
+		<span class="string">&quot;Fetch for large statement started&quot;</span>,
+	);
 
 	<span class="comment">// Peers we already tried (and failed).</span>
 	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">tried_peers</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
