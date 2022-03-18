@@ -2544,13 +2544,6 @@
 <span id="2544">2544</span>
 <span id="2545">2545</span>
 <span id="2546">2546</span>
-<span id="2547">2547</span>
-<span id="2548">2548</span>
-<span id="2549">2549</span>
-<span id="2550">2550</span>
-<span id="2551">2551</span>
-<span id="2552">2552</span>
-<span id="2553">2553</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -2588,7 +2581,7 @@
 		<span class="ident">ApprovalVotingMessage</span>, <span class="ident">AssignmentCheckError</span>, <span class="ident">AssignmentCheckResult</span>,
 		<span class="ident">AvailabilityRecoveryMessage</span>, <span class="ident">BlockDescription</span>, <span class="ident">CandidateValidationMessage</span>, <span class="ident">ChainApiMessage</span>,
 		<span class="ident">ChainSelectionMessage</span>, <span class="ident">DisputeCoordinatorMessage</span>, <span class="ident">HighestApprovedAncestorBlock</span>,
-		<span class="ident">ImportStatementsResult</span>, <span class="ident">RuntimeApiMessage</span>, <span class="ident">RuntimeApiRequest</span>,
+		<span class="ident">RuntimeApiMessage</span>, <span class="ident">RuntimeApiRequest</span>,
 	},
 	<span class="ident">overseer</span>::{<span class="self">self</span>, <span class="ident">SubsystemSender</span> <span class="kw">as</span> <span class="kw">_</span>},
 	<span class="ident">FromOverseer</span>, <span class="ident">OverseerSignal</span>, <span class="ident">SpawnedSubsystem</span>, <span class="ident">SubsystemContext</span>, <span class="ident">SubsystemError</span>,
@@ -3503,7 +3496,9 @@
 				<span class="ident">dispute_statement</span>,
 				<span class="ident">validator_index</span>,
 			} =&gt; {
-				<span class="kw">let</span> (<span class="ident">pending_confirmation</span>, <span class="ident">confirmation_rx</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
+				<span class="comment">// TODO: Log confirmation results in an efficient way:</span>
+				<span class="comment">// https://github.com/paritytech/polkadot/issues/5156</span>
+				<span class="kw">let</span> (<span class="ident">pending_confirmation</span>, <span class="ident">_confirmation_rx</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
 				<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">DisputeCoordinatorMessage::ImportStatements</span> {
 					<span class="ident">candidate_hash</span>,
 					<span class="ident">candidate_receipt</span>,
@@ -3512,15 +3507,6 @@
 					<span class="ident">pending_confirmation</span>,
 				})
 				.<span class="kw">await</span>;
-
-				<span class="kw">match</span> <span class="ident">confirmation_rx</span>.<span class="kw">await</span> {
-					<span class="prelude-val">Err</span>(<span class="ident">oneshot::Canceled</span>) =&gt; {
-						<span class="macro">gum::debug!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="string">&quot;Dispute coordinator confirmation lost&quot;</span>,)
-					},
-					<span class="prelude-val">Ok</span>(<span class="ident">ImportStatementsResult::ValidImport</span>) =&gt; {},
-					<span class="prelude-val">Ok</span>(<span class="ident">ImportStatementsResult::InvalidImport</span>) =&gt;
-						<span class="macro">gum::warn!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="string">&quot;Failed to import statements of validity&quot;</span>,),
-				}
 			},
 			<span class="ident">Action::NoteApprovedInChainSelection</span>(<span class="ident">block_hash</span>) =&gt; {
 				<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">ChainSelectionMessage::Approved</span>(<span class="ident">block_hash</span>)).<span class="kw">await</span>;

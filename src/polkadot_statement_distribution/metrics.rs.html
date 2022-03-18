@@ -178,6 +178,26 @@
 <span id="178">178</span>
 <span id="179">179</span>
 <span id="180">180</span>
+<span id="181">181</span>
+<span id="182">182</span>
+<span id="183">183</span>
+<span id="184">184</span>
+<span id="185">185</span>
+<span id="186">186</span>
+<span id="187">187</span>
+<span id="188">188</span>
+<span id="189">189</span>
+<span id="190">190</span>
+<span id="191">191</span>
+<span id="192">192</span>
+<span id="193">193</span>
+<span id="194">194</span>
+<span id="195">195</span>
+<span id="196">196</span>
+<span id="197">197</span>
+<span id="198">198</span>
+<span id="199">199</span>
+<span id="200">200</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2022 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// Polkadot is free software: you can redistribute it and/or modify</span>
 <span class="comment">// it under the terms of the GNU General Public License as published by</span>
@@ -196,6 +216,10 @@
 
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem_util::metrics</span>::{<span class="self">self</span>, <span class="ident">prometheus</span>};
 
+<span class="doccomment">/// Buckets more suitable for checking the typical latency values</span>
+<span class="kw">const</span> <span class="ident">HISTOGRAM_LATENCY_BUCKETS</span>: <span class="kw-2">&amp;</span>[<span class="ident">f64</span>] <span class="op">=</span>
+	<span class="kw-2">&amp;</span>[<span class="number">0.05</span>, <span class="number">0.1</span>, <span class="number">0.2</span>, <span class="number">0.3</span>, <span class="number">0.4</span>, <span class="number">0.5</span>, <span class="number">0.6</span>, <span class="number">0.75</span>, <span class="number">0.9</span>, <span class="number">1.0</span>, <span class="number">1.2</span>, <span class="number">1.5</span>, <span class="number">1.75</span>];
+
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
 <span class="kw">struct</span> <span class="ident">MetricsInner</span> {
 	<span class="ident">statements_distributed</span>: <span class="ident">prometheus::Counter</span><span class="op">&lt;</span><span class="ident">prometheus::U64</span><span class="op">&gt;</span>,
@@ -203,7 +227,7 @@
 	<span class="ident">received_responses</span>: <span class="ident">prometheus::CounterVec</span><span class="op">&lt;</span><span class="ident">prometheus::U64</span><span class="op">&gt;</span>,
 	<span class="ident">active_leaves_update</span>: <span class="ident">prometheus::Histogram</span>,
 	<span class="ident">share</span>: <span class="ident">prometheus::Histogram</span>,
-	<span class="ident">network_bridge_update_v1</span>: <span class="ident">prometheus::Histogram</span>,
+	<span class="ident">network_bridge_update_v1</span>: <span class="ident">prometheus::HistogramVec</span>,
 	<span class="ident">statements_unexpected</span>: <span class="ident">prometheus::CounterVec</span><span class="op">&lt;</span><span class="ident">prometheus::U64</span><span class="op">&gt;</span>,
 	<span class="ident">created_message_size</span>: <span class="ident">prometheus::Gauge</span><span class="op">&lt;</span><span class="ident">prometheus::U64</span><span class="op">&gt;</span>,
 }
@@ -254,8 +278,14 @@
 	<span class="doccomment">/// Provide a timer for `network_bridge_update_v1` which observes on drop.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">time_network_bridge_update_v1</span>(
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
+		<span class="ident">message_type</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>,
 	) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">metrics::prometheus::prometheus::HistogramTimer</span><span class="op">&gt;</span> {
-		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">as_ref</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">metrics</span><span class="op">|</span> <span class="ident">metrics</span>.<span class="ident">network_bridge_update_v1</span>.<span class="ident">start_timer</span>())
+		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">as_ref</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">metrics</span><span class="op">|</span> {
+			<span class="ident">metrics</span>
+				.<span class="ident">network_bridge_update_v1</span>
+				.<span class="ident">with_label_values</span>(<span class="kw-2">&amp;</span>[<span class="ident">message_type</span>])
+				.<span class="ident">start_timer</span>()
+		})
 	}
 
 	<span class="doccomment">/// Update the out-of-view statements counter for unexpected valid statements</span>
@@ -317,24 +347,34 @@
 				<span class="ident">registry</span>,
 			)<span class="question-mark">?</span>,
 			<span class="ident">active_leaves_update</span>: <span class="ident">prometheus::register</span>(
-				<span class="ident">prometheus::Histogram::with_opts</span>(<span class="ident">prometheus::HistogramOpts::new</span>(
-					<span class="string">&quot;polkadot_parachain_statement_distribution_active_leaves_update&quot;</span>,
-					<span class="string">&quot;Time spent within `statement_distribution::active_leaves_update`&quot;</span>,
-				))<span class="question-mark">?</span>,
+				<span class="ident">prometheus::Histogram::with_opts</span>(
+					<span class="ident">prometheus::HistogramOpts::new</span>(
+						<span class="string">&quot;polkadot_parachain_statement_distribution_active_leaves_update&quot;</span>,
+						<span class="string">&quot;Time spent within `statement_distribution::active_leaves_update`&quot;</span>,
+					)
+					.<span class="ident">buckets</span>(<span class="ident">HISTOGRAM_LATENCY_BUCKETS</span>.<span class="ident">into</span>()),
+				)<span class="question-mark">?</span>,
 				<span class="ident">registry</span>,
 			)<span class="question-mark">?</span>,
 			<span class="ident">share</span>: <span class="ident">prometheus::register</span>(
-				<span class="ident">prometheus::Histogram::with_opts</span>(<span class="ident">prometheus::HistogramOpts::new</span>(
-					<span class="string">&quot;polkadot_parachain_statement_distribution_share&quot;</span>,
-					<span class="string">&quot;Time spent within `statement_distribution::share`&quot;</span>,
-				))<span class="question-mark">?</span>,
+				<span class="ident">prometheus::Histogram::with_opts</span>(
+					<span class="ident">prometheus::HistogramOpts::new</span>(
+						<span class="string">&quot;polkadot_parachain_statement_distribution_share&quot;</span>,
+						<span class="string">&quot;Time spent within `statement_distribution::share`&quot;</span>,
+					)
+					.<span class="ident">buckets</span>(<span class="ident">HISTOGRAM_LATENCY_BUCKETS</span>.<span class="ident">into</span>()),
+				)<span class="question-mark">?</span>,
 				<span class="ident">registry</span>,
 			)<span class="question-mark">?</span>,
 			<span class="ident">network_bridge_update_v1</span>: <span class="ident">prometheus::register</span>(
-				<span class="ident">prometheus::Histogram::with_opts</span>(<span class="ident">prometheus::HistogramOpts::new</span>(
-					<span class="string">&quot;polkadot_parachain_statement_distribution_network_bridge_update_v1&quot;</span>,
-					<span class="string">&quot;Time spent within `statement_distribution::network_bridge_update_v1`&quot;</span>,
-				))<span class="question-mark">?</span>,
+				<span class="ident">prometheus::HistogramVec::new</span>(
+					<span class="ident">prometheus::HistogramOpts::new</span>(
+						<span class="string">&quot;polkadot_parachain_statement_distribution_network_bridge_update_v1&quot;</span>,
+						<span class="string">&quot;Time spent within `statement_distribution::network_bridge_update_v1`&quot;</span>,
+					)
+					.<span class="ident">buckets</span>(<span class="ident">HISTOGRAM_LATENCY_BUCKETS</span>.<span class="ident">into</span>()),
+					<span class="kw-2">&amp;</span>[<span class="string">&quot;message_type&quot;</span>],
+				)<span class="question-mark">?</span>,
 				<span class="ident">registry</span>,
 			)<span class="question-mark">?</span>,
 			<span class="ident">statements_unexpected</span>: <span class="ident">prometheus::register</span>(
