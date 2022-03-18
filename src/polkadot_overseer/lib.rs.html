@@ -1375,7 +1375,7 @@
 	<span class="ident">SupportsParachains</span>: <span class="ident">HeadSupportsParachains</span>,
 	<span class="ident">S</span>: <span class="ident">SpawnNamed</span>,
 {
-	<span class="doccomment">/// Stop the overseer.</span>
+	<span class="doccomment">/// Stop the `Overseer`.</span>
 	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">stop</span>(<span class="kw-2">mut</span> <span class="self">self</span>) {
 		<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">wait_terminate</span>(<span class="ident">OverseerSignal::Conclude</span>, <span class="ident">Duration::from_secs</span>(<span class="number">1_u64</span>)).<span class="kw">await</span>;
 	}
