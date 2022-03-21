@@ -2302,67 +2302,6 @@
 <span id="2302">2302</span>
 <span id="2303">2303</span>
 <span id="2304">2304</span>
-<span id="2305">2305</span>
-<span id="2306">2306</span>
-<span id="2307">2307</span>
-<span id="2308">2308</span>
-<span id="2309">2309</span>
-<span id="2310">2310</span>
-<span id="2311">2311</span>
-<span id="2312">2312</span>
-<span id="2313">2313</span>
-<span id="2314">2314</span>
-<span id="2315">2315</span>
-<span id="2316">2316</span>
-<span id="2317">2317</span>
-<span id="2318">2318</span>
-<span id="2319">2319</span>
-<span id="2320">2320</span>
-<span id="2321">2321</span>
-<span id="2322">2322</span>
-<span id="2323">2323</span>
-<span id="2324">2324</span>
-<span id="2325">2325</span>
-<span id="2326">2326</span>
-<span id="2327">2327</span>
-<span id="2328">2328</span>
-<span id="2329">2329</span>
-<span id="2330">2330</span>
-<span id="2331">2331</span>
-<span id="2332">2332</span>
-<span id="2333">2333</span>
-<span id="2334">2334</span>
-<span id="2335">2335</span>
-<span id="2336">2336</span>
-<span id="2337">2337</span>
-<span id="2338">2338</span>
-<span id="2339">2339</span>
-<span id="2340">2340</span>
-<span id="2341">2341</span>
-<span id="2342">2342</span>
-<span id="2343">2343</span>
-<span id="2344">2344</span>
-<span id="2345">2345</span>
-<span id="2346">2346</span>
-<span id="2347">2347</span>
-<span id="2348">2348</span>
-<span id="2349">2349</span>
-<span id="2350">2350</span>
-<span id="2351">2351</span>
-<span id="2352">2352</span>
-<span id="2353">2353</span>
-<span id="2354">2354</span>
-<span id="2355">2355</span>
-<span id="2356">2356</span>
-<span id="2357">2357</span>
-<span id="2358">2358</span>
-<span id="2359">2359</span>
-<span id="2360">2360</span>
-<span id="2361">2361</span>
-<span id="2362">2362</span>
-<span id="2363">2363</span>
-<span id="2364">2364</span>
-<span id="2365">2365</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2019-2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Parity Bridges Common.</span>
 
@@ -2535,12 +2474,14 @@
 		<span class="kw">type</span> <span class="ident">TargetHeaderChain</span>: <span class="ident">TargetHeaderChain</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::OutboundPayload</span>, <span class="ident"><span class="self">Self</span>::AccountId</span><span class="op">&gt;</span>;
 		<span class="doccomment">/// Message payload verifier.</span>
 		<span class="kw">type</span> <span class="ident">LaneMessageVerifier</span>: <span class="ident">LaneMessageVerifier</span><span class="op">&lt;</span>
+			<span class="ident"><span class="self">Self</span>::Origin</span>,
 			<span class="ident"><span class="self">Self</span>::AccountId</span>,
 			<span class="ident"><span class="self">Self</span>::OutboundPayload</span>,
 			<span class="ident"><span class="self">Self</span>::OutboundMessageFee</span>,
 		<span class="op">&gt;</span>;
 		<span class="doccomment">/// Message delivery payment.</span>
 		<span class="kw">type</span> <span class="ident">MessageDeliveryAndDispatchPayment</span>: <span class="ident">MessageDeliveryAndDispatchPayment</span><span class="op">&lt;</span>
+			<span class="ident"><span class="self">Self</span>::Origin</span>,
 			<span class="ident"><span class="self">Self</span>::AccountId</span>,
 			<span class="ident"><span class="self">Self</span>::OutboundMessageFee</span>,
 		<span class="op">&gt;</span>;
@@ -2641,16 +2582,12 @@
 			<span class="ident">payload</span>: <span class="ident">T::OutboundPayload</span>,
 			<span class="ident">delivery_and_dispatch_fee</span>: <span class="ident">T::OutboundMessageFee</span>,
 		) -&gt; <span class="ident">DispatchResultWithPostInfo</span> {
-			<span class="ident"><span class="kw">crate</span>::send_message</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(
-				<span class="ident">origin</span>.<span class="ident">into</span>().<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">BadOrigin</span>)<span class="question-mark">?</span>,
-				<span class="ident">lane_id</span>,
-				<span class="ident">payload</span>,
-				<span class="ident">delivery_and_dispatch_fee</span>,
+			<span class="ident"><span class="kw">crate</span>::send_message</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">origin</span>, <span class="ident">lane_id</span>, <span class="ident">payload</span>, <span class="ident">delivery_and_dispatch_fee</span>).<span class="ident">map</span>(
+				<span class="op">|</span><span class="ident">sent_message</span><span class="op">|</span> <span class="ident">PostDispatchInfo</span> {
+					<span class="ident">actual_weight</span>: <span class="prelude-val">Some</span>(<span class="ident">sent_message</span>.<span class="ident">weight</span>),
+					<span class="ident">pays_fee</span>: <span class="ident">Pays::Yes</span>,
+				},
 			)
-			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">sent_message</span><span class="op">|</span> <span class="ident">PostDispatchInfo</span> {
-				<span class="ident">actual_weight</span>: <span class="prelude-val">Some</span>(<span class="ident">sent_message</span>.<span class="ident">weight</span>),
-				<span class="ident">pays_fee</span>: <span class="ident">Pays::Yes</span>,
-			})
 		}
 
 		<span class="doccomment">/// Pay additional fee for the message.</span>
@@ -2678,17 +2615,15 @@
 			);
 
 			<span class="comment">// withdraw additional fee from submitter</span>
-			<span class="kw">let</span> <span class="ident">submitter</span> <span class="op">=</span> <span class="ident">origin</span>.<span class="ident">into</span>().<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">BadOrigin</span>)<span class="question-mark">?</span>;
 			<span class="ident">T::MessageDeliveryAndDispatchPayment::pay_delivery_and_dispatch_fee</span>(
-				<span class="kw-2">&amp;</span><span class="ident">submitter</span>,
+				<span class="kw-2">&amp;</span><span class="ident">origin</span>,
 				<span class="kw-2">&amp;</span><span class="ident">additional_fee</span>,
 				<span class="kw-2">&amp;</span><span class="ident">relayer_fund_account_id</span>::<span class="op">&lt;</span><span class="ident">T::AccountId</span>, <span class="ident">T::AccountIdConverter</span><span class="op">&gt;</span>(),
 			)
 			.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> {
 				<span class="macro">log::trace!</span>(
 					<span class="ident">target</span>: <span class="string">&quot;runtime::bridge-messages&quot;</span>,
-					<span class="string">&quot;Submitter {:?} can&#39;t pay additional fee {:?} for the message {:?}/{:?} to {:?}: {:?}&quot;</span>,
-					<span class="ident">submitter</span>,
+					<span class="string">&quot;Submitter can&#39;t pay additional fee {:?} for the message {:?}/{:?} to {:?}: {:?}&quot;</span>,
 					<span class="ident">additional_fee</span>,
 					<span class="ident">lane_id</span>,
 					<span class="ident">nonce</span>,
@@ -3129,67 +3064,6 @@
 		) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">MessageData</span><span class="op">&lt;</span><span class="ident">T::OutboundMessageFee</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 			<span class="ident">OutboundMessages</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">MessageKey</span> { <span class="ident">lane_id</span>: <span class="ident">lane</span>, <span class="ident">nonce</span> })
 		}
-
-		<span class="doccomment">/// Get nonce of the latest generated message at given outbound lane.</span>
-		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">outbound_latest_generated_nonce</span>(<span class="ident">lane</span>: <span class="ident">LaneId</span>) -&gt; <span class="ident">MessageNonce</span> {
-			<span class="ident">OutboundLanes</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">lane</span>).<span class="ident">latest_generated_nonce</span>
-		}
-
-		<span class="doccomment">/// Get nonce of the latest confirmed message at given outbound lane.</span>
-		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">outbound_latest_received_nonce</span>(<span class="ident">lane</span>: <span class="ident">LaneId</span>) -&gt; <span class="ident">MessageNonce</span> {
-			<span class="ident">OutboundLanes</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">lane</span>).<span class="ident">latest_received_nonce</span>
-		}
-
-		<span class="doccomment">/// Get nonce of the latest received message at given inbound lane.</span>
-		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">inbound_latest_received_nonce</span>(<span class="ident">lane</span>: <span class="ident">LaneId</span>) -&gt; <span class="ident">MessageNonce</span> {
-			<span class="ident">InboundLanes</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">lane</span>).<span class="ident">last_delivered_nonce</span>()
-		}
-
-		<span class="doccomment">/// Get nonce of the latest confirmed message at given inbound lane.</span>
-		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">inbound_latest_confirmed_nonce</span>(<span class="ident">lane</span>: <span class="ident">LaneId</span>) -&gt; <span class="ident">MessageNonce</span> {
-			<span class="ident">InboundLanes</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">lane</span>).<span class="ident">last_confirmed_nonce</span>
-		}
-
-		<span class="doccomment">/// Get state of unrewarded relayers set.</span>
-		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">inbound_unrewarded_relayers_state</span>(
-			<span class="ident">lane</span>: <span class="ident">bp_messages::LaneId</span>,
-		) -&gt; <span class="ident">bp_messages::UnrewardedRelayersState</span> {
-			<span class="kw">let</span> <span class="ident">relayers</span> <span class="op">=</span> <span class="ident">InboundLanes</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">lane</span>).<span class="ident">relayers</span>;
-			<span class="ident">bp_messages::UnrewardedRelayersState</span> {
-				<span class="ident">unrewarded_relayer_entries</span>: <span class="ident">relayers</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="kw">_</span>,
-				<span class="ident">messages_in_oldest_entry</span>: <span class="ident">relayers</span>
-					.<span class="ident">front</span>()
-					.<span class="ident">map</span>(<span class="op">|</span><span class="ident">entry</span><span class="op">|</span> <span class="number">1</span> <span class="op">+</span> <span class="ident">entry</span>.<span class="ident">messages</span>.<span class="ident">end</span> <span class="op">-</span> <span class="ident">entry</span>.<span class="ident">messages</span>.<span class="ident">begin</span>)
-					.<span class="ident">unwrap_or</span>(<span class="number">0</span>),
-				<span class="ident">total_messages</span>: <span class="ident">total_unrewarded_messages</span>(<span class="kw-2">&amp;</span><span class="ident">relayers</span>).<span class="ident">unwrap_or</span>(<span class="ident">MessageNonce::MAX</span>),
-			}
-		}
-	}
-}
-
-<span class="doccomment">/// Getting storage keys for messages and lanes states. These keys are normally used when building</span>
-<span class="doccomment">/// messages and lanes states proofs.</span>
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">storage_keys</span> {
-	<span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
-	<span class="kw">use</span> <span class="ident">sp_core::storage::StorageKey</span>;
-
-	<span class="doccomment">/// Storage key of the outbound message in the runtime storage.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">message_key</span>(<span class="ident">pallet_prefix</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">lane</span>: <span class="kw-2">&amp;</span><span class="ident">LaneId</span>, <span class="ident">nonce</span>: <span class="ident">MessageNonce</span>) -&gt; <span class="ident">StorageKey</span> {
-		<span class="ident">bp_runtime::storage_map_final_key_blake2_128concat</span>(
-			<span class="ident">pallet_prefix</span>,
-			<span class="string">&quot;OutboundMessages&quot;</span>,
-			<span class="kw-2">&amp;</span><span class="ident">MessageKey</span> { <span class="ident">lane_id</span>: <span class="kw-2">*</span><span class="ident">lane</span>, <span class="ident">nonce</span> }.<span class="ident">encode</span>(),
-		)
-	}
-
-	<span class="doccomment">/// Storage key of the outbound message lane state in the runtime storage.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">outbound_lane_data_key</span>(<span class="ident">pallet_prefix</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">lane</span>: <span class="kw-2">&amp;</span><span class="ident">LaneId</span>) -&gt; <span class="ident">StorageKey</span> {
-		<span class="ident">bp_runtime::storage_map_final_key_blake2_128concat</span>(<span class="ident">pallet_prefix</span>, <span class="string">&quot;OutboundLanes&quot;</span>, <span class="ident">lane</span>)
-	}
-
-	<span class="doccomment">/// Storage key of the inbound message lane state in the runtime storage.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">inbound_lane_data_key</span>(<span class="ident">pallet_prefix</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">lane</span>: <span class="kw-2">&amp;</span><span class="ident">LaneId</span>) -&gt; <span class="ident">StorageKey</span> {
-		<span class="ident">bp_runtime::storage_map_final_key_blake2_128concat</span>(<span class="ident">pallet_prefix</span>, <span class="string">&quot;InboundLanes&quot;</span>, <span class="ident">lane</span>)
 	}
 }
 
@@ -3206,6 +3080,7 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>
 	<span class="ident">bp_messages::source_chain::MessagesBridge</span><span class="op">&lt;</span>
+		<span class="ident">T::Origin</span>,
 		<span class="ident">T::AccountId</span>,
 		<span class="ident">T::OutboundMessageFee</span>,
 		<span class="ident">T::OutboundPayload</span>,
@@ -3217,7 +3092,7 @@
 	<span class="kw">type</span> <span class="ident">Error</span> <span class="op">=</span> <span class="ident">sp_runtime::DispatchErrorWithPostInfo</span><span class="op">&lt;</span><span class="ident">PostDispatchInfo</span><span class="op">&gt;</span>;
 
 	<span class="kw">fn</span> <span class="ident">send_message</span>(
-		<span class="ident">sender</span>: <span class="ident">bp_messages::source_chain::Sender</span><span class="op">&lt;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span>,
+		<span class="ident">sender</span>: <span class="ident">T::Origin</span>,
 		<span class="ident">lane</span>: <span class="ident">LaneId</span>,
 		<span class="ident">message</span>: <span class="ident">T::OutboundPayload</span>,
 		<span class="ident">delivery_and_dispatch_fee</span>: <span class="ident">T::OutboundMessageFee</span>,
@@ -3228,7 +3103,7 @@
 
 <span class="doccomment">/// Function that actually sends message.</span>
 <span class="kw">fn</span> <span class="ident">send_message</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span><span class="op">&gt;</span>(
-	<span class="ident">submitter</span>: <span class="ident">bp_messages::source_chain::Sender</span><span class="op">&lt;</span><span class="ident">T::AccountId</span><span class="op">&gt;</span>,
+	<span class="ident">submitter</span>: <span class="ident">T::Origin</span>,
 	<span class="ident">lane_id</span>: <span class="ident">LaneId</span>,
 	<span class="ident">payload</span>: <span class="ident">T::OutboundPayload</span>,
 	<span class="ident">delivery_and_dispatch_fee</span>: <span class="ident">T::OutboundMessageFee</span>,
@@ -3282,9 +3157,8 @@
 	.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> {
 		<span class="macro">log::trace!</span>(
 			<span class="ident">target</span>: <span class="string">&quot;runtime::bridge-messages&quot;</span>,
-			<span class="string">&quot;Message to lane {:?} is rejected because submitter {:?} is unable to pay fee {:?}: {:?}&quot;</span>,
+			<span class="string">&quot;Message to lane {:?} is rejected because submitter is unable to pay fee {:?}: {:?}&quot;</span>,
 			<span class="ident">lane_id</span>,
-			<span class="ident">submitter</span>,
 			<span class="ident">delivery_and_dispatch_fee</span>,
 			<span class="ident">err</span>,
 		);
@@ -3525,14 +3399,31 @@
 		<span class="ident">REGULAR_PAYLOAD</span>, <span class="ident">TEST_LANE_ID</span>, <span class="ident">TEST_RELAYER_A</span>, <span class="ident">TEST_RELAYER_B</span>,
 	};
 	<span class="kw">use</span> <span class="ident">bp_messages</span>::{<span class="ident">UnrewardedRelayer</span>, <span class="ident">UnrewardedRelayersState</span>};
-	<span class="kw">use</span> <span class="ident">frame_support</span>::{<span class="ident">assert_noop</span>, <span class="ident">assert_ok</span>, <span class="ident">weights::Weight</span>};
+	<span class="kw">use</span> <span class="ident">frame_support</span>::{
+		<span class="ident">assert_noop</span>, <span class="ident">assert_ok</span>,
+		<span class="ident">storage::generator</span>::{<span class="ident">StorageMap</span>, <span class="ident">StorageValue</span>},
+		<span class="ident">weights::Weight</span>,
+	};
 	<span class="kw">use</span> <span class="ident">frame_system</span>::{<span class="ident">EventRecord</span>, <span class="ident">Pallet</span> <span class="kw">as</span> <span class="ident">System</span>, <span class="ident">Phase</span>};
-	<span class="kw">use</span> <span class="ident">hex_literal::hex</span>;
 	<span class="kw">use</span> <span class="ident">sp_runtime::DispatchError</span>;
 
 	<span class="kw">fn</span> <span class="ident">get_ready_for_events</span>() {
 		<span class="ident">System</span>::<span class="op">&lt;</span><span class="ident">TestRuntime</span><span class="op">&gt;</span><span class="ident">::set_block_number</span>(<span class="number">1</span>);
 		<span class="ident">System</span>::<span class="op">&lt;</span><span class="ident">TestRuntime</span><span class="op">&gt;</span><span class="ident">::reset_events</span>();
+	}
+
+	<span class="kw">fn</span> <span class="ident">inbound_unrewarded_relayers_state</span>(
+		<span class="ident">lane</span>: <span class="ident">bp_messages::LaneId</span>,
+	) -&gt; <span class="ident">bp_messages::UnrewardedRelayersState</span> {
+		<span class="kw">let</span> <span class="ident">relayers</span> <span class="op">=</span> <span class="ident">InboundLanes</span>::<span class="op">&lt;</span><span class="ident">TestRuntime</span>, ()<span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">lane</span>).<span class="ident">relayers</span>;
+		<span class="ident">bp_messages::UnrewardedRelayersState</span> {
+			<span class="ident">unrewarded_relayer_entries</span>: <span class="ident">relayers</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="kw">_</span>,
+			<span class="ident">messages_in_oldest_entry</span>: <span class="ident">relayers</span>
+				.<span class="ident">front</span>()
+				.<span class="ident">map</span>(<span class="op">|</span><span class="ident">entry</span><span class="op">|</span> <span class="number">1</span> <span class="op">+</span> <span class="ident">entry</span>.<span class="ident">messages</span>.<span class="ident">end</span> <span class="op">-</span> <span class="ident">entry</span>.<span class="ident">messages</span>.<span class="ident">begin</span>)
+				.<span class="ident">unwrap_or</span>(<span class="number">0</span>),
+			<span class="ident">total_messages</span>: <span class="ident">total_unrewarded_messages</span>(<span class="kw-2">&amp;</span><span class="ident">relayers</span>).<span class="ident">unwrap_or</span>(<span class="ident">MessageNonce::MAX</span>),
+		}
 	}
 
 	<span class="kw">fn</span> <span class="ident">send_regular_message</span>() -&gt; <span class="ident">Weight</span> {
@@ -3979,7 +3870,7 @@
 				},
 			);
 			<span class="macro">assert_eq!</span>(
-				<span class="ident">Pallet</span>::<span class="op">&lt;</span><span class="ident">TestRuntime</span><span class="op">&gt;</span><span class="ident">::inbound_unrewarded_relayers_state</span>(<span class="ident">TEST_LANE_ID</span>),
+				<span class="ident">inbound_unrewarded_relayers_state</span>(<span class="ident">TEST_LANE_ID</span>),
 				<span class="ident">UnrewardedRelayersState</span> {
 					<span class="ident">unrewarded_relayer_entries</span>: <span class="number">2</span>,
 					<span class="ident">messages_in_oldest_entry</span>: <span class="number">1</span>,
@@ -4014,7 +3905,7 @@
 				},
 			);
 			<span class="macro">assert_eq!</span>(
-				<span class="ident">Pallet</span>::<span class="op">&lt;</span><span class="ident">TestRuntime</span><span class="op">&gt;</span><span class="ident">::inbound_unrewarded_relayers_state</span>(<span class="ident">TEST_LANE_ID</span>),
+				<span class="ident">inbound_unrewarded_relayers_state</span>(<span class="ident">TEST_LANE_ID</span>),
 				<span class="ident">UnrewardedRelayersState</span> {
 					<span class="ident">unrewarded_relayer_entries</span>: <span class="number">2</span>,
 					<span class="ident">messages_in_oldest_entry</span>: <span class="number">1</span>,
@@ -4253,45 +4144,6 @@
 
 			<span class="macro">assert_eq!</span>(<span class="ident">InboundLanes</span>::<span class="op">&lt;</span><span class="ident">TestRuntime</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">TEST_LANE_ID</span>).<span class="ident">last_delivered_nonce</span>(), <span class="number">3</span>,);
 		});
-	}
-
-	<span class="attribute">#[<span class="ident">test</span>]</span>
-	<span class="kw">fn</span> <span class="ident">storage_message_key_computed_properly</span>() {
-		<span class="comment">// If this test fails, then something has been changed in module storage that is breaking</span>
-		<span class="comment">// all previously crafted messages proofs.</span>
-		<span class="kw">let</span> <span class="ident">storage_key</span> <span class="op">=</span> <span class="ident">storage_keys::message_key</span>(<span class="string">&quot;BridgeMessages&quot;</span>, <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="string">b&quot;test&quot;</span>, <span class="number">42</span>).<span class="number">0</span>;
-		<span class="macro">assert_eq!</span>(
-			<span class="ident">storage_key</span>,
-			<span class="macro">hex!</span>(<span class="string">&quot;dd16c784ebd3390a9bc0357c7511ed018a395e6242c6813b196ca31ed0547ea79446af0e09063bd4a7874aef8a997cec746573742a00000000000000&quot;</span>).<span class="ident">to_vec</span>(),
-			<span class="string">&quot;Unexpected storage key: {}&quot;</span>,
-			<span class="ident">hex::encode</span>(<span class="kw-2">&amp;</span><span class="ident">storage_key</span>),
-		);
-	}
-
-	<span class="attribute">#[<span class="ident">test</span>]</span>
-	<span class="kw">fn</span> <span class="ident">outbound_lane_data_key_computed_properly</span>() {
-		<span class="comment">// If this test fails, then something has been changed in module storage that is breaking</span>
-		<span class="comment">// all previously crafted outbound lane state proofs.</span>
-		<span class="kw">let</span> <span class="ident">storage_key</span> <span class="op">=</span> <span class="ident">storage_keys::outbound_lane_data_key</span>(<span class="string">&quot;BridgeMessages&quot;</span>, <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="string">b&quot;test&quot;</span>).<span class="number">0</span>;
-		<span class="macro">assert_eq!</span>(
-			<span class="ident">storage_key</span>,
-			<span class="macro">hex!</span>(<span class="string">&quot;dd16c784ebd3390a9bc0357c7511ed0196c246acb9b55077390e3ca723a0ca1f44a8995dd50b6657a037a7839304535b74657374&quot;</span>).<span class="ident">to_vec</span>(),
-			<span class="string">&quot;Unexpected storage key: {}&quot;</span>,
-			<span class="ident">hex::encode</span>(<span class="kw-2">&amp;</span><span class="ident">storage_key</span>),
-		);
-	}
-
-	<span class="attribute">#[<span class="ident">test</span>]</span>
-	<span class="kw">fn</span> <span class="ident">inbound_lane_data_key_computed_properly</span>() {
-		<span class="comment">// If this test fails, then something has been changed in module storage that is breaking</span>
-		<span class="comment">// all previously crafted inbound lane state proofs.</span>
-		<span class="kw">let</span> <span class="ident">storage_key</span> <span class="op">=</span> <span class="ident">storage_keys::inbound_lane_data_key</span>(<span class="string">&quot;BridgeMessages&quot;</span>, <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="string">b&quot;test&quot;</span>).<span class="number">0</span>;
-		<span class="macro">assert_eq!</span>(
-			<span class="ident">storage_key</span>,
-			<span class="macro">hex!</span>(<span class="string">&quot;dd16c784ebd3390a9bc0357c7511ed01e5f83cf83f2127eb47afdc35d6e43fab44a8995dd50b6657a037a7839304535b74657374&quot;</span>).<span class="ident">to_vec</span>(),
-			<span class="string">&quot;Unexpected storage key: {}&quot;</span>,
-			<span class="ident">hex::encode</span>(<span class="kw-2">&amp;</span><span class="ident">storage_key</span>),
-		);
 	}
 
 	<span class="attribute">#[<span class="ident">test</span>]</span>
@@ -4726,6 +4578,32 @@
 				<span class="ident"><span class="kw">crate</span>::mock::DbWeight::get</span>().<span class="ident">reads</span>(<span class="number">1</span>).<span class="ident">saturating_add</span>(<span class="ident">prune_weight</span>)
 			);
 		});
+	}
+
+	<span class="attribute">#[<span class="ident">test</span>]</span>
+	<span class="kw">fn</span> <span class="ident">storage_keys_computed_properly</span>() {
+		<span class="macro">assert_eq!</span>(
+			<span class="ident">PalletOperatingMode</span>::<span class="op">&lt;</span><span class="ident">TestRuntime</span><span class="op">&gt;</span><span class="ident">::storage_value_final_key</span>().<span class="ident">to_vec</span>(),
+			<span class="ident">bp_messages::storage_keys::operating_mode_key</span>(<span class="string">&quot;Messages&quot;</span>).<span class="number">0</span>,
+		);
+
+		<span class="macro">assert_eq!</span>(
+			<span class="ident">OutboundMessages</span>::<span class="op">&lt;</span><span class="ident">TestRuntime</span><span class="op">&gt;</span><span class="ident">::storage_map_final_key</span>(<span class="ident">MessageKey</span> {
+				<span class="ident">lane_id</span>: <span class="ident">TEST_LANE_ID</span>,
+				<span class="ident">nonce</span>: <span class="number">42</span>
+			}),
+			<span class="ident">bp_messages::storage_keys::message_key</span>(<span class="string">&quot;Messages&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">TEST_LANE_ID</span>, <span class="number">42</span>).<span class="number">0</span>,
+		);
+
+		<span class="macro">assert_eq!</span>(
+			<span class="ident">OutboundLanes</span>::<span class="op">&lt;</span><span class="ident">TestRuntime</span><span class="op">&gt;</span><span class="ident">::storage_map_final_key</span>(<span class="ident">TEST_LANE_ID</span>),
+			<span class="ident">bp_messages::storage_keys::outbound_lane_data_key</span>(<span class="string">&quot;Messages&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">TEST_LANE_ID</span>).<span class="number">0</span>,
+		);
+
+		<span class="macro">assert_eq!</span>(
+			<span class="ident">InboundLanes</span>::<span class="op">&lt;</span><span class="ident">TestRuntime</span><span class="op">&gt;</span><span class="ident">::storage_map_final_key</span>(<span class="ident">TEST_LANE_ID</span>),
+			<span class="ident">bp_messages::storage_keys::inbound_lane_data_key</span>(<span class="string">&quot;Messages&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">TEST_LANE_ID</span>).<span class="number">0</span>,
+		);
 	}
 }
 </code></pre></div>

@@ -99,32 +99,6 @@
 <span id="99"> 99</span>
 <span id="100">100</span>
 <span id="101">101</span>
-<span id="102">102</span>
-<span id="103">103</span>
-<span id="104">104</span>
-<span id="105">105</span>
-<span id="106">106</span>
-<span id="107">107</span>
-<span id="108">108</span>
-<span id="109">109</span>
-<span id="110">110</span>
-<span id="111">111</span>
-<span id="112">112</span>
-<span id="113">113</span>
-<span id="114">114</span>
-<span id="115">115</span>
-<span id="116">116</span>
-<span id="117">117</span>
-<span id="118">118</span>
-<span id="119">119</span>
-<span id="120">120</span>
-<span id="121">121</span>
-<span id="122">122</span>
-<span id="123">123</span>
-<span id="124">124</span>
-<span id="125">125</span>
-<span id="126">126</span>
-<span id="127">127</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2019-2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Parity Bridges Common.</span>
 
@@ -145,15 +119,23 @@
 <span class="comment">// RuntimeApi generated functions</span>
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">clippy::too_many_arguments</span>)]</span>
 
-<span class="kw">use</span> <span class="ident">bp_messages</span>::{<span class="ident">LaneId</span>, <span class="ident">MessageDetails</span>, <span class="ident">MessageNonce</span>, <span class="ident">UnrewardedRelayersState</span>};
+<span class="kw">use</span> <span class="ident">bp_messages</span>::{<span class="ident">LaneId</span>, <span class="ident">MessageDetails</span>, <span class="ident">MessageNonce</span>};
+<span class="kw">use</span> <span class="ident">sp_runtime::FixedU128</span>;
 <span class="kw">use</span> <span class="ident">sp_std::prelude</span>::<span class="kw-2">*</span>;
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">bp_polkadot_core</span>::<span class="kw-2">*</span>;
 <span class="comment">// Rococo runtime = Wococo runtime</span>
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">bp_rococo</span>::{<span class="ident">WeightToFee</span>, <span class="ident">PAY_INBOUND_DISPATCH_FEE_WEIGHT</span>, <span class="ident">SESSION_LENGTH</span>, <span class="ident">VERSION</span>};
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">bp_rococo</span>::{<span class="ident">WeightToFee</span>, <span class="ident">EXISTENTIAL_DEPOSIT</span>, <span class="ident">PAY_INBOUND_DISPATCH_FEE_WEIGHT</span>, <span class="ident">VERSION</span>};
 
 <span class="doccomment">/// Wococo Chain</span>
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">Wococo</span> <span class="op">=</span> <span class="ident">PolkadotLike</span>;
+
+<span class="doccomment">/// The target length of a session (how often authorities change) on Wococo measured in of number</span>
+<span class="doccomment">/// of blocks.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// Note that since this is a target sessions may change before/after this time depending on network</span>
+<span class="doccomment">/// conditions.</span>
+<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">SESSION_LENGTH</span>: <span class="ident">BlockNumber</span> <span class="op">=</span> <span class="ident">time_units::MINUTES</span>;
 
 <span class="comment">// We use this to get the account on Wococo (target) which is derived from Rococo&#39;s (source)</span>
 <span class="comment">// account.</span>
@@ -162,13 +144,13 @@
 	<span class="ident">AccountIdConverter::convert</span>(<span class="ident">encoded_id</span>)
 }
 
-<span class="doccomment">/// Name of the With-Rococo messages pallet instance in the Wococo runtime.</span>
-<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">WITH_ROCOCO_MESSAGES_PALLET_NAME</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;BridgeRococoMessages&quot;</span>;
+<span class="doccomment">/// Name of the With-Wococo GRANDPA pallet instance that is deployed at bridged chains.</span>
+<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">WITH_WOCOCO_GRANDPA_PALLET_NAME</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;BridgeWococoGrandpa&quot;</span>;
+<span class="doccomment">/// Name of the With-Wococo messages pallet instance that is deployed at bridged chains.</span>
+<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">WITH_WOCOCO_MESSAGES_PALLET_NAME</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;BridgeWococoMessages&quot;</span>;
 
 <span class="doccomment">/// Name of the `WococoFinalityApi::best_finalized` runtime method.</span>
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">BEST_FINALIZED_WOCOCO_HEADER_METHOD</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;WococoFinalityApi_best_finalized&quot;</span>;
-<span class="doccomment">/// Name of the `WococoFinalityApi::is_known_header` runtime method.</span>
-<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">IS_KNOWN_WOCOCO_HEADER_METHOD</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;WococoFinalityApi_is_known_header&quot;</span>;
 
 <span class="doccomment">/// Name of the `ToWococoOutboundLaneApi::estimate_message_delivery_and_dispatch_fee` runtime</span>
 <span class="doccomment">/// method.</span>
@@ -176,22 +158,6 @@
 	<span class="string">&quot;ToWococoOutboundLaneApi_estimate_message_delivery_and_dispatch_fee&quot;</span>;
 <span class="doccomment">/// Name of the `ToWococoOutboundLaneApi::message_details` runtime method.</span>
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">TO_WOCOCO_MESSAGE_DETAILS_METHOD</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;ToWococoOutboundLaneApi_message_details&quot;</span>;
-<span class="doccomment">/// Name of the `ToWococoOutboundLaneApi::latest_generated_nonce` runtime method.</span>
-<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">TO_WOCOCO_LATEST_GENERATED_NONCE_METHOD</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span>
-	<span class="string">&quot;ToWococoOutboundLaneApi_latest_generated_nonce&quot;</span>;
-<span class="doccomment">/// Name of the `ToWococoOutboundLaneApi::latest_received_nonce` runtime method.</span>
-<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">TO_WOCOCO_LATEST_RECEIVED_NONCE_METHOD</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span>
-	<span class="string">&quot;ToWococoOutboundLaneApi_latest_received_nonce&quot;</span>;
-
-<span class="doccomment">/// Name of the `FromWococoInboundLaneApi::latest_received_nonce` runtime method.</span>
-<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">FROM_WOCOCO_LATEST_RECEIVED_NONCE_METHOD</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span>
-	<span class="string">&quot;FromWococoInboundLaneApi_latest_received_nonce&quot;</span>;
-<span class="doccomment">/// Name of the `FromWococoInboundLaneApi::latest_onfirmed_nonce` runtime method.</span>
-<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">FROM_WOCOCO_LATEST_CONFIRMED_NONCE_METHOD</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span>
-	<span class="string">&quot;FromWococoInboundLaneApi_latest_confirmed_nonce&quot;</span>;
-<span class="doccomment">/// Name of the `FromWococoInboundLaneApi::unrewarded_relayers_state` runtime method.</span>
-<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">FROM_WOCOCO_UNREWARDED_RELAYERS_STATE</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span>
-	<span class="string">&quot;FromWococoInboundLaneApi_unrewarded_relayers_state&quot;</span>;
 
 <span class="macro">sp_api::decl_runtime_apis!</span> {
 	<span class="doccomment">/// API for querying information about the finalized Wococo headers.</span>
@@ -201,8 +167,6 @@
 	<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">WococoFinalityApi</span> {
 		<span class="doccomment">/// Returns number and hash of the best finalized header known to the bridge module.</span>
 		<span class="kw">fn</span> <span class="ident">best_finalized</span>() -&gt; (<span class="ident">BlockNumber</span>, <span class="ident">Hash</span>);
-		<span class="doccomment">/// Returns true if the header is known to the runtime.</span>
-		<span class="kw">fn</span> <span class="ident">is_known_header</span>(<span class="ident">hash</span>: <span class="ident">Hash</span>) -&gt; <span class="ident">bool</span>;
 	}
 
 	<span class="doccomment">/// Outbound message lane API for messages that are sent to Wococo chain.</span>
@@ -222,6 +186,7 @@
 		<span class="kw">fn</span> <span class="ident">estimate_message_delivery_and_dispatch_fee</span>(
 			<span class="ident">lane_id</span>: <span class="ident">LaneId</span>,
 			<span class="ident">payload</span>: <span class="ident">OutboundPayload</span>,
+			<span class="ident">wococo_to_this_conversion_rate</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">FixedU128</span><span class="op">&gt;</span>,
 		) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">OutboundMessageFee</span><span class="op">&gt;</span>;
 		<span class="doccomment">/// Returns dispatch weight, encoded payload size and delivery+dispatch fee of all</span>
 		<span class="doccomment">/// messages in given inclusive range.</span>
@@ -233,23 +198,6 @@
 			<span class="ident">begin</span>: <span class="ident">MessageNonce</span>,
 			<span class="ident">end</span>: <span class="ident">MessageNonce</span>,
 		) -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">MessageDetails</span><span class="op">&lt;</span><span class="ident">OutboundMessageFee</span><span class="op">&gt;</span><span class="op">&gt;</span>;
-		<span class="doccomment">/// Returns nonce of the latest message, received by bridged chain.</span>
-		<span class="kw">fn</span> <span class="ident">latest_received_nonce</span>(<span class="ident">lane</span>: <span class="ident">LaneId</span>) -&gt; <span class="ident">MessageNonce</span>;
-		<span class="doccomment">/// Returns nonce of the latest message, generated by given lane.</span>
-		<span class="kw">fn</span> <span class="ident">latest_generated_nonce</span>(<span class="ident">lane</span>: <span class="ident">LaneId</span>) -&gt; <span class="ident">MessageNonce</span>;
-	}
-
-	<span class="doccomment">/// Inbound message lane API for messages sent by Wococo chain.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// This API is implemented by runtimes that are receiving messages from Wococo chain, not the</span>
-	<span class="doccomment">/// Wococo runtime itself.</span>
-	<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">FromWococoInboundLaneApi</span> {
-		<span class="doccomment">/// Returns nonce of the latest message, received by given lane.</span>
-		<span class="kw">fn</span> <span class="ident">latest_received_nonce</span>(<span class="ident">lane</span>: <span class="ident">LaneId</span>) -&gt; <span class="ident">MessageNonce</span>;
-		<span class="doccomment">/// Nonce of the latest message that has been confirmed to the bridged chain.</span>
-		<span class="kw">fn</span> <span class="ident">latest_confirmed_nonce</span>(<span class="ident">lane</span>: <span class="ident">LaneId</span>) -&gt; <span class="ident">MessageNonce</span>;
-		<span class="doccomment">/// State of the unrewarded relayers set at given lane.</span>
-		<span class="kw">fn</span> <span class="ident">unrewarded_relayers_state</span>(<span class="ident">lane</span>: <span class="ident">LaneId</span>) -&gt; <span class="ident">UnrewardedRelayersState</span>;
 	}
 }
 </code></pre></div>

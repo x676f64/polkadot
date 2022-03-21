@@ -275,6 +275,8 @@
 <span id="275">275</span>
 <span id="276">276</span>
 <span id="277">277</span>
+<span id="278">278</span>
+<span id="279">279</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2019-2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Parity Bridges Common.</span>
 
@@ -299,11 +301,11 @@
 <span class="kw">use</span> <span class="ident">frame_support</span>::{<span class="ident">RuntimeDebug</span>, <span class="ident">StorageHasher</span>};
 <span class="kw">use</span> <span class="ident">sp_core</span>::{<span class="ident">hash::H256</span>, <span class="ident">storage::StorageKey</span>};
 <span class="kw">use</span> <span class="ident">sp_io::hashing::blake2_256</span>;
-<span class="kw">use</span> <span class="ident">sp_std</span>::{<span class="ident">convert::TryFrom</span>, <span class="ident">vec::Vec</span>};
+<span class="kw">use</span> <span class="ident">sp_std</span>::{<span class="ident">convert::TryFrom</span>, <span class="ident">vec</span>, <span class="ident">vec::Vec</span>};
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">chain</span>::{
-	<span class="ident">AccountIdOf</span>, <span class="ident">AccountPublicOf</span>, <span class="ident">BalanceOf</span>, <span class="ident">BlockNumberOf</span>, <span class="ident">Chain</span>, <span class="ident">HashOf</span>, <span class="ident">HasherOf</span>, <span class="ident">HeaderOf</span>,
-	<span class="ident">IndexOf</span>, <span class="ident">SignatureOf</span>, <span class="ident">TransactionEraOf</span>,
+	<span class="ident">AccountIdOf</span>, <span class="ident">AccountPublicOf</span>, <span class="ident">BalanceOf</span>, <span class="ident">BlockNumberOf</span>, <span class="ident">Chain</span>, <span class="ident">EncodedOrDecodedCall</span>, <span class="ident">HashOf</span>,
+	<span class="ident">HasherOf</span>, <span class="ident">HeaderOf</span>, <span class="ident">IndexOf</span>, <span class="ident">SignatureOf</span>, <span class="ident">TransactionEraOf</span>,
 };
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">frame_support::storage::storage_prefix</span> <span class="kw">as</span> <span class="ident">storage_value_final_key</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">storage_proof</span>::{<span class="ident">Error</span> <span class="kw">as</span> <span class="ident">StorageProofError</span>, <span class="ident">StorageProofChecker</span>};
@@ -478,47 +480,22 @@
 }
 
 <span class="doccomment">/// This is a copy of the</span>
-<span class="doccomment">/// `frame_support::storage::generator::StorageMap::storage_map_final_key` for `Blake2_128Concat`</span>
-<span class="doccomment">/// maps.</span>
+<span class="doccomment">/// `frame_support::storage::generator::StorageMap::storage_map_final_key` for maps based</span>
+<span class="doccomment">/// on selected hasher.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// We&#39;re using it because to call `storage_map_final_key` directly, we need access to the runtime</span>
 <span class="doccomment">/// and pallet instance, which (sometimes) is impossible.</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">storage_map_final_key_blake2_128concat</span>(
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">storage_map_final_key</span><span class="op">&lt;</span><span class="ident">H</span>: <span class="ident">StorageHasher</span><span class="op">&gt;</span>(
 	<span class="ident">pallet_prefix</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>,
 	<span class="ident">map_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>,
 	<span class="ident">key</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>],
 ) -&gt; <span class="ident">StorageKey</span> {
-	<span class="ident">storage_map_final_key_identity</span>(
-		<span class="ident">pallet_prefix</span>,
-		<span class="ident">map_name</span>,
-		<span class="kw-2">&amp;</span><span class="ident">frame_support::Blake2_128Concat::hash</span>(<span class="ident">key</span>),
-	)
-}
-
-<span class="doccomment">///</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">storage_map_final_key_twox64_concat</span>(
-	<span class="ident">pallet_prefix</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>,
-	<span class="ident">map_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>,
-	<span class="ident">key</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>],
-) -&gt; <span class="ident">StorageKey</span> {
-	<span class="ident">storage_map_final_key_identity</span>(<span class="ident">pallet_prefix</span>, <span class="ident">map_name</span>, <span class="kw-2">&amp;</span><span class="ident">frame_support::Twox64Concat::hash</span>(<span class="ident">key</span>))
-}
-
-<span class="doccomment">/// This is a copy of the</span>
-<span class="doccomment">/// `frame_support::storage::generator::StorageMap::storage_map_final_key` for `Identity` maps.</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// We&#39;re using it because to call `storage_map_final_key` directly, we need access to the runtime</span>
-<span class="doccomment">/// and pallet instance, which (sometimes) is impossible.</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">storage_map_final_key_identity</span>(
-	<span class="ident">pallet_prefix</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>,
-	<span class="ident">map_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>,
-	<span class="ident">key_hashed</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>],
-) -&gt; <span class="ident">StorageKey</span> {
+	<span class="kw">let</span> <span class="ident">key_hashed</span> <span class="op">=</span> <span class="ident">H::hash</span>(<span class="ident">key</span>);
 	<span class="kw">let</span> <span class="ident">pallet_prefix_hashed</span> <span class="op">=</span> <span class="ident">frame_support::Twox128::hash</span>(<span class="ident">pallet_prefix</span>.<span class="ident">as_bytes</span>());
 	<span class="kw">let</span> <span class="ident">storage_prefix_hashed</span> <span class="op">=</span> <span class="ident">frame_support::Twox128::hash</span>(<span class="ident">map_name</span>.<span class="ident">as_bytes</span>());
 
 	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">final_key</span> <span class="op">=</span> <span class="ident">Vec::with_capacity</span>(
-		<span class="ident">pallet_prefix_hashed</span>.<span class="ident">len</span>() <span class="op">+</span> <span class="ident">storage_prefix_hashed</span>.<span class="ident">len</span>() <span class="op">+</span> <span class="ident">key_hashed</span>.<span class="ident">len</span>(),
+		<span class="ident">pallet_prefix_hashed</span>.<span class="ident">len</span>() <span class="op">+</span> <span class="ident">storage_prefix_hashed</span>.<span class="ident">len</span>() <span class="op">+</span> <span class="ident">key_hashed</span>.<span class="ident">as_ref</span>().<span class="ident">len</span>(),
 	);
 
 	<span class="ident">final_key</span>.<span class="ident">extend_from_slice</span>(<span class="kw-2">&amp;</span><span class="ident">pallet_prefix_hashed</span>[..]);
@@ -531,13 +508,27 @@
 <span class="doccomment">/// This is how a storage key of storage parameter (`parameter_types! { storage Param: bool = false;</span>
 <span class="doccomment">/// }`) is computed.</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// Copied from `frame_support::parameter_types` macro</span>
+<span class="doccomment">/// Copied from `frame_support::parameter_types` macro.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">storage_parameter_key</span>(<span class="ident">parameter_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="ident">StorageKey</span> {
 	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="ident">Vec::with_capacity</span>(<span class="number">1</span> <span class="op">+</span> <span class="ident">parameter_name</span>.<span class="ident">len</span>() <span class="op">+</span> <span class="number">1</span>);
 	<span class="ident">buffer</span>.<span class="ident">push</span>(<span class="string">b&#39;:&#39;</span>);
 	<span class="ident">buffer</span>.<span class="ident">extend_from_slice</span>(<span class="ident">parameter_name</span>.<span class="ident">as_bytes</span>());
 	<span class="ident">buffer</span>.<span class="ident">push</span>(<span class="string">b&#39;:&#39;</span>);
 	<span class="ident">StorageKey</span>(<span class="ident">sp_io::hashing::twox_128</span>(<span class="kw-2">&amp;</span><span class="ident">buffer</span>).<span class="ident">to_vec</span>())
+}
+
+<span class="doccomment">/// This is how a storage key of storage value is computed.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// Copied from `frame_support::storage::storage_prefix`.</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">storage_value_key</span>(<span class="ident">pallet_prefix</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">value_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="ident">StorageKey</span> {
+	<span class="kw">let</span> <span class="ident">pallet_hash</span> <span class="op">=</span> <span class="ident">sp_io::hashing::twox_128</span>(<span class="ident">pallet_prefix</span>.<span class="ident">as_bytes</span>());
+	<span class="kw">let</span> <span class="ident">storage_hash</span> <span class="op">=</span> <span class="ident">sp_io::hashing::twox_128</span>(<span class="ident">value_name</span>.<span class="ident">as_bytes</span>());
+
+	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">final_key</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="number">0u8</span>; <span class="number">32</span>];
+	<span class="ident">final_key</span>[..<span class="number">16</span>].<span class="ident">copy_from_slice</span>(<span class="kw-2">&amp;</span><span class="ident">pallet_hash</span>);
+	<span class="ident">final_key</span>[<span class="number">16</span>..].<span class="ident">copy_from_slice</span>(<span class="kw-2">&amp;</span><span class="ident">storage_hash</span>);
+
+	<span class="ident">StorageKey</span>(<span class="ident">final_key</span>)
 }
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
@@ -549,6 +540,19 @@
 		<span class="macro">assert_eq!</span>(
 			<span class="ident">storage_parameter_key</span>(<span class="string">&quot;MillauToRialtoConversionRate&quot;</span>),
 			<span class="ident">StorageKey</span>(<span class="macro">hex_literal::hex!</span>(<span class="string">&quot;58942375551bb0af1682f72786b59d04&quot;</span>).<span class="ident">to_vec</span>()),
+		);
+	}
+
+	<span class="attribute">#[<span class="ident">test</span>]</span>
+	<span class="kw">fn</span> <span class="ident">storage_value_key_works</span>() {
+		<span class="macro">assert_eq!</span>(
+			<span class="ident">storage_value_key</span>(<span class="string">&quot;PalletTransactionPayment&quot;</span>, <span class="string">&quot;NextFeeMultiplier&quot;</span>),
+			<span class="ident">StorageKey</span>(
+				<span class="macro">hex_literal::hex!</span>(
+					<span class="string">&quot;f0e954dfcca51a255ab12c60c789256a3f2edf3bdf381debe331ab7446addfdc&quot;</span>
+				)
+				.<span class="ident">to_vec</span>()
+			),
 		);
 	}
 }

@@ -400,11 +400,6 @@
 <span id="400">400</span>
 <span id="401">401</span>
 <span id="402">402</span>
-<span id="403">403</span>
-<span id="404">404</span>
-<span id="405">405</span>
-<span id="406">406</span>
-<span id="407">407</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2019-2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Parity Bridges Common.</span>
 
@@ -435,6 +430,7 @@
 <span class="kw">use</span> <span class="ident">sp_std</span>::{<span class="ident">collections::vec_deque::VecDeque</span>, <span class="ident">prelude</span>::<span class="kw-2">*</span>};
 
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">source_chain</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">storage_keys</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">target_chain</span>;
 
 <span class="comment">// Weight is reexported to avoid additional frame-support dependencies in related crates.</span>
@@ -629,15 +625,9 @@
 	<span class="doccomment">/// Create new `DeliveredMessages` struct that confirms delivery of single nonce with given</span>
 	<span class="doccomment">/// dispatch result.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">nonce</span>: <span class="ident">MessageNonce</span>, <span class="ident">dispatch_result</span>: <span class="ident">bool</span>) -&gt; <span class="self">Self</span> {
-		<span class="ident">DeliveredMessages</span> {
-			<span class="ident">begin</span>: <span class="ident">nonce</span>,
-			<span class="ident">end</span>: <span class="ident">nonce</span>,
-			<span class="ident">dispatch_results</span>: <span class="kw">if</span> <span class="ident">dispatch_result</span> {
-				<span class="macro">bitvec!</span>[<span class="ident">u8</span>, <span class="ident">Msb0</span>; <span class="number">1</span>]
-			} <span class="kw">else</span> {
-				<span class="macro">bitvec!</span>[<span class="ident">u8</span>, <span class="ident">Msb0</span>; <span class="number">0</span>]
-			},
-		}
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">dispatch_results</span> <span class="op">=</span> <span class="ident">BitVec::with_capacity</span>(<span class="number">1</span>);
+		<span class="ident">dispatch_results</span>.<span class="ident">push</span>(<span class="kw">if</span> <span class="ident">dispatch_result</span> { <span class="bool-val">true</span> } <span class="kw">else</span> { <span class="bool-val">false</span> });
+		<span class="ident">DeliveredMessages</span> { <span class="ident">begin</span>: <span class="ident">nonce</span>, <span class="ident">end</span>: <span class="ident">nonce</span>, <span class="ident">dispatch_results</span> }
 	}
 
 	<span class="doccomment">/// Return total count of delivered messages.</span>

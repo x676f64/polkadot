@@ -502,6 +502,29 @@
 <span id="502">502</span>
 <span id="503">503</span>
 <span id="504">504</span>
+<span id="505">505</span>
+<span id="506">506</span>
+<span id="507">507</span>
+<span id="508">508</span>
+<span id="509">509</span>
+<span id="510">510</span>
+<span id="511">511</span>
+<span id="512">512</span>
+<span id="513">513</span>
+<span id="514">514</span>
+<span id="515">515</span>
+<span id="516">516</span>
+<span id="517">517</span>
+<span id="518">518</span>
+<span id="519">519</span>
+<span id="520">520</span>
+<span id="521">521</span>
+<span id="522">522</span>
+<span id="523">523</span>
+<span id="524">524</span>
+<span id="525">525</span>
+<span id="526">526</span>
+<span id="527">527</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -522,32 +545,32 @@
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::{<span class="ident">at_rococo</span>::<span class="kw-2">*</span>, <span class="ident">at_wococo</span>::<span class="kw-2">*</span>};
 
+<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">Balances</span>, <span class="ident">Runtime</span>};
+
 <span class="kw">use</span> <span class="ident">bp_messages</span>::{
-	<span class="ident">source_chain::TargetHeaderChain</span>,
+	<span class="ident">source_chain</span>::{<span class="ident">SenderOrigin</span>, <span class="ident">TargetHeaderChain</span>},
 	<span class="ident">target_chain</span>::{<span class="ident">ProvedMessages</span>, <span class="ident">SourceHeaderChain</span>},
 	<span class="ident">InboundLaneData</span>, <span class="ident">LaneId</span>, <span class="ident">Message</span>, <span class="ident">MessageNonce</span>,
 };
-<span class="kw">use</span> <span class="ident">bp_rococo</span>::{
-	<span class="ident">max_extrinsic_size</span>, <span class="ident">max_extrinsic_weight</span>, <span class="ident">EXTRA_STORAGE_PROOF_SIZE</span>,
-	<span class="ident">MAXIMAL_ENCODED_ACCOUNT_ID_SIZE</span>,
-};
-<span class="kw">use</span> <span class="ident">bp_runtime</span>::{<span class="ident">ChainId</span>, <span class="ident">ROCOCO_CHAIN_ID</span>, <span class="ident">WOCOCO_CHAIN_ID</span>};
+<span class="kw">use</span> <span class="ident">bp_rococo</span>::{<span class="ident">Balance</span>, <span class="ident">Rococo</span>, <span class="ident">EXTRA_STORAGE_PROOF_SIZE</span>, <span class="ident">MAXIMAL_ENCODED_ACCOUNT_ID_SIZE</span>};
+<span class="kw">use</span> <span class="ident">bp_runtime</span>::{<span class="ident">Chain</span>, <span class="ident">ChainId</span>, <span class="ident">ROCOCO_CHAIN_ID</span>, <span class="ident">WOCOCO_CHAIN_ID</span>};
 <span class="kw">use</span> <span class="ident">bridge_runtime_common::messages</span>::{
-	<span class="ident">source</span> <span class="kw">as</span> <span class="ident">messages_source</span>, <span class="ident">target</span> <span class="kw">as</span> <span class="ident">messages_target</span>, <span class="ident">BridgedChainWithMessages</span>,
-	<span class="ident">ChainWithMessages</span>, <span class="ident">MessageBridge</span>, <span class="ident">MessageTransaction</span>, <span class="ident">ThisChainWithMessages</span>,
+	<span class="ident">source</span> <span class="kw">as</span> <span class="ident">messages_source</span>, <span class="ident">target</span> <span class="kw">as</span> <span class="ident">messages_target</span>, <span class="ident">transaction_payment</span>,
+	<span class="ident">BridgedChainWithMessages</span>, <span class="ident">ChainWithMessages</span>, <span class="ident">MessageBridge</span>, <span class="ident">MessageTransaction</span>,
+	<span class="ident">ThisChainWithMessages</span>,
 };
 <span class="kw">use</span> <span class="ident">frame_support</span>::{
 	<span class="ident">traits::Get</span>,
 	<span class="ident">weights</span>::{<span class="ident">Weight</span>, <span class="ident">WeightToFeePolynomial</span>},
 	<span class="ident">RuntimeDebug</span>,
 };
-<span class="kw">use</span> <span class="ident">sp_std</span>::{<span class="ident">convert::TryFrom</span>, <span class="ident">marker::PhantomData</span>, <span class="ident">ops::RangeInclusive</span>};
-
 <span class="kw">use</span> <span class="ident">rococo_runtime_constants::fee::WeightToFee</span>;
+<span class="kw">use</span> <span class="ident">sp_runtime::FixedU128</span>;
+<span class="kw">use</span> <span class="ident">sp_std</span>::{<span class="ident">convert::TryFrom</span>, <span class="ident">marker::PhantomData</span>, <span class="ident">ops::RangeInclusive</span>};
 
 <span class="doccomment">/// Maximal number of pending outbound messages.</span>
 <span class="kw">const</span> <span class="ident">MAXIMAL_PENDING_MESSAGES_AT_OUTBOUND_LANE</span>: <span class="ident">MessageNonce</span> <span class="op">=</span>
-	<span class="ident">bp_rococo::MAX_UNCONFIRMED_MESSAGES_AT_INBOUND_LANE</span>;
+	<span class="ident">bp_rococo::MAX_UNCONFIRMED_MESSAGES_IN_CONFIRMATION_TX</span>;
 <span class="doccomment">/// Maximal weight of single message delivery confirmation transaction on Rococo/Wococo chain.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// This value is a result of `pallet_bridge_messages::Pallet::receive_messages_delivery_proof` weight formula</span>
@@ -606,13 +629,14 @@
 	<span class="kw">type</span> <span class="ident">Signer</span> <span class="op">=</span> <span class="ident">primitives::v2::AccountPublic</span>;
 	<span class="kw">type</span> <span class="ident">Signature</span> <span class="op">=</span> <span class="ident"><span class="kw">crate</span>::Signature</span>;
 	<span class="kw">type</span> <span class="ident">Weight</span> <span class="op">=</span> <span class="ident">Weight</span>;
-	<span class="kw">type</span> <span class="ident">Balance</span> <span class="op">=</span> <span class="ident"><span class="kw">crate</span>::Balance</span>;
+	<span class="kw">type</span> <span class="ident">Balance</span> <span class="op">=</span> <span class="ident">Balance</span>;
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">GI</span><span class="op">&gt;</span> <span class="ident">ThisChainWithMessages</span> <span class="kw">for</span> <span class="ident">RococoLikeChain</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">GI</span><span class="op">&gt;</span> {
+	<span class="kw">type</span> <span class="ident">Origin</span> <span class="op">=</span> <span class="ident"><span class="kw">crate</span>::Origin</span>;
 	<span class="kw">type</span> <span class="ident">Call</span> <span class="op">=</span> <span class="ident"><span class="kw">crate</span>::Call</span>;
 
-	<span class="kw">fn</span> <span class="ident">is_outbound_lane_enabled</span>(<span class="ident">lane</span>: <span class="kw-2">&amp;</span><span class="ident">LaneId</span>) -&gt; <span class="ident">bool</span> {
+	<span class="kw">fn</span> <span class="ident">is_message_accepted</span>(<span class="ident">_submitter</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="kw">crate</span>::Origin</span>, <span class="ident">lane</span>: <span class="kw-2">&amp;</span><span class="ident">LaneId</span>) -&gt; <span class="ident">bool</span> {
 		<span class="kw-2">*</span><span class="ident">lane</span> <span class="op">==</span> [<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>]
 	}
 
@@ -636,14 +660,14 @@
 		}
 	}
 
-	<span class="kw">fn</span> <span class="ident">transaction_payment</span>(<span class="ident">transaction</span>: <span class="ident">MessageTransaction</span><span class="op">&lt;</span><span class="ident">Weight</span><span class="op">&gt;</span>) -&gt; <span class="ident"><span class="kw">crate</span>::Balance</span> {
+	<span class="kw">fn</span> <span class="ident">transaction_payment</span>(<span class="ident">transaction</span>: <span class="ident">MessageTransaction</span><span class="op">&lt;</span><span class="ident">Weight</span><span class="op">&gt;</span>) -&gt; <span class="ident">Balance</span> {
 		<span class="comment">// current fee multiplier is used here</span>
-		<span class="ident">bridge_runtime_common::messages::transaction_payment</span>(
+		<span class="ident">transaction_payment</span>(
 			<span class="ident"><span class="kw">crate</span>::BlockWeights::get</span>()
 				.<span class="ident">get</span>(<span class="ident">frame_support::weights::DispatchClass::Normal</span>)
 				.<span class="ident">base_extrinsic</span>,
 			<span class="ident"><span class="kw">crate</span>::TransactionByteFee::get</span>(),
-			<span class="ident">pallet_transaction_payment::Pallet</span>::<span class="op">&lt;</span><span class="ident"><span class="kw">crate</span>::Runtime</span><span class="op">&gt;</span><span class="ident">::next_fee_multiplier</span>(),
+			<span class="ident">pallet_transaction_payment::Pallet</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span><span class="ident">::next_fee_multiplier</span>(),
 			<span class="op">|</span><span class="ident">weight</span><span class="op">|</span> <span class="ident">WeightToFee::calc</span>(<span class="kw-2">&amp;</span><span class="ident">weight</span>),
 			<span class="ident">transaction</span>,
 		)
@@ -652,13 +676,14 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">GI</span><span class="op">&gt;</span> <span class="ident">BridgedChainWithMessages</span> <span class="kw">for</span> <span class="ident">RococoLikeChain</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">GI</span><span class="op">&gt;</span> {
 	<span class="kw">fn</span> <span class="ident">maximal_extrinsic_size</span>() -&gt; <span class="ident">u32</span> {
-		<span class="ident">max_extrinsic_size</span>()
+		<span class="ident">Rococo::max_extrinsic_size</span>()
 	}
 
 	<span class="kw">fn</span> <span class="ident">message_weight_limits</span>(<span class="ident">_message_payload</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) -&gt; <span class="ident">RangeInclusive</span><span class="op">&lt;</span><span class="ident">Weight</span><span class="op">&gt;</span> {
 		<span class="comment">// we don&#39;t want to relay too large messages + keep reserve for future upgrades</span>
-		<span class="kw">let</span> <span class="ident">upper_limit</span> <span class="op">=</span>
-			<span class="ident">messages_target::maximal_incoming_message_dispatch_weight</span>(<span class="ident">max_extrinsic_weight</span>());
+		<span class="kw">let</span> <span class="ident">upper_limit</span> <span class="op">=</span> <span class="ident">messages_target::maximal_incoming_message_dispatch_weight</span>(
+			<span class="ident">Rococo::max_extrinsic_weight</span>(),
+		);
 
 		<span class="comment">// we&#39;re charging for payload bytes in `With(Wococo | Rococo)MessageBridge::transaction_payment` function</span>
 		<span class="comment">//</span>
@@ -693,14 +718,14 @@
 		}
 	}
 
-	<span class="kw">fn</span> <span class="ident">transaction_payment</span>(<span class="ident">transaction</span>: <span class="ident">MessageTransaction</span><span class="op">&lt;</span><span class="ident">Weight</span><span class="op">&gt;</span>) -&gt; <span class="ident"><span class="kw">crate</span>::Balance</span> {
+	<span class="kw">fn</span> <span class="ident">transaction_payment</span>(<span class="ident">transaction</span>: <span class="ident">MessageTransaction</span><span class="op">&lt;</span><span class="ident">Weight</span><span class="op">&gt;</span>) -&gt; <span class="ident">Balance</span> {
 		<span class="comment">// current fee multiplier is used here</span>
 		<span class="ident">bridge_runtime_common::messages::transaction_payment</span>(
 			<span class="ident"><span class="kw">crate</span>::BlockWeights::get</span>()
 				.<span class="ident">get</span>(<span class="ident">frame_support::weights::DispatchClass::Normal</span>)
 				.<span class="ident">base_extrinsic</span>,
 			<span class="ident"><span class="kw">crate</span>::TransactionByteFee::get</span>(),
-			<span class="ident">pallet_transaction_payment::Pallet</span>::<span class="op">&lt;</span><span class="ident"><span class="kw">crate</span>::Runtime</span><span class="op">&gt;</span><span class="ident">::next_fee_multiplier</span>(),
+			<span class="ident">pallet_transaction_payment::Pallet</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span><span class="ident">::next_fee_multiplier</span>(),
 			<span class="op">|</span><span class="ident">weight</span><span class="op">|</span> <span class="ident">WeightToFee::calc</span>(<span class="kw-2">&amp;</span><span class="ident">weight</span>),
 			<span class="ident">transaction</span>,
 		)
@@ -714,30 +739,35 @@
 	<span class="ident">B::ThisChain</span>: <span class="ident">ChainWithMessages</span><span class="op">&lt;</span><span class="ident">AccountId</span> <span class="op">=</span> <span class="ident"><span class="kw">crate</span>::AccountId</span><span class="op">&gt;</span>,
 	<span class="ident">B::BridgedChain</span>: <span class="ident">ChainWithMessages</span><span class="op">&lt;</span><span class="ident">Hash</span> <span class="op">=</span> <span class="ident"><span class="kw">crate</span>::Hash</span><span class="op">&gt;</span>,
 	<span class="ident">GI</span>: <span class="lifetime">&#39;static</span>,
-	<span class="ident"><span class="kw">crate</span>::Runtime</span>: <span class="ident">pallet_bridge_grandpa::Config</span><span class="op">&lt;</span><span class="ident">GI</span><span class="op">&gt;</span>,
-	<span class="op">&lt;</span><span class="op">&lt;</span><span class="ident"><span class="kw">crate</span>::Runtime</span> <span class="kw">as</span> <span class="ident">pallet_bridge_grandpa::Config</span><span class="op">&lt;</span><span class="ident">GI</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::BridgedChain</span> <span class="kw">as</span> <span class="ident">bp_runtime::Chain</span><span class="op">&gt;</span><span class="ident">::Hash</span>: <span class="ident">From</span><span class="op">&lt;</span><span class="ident"><span class="kw">crate</span>::Hash</span><span class="op">&gt;</span>,
+	<span class="ident">Runtime</span>: <span class="ident">pallet_bridge_grandpa::Config</span><span class="op">&lt;</span><span class="ident">GI</span><span class="op">&gt;</span>,
+	<span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">Runtime</span> <span class="kw">as</span> <span class="ident">pallet_bridge_grandpa::Config</span><span class="op">&lt;</span><span class="ident">GI</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::BridgedChain</span> <span class="kw">as</span> <span class="ident">bp_runtime::Chain</span><span class="op">&gt;</span><span class="ident">::Hash</span>:
+		<span class="ident">From</span><span class="op">&lt;</span><span class="ident"><span class="kw">crate</span>::Hash</span><span class="op">&gt;</span>,
 {
 	<span class="kw">type</span> <span class="ident">Error</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>;
-	<span class="kw">type</span> <span class="ident">MessagesDeliveryProof</span> <span class="op">=</span> <span class="ident">messages_source::FromBridgedChainMessagesDeliveryProof</span><span class="op">&lt;</span><span class="ident"><span class="kw">crate</span>::Hash</span><span class="op">&gt;</span>;
+	<span class="kw">type</span> <span class="ident">MessagesDeliveryProof</span> <span class="op">=</span>
+		<span class="ident">messages_source::FromBridgedChainMessagesDeliveryProof</span><span class="op">&lt;</span><span class="ident"><span class="kw">crate</span>::Hash</span><span class="op">&gt;</span>;
 
-	<span class="kw">fn</span> <span class="ident">verify_message</span>(<span class="ident">payload</span>: <span class="kw-2">&amp;</span><span class="ident">messages_source::FromThisChainMessagePayload</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident"><span class="self">Self</span>::Error</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">verify_message</span>(
+		<span class="ident">payload</span>: <span class="kw-2">&amp;</span><span class="ident">messages_source::FromThisChainMessagePayload</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
+	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident"><span class="self">Self</span>::Error</span><span class="op">&gt;</span> {
 		<span class="ident">messages_source::verify_chain_message</span>::<span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>(<span class="ident">payload</span>)
 	}
 
 	<span class="kw">fn</span> <span class="ident">verify_messages_delivery_proof</span>(
 		<span class="ident">proof</span>: <span class="ident"><span class="self">Self</span>::MessagesDeliveryProof</span>,
 	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">LaneId</span>, <span class="ident">InboundLaneData</span><span class="op">&lt;</span><span class="ident"><span class="kw">crate</span>::AccountId</span><span class="op">&gt;</span>), <span class="ident"><span class="self">Self</span>::Error</span><span class="op">&gt;</span> {
-		<span class="ident">messages_source::verify_messages_delivery_proof</span>::<span class="op">&lt;</span><span class="ident">B</span>, <span class="ident"><span class="kw">crate</span>::Runtime</span>, <span class="ident">GI</span><span class="op">&gt;</span>(<span class="ident">proof</span>)
+		<span class="ident">messages_source::verify_messages_delivery_proof</span>::<span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">Runtime</span>, <span class="ident">GI</span><span class="op">&gt;</span>(<span class="ident">proof</span>)
 	}
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">GI</span><span class="op">&gt;</span> <span class="ident">SourceHeaderChain</span><span class="op">&lt;</span><span class="ident"><span class="kw">crate</span>::Balance</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">RococoLikeChain</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">GI</span><span class="op">&gt;</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">GI</span><span class="op">&gt;</span> <span class="ident">SourceHeaderChain</span><span class="op">&lt;</span><span class="ident">Balance</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">RococoLikeChain</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">GI</span><span class="op">&gt;</span>
 <span class="kw">where</span>
 	<span class="ident">B</span>: <span class="ident">MessageBridge</span>,
-	<span class="ident">B::BridgedChain</span>: <span class="ident">ChainWithMessages</span><span class="op">&lt;</span><span class="ident">Balance</span> <span class="op">=</span> <span class="ident"><span class="kw">crate</span>::Balance</span>, <span class="ident">Hash</span> <span class="op">=</span> <span class="ident"><span class="kw">crate</span>::Hash</span><span class="op">&gt;</span>,
+	<span class="ident">B::BridgedChain</span>: <span class="ident">ChainWithMessages</span><span class="op">&lt;</span><span class="ident">Balance</span> <span class="op">=</span> <span class="ident">Balance</span>, <span class="ident">Hash</span> <span class="op">=</span> <span class="ident"><span class="kw">crate</span>::Hash</span><span class="op">&gt;</span>,
 	<span class="ident">GI</span>: <span class="lifetime">&#39;static</span>,
-	<span class="ident"><span class="kw">crate</span>::Runtime</span>: <span class="ident">pallet_bridge_grandpa::Config</span><span class="op">&lt;</span><span class="ident">GI</span><span class="op">&gt;</span>,
-	<span class="op">&lt;</span><span class="op">&lt;</span><span class="ident"><span class="kw">crate</span>::Runtime</span> <span class="kw">as</span> <span class="ident">pallet_bridge_grandpa::Config</span><span class="op">&lt;</span><span class="ident">GI</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::BridgedChain</span> <span class="kw">as</span> <span class="ident">bp_runtime::Chain</span><span class="op">&gt;</span><span class="ident">::Hash</span>: <span class="ident">From</span><span class="op">&lt;</span><span class="ident"><span class="kw">crate</span>::Hash</span><span class="op">&gt;</span>,
+	<span class="ident">Runtime</span>: <span class="ident">pallet_bridge_grandpa::Config</span><span class="op">&lt;</span><span class="ident">GI</span><span class="op">&gt;</span>,
+	<span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">Runtime</span> <span class="kw">as</span> <span class="ident">pallet_bridge_grandpa::Config</span><span class="op">&lt;</span><span class="ident">GI</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::BridgedChain</span> <span class="kw">as</span> <span class="ident">bp_runtime::Chain</span><span class="op">&gt;</span><span class="ident">::Hash</span>:
+		<span class="ident">From</span><span class="op">&lt;</span><span class="ident"><span class="kw">crate</span>::Hash</span><span class="op">&gt;</span>,
 {
 	<span class="kw">type</span> <span class="ident">Error</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>;
 	<span class="kw">type</span> <span class="ident">MessagesProof</span> <span class="op">=</span> <span class="ident">messages_target::FromBridgedChainMessagesProof</span><span class="op">&lt;</span><span class="ident"><span class="kw">crate</span>::Hash</span><span class="op">&gt;</span>;
@@ -745,8 +775,9 @@
 	<span class="kw">fn</span> <span class="ident">verify_messages_proof</span>(
 		<span class="ident">proof</span>: <span class="ident"><span class="self">Self</span>::MessagesProof</span>,
 		<span class="ident">messages_count</span>: <span class="ident">u32</span>,
-	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">ProvedMessages</span><span class="op">&lt;</span><span class="ident">Message</span><span class="op">&lt;</span><span class="ident"><span class="kw">crate</span>::Balance</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident"><span class="self">Self</span>::Error</span><span class="op">&gt;</span> {
-		<span class="ident">messages_target::verify_messages_proof</span>::<span class="op">&lt;</span><span class="ident">B</span>, <span class="ident"><span class="kw">crate</span>::Runtime</span>, <span class="ident">GI</span><span class="op">&gt;</span>(<span class="ident">proof</span>, <span class="ident">messages_count</span>).<span class="ident">and_then</span>(<span class="ident">verify_inbound_messages_lane</span>)
+	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">ProvedMessages</span><span class="op">&lt;</span><span class="ident">Message</span><span class="op">&lt;</span><span class="ident">Balance</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident"><span class="self">Self</span>::Error</span><span class="op">&gt;</span> {
+		<span class="ident">messages_target::verify_messages_proof</span>::<span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">Runtime</span>, <span class="ident">GI</span><span class="op">&gt;</span>(<span class="ident">proof</span>, <span class="ident">messages_count</span>)
+			.<span class="ident">and_then</span>(<span class="ident">verify_inbound_messages_lane</span>)
 	}
 }
 
@@ -755,8 +786,8 @@
 
 <span class="doccomment">/// Verify that lanes of inbound messages are enabled.</span>
 <span class="kw">fn</span> <span class="ident">verify_inbound_messages_lane</span>(
-	<span class="ident">messages</span>: <span class="ident">ProvedMessages</span><span class="op">&lt;</span><span class="ident">Message</span><span class="op">&lt;</span><span class="ident"><span class="kw">crate</span>::Balance</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">ProvedMessages</span><span class="op">&lt;</span><span class="ident">Message</span><span class="op">&lt;</span><span class="ident"><span class="kw">crate</span>::Balance</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span><span class="op">&gt;</span> {
+	<span class="ident">messages</span>: <span class="ident">ProvedMessages</span><span class="op">&lt;</span><span class="ident">Message</span><span class="op">&lt;</span><span class="ident">Balance</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">ProvedMessages</span><span class="op">&lt;</span><span class="ident">Message</span><span class="op">&lt;</span><span class="ident">Balance</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span><span class="op">&gt;</span> {
 	<span class="kw">let</span> <span class="ident">allowed_incoming_lanes</span> <span class="op">=</span> [[<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>]];
 	<span class="kw">if</span> <span class="ident">messages</span>.<span class="ident">keys</span>().<span class="ident">any</span>(<span class="op">|</span><span class="ident">lane_id</span><span class="op">|</span> <span class="op">!</span><span class="ident">allowed_incoming_lanes</span>.<span class="ident">contains</span>(<span class="ident">lane_id</span>)) {
 		<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">INBOUND_LANE_DISABLED</span>)
@@ -767,11 +798,24 @@
 <span class="doccomment">/// The cost of delivery confirmation transaction.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">GetDeliveryConfirmationTransactionFee</span>;
 
-<span class="kw">impl</span> <span class="ident">Get</span><span class="op">&lt;</span><span class="ident"><span class="kw">crate</span>::Balance</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">GetDeliveryConfirmationTransactionFee</span> {
-	<span class="kw">fn</span> <span class="ident">get</span>() -&gt; <span class="ident"><span class="kw">crate</span>::Balance</span> {
+<span class="kw">impl</span> <span class="ident">Get</span><span class="op">&lt;</span><span class="ident">Balance</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">GetDeliveryConfirmationTransactionFee</span> {
+	<span class="kw">fn</span> <span class="ident">get</span>() -&gt; <span class="ident">Balance</span> {
 		<span class="op">&lt;</span><span class="ident">RococoAtRococo</span> <span class="kw">as</span> <span class="ident">ThisChainWithMessages</span><span class="op">&gt;</span><span class="ident">::transaction_payment</span>(
 			<span class="ident">RococoAtRococo::estimate_delivery_confirmation_transaction</span>(),
 		)
+	}
+}
+
+<span class="kw">impl</span> <span class="ident">SenderOrigin</span><span class="op">&lt;</span><span class="ident"><span class="kw">crate</span>::AccountId</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident"><span class="kw">crate</span>::Origin</span> {
+	<span class="kw">fn</span> <span class="ident">linked_account</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="kw">crate</span>::AccountId</span><span class="op">&gt;</span> {
+		<span class="kw">match</span> <span class="self">self</span>.<span class="ident">caller</span> {
+			<span class="ident"><span class="kw">crate</span>::OriginCaller::system</span>(<span class="ident">frame_system::RawOrigin::Signed</span>(<span class="kw-2">ref</span> <span class="ident">submitter</span>)) =&gt;
+				<span class="prelude-val">Some</span>(<span class="ident">submitter</span>.<span class="ident">clone</span>()),
+			<span class="ident"><span class="kw">crate</span>::OriginCaller::system</span>(<span class="ident">frame_system::RawOrigin::Root</span>) <span class="op">|</span>
+			<span class="ident"><span class="kw">crate</span>::OriginCaller::system</span>(<span class="ident">frame_system::RawOrigin::None</span>) =&gt;
+				<span class="ident"><span class="kw">crate</span>::RootAccountForPayments::get</span>(),
+			<span class="kw">_</span> =&gt; <span class="prelude-val">None</span>,
+		}
 	}
 }
 
@@ -788,13 +832,14 @@
 		<span class="kw">const</span> <span class="ident">BRIDGED_CHAIN_ID</span>: <span class="ident">ChainId</span> <span class="op">=</span> <span class="ident">WOCOCO_CHAIN_ID</span>;
 		<span class="kw">const</span> <span class="ident">RELAYER_FEE_PERCENT</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">10</span>;
 		<span class="kw">const</span> <span class="ident">BRIDGED_MESSAGES_PALLET_NAME</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span>
-			<span class="ident">bp_wococo::WITH_ROCOCO_MESSAGES_PALLET_NAME</span>;
+			<span class="ident">bp_rococo::WITH_ROCOCO_MESSAGES_PALLET_NAME</span>;
 
 		<span class="kw">type</span> <span class="ident">ThisChain</span> <span class="op">=</span> <span class="ident">RococoAtRococo</span>;
 		<span class="kw">type</span> <span class="ident">BridgedChain</span> <span class="op">=</span> <span class="ident">WococoAtRococo</span>;
 
 		<span class="kw">fn</span> <span class="ident">bridged_balance_to_this_balance</span>(
 			<span class="ident">bridged_balance</span>: <span class="ident">bp_wococo::Balance</span>,
+			<span class="ident">_bridged_to_this_conversion_rate_override</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">FixedU128</span><span class="op">&gt;</span>,
 		) -&gt; <span class="ident">bp_rococo::Balance</span> {
 			<span class="ident">bridged_balance</span>
 		}
@@ -819,8 +864,8 @@
 	<span class="doccomment">/// Call-dispatch based message dispatch for Wococo -&gt; Rococo messages.</span>
 	<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">FromWococoMessageDispatch</span> <span class="op">=</span> <span class="ident">messages_target::FromBridgedChainMessageDispatch</span><span class="op">&lt;</span>
 		<span class="ident">AtRococoWithWococoMessageBridge</span>,
-		<span class="ident"><span class="kw">crate</span>::Runtime</span>,
-		<span class="ident">pallet_balances::Pallet</span><span class="op">&lt;</span><span class="ident"><span class="kw">crate</span>::Runtime</span><span class="op">&gt;</span>,
+		<span class="ident">Runtime</span>,
+		<span class="ident">Balances</span>,
 		<span class="ident"><span class="kw">crate</span>::AtRococoFromWococoMessagesDispatch</span>,
 	<span class="op">&gt;</span>;
 }
@@ -838,13 +883,14 @@
 		<span class="kw">const</span> <span class="ident">BRIDGED_CHAIN_ID</span>: <span class="ident">ChainId</span> <span class="op">=</span> <span class="ident">ROCOCO_CHAIN_ID</span>;
 		<span class="kw">const</span> <span class="ident">RELAYER_FEE_PERCENT</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">10</span>;
 		<span class="kw">const</span> <span class="ident">BRIDGED_MESSAGES_PALLET_NAME</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span>
-			<span class="ident">bp_rococo::WITH_WOCOCO_MESSAGES_PALLET_NAME</span>;
+			<span class="ident">bp_wococo::WITH_WOCOCO_MESSAGES_PALLET_NAME</span>;
 
 		<span class="kw">type</span> <span class="ident">ThisChain</span> <span class="op">=</span> <span class="ident">WococoAtWococo</span>;
 		<span class="kw">type</span> <span class="ident">BridgedChain</span> <span class="op">=</span> <span class="ident">RococoAtWococo</span>;
 
 		<span class="kw">fn</span> <span class="ident">bridged_balance_to_this_balance</span>(
 			<span class="ident">bridged_balance</span>: <span class="ident">bp_rococo::Balance</span>,
+			<span class="ident">_bridged_to_this_conversion_rate_override</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">FixedU128</span><span class="op">&gt;</span>,
 		) -&gt; <span class="ident">bp_wococo::Balance</span> {
 			<span class="ident">bridged_balance</span>
 		}
@@ -869,8 +915,8 @@
 	<span class="doccomment">/// Call-dispatch based message dispatch for Rococo -&gt; Wococo messages.</span>
 	<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">FromRococoMessageDispatch</span> <span class="op">=</span> <span class="ident">messages_target::FromBridgedChainMessageDispatch</span><span class="op">&lt;</span>
 		<span class="ident">AtWococoWithRococoMessageBridge</span>,
-		<span class="ident"><span class="kw">crate</span>::Runtime</span>,
-		<span class="ident">pallet_balances::Pallet</span><span class="op">&lt;</span><span class="ident"><span class="kw">crate</span>::Runtime</span><span class="op">&gt;</span>,
+		<span class="ident">Runtime</span>,
+		<span class="ident">Balances</span>,
 		<span class="ident"><span class="kw">crate</span>::AtWococoFromRococoMessagesDispatch</span>,
 	<span class="op">&gt;</span>;
 }
@@ -894,7 +940,7 @@
 
 		<span class="comment">// we don&#39;t have any knowledge of messages-at-Rococo weights, so we&#39;ll be using</span>
 		<span class="comment">// weights of one of our testnets, which should be accurate enough</span>
-		<span class="kw">type</span> <span class="ident">Weights</span> <span class="op">=</span> <span class="ident">pallet_bridge_messages::weights::RialtoWeight</span><span class="op">&lt;</span><span class="ident"><span class="kw">crate</span>::Runtime</span><span class="op">&gt;</span>;
+		<span class="kw">type</span> <span class="ident">Weights</span> <span class="op">=</span> <span class="ident">pallet_bridge_messages::weights::MillauWeight</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>;
 
 		<span class="ident">pallet_bridge_messages::ensure_weights_are_correct</span>::<span class="op">&lt;</span><span class="ident">Weights</span><span class="op">&gt;</span>(
 			<span class="ident">DEFAULT_MESSAGE_DELIVERY_TX_WEIGHT</span>,
@@ -905,30 +951,30 @@
 		);
 
 		<span class="kw">let</span> <span class="ident">max_incoming_message_proof_size</span> <span class="op">=</span> <span class="ident">bp_rococo::EXTRA_STORAGE_PROOF_SIZE</span>.<span class="ident">saturating_add</span>(
-			<span class="ident">messages::target::maximal_incoming_message_size</span>(<span class="ident">bp_rococo::max_extrinsic_size</span>()),
+			<span class="ident">messages::target::maximal_incoming_message_size</span>(<span class="ident">Rococo::max_extrinsic_size</span>()),
 		);
 		<span class="ident">pallet_bridge_messages::ensure_able_to_receive_message</span>::<span class="op">&lt;</span><span class="ident">Weights</span><span class="op">&gt;</span>(
-			<span class="ident">bp_rococo::max_extrinsic_size</span>(),
-			<span class="ident">bp_rococo::max_extrinsic_weight</span>(),
+			<span class="ident">Rococo::max_extrinsic_size</span>(),
+			<span class="ident">Rococo::max_extrinsic_weight</span>(),
 			<span class="ident">max_incoming_message_proof_size</span>,
 			<span class="ident">messages::target::maximal_incoming_message_dispatch_weight</span>(
-				<span class="ident">bp_rococo::max_extrinsic_weight</span>(),
+				<span class="ident">Rococo::max_extrinsic_weight</span>(),
 			),
 		);
 
 		<span class="kw">let</span> <span class="ident">max_incoming_inbound_lane_data_proof_size</span> <span class="op">=</span>
 			<span class="ident">bp_messages::InboundLaneData</span>::<span class="op">&lt;</span>()<span class="op">&gt;</span><span class="ident">::encoded_size_hint</span>(
 				<span class="ident">bp_rococo::MAXIMAL_ENCODED_ACCOUNT_ID_SIZE</span>,
-				<span class="ident">bp_rococo::MAX_UNREWARDED_RELAYER_ENTRIES_AT_INBOUND_LANE</span> <span class="kw">as</span> <span class="kw">_</span>,
-				<span class="ident">bp_rococo::MAX_UNCONFIRMED_MESSAGES_AT_INBOUND_LANE</span> <span class="kw">as</span> <span class="kw">_</span>,
+				<span class="ident">bp_rococo::MAX_UNREWARDED_RELAYERS_IN_CONFIRMATION_TX</span> <span class="kw">as</span> <span class="kw">_</span>,
+				<span class="ident">bp_rococo::MAX_UNCONFIRMED_MESSAGES_IN_CONFIRMATION_TX</span> <span class="kw">as</span> <span class="kw">_</span>,
 			)
 			.<span class="ident">unwrap_or</span>(<span class="ident">u32::MAX</span>);
 		<span class="ident">pallet_bridge_messages::ensure_able_to_receive_confirmation</span>::<span class="op">&lt;</span><span class="ident">Weights</span><span class="op">&gt;</span>(
-			<span class="ident">bp_rococo::max_extrinsic_size</span>(),
-			<span class="ident">bp_rococo::max_extrinsic_weight</span>(),
+			<span class="ident">Rococo::max_extrinsic_size</span>(),
+			<span class="ident">Rococo::max_extrinsic_weight</span>(),
 			<span class="ident">max_incoming_inbound_lane_data_proof_size</span>,
-			<span class="ident">bp_rococo::MAX_UNREWARDED_RELAYER_ENTRIES_AT_INBOUND_LANE</span>,
-			<span class="ident">bp_rococo::MAX_UNCONFIRMED_MESSAGES_AT_INBOUND_LANE</span>,
+			<span class="ident">bp_rococo::MAX_UNREWARDED_RELAYERS_IN_CONFIRMATION_TX</span>,
+			<span class="ident">bp_rococo::MAX_UNCONFIRMED_MESSAGES_IN_CONFIRMATION_TX</span>,
 			<span class="ident"><span class="kw">crate</span>::RocksDbWeight::get</span>(),
 		);
 	}
@@ -969,7 +1015,7 @@
 		);
 	}
 
-	<span class="kw">fn</span> <span class="ident">proved_messages</span>(<span class="ident">lane_id</span>: <span class="ident">LaneId</span>) -&gt; <span class="ident">ProvedMessages</span><span class="op">&lt;</span><span class="ident">Message</span><span class="op">&lt;</span><span class="ident"><span class="kw">crate</span>::Balance</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">proved_messages</span>(<span class="ident">lane_id</span>: <span class="ident">LaneId</span>) -&gt; <span class="ident">ProvedMessages</span><span class="op">&lt;</span><span class="ident">Message</span><span class="op">&lt;</span><span class="ident">Balance</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 		<span class="macro">vec!</span>[(
 			<span class="ident">lane_id</span>,
 			<span class="ident">ProvedLaneMessages</span> {

@@ -435,6 +435,19 @@
 <span id="435">435</span>
 <span id="436">436</span>
 <span id="437">437</span>
+<span id="438">438</span>
+<span id="439">439</span>
+<span id="440">440</span>
+<span id="441">441</span>
+<span id="442">442</span>
+<span id="443">443</span>
+<span id="444">444</span>
+<span id="445">445</span>
+<span id="446">446</span>
+<span id="447">447</span>
+<span id="448">448</span>
+<span id="449">449</span>
+<span id="450">450</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2019-2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Parity Bridges Common.</span>
 
@@ -454,7 +467,7 @@
 <span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>), <span class="ident">no_std</span>)]</span>
 
 <span class="kw">use</span> <span class="ident">bp_messages::MessageNonce</span>;
-<span class="kw">use</span> <span class="ident">bp_runtime::Chain</span>;
+<span class="kw">use</span> <span class="ident">bp_runtime</span>::{<span class="ident">Chain</span>, <span class="ident">EncodedOrDecodedCall</span>};
 <span class="kw">use</span> <span class="ident">frame_support</span>::{
 	<span class="ident">dispatch::Dispatchable</span>,
 	<span class="ident">parameter_types</span>,
@@ -553,31 +566,17 @@
 		.<span class="ident">build_or_panic</span>();
 }
 
-<span class="doccomment">/// Get the maximum weight (compute time) that a Normal extrinsic on the Polkadot-like chain can</span>
-<span class="doccomment">/// use.</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">max_extrinsic_weight</span>() -&gt; <span class="ident">Weight</span> {
-	<span class="ident">BlockWeights::get</span>()
-		.<span class="ident">get</span>(<span class="ident">DispatchClass::Normal</span>)
-		.<span class="ident">max_extrinsic</span>
-		.<span class="ident">unwrap_or</span>(<span class="ident">Weight::MAX</span>)
-}
-
-<span class="doccomment">/// Get the maximum length in bytes that a Normal extrinsic on the Polkadot-like chain requires.</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">max_extrinsic_size</span>() -&gt; <span class="ident">u32</span> {
-	<span class="kw-2">*</span><span class="ident">BlockLength::get</span>().<span class="ident">max</span>.<span class="ident">get</span>(<span class="ident">DispatchClass::Normal</span>)
-}
-
 <span class="comment">// TODO [#78] may need to be updated after https://github.com/paritytech/parity-bridges-common/issues/78</span>
 <span class="doccomment">/// Maximal number of messages in single delivery transaction.</span>
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MAX_MESSAGES_IN_DELIVERY_TRANSACTION</span>: <span class="ident">MessageNonce</span> <span class="op">=</span> <span class="number">128</span>;
 
 <span class="doccomment">/// Maximal number of unrewarded relayer entries at inbound lane.</span>
-<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MAX_UNREWARDED_RELAYER_ENTRIES_AT_INBOUND_LANE</span>: <span class="ident">MessageNonce</span> <span class="op">=</span> <span class="number">128</span>;
+<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MAX_UNREWARDED_RELAYERS_IN_CONFIRMATION_TX</span>: <span class="ident">MessageNonce</span> <span class="op">=</span> <span class="number">128</span>;
 
 <span class="comment">// TODO [#438] should be selected keeping in mind:</span>
 <span class="comment">// finality delay on both chains + reward payout cost + messages throughput.</span>
 <span class="doccomment">/// Maximal number of unconfirmed messages at inbound lane.</span>
-<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MAX_UNCONFIRMED_MESSAGES_AT_INBOUND_LANE</span>: <span class="ident">MessageNonce</span> <span class="op">=</span> <span class="number">8192</span>;
+<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MAX_UNCONFIRMED_MESSAGES_IN_CONFIRMATION_TX</span>: <span class="ident">MessageNonce</span> <span class="op">=</span> <span class="number">8192</span>;
 
 <span class="comment">// One important thing about weight-related constants here is that actually we may have</span>
 <span class="comment">// different weights on different Polkadot-like chains. But now all deployments are</span>
@@ -679,8 +678,12 @@
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">Balance</span> <span class="op">=</span> <span class="ident">u128</span>;
 
 <span class="doccomment">/// Unchecked Extrinsic type.</span>
-<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">UncheckedExtrinsic</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span> <span class="op">=</span>
-	<span class="ident">generic::UncheckedExtrinsic</span><span class="op">&lt;</span><span class="ident">AccountAddress</span>, <span class="ident">Call</span>, <span class="ident">Signature</span>, <span class="ident">SignedExtensions</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span><span class="op">&gt;</span>;
+<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">UncheckedExtrinsic</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">generic::UncheckedExtrinsic</span><span class="op">&lt;</span>
+	<span class="ident">AccountAddress</span>,
+	<span class="ident">EncodedOrDecodedCall</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span>,
+	<span class="ident">Signature</span>,
+	<span class="ident">SignedExtensions</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span>,
+<span class="op">&gt;</span>;
 
 <span class="doccomment">/// Account address, used by the Polkadot-like chain.</span>
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">Address</span> <span class="op">=</span> <span class="ident">MultiAddress</span><span class="op">&lt;</span><span class="ident">AccountId</span>, ()<span class="op">&gt;</span>;
@@ -698,7 +701,11 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Clone</span>, <span class="ident">RuntimeDebug</span>, <span class="ident">TypeInfo</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SignedExtensions</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span> {
 	<span class="ident">encode_payload</span>: <span class="ident">SignedExtra</span>,
-	<span class="ident">additional_signed</span>: <span class="ident">AdditionalSigned</span>,
+	<span class="comment">// It may be set to `None` if extensions are decoded. We are never reconstructing transactions</span>
+	<span class="comment">// (and it makes no sense to do that) =&gt; decoded version of `SignedExtensions` is only used to</span>
+	<span class="comment">// read fields of `encode_payload`. And when resigning transaction, we&#39;re reconstructing</span>
+	<span class="comment">// `SignedExtensions` from the scratch.</span>
+	<span class="ident">additional_signed</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">AdditionalSigned</span><span class="op">&gt;</span>,
 	<span class="ident">_data</span>: <span class="ident">sp_std::marker::PhantomData</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span>,
 }
 
@@ -710,15 +717,20 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span> <span class="ident">parity_scale_codec::Decode</span> <span class="kw">for</span> <span class="ident">SignedExtensions</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span> {
 	<span class="kw">fn</span> <span class="ident">decode</span><span class="op">&lt;</span><span class="ident">I</span>: <span class="ident">parity_scale_codec::Input</span><span class="op">&gt;</span>(
-		<span class="ident">_input</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">I</span>,
+		<span class="ident">input</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">I</span>,
 	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">parity_scale_codec::Error</span><span class="op">&gt;</span> {
-		<span class="macro">unimplemented!</span>(<span class="string">&quot;SignedExtensions are never meant to be decoded, they are only used to create transaction&quot;</span>);
+		<span class="ident">SignedExtra::decode</span>(<span class="ident">input</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">encode_payload</span><span class="op">|</span> <span class="ident">SignedExtensions</span> {
+			<span class="ident">encode_payload</span>,
+			<span class="ident">additional_signed</span>: <span class="prelude-val">None</span>,
+			<span class="ident">_data</span>: <span class="ident">Default::default</span>(),
+		})
 	}
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span> <span class="ident">SignedExtensions</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span> {
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(
-		<span class="ident">version</span>: <span class="ident">sp_version::RuntimeVersion</span>,
+		<span class="ident">spec_version</span>: <span class="ident">u32</span>,
+		<span class="ident">transaction_version</span>: <span class="ident">u32</span>,
 		<span class="ident">era</span>: <span class="ident">bp_runtime::TransactionEraOf</span><span class="op">&lt;</span><span class="ident">PolkadotLike</span><span class="op">&gt;</span>,
 		<span class="ident">genesis_hash</span>: <span class="ident">Hash</span>,
 		<span class="ident">nonce</span>: <span class="ident">Nonce</span>,
@@ -735,16 +747,16 @@
 				(),              <span class="comment">// Check weight</span>
 				<span class="ident">tip</span>.<span class="ident">into</span>(),      <span class="comment">// transaction payment / tip (compact encoding)</span>
 			),
-			<span class="ident">additional_signed</span>: (
+			<span class="ident">additional_signed</span>: <span class="prelude-val">Some</span>((
 				(),
-				<span class="ident">version</span>.<span class="ident">spec_version</span>,
-				<span class="ident">version</span>.<span class="ident">transaction_version</span>,
+				<span class="ident">spec_version</span>,
+				<span class="ident">transaction_version</span>,
 				<span class="ident">genesis_hash</span>,
 				<span class="ident">era</span>.<span class="ident">signed_payload</span>(<span class="ident">genesis_hash</span>),
 				(),
 				(),
 				(),
-			),
+			)),
 			<span class="ident">_data</span>: <span class="ident">Default::default</span>(),
 		}
 	}
@@ -782,17 +794,22 @@
 	<span class="kw">type</span> <span class="ident">Pre</span> <span class="op">=</span> ();
 
 	<span class="kw">fn</span> <span class="ident">additional_signed</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::AdditionalSigned</span>, <span class="ident">TransactionValidityError</span><span class="op">&gt;</span> {
-		<span class="prelude-val">Ok</span>(<span class="self">self</span>.<span class="ident">additional_signed</span>)
+		<span class="comment">// we shall not ever see this error in relay, because we are never signing decoded</span>
+		<span class="comment">// transactions. Instead we&#39;re constructing and signing new transactions. So the error code</span>
+		<span class="comment">// is kinda random here</span>
+		<span class="self">self</span>.<span class="ident">additional_signed</span>.<span class="ident">ok_or</span>(<span class="ident">TransactionValidityError::Unknown</span>(
+			<span class="ident">frame_support::unsigned::UnknownTransaction::Custom</span>(<span class="number">0xFF</span>),
+		))
 	}
 
 	<span class="kw">fn</span> <span class="ident">pre_dispatch</span>(
 		<span class="self">self</span>,
-		<span class="ident">who</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::AccountId</span>,
-		<span class="ident">call</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::Call</span>,
-		<span class="ident">info</span>: <span class="kw-2">&amp;</span><span class="ident">DispatchInfoOf</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Call</span><span class="op">&gt;</span>,
-		<span class="ident">len</span>: <span class="ident">usize</span>,
+		<span class="ident">_who</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::AccountId</span>,
+		<span class="ident">_call</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::Call</span>,
+		<span class="ident">_info</span>: <span class="kw-2">&amp;</span><span class="ident">DispatchInfoOf</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Call</span><span class="op">&gt;</span>,
+		<span class="ident">_len</span>: <span class="ident">usize</span>,
 	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Pre</span>, <span class="ident">TransactionValidityError</span><span class="op">&gt;</span> {
-		<span class="prelude-val">Ok</span>(<span class="self">self</span>.<span class="ident">validate</span>(<span class="ident">who</span>, <span class="ident">call</span>, <span class="ident">info</span>, <span class="ident">len</span>).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> ())<span class="question-mark">?</span>)
+		<span class="prelude-val">Ok</span>(())
 	}
 }
 
@@ -810,6 +827,17 @@
 	<span class="kw">type</span> <span class="ident">Balance</span> <span class="op">=</span> <span class="ident">Balance</span>;
 	<span class="kw">type</span> <span class="ident">Index</span> <span class="op">=</span> <span class="ident">Index</span>;
 	<span class="kw">type</span> <span class="ident">Signature</span> <span class="op">=</span> <span class="ident">Signature</span>;
+
+	<span class="kw">fn</span> <span class="ident">max_extrinsic_size</span>() -&gt; <span class="ident">u32</span> {
+		<span class="kw-2">*</span><span class="ident">BlockLength::get</span>().<span class="ident">max</span>.<span class="ident">get</span>(<span class="ident">DispatchClass::Normal</span>)
+	}
+
+	<span class="kw">fn</span> <span class="ident">max_extrinsic_weight</span>() -&gt; <span class="ident">Weight</span> {
+		<span class="ident">BlockWeights::get</span>()
+			.<span class="ident">get</span>(<span class="ident">DispatchClass::Normal</span>)
+			.<span class="ident">max_extrinsic</span>
+			.<span class="ident">unwrap_or</span>(<span class="ident">Weight::MAX</span>)
+	}
 }
 
 <span class="doccomment">/// Convert a 256-bit hash into an AccountId.</span>
@@ -846,13 +874,11 @@
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">tests</span> {
 	<span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
-	<span class="kw">use</span> <span class="ident">parity_scale_codec::Decode</span>;
-	<span class="kw">use</span> <span class="ident">sp_runtime</span>::{<span class="ident">codec::Encode</span>, <span class="ident">traits::TrailingZeroInput</span>};
+	<span class="kw">use</span> <span class="ident">sp_runtime::codec::Encode</span>;
 
 	<span class="attribute">#[<span class="ident">test</span>]</span>
 	<span class="kw">fn</span> <span class="ident">maximal_encoded_account_id_size_is_correct</span>() {
-		<span class="kw">let</span> <span class="ident">actual_size</span> <span class="op">=</span>
-			<span class="ident">AccountId::decode</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">TrailingZeroInput::new</span>(<span class="kw-2">&amp;</span>[])).<span class="ident">unwrap</span>().<span class="ident">encode</span>().<span class="ident">len</span>();
+		<span class="kw">let</span> <span class="ident">actual_size</span> <span class="op">=</span> <span class="ident">AccountId::from</span>([<span class="number">0u8</span>; <span class="number">32</span>]).<span class="ident">encode</span>().<span class="ident">len</span>();
 		<span class="macro">assert!</span>(
 			<span class="ident">actual_size</span> <span class="op">&lt;</span><span class="op">=</span> <span class="ident">MAXIMAL_ENCODED_ACCOUNT_ID_SIZE</span> <span class="kw">as</span> <span class="ident">usize</span>,
 			<span class="string">&quot;Actual size of encoded account id for Polkadot-like chains ({}) is larger than expected {}&quot;</span>,
