@@ -169,6 +169,9 @@
 <span id="169">169</span>
 <span id="170">170</span>
 <span id="171">171</span>
+<span id="172">172</span>
+<span id="173">173</span>
+<span id="174">174</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2022 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -238,7 +241,10 @@
 
 	<span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">expander::Expander::new</span>(<span class="string">&quot;gum&quot;</span>)
 		.<span class="ident">add_comment</span>(<span class="string">&quot;Generated overseer code by `gum::warn!(..)`&quot;</span>.<span class="ident">to_owned</span>())
-		.<span class="ident">dry</span>(<span class="op">!</span><span class="macro">cfg!</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;expand&quot;</span>))
+		<span class="comment">// `dry=true` until rust-analyzer can selectively disable features so it&#39;s</span>
+		<span class="comment">// not all red squiggles. Originally: `!cfg!(feature = &quot;expand&quot;)`</span>
+		<span class="comment">// ISSUE: &lt;https://github.com/rust-analyzer/rust-analyzer/issues/11777&gt;</span>
+		.<span class="ident">dry</span>(<span class="bool-val">true</span>)
 		.<span class="ident">verbose</span>(<span class="bool-val">false</span>)
 		.<span class="ident">fmt</span>(<span class="ident">expander::Edition::_2021</span>)
 		.<span class="ident">maybe_write_to_out_dir</span>(<span class="ident">impl_gum2</span>(<span class="ident">item</span>, <span class="ident">level</span>))
