@@ -1512,6 +1512,35 @@
 <span id="1512">1512</span>
 <span id="1513">1513</span>
 <span id="1514">1514</span>
+<span id="1515">1515</span>
+<span id="1516">1516</span>
+<span id="1517">1517</span>
+<span id="1518">1518</span>
+<span id="1519">1519</span>
+<span id="1520">1520</span>
+<span id="1521">1521</span>
+<span id="1522">1522</span>
+<span id="1523">1523</span>
+<span id="1524">1524</span>
+<span id="1525">1525</span>
+<span id="1526">1526</span>
+<span id="1527">1527</span>
+<span id="1528">1528</span>
+<span id="1529">1529</span>
+<span id="1530">1530</span>
+<span id="1531">1531</span>
+<span id="1532">1532</span>
+<span id="1533">1533</span>
+<span id="1534">1534</span>
+<span id="1535">1535</span>
+<span id="1536">1536</span>
+<span id="1537">1537</span>
+<span id="1538">1538</span>
+<span id="1539">1539</span>
+<span id="1540">1540</span>
+<span id="1541">1541</span>
+<span id="1542">1542</span>
+<span id="1543">1543</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -1799,7 +1828,7 @@
 	<span class="kw">type</span> <span class="ident">AccountData</span> <span class="op">=</span> <span class="ident">pallet_balances::AccountData</span><span class="op">&lt;</span><span class="ident">Balance</span><span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">OnNewAccount</span> <span class="op">=</span> ();
 	<span class="kw">type</span> <span class="ident">OnKilledAccount</span> <span class="op">=</span> ();
-	<span class="kw">type</span> <span class="ident">SystemWeightInfo</span> <span class="op">=</span> ();
+	<span class="kw">type</span> <span class="ident">SystemWeightInfo</span> <span class="op">=</span> <span class="ident">weights::frame_system::WeightInfo</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">SS58Prefix</span> <span class="op">=</span> <span class="ident">SS58Prefix</span>;
 	<span class="kw">type</span> <span class="ident">OnSetCode</span> <span class="op">=</span> ();
 	<span class="kw">type</span> <span class="ident">MaxConsumers</span> <span class="op">=</span> <span class="ident">frame_support::traits::ConstU32</span><span class="op">&lt;</span><span class="number">16</span><span class="op">&gt;</span>;
@@ -1902,7 +1931,7 @@
 	<span class="kw">type</span> <span class="ident">NextSessionRotation</span> <span class="op">=</span> <span class="ident">Babe</span>;
 	<span class="kw">type</span> <span class="ident">ReportUnresponsiveness</span> <span class="op">=</span> <span class="ident">Offences</span>;
 	<span class="kw">type</span> <span class="ident">UnsignedPriority</span> <span class="op">=</span> <span class="ident">ImOnlineUnsignedPriority</span>;
-	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> ();
+	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> <span class="ident">weights::pallet_im_online::WeightInfo</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">MaxKeys</span> <span class="op">=</span> <span class="ident">MaxKeys</span>;
 	<span class="kw">type</span> <span class="ident">MaxPeerInHeartbeats</span> <span class="op">=</span> <span class="ident">MaxPeerInHeartbeats</span>;
 	<span class="kw">type</span> <span class="ident">MaxPeerDataEncodingSize</span> <span class="op">=</span> <span class="ident">MaxPeerDataEncodingSize</span>;
@@ -1923,7 +1952,7 @@
 	<span class="kw">type</span> <span class="ident">MaxLocks</span> <span class="op">=</span> <span class="ident">MaxLocks</span>;
 	<span class="kw">type</span> <span class="ident">MaxReserves</span> <span class="op">=</span> <span class="ident">MaxReserves</span>;
 	<span class="kw">type</span> <span class="ident">ReserveIdentifier</span> <span class="op">=</span> [<span class="ident">u8</span>; <span class="number">8</span>];
-	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> ();
+	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> <span class="ident">weights::pallet_balances::WeightInfo</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>;
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">C</span><span class="op">&gt;</span> <span class="ident">frame_system::offchain::SendTransactionTypes</span><span class="op">&lt;</span><span class="ident">C</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Runtime</span>
@@ -1956,7 +1985,7 @@
 	<span class="kw">type</span> <span class="ident">Moment</span> <span class="op">=</span> <span class="ident">u64</span>;
 	<span class="kw">type</span> <span class="ident">OnTimestampSet</span> <span class="op">=</span> <span class="ident">Babe</span>;
 	<span class="kw">type</span> <span class="ident">MinimumPeriod</span> <span class="op">=</span> <span class="ident">MinimumPeriod</span>;
-	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> ();
+	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> <span class="ident">weights::pallet_timestamp::WeightInfo</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>;
 }
 
 <span class="macro">parameter_types!</span> {
@@ -2037,7 +2066,7 @@
 	<span class="kw">type</span> <span class="ident">Currency</span> <span class="op">=</span> <span class="ident">Balances</span>;
 	<span class="kw">type</span> <span class="ident">Deposit</span> <span class="op">=</span> <span class="ident">IndexDeposit</span>;
 	<span class="kw">type</span> <span class="ident">Event</span> <span class="op">=</span> <span class="ident">Event</span>;
-	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> ();
+	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> <span class="ident">weights::pallet_indices::WeightInfo</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>;
 }
 
 <span class="macro">parameter_types!</span> {
@@ -2082,7 +2111,7 @@
 <span class="kw">impl</span> <span class="ident">parachains_origin::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {}
 
 <span class="kw">impl</span> <span class="ident">parachains_configuration::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
-	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> <span class="ident">parachains_configuration::TestWeightInfo</span>;
+	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> <span class="ident">weights::runtime_parachains_configuration::WeightInfo</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>;
 }
 
 <span class="kw">impl</span> <span class="ident">parachains_shared::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {}
@@ -2132,7 +2161,7 @@
 	<span class="kw">type</span> <span class="ident">Event</span> <span class="op">=</span> <span class="ident">Event</span>;
 	<span class="kw">type</span> <span class="ident">Origin</span> <span class="op">=</span> <span class="ident">Origin</span>;
 	<span class="kw">type</span> <span class="ident">Currency</span> <span class="op">=</span> <span class="ident">Balances</span>;
-	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> <span class="ident">weights::runtime_parachains_hrmp::WeightInfo</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>;
+	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> <span class="ident">weights::runtime_parachains_hrmp::WeightInfo</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>;
 }
 
 <span class="kw">impl</span> <span class="ident">parachains_paras_inherent::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
@@ -2144,7 +2173,7 @@
 <span class="kw">impl</span> <span class="ident">parachains_initializer::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
 	<span class="kw">type</span> <span class="ident">Randomness</span> <span class="op">=</span> <span class="ident">pallet_babe::RandomnessFromOneEpochAgo</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">ForceOrigin</span> <span class="op">=</span> <span class="ident">EnsureRoot</span><span class="op">&lt;</span><span class="ident">AccountId</span><span class="op">&gt;</span>;
-	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> ();
+	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> <span class="ident">weights::runtime_parachains_initializer::WeightInfo</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>;
 }
 
 <span class="kw">impl</span> <span class="ident">paras_sudo_wrapper::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {}
@@ -2180,7 +2209,7 @@
 	<span class="kw">type</span> <span class="ident">OnSwap</span> <span class="op">=</span> (<span class="ident">Crowdloan</span>, <span class="ident">Slots</span>);
 	<span class="kw">type</span> <span class="ident">ParaDeposit</span> <span class="op">=</span> <span class="ident">ParaDeposit</span>;
 	<span class="kw">type</span> <span class="ident">DataDepositPerByte</span> <span class="op">=</span> <span class="ident">DataDepositPerByte</span>;
-	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> <span class="ident">paras_registrar::TestWeightInfo</span>;
+	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> <span class="ident">weights::runtime_common_paras_registrar::WeightInfo</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>;
 }
 
 <span class="kw">impl</span> <span class="ident">pallet_beefy::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
@@ -2387,7 +2416,7 @@
 	<span class="kw">type</span> <span class="ident">SampleLength</span> <span class="op">=</span> <span class="ident">SampleLength</span>;
 	<span class="kw">type</span> <span class="ident">Randomness</span> <span class="op">=</span> <span class="ident">pallet_babe::RandomnessFromOneEpochAgo</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">InitiateOrigin</span> <span class="op">=</span> <span class="ident">EnsureRoot</span><span class="op">&lt;</span><span class="ident">AccountId</span><span class="op">&gt;</span>;
-	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> <span class="ident">auctions::TestWeightInfo</span>;
+	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> <span class="ident">weights::runtime_common_auctions::WeightInfo</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>;
 }
 
 <span class="macro">parameter_types!</span> {
@@ -2401,7 +2430,7 @@
 	<span class="kw">type</span> <span class="ident">LeasePeriod</span> <span class="op">=</span> <span class="ident">LeasePeriod</span>;
 	<span class="kw">type</span> <span class="ident">LeaseOffset</span> <span class="op">=</span> ();
 	<span class="kw">type</span> <span class="ident">ForceOrigin</span> <span class="op">=</span> <span class="ident">EnsureRoot</span><span class="op">&lt;</span><span class="ident">AccountId</span><span class="op">&gt;</span>;
-	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> <span class="ident">slots::TestWeightInfo</span>;
+	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> <span class="ident">weights::runtime_common_slots::WeightInfo</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>;
 }
 
 <span class="macro">parameter_types!</span> {
@@ -2422,7 +2451,7 @@
 	<span class="kw">type</span> <span class="ident">Registrar</span> <span class="op">=</span> <span class="ident">Registrar</span>;
 	<span class="kw">type</span> <span class="ident">Auctioneer</span> <span class="op">=</span> <span class="ident">Auctions</span>;
 	<span class="kw">type</span> <span class="ident">MaxMemoLength</span> <span class="op">=</span> <span class="ident">MaxMemoLength</span>;
-	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> <span class="ident">crowdloan::TestWeightInfo</span>;
+	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> <span class="ident">weights::runtime_common_crowdloan::WeightInfo</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>;
 }
 
 <span class="kw">impl</span> <span class="ident">pallet_sudo::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
@@ -2439,7 +2468,7 @@
 	<span class="kw">type</span> <span class="ident">Event</span> <span class="op">=</span> <span class="ident">Event</span>;
 	<span class="kw">type</span> <span class="ident">Call</span> <span class="op">=</span> <span class="ident">Call</span>;
 	<span class="kw">type</span> <span class="ident">PalletsOrigin</span> <span class="op">=</span> <span class="ident">OriginCaller</span>;
-	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> ();
+	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> <span class="ident">weights::pallet_utility::WeightInfo</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>;
 }
 
 <span class="macro">parameter_types!</span> {
@@ -2509,7 +2538,7 @@
 	<span class="kw">type</span> <span class="ident">ProxyDepositBase</span> <span class="op">=</span> <span class="ident">ProxyDepositBase</span>;
 	<span class="kw">type</span> <span class="ident">ProxyDepositFactor</span> <span class="op">=</span> <span class="ident">ProxyDepositFactor</span>;
 	<span class="kw">type</span> <span class="ident">MaxProxies</span> <span class="op">=</span> <span class="ident">MaxProxies</span>;
-	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> ();
+	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> <span class="ident">weights::pallet_proxy::WeightInfo</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">MaxPending</span> <span class="op">=</span> <span class="ident">MaxPending</span>;
 	<span class="kw">type</span> <span class="ident">CallHasher</span> <span class="op">=</span> <span class="ident">BlakeTwo256</span>;
 	<span class="kw">type</span> <span class="ident">AnnouncementDepositBase</span> <span class="op">=</span> <span class="ident">AnnouncementDepositBase</span>;
@@ -2530,7 +2559,7 @@
 	<span class="kw">type</span> <span class="ident">MaxProposals</span> <span class="op">=</span> <span class="ident">MaxProposals</span>;
 	<span class="kw">type</span> <span class="ident">DefaultVote</span> <span class="op">=</span> <span class="ident">pallet_collective::PrimeDefaultVote</span>;
 	<span class="kw">type</span> <span class="ident">MaxMembers</span> <span class="op">=</span> <span class="ident">MaxMembers</span>;
-	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> ();
+	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> <span class="ident">weights::pallet_collective::WeightInfo</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>;
 }
 
 <span class="kw">impl</span> <span class="ident">pallet_membership::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
@@ -2543,7 +2572,7 @@
 	<span class="kw">type</span> <span class="ident">MembershipInitialized</span> <span class="op">=</span> <span class="ident">Collective</span>;
 	<span class="kw">type</span> <span class="ident">MembershipChanged</span> <span class="op">=</span> <span class="ident">Collective</span>;
 	<span class="kw">type</span> <span class="ident">MaxMembers</span> <span class="op">=</span> <span class="ident">MaxMembers</span>;
-	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> ();
+	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> <span class="ident">weights::pallet_membership::WeightInfo</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>;
 }
 
 <span class="macro">parameter_types!</span> {
@@ -2561,7 +2590,7 @@
 	<span class="kw">type</span> <span class="ident">DepositBase</span> <span class="op">=</span> <span class="ident">DepositBase</span>;
 	<span class="kw">type</span> <span class="ident">DepositFactor</span> <span class="op">=</span> <span class="ident">DepositFactor</span>;
 	<span class="kw">type</span> <span class="ident">MaxSignatories</span> <span class="op">=</span> <span class="ident">MaxSignatories</span>;
-	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> ();
+	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> <span class="ident">weights::pallet_multisig::WeightInfo</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>;
 }
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;runtime-benchmarks&quot;</span>)]</span>
@@ -2571,11 +2600,32 @@
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;runtime-benchmarks&quot;</span>)]</span>
 <span class="kw">mod</span> <span class="ident">benches</span> {
 	<span class="macro">define_benchmarks!</span>(
+		<span class="comment">// Polkadot</span>
+		<span class="comment">// NOTE: Make sure to prefix these with `runtime_common::` so</span>
+		<span class="comment">// the that path resolves correctly in the generated file.</span>
+		[<span class="ident">runtime_common::auctions</span>, <span class="ident">Auctions</span>]
+		[<span class="ident">runtime_common::crowdloan</span>, <span class="ident">Crowdloan</span>]
+		[<span class="ident">runtime_common::paras_registrar</span>, <span class="ident">Registrar</span>]
+		[<span class="ident">runtime_common::slots</span>, <span class="ident">Slots</span>]
 		[<span class="ident">runtime_parachains::configuration</span>, <span class="ident">Configuration</span>]
+		[<span class="ident">runtime_parachains::hrmp</span>, <span class="ident">Hrmp</span>]
+		[<span class="ident">runtime_parachains::initializer</span>, <span class="ident">Initializer</span>]
+		[<span class="ident">runtime_parachains::paras</span>, <span class="ident">Paras</span>]
 		[<span class="ident">runtime_parachains::disputes</span>, <span class="ident">ParasDisputes</span>]
 		[<span class="ident">runtime_parachains::paras_inherent</span>, <span class="ident">ParaInherent</span>]
-		[<span class="ident">runtime_parachains::paras</span>, <span class="ident">Paras</span>]
 		[<span class="ident">runtime_parachains::ump</span>, <span class="ident">Ump</span>]
+		<span class="comment">// Substrate</span>
+		[<span class="ident">frame_benchmarking::baseline</span>, <span class="ident">Baseline</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>]
+		[<span class="ident">pallet_balances</span>, <span class="ident">Balances</span>]
+		[<span class="ident">pallet_collective</span>, <span class="ident">Collective</span>]
+		[<span class="ident">pallet_im_online</span>, <span class="ident">ImOnline</span>]
+		[<span class="ident">pallet_indices</span>, <span class="ident">Indices</span>]
+		[<span class="ident">pallet_membership</span>, <span class="ident">Membership</span>]
+		[<span class="ident">pallet_multisig</span>, <span class="ident">Multisig</span>]
+		[<span class="ident">pallet_proxy</span>, <span class="ident">Proxy</span>]
+		[<span class="ident">frame_system</span>, <span class="ident">SystemBench</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>]
+		[<span class="ident">pallet_timestamp</span>, <span class="ident">Timestamp</span>]
+		[<span class="ident">pallet_utility</span>, <span class="ident">Utility</span>]
 	);
 }
 
@@ -2991,6 +3041,9 @@
 			<span class="kw">use</span> <span class="ident">frame_benchmarking</span>::{<span class="ident">Benchmarking</span>, <span class="ident">BenchmarkList</span>};
 			<span class="kw">use</span> <span class="ident">frame_support::traits::StorageInfoTrait</span>;
 
+			<span class="kw">use</span> <span class="ident">frame_system_benchmarking::Pallet</span> <span class="kw">as</span> <span class="ident">SystemBench</span>;
+			<span class="kw">use</span> <span class="ident">frame_benchmarking::baseline::Pallet</span> <span class="kw">as</span> <span class="ident">Baseline</span>;
+
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">list</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="op">&lt;</span><span class="ident">BenchmarkList</span><span class="op">&gt;</span><span class="ident">::new</span>();
 			<span class="macro">list_benchmarks!</span>(<span class="ident">list</span>, <span class="ident">extra</span>);
 
@@ -3005,6 +3058,11 @@
 			<span class="ident">sp_runtime::RuntimeString</span>,
 		<span class="op">&gt;</span> {
 			<span class="kw">use</span> <span class="ident">frame_benchmarking</span>::{<span class="ident">Benchmarking</span>, <span class="ident">BenchmarkBatch</span>, <span class="ident">TrackedStorageKey</span>};
+			<span class="kw">use</span> <span class="ident">frame_system_benchmarking::Pallet</span> <span class="kw">as</span> <span class="ident">SystemBench</span>;
+			<span class="kw">use</span> <span class="ident">frame_benchmarking::baseline::Pallet</span> <span class="kw">as</span> <span class="ident">Baseline</span>;
+
+			<span class="kw">impl</span> <span class="ident">frame_system_benchmarking::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {}
+			<span class="kw">impl</span> <span class="ident">frame_benchmarking::baseline::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {}
 
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">batches</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="op">&lt;</span><span class="ident">BenchmarkBatch</span><span class="op">&gt;</span><span class="ident">::new</span>();
 			<span class="kw">let</span> <span class="ident">whitelist</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">TrackedStorageKey</span><span class="op">&gt;</span> <span class="op">=</span> <span class="macro">vec!</span>[
