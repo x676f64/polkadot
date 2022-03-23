@@ -773,22 +773,6 @@
 <span id="773">773</span>
 <span id="774">774</span>
 <span id="775">775</span>
-<span id="776">776</span>
-<span id="777">777</span>
-<span id="778">778</span>
-<span id="779">779</span>
-<span id="780">780</span>
-<span id="781">781</span>
-<span id="782">782</span>
-<span id="783">783</span>
-<span id="784">784</span>
-<span id="785">785</span>
-<span id="786">786</span>
-<span id="787">787</span>
-<span id="788">788</span>
-<span id="789">789</span>
-<span id="790">790</span>
-<span id="791">791</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -941,12 +925,7 @@
 
 <span class="doccomment">/// Provisioner run arguments.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Copy</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ProvisionerConfig</span> {
-	<span class="doccomment">/// If enabled, dispute votes will be provided to `fn create_inherent`, otherwise not.</span>
-	<span class="doccomment">/// Long term we will obviously always want disputes to be enabled, this option exists for testing purposes</span>
-	<span class="doccomment">/// and will be removed in the near future.</span>
-	<span class="kw">pub</span> <span class="ident">disputes_enabled</span>: <span class="ident">bool</span>,
-}
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ProvisionerConfig</span>;
 
 <span class="kw">impl</span> <span class="ident">JobTrait</span> <span class="kw">for</span> <span class="ident">ProvisionerJob</span> {
 	<span class="kw">type</span> <span class="ident">ToJob</span> <span class="op">=</span> <span class="ident">ProvisionerMessage</span>;
@@ -961,7 +940,7 @@
 	<span class="comment">// this function is in charge of creating and executing the job&#39;s main loop</span>
 	<span class="kw">fn</span> <span class="ident">run</span><span class="op">&lt;</span><span class="ident">S</span>: <span class="ident">SubsystemSender</span><span class="op">&gt;</span>(
 		<span class="ident">leaf</span>: <span class="ident">ActivatedLeaf</span>,
-		<span class="ident">run_args</span>: <span class="ident"><span class="self">Self</span>::RunArgs</span>,
+		<span class="kw">_</span>: <span class="ident"><span class="self">Self</span>::RunArgs</span>,
 		<span class="ident">metrics</span>: <span class="ident"><span class="self">Self</span>::Metrics</span>,
 		<span class="ident">receiver</span>: <span class="ident">mpsc::Receiver</span><span class="op">&lt;</span><span class="ident">ProvisionerMessage</span><span class="op">&gt;</span>,
 		<span class="kw-2">mut</span> <span class="ident">sender</span>: <span class="ident">JobSender</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>,
@@ -970,12 +949,8 @@
 		<span class="kw">async</span> <span class="kw">move</span> {
 			<span class="kw">let</span> <span class="ident">job</span> <span class="op">=</span> <span class="ident">ProvisionerJob::new</span>(<span class="ident">leaf</span>, <span class="ident">metrics</span>, <span class="ident">receiver</span>);
 
-			<span class="ident">job</span>.<span class="ident">run_loop</span>(
-				<span class="ident">sender</span>.<span class="ident">subsystem_sender</span>(),
-				<span class="ident">run_args</span>.<span class="ident">disputes_enabled</span>,
-				<span class="ident">PerLeafSpan::new</span>(<span class="ident">span</span>, <span class="string">&quot;provisioner&quot;</span>),
-			)
-			.<span class="kw">await</span>
+			<span class="ident">job</span>.<span class="ident">run_loop</span>(<span class="ident">sender</span>.<span class="ident">subsystem_sender</span>(), <span class="ident">PerLeafSpan::new</span>(<span class="ident">span</span>, <span class="string">&quot;provisioner&quot;</span>))
+				.<span class="kw">await</span>
 		}
 		.<span class="ident">boxed</span>()
 	}
@@ -1001,7 +976,6 @@
 	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run_loop</span>(
 		<span class="kw-2">mut</span> <span class="self">self</span>,
 		<span class="ident">sender</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">impl</span> <span class="ident">SubsystemSender</span>,
-		<span class="ident">disputes_enabled</span>: <span class="ident">bool</span>,
 		<span class="ident">span</span>: <span class="ident">PerLeafSpan</span>,
 	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
 		<span class="kw">loop</span> {
@@ -1012,7 +986,7 @@
 						<span class="kw">let</span> <span class="ident">_timer</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">metrics</span>.<span class="ident">time_request_inherent_data</span>();
 
 						<span class="kw">if</span> <span class="self">self</span>.<span class="ident">inherent_after</span>.<span class="ident">is_ready</span>() {
-							<span class="self">self</span>.<span class="ident">send_inherent_data</span>(<span class="ident">sender</span>, <span class="macro">vec!</span>[<span class="ident">return_sender</span>], <span class="ident">disputes_enabled</span>).<span class="kw">await</span>;
+							<span class="self">self</span>.<span class="ident">send_inherent_data</span>(<span class="ident">sender</span>, <span class="macro">vec!</span>[<span class="ident">return_sender</span>]).<span class="kw">await</span>;
 						} <span class="kw">else</span> {
 							<span class="self">self</span>.<span class="ident">awaiting_inherent</span>.<span class="ident">push</span>(<span class="ident">return_sender</span>);
 						}
@@ -1029,7 +1003,7 @@
 					<span class="kw">let</span> <span class="ident">_span</span> <span class="op">=</span> <span class="ident">span</span>.<span class="ident">child</span>(<span class="string">&quot;send-inherent-data&quot;</span>);
 					<span class="kw">let</span> <span class="ident">return_senders</span> <span class="op">=</span> <span class="ident">std::mem::take</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">awaiting_inherent</span>);
 					<span class="kw">if</span> <span class="op">!</span><span class="ident">return_senders</span>.<span class="ident">is_empty</span>() {
-						<span class="self">self</span>.<span class="ident">send_inherent_data</span>(<span class="ident">sender</span>, <span class="ident">return_senders</span>, <span class="ident">disputes_enabled</span>).<span class="kw">await</span>;
+						<span class="self">self</span>.<span class="ident">send_inherent_data</span>(<span class="ident">sender</span>, <span class="ident">return_senders</span>).<span class="kw">await</span>;
 					}
 				}
 			}
@@ -1042,7 +1016,6 @@
 		<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
 		<span class="ident">sender</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">impl</span> <span class="ident">SubsystemSender</span>,
 		<span class="ident">return_senders</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">oneshot::Sender</span><span class="op">&lt;</span><span class="ident">ProvisionerInherentData</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-		<span class="ident">disputes_enabled</span>: <span class="ident">bool</span>,
 	) {
 		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span> <span class="ident">send_inherent_data</span>(
 			<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">leaf</span>,
@@ -1050,7 +1023,6 @@
 			<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">backed_candidates</span>,
 			<span class="ident">return_senders</span>,
 			<span class="ident">sender</span>,
-			<span class="ident">disputes_enabled</span>,
 			<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">metrics</span>,
 		)
 		.<span class="kw">await</span>
@@ -1064,7 +1036,6 @@
 				<span class="ident">signed_bitfield_count</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">signed_bitfields</span>.<span class="ident">len</span>(),
 				<span class="ident">backed_candidates_count</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">backed_candidates</span>.<span class="ident">len</span>(),
 				<span class="ident">leaf_hash</span> <span class="op">=</span> <span class="question-mark">?</span><span class="self">self</span>.<span class="ident">leaf</span>.<span class="ident">hash</span>,
-				<span class="ident">disputes_enabled</span>,
 				<span class="string">&quot;inherent data sent successfully&quot;</span>
 			);
 		}
@@ -1122,7 +1093,6 @@
 	<span class="ident">candidates</span>: <span class="kw-2">&amp;</span>[<span class="ident">CandidateReceipt</span>],
 	<span class="ident">return_senders</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">oneshot::Sender</span><span class="op">&lt;</span><span class="ident">ProvisionerInherentData</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	<span class="ident">from_job</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw">impl</span> <span class="ident">SubsystemSender</span>,
-	<span class="ident">disputes_enabled</span>: <span class="ident">bool</span>,
 	<span class="ident">metrics</span>: <span class="kw-2">&amp;</span><span class="ident">Metrics</span>,
 ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
 	<span class="kw">let</span> <span class="ident">availability_cores</span> <span class="op">=</span> <span class="ident">request_availability_cores</span>(<span class="ident">leaf</span>.<span class="ident">hash</span>, <span class="ident">from_job</span>)
@@ -1130,8 +1100,7 @@
 		.<span class="kw">await</span>
 		.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> <span class="ident">Error::CanceledAvailabilityCores</span>(<span class="ident">err</span>))<span class="question-mark">?</span><span class="question-mark">?</span>;
 
-	<span class="kw">let</span> <span class="ident">disputes</span> <span class="op">=</span>
-		<span class="kw">if</span> <span class="ident">disputes_enabled</span> { <span class="ident">select_disputes</span>(<span class="ident">from_job</span>, <span class="ident">metrics</span>).<span class="kw">await</span><span class="question-mark">?</span> } <span class="kw">else</span> { <span class="macro">vec!</span>[] };
+	<span class="kw">let</span> <span class="ident">disputes</span> <span class="op">=</span> <span class="ident">select_disputes</span>(<span class="ident">from_job</span>, <span class="ident">metrics</span>).<span class="kw">await</span><span class="question-mark">?</span>;
 
 	<span class="comment">// Only include bitfields on fresh leaves. On chain reversions, we want to make sure that</span>
 	<span class="comment">// there will be at least one block, which cannot get disputed, so the chain can make progress.</span>
@@ -1145,7 +1114,6 @@
 
 	<span class="macro">gum::debug!</span>(
 		<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
-		<span class="ident">disputes_enabled</span> <span class="op">=</span> <span class="ident">disputes_enabled</span>,
 		<span class="ident">availability_cores_len</span> <span class="op">=</span> <span class="ident">availability_cores</span>.<span class="ident">len</span>(),
 		<span class="ident">disputes_count</span> <span class="op">=</span> <span class="ident">disputes</span>.<span class="ident">len</span>(),
 		<span class="ident">bitfields_count</span> <span class="op">=</span> <span class="ident">bitfields</span>.<span class="ident">len</span>(),

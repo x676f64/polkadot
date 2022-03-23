@@ -560,34 +560,6 @@
 <span id="560">560</span>
 <span id="561">561</span>
 <span id="562">562</span>
-<span id="563">563</span>
-<span id="564">564</span>
-<span id="565">565</span>
-<span id="566">566</span>
-<span id="567">567</span>
-<span id="568">568</span>
-<span id="569">569</span>
-<span id="570">570</span>
-<span id="571">571</span>
-<span id="572">572</span>
-<span id="573">573</span>
-<span id="574">574</span>
-<span id="575">575</span>
-<span id="576">576</span>
-<span id="577">577</span>
-<span id="578">578</span>
-<span id="579">579</span>
-<span id="580">580</span>
-<span id="581">581</span>
-<span id="582">582</span>
-<span id="583">583</span>
-<span id="584">584</span>
-<span id="585">585</span>
-<span id="586">586</span>
-<span id="587">587</span>
-<span id="588">588</span>
-<span id="589">589</span>
-<span id="590">590</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -754,30 +726,13 @@
 
 	<span class="doccomment">/// Create a new [`SelectRelayChain`] wrapping the given chain backend</span>
 	<span class="doccomment">/// and a handle to the overseer.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_disputes_aware</span>(
-		<span class="ident">backend</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
-		<span class="ident">overseer</span>: <span class="ident">Handle</span>,
-		<span class="ident">metrics</span>: <span class="ident">Metrics</span>,
-		<span class="ident">disputes_enabled</span>: <span class="ident">bool</span>,
-	) -&gt; <span class="self">Self</span> {
-		<span class="macro">gum::debug!</span>(
-			<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
-			<span class="string">&quot;Using {} chain selection algorithm&quot;</span>,
-			<span class="kw">if</span> <span class="ident">disputes_enabled</span> {
-				<span class="string">&quot;dispute aware relay&quot;</span>
-			} <span class="kw">else</span> {
-				<span class="comment">// no disputes are queried, that logic is disabled</span>
-				<span class="comment">// in `fn finality_target_with_longest_chain`.</span>
-				<span class="string">&quot;short-circuited relay&quot;</span>
-			}
-		);
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_with_overseer</span>(<span class="ident">backend</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>, <span class="ident">overseer</span>: <span class="ident">Handle</span>, <span class="ident">metrics</span>: <span class="ident">Metrics</span>) -&gt; <span class="self">Self</span> {
+		<span class="macro">gum::debug!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="string">&quot;Using dispute aware relay-chain selection algorithm&quot;</span>,);
+
 		<span class="ident">SelectRelayChain</span> {
 			<span class="ident">longest_chain</span>: <span class="ident">sc_consensus::LongestChain::new</span>(<span class="ident">backend</span>.<span class="ident">clone</span>()),
 			<span class="ident">selection</span>: <span class="ident">IsDisputesAwareWithOverseer::Yes</span>(<span class="ident">SelectRelayChainInner::new</span>(
-				<span class="ident">backend</span>,
-				<span class="ident">overseer</span>,
-				<span class="ident">metrics</span>,
-				<span class="ident">disputes_enabled</span>,
+				<span class="ident">backend</span>, <span class="ident">overseer</span>, <span class="ident">metrics</span>,
 			)),
 		}
 	}
@@ -834,7 +789,6 @@
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SelectRelayChainInner</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">OH</span><span class="op">&gt;</span> {
 	<span class="ident">backend</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
 	<span class="ident">overseer</span>: <span class="ident">OH</span>,
-	<span class="ident">disputes_enabled</span>: <span class="ident">bool</span>,
 	<span class="ident">metrics</span>: <span class="ident">Metrics</span>,
 }
 
@@ -845,8 +799,8 @@
 {
 	<span class="doccomment">/// Create a new [`SelectRelayChainInner`] wrapping the given chain backend</span>
 	<span class="doccomment">/// and a handle to the overseer.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">backend</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>, <span class="ident">overseer</span>: <span class="ident">OH</span>, <span class="ident">metrics</span>: <span class="ident">Metrics</span>, <span class="ident">disputes_enabled</span>: <span class="ident">bool</span>) -&gt; <span class="self">Self</span> {
-		<span class="ident">SelectRelayChainInner</span> { <span class="ident">backend</span>, <span class="ident">overseer</span>, <span class="ident">metrics</span>, <span class="ident">disputes_enabled</span> }
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">backend</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>, <span class="ident">overseer</span>: <span class="ident">OH</span>, <span class="ident">metrics</span>: <span class="ident">Metrics</span>) -&gt; <span class="self">Self</span> {
+		<span class="ident">SelectRelayChainInner</span> { <span class="ident">backend</span>, <span class="ident">overseer</span>, <span class="ident">metrics</span> }
 	}
 
 	<span class="kw">fn</span> <span class="ident">block_header</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">hash</span>: <span class="ident">Hash</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">PolkadotHeader</span>, <span class="ident">ConsensusError</span><span class="op">&gt;</span> {
@@ -884,7 +838,6 @@
 			<span class="ident">backend</span>: <span class="self">self</span>.<span class="ident">backend</span>.<span class="ident">clone</span>(),
 			<span class="ident">overseer</span>: <span class="self">self</span>.<span class="ident">overseer</span>.<span class="ident">clone</span>(),
 			<span class="ident">metrics</span>: <span class="self">self</span>.<span class="ident">metrics</span>.<span class="ident">clone</span>(),
-			<span class="ident">disputes_enabled</span>: <span class="self">self</span>.<span class="ident">disputes_enabled</span>,
 		}
 	}
 }
@@ -982,7 +935,7 @@
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">overseer</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">overseer</span>.<span class="ident">clone</span>();
 		<span class="macro">gum::trace!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="question-mark">?</span><span class="ident">best_leaf</span>, <span class="string">&quot;Longest chain&quot;</span>);
 
-		<span class="kw">let</span> <span class="ident">subchain_head</span> <span class="op">=</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">disputes_enabled</span> {
+		<span class="kw">let</span> <span class="ident">subchain_head</span> <span class="op">=</span> {
 			<span class="kw">let</span> (<span class="ident">tx</span>, <span class="ident">rx</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
 			<span class="ident">overseer</span>
 				.<span class="ident">send_msg</span>(
@@ -1002,13 +955,6 @@
 				<span class="comment">// No viable leaves containing the block.</span>
 				<span class="prelude-val">None</span> =&gt; <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">target_hash</span>),
 				<span class="prelude-val">Some</span>(<span class="ident">best</span>) =&gt; <span class="ident">best</span>,
-			}
-		} <span class="kw">else</span> {
-			<span class="macro">gum::trace!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="question-mark">?</span><span class="ident">best_leaf</span>, <span class="string">&quot;Dummy disputes active&quot;</span>);
-			<span class="kw">if</span> <span class="ident">best_leaf</span> <span class="op">==</span> <span class="ident">target_hash</span> {
-				<span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">target_hash</span>)
-			} <span class="kw">else</span> {
-				<span class="ident">best_leaf</span>
 			}
 		};
 
@@ -1083,7 +1029,7 @@
 		<span class="kw">let</span> <span class="ident">lag</span> <span class="op">=</span> <span class="ident">initial_leaf_number</span>.<span class="ident">saturating_sub</span>(<span class="ident">subchain_number</span>);
 		<span class="self">self</span>.<span class="ident">metrics</span>.<span class="ident">note_approval_checking_finality_lag</span>(<span class="ident">lag</span>);
 
-		<span class="kw">let</span> (<span class="ident">lag</span>, <span class="ident">subchain_head</span>) <span class="op">=</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">disputes_enabled</span> {
+		<span class="kw">let</span> (<span class="ident">lag</span>, <span class="ident">subchain_head</span>) <span class="op">=</span> {
 			<span class="comment">// Prevent sending flawed data to the dispute-coordinator.</span>
 			<span class="kw">if</span> <span class="prelude-val">Some</span>(<span class="ident">subchain_block_descriptions</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="kw">_</span>) <span class="op">!</span><span class="op">=</span>
 				<span class="ident">subchain_number</span>.<span class="ident">checked_sub</span>(<span class="ident">target_number</span>)
@@ -1134,8 +1080,6 @@
 						<span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">target_hash</span>)
 					},
 				};
-			(<span class="ident">lag</span>, <span class="ident">subchain_head</span>)
-		} <span class="kw">else</span> {
 			(<span class="ident">lag</span>, <span class="ident">subchain_head</span>)
 		};
 
