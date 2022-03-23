@@ -1999,6 +1999,8 @@
 <span id="1999">1999</span>
 <span id="2000">2000</span>
 <span id="2001">2001</span>
+<span id="2002">2002</span>
+<span id="2003">2003</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -2406,7 +2408,8 @@
 
 	<span class="comment">// 1 hour session, 15 minutes unsigned phase, 8 offchain executions.</span>
 	<span class="kw">pub</span> <span class="ident">OffchainRepeat</span>: <span class="ident">BlockNumber</span> <span class="op">=</span> <span class="ident">UnsignedPhase::get</span>() <span class="op">/</span> <span class="number">8</span>;
-	<span class="doccomment">/// We take the top 12_500 nominators as electing voters..</span>
+
+	<span class="doccomment">/// We take the top 12500 nominators as electing voters..</span>
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MaxElectingVoters</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">12_500</span>;
 	<span class="doccomment">/// ... and all of the validators as electable targets. Whilst this is the case, we cannot and</span>
 	<span class="doccomment">/// shall not increase the size of the validator intentions.</span>
@@ -2419,6 +2422,7 @@
 		<span class="ident">VoterIndex</span> <span class="op">=</span> <span class="ident">u32</span>,
 		<span class="ident">TargetIndex</span> <span class="op">=</span> <span class="ident">u16</span>,
 		<span class="ident">Accuracy</span> <span class="op">=</span> <span class="ident">sp_runtime::PerU16</span>,
+		<span class="ident">MaxVoters</span> <span class="op">=</span> <span class="ident">MaxElectingVoters</span>,
 	<span class="op">&gt;</span>(<span class="number">24</span>)
 );
 
