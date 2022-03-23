@@ -185,6 +185,8 @@
 <span id="185">185</span>
 <span id="186">186</span>
 <span id="187">187</span>
+<span id="188">188</span>
+<span id="189">189</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2022 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -207,11 +209,7 @@
 	<span class="ident">parachains_origin</span>, <span class="ident">AccountId</span>, <span class="ident">Balances</span>, <span class="ident">Call</span>, <span class="ident">CouncilCollective</span>, <span class="ident">Event</span>, <span class="ident">Origin</span>, <span class="ident">ParaId</span>,
 	<span class="ident">Runtime</span>, <span class="ident">WeightToFee</span>, <span class="ident">XcmPallet</span>,
 };
-<span class="kw">use</span> <span class="ident">frame_support</span>::{
-	<span class="ident">match_types</span>, <span class="ident">parameter_types</span>,
-	<span class="ident">traits</span>::{<span class="ident">Everything</span>, <span class="ident">Nothing</span>},
-	<span class="ident">weights::Weight</span>,
-};
+<span class="kw">use</span> <span class="ident">frame_support</span>::{<span class="ident">match_types</span>, <span class="ident">parameter_types</span>, <span class="ident">traits::Everything</span>, <span class="ident">weights::Weight</span>};
 <span class="kw">use</span> <span class="ident">runtime_common</span>::{<span class="ident">xcm_sender</span>, <span class="ident">ToAuthor</span>};
 <span class="kw">use</span> <span class="ident">xcm::latest::prelude</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">xcm_builder</span>::{
@@ -356,14 +354,20 @@
 );
 <span class="kw">impl</span> <span class="ident">pallet_xcm::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
 	<span class="kw">type</span> <span class="ident">Event</span> <span class="op">=</span> <span class="ident">Event</span>;
-	<span class="kw">type</span> <span class="ident">SendXcmOrigin</span> <span class="op">=</span> <span class="ident">xcm_builder::EnsureXcmOrigin</span><span class="op">&lt;</span><span class="ident">Origin</span>, <span class="ident">LocalOriginToLocation</span><span class="op">&gt;</span>;
+	<span class="comment">// We don&#39;t allow any messages to be sent via the transaction yet. This is basically safe to</span>
+	<span class="comment">// enable, (safe the possibility of someone spamming the parachain if they&#39;re willing to pay</span>
+	<span class="comment">// the DOT to send from the Relay-chain). But it&#39;s useless until we bring in XCM v3 which will</span>
+	<span class="comment">// make `DescendOrigin` a bit more useful.</span>
+	<span class="kw">type</span> <span class="ident">SendXcmOrigin</span> <span class="op">=</span> <span class="ident">xcm_builder::EnsureXcmOrigin</span><span class="op">&lt;</span><span class="ident">Origin</span>, ()<span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">XcmRouter</span> <span class="op">=</span> <span class="ident">XcmRouter</span>;
-	<span class="comment">// Anyone can execute XCM messages locally...</span>
+	<span class="comment">// Anyone can execute XCM messages locally.</span>
 	<span class="kw">type</span> <span class="ident">ExecuteXcmOrigin</span> <span class="op">=</span> <span class="ident">xcm_builder::EnsureXcmOrigin</span><span class="op">&lt;</span><span class="ident">Origin</span>, <span class="ident">LocalOriginToLocation</span><span class="op">&gt;</span>;
-	<span class="comment">// ...but they must match our filter, which rejects all.</span>
-	<span class="kw">type</span> <span class="ident">XcmExecuteFilter</span> <span class="op">=</span> <span class="ident">Nothing</span>;
+	<span class="kw">type</span> <span class="ident">XcmExecuteFilter</span> <span class="op">=</span> <span class="ident">Everything</span>;
 	<span class="kw">type</span> <span class="ident">XcmExecutor</span> <span class="op">=</span> <span class="ident">xcm_executor::XcmExecutor</span><span class="op">&lt;</span><span class="ident">XcmConfig</span><span class="op">&gt;</span>;
+	<span class="comment">// Anyone is able to use teleportation regardless of who they are and what they want to teleport.</span>
 	<span class="kw">type</span> <span class="ident">XcmTeleportFilter</span> <span class="op">=</span> <span class="ident">Everything</span>;
+	<span class="comment">// Anyone is able to use reserve transfers regardless of who they are and what they want to</span>
+	<span class="comment">// transfer.</span>
 	<span class="kw">type</span> <span class="ident">XcmReserveTransferFilter</span> <span class="op">=</span> <span class="ident">Everything</span>;
 	<span class="kw">type</span> <span class="ident">Weigher</span> <span class="op">=</span> <span class="ident">FixedWeightBounds</span><span class="op">&lt;</span><span class="ident">BaseXcmWeight</span>, <span class="ident">Call</span>, <span class="ident">MaxInstructions</span><span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">LocationInverter</span> <span class="op">=</span> <span class="ident">LocationInverter</span><span class="op">&lt;</span><span class="ident">Ancestry</span><span class="op">&gt;</span>;

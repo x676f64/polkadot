@@ -182,6 +182,14 @@
 <span id="182">182</span>
 <span id="183">183</span>
 <span id="184">184</span>
+<span id="185">185</span>
+<span id="186">186</span>
+<span id="187">187</span>
+<span id="188">188</span>
+<span id="189">189</span>
+<span id="190">190</span>
+<span id="191">191</span>
+<span id="192">192</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2022 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -242,7 +250,7 @@
 	<span class="ident">AccountId32Aliases</span><span class="op">&lt;</span><span class="ident">PolkadotNetwork</span>, <span class="ident">AccountId</span><span class="op">&gt;</span>,
 );
 
-<span class="doccomment">/// Our asset transactor. This is what allows us to interest with the runtime facilities from the point of</span>
+<span class="doccomment">/// Our asset transactor. This is what allows us to interact with the runtime assets from the point of</span>
 <span class="doccomment">/// view of XCM-only concepts like `MultiLocation` and `MultiAsset`.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// Ours is only aware of the Balances pallet, which is mapped to `DotLocation`.</span>
@@ -259,13 +267,18 @@
 	<span class="ident">CheckAccount</span>,
 <span class="op">&gt;</span>;
 
-<span class="doccomment">/// The means that we convert an the XCM message origin location into a local dispatch origin.</span>
+<span class="doccomment">/// The means that we convert an XCM origin `MultiLocation` into the runtime&#39;s `Origin` type for</span>
+<span class="doccomment">/// local dispatch. This is a conversion function from an `OriginKind` type along with the</span>
+<span class="doccomment">/// `MultiLocation` value and returns an `Origin` value or an error.</span>
 <span class="kw">type</span> <span class="ident">LocalOriginConverter</span> <span class="op">=</span> (
-	<span class="comment">// A `Signed` origin of the sovereign account that the original location controls.</span>
+	<span class="comment">// If the origin kind is `Sovereign`, then return a `Signed` origin with the account determined</span>
+	<span class="comment">// by the `SovereignAccountOf` converter.</span>
 	<span class="ident">SovereignSignedViaLocation</span><span class="op">&lt;</span><span class="ident">SovereignAccountOf</span>, <span class="ident">Origin</span><span class="op">&gt;</span>,
-	<span class="comment">// A child parachain, natively expressed, has the `Parachain` origin.</span>
+	<span class="comment">// If the origin kind is `Native` and the XCM origin is a child parachain, then we can express</span>
+	<span class="comment">// it with the special `parachains_origin::Origin` origin variant.</span>
 	<span class="ident">ChildParachainAsNative</span><span class="op">&lt;</span><span class="ident">parachains_origin::Origin</span>, <span class="ident">Origin</span><span class="op">&gt;</span>,
-	<span class="comment">// The AccountId32 location type can be expressed natively as a `Signed` origin.</span>
+	<span class="comment">// If the origin kind is `Native` and the XCM origin is the `AccountId32` location, then it can</span>
+	<span class="comment">// be expressed using the `Signed` origin variant.</span>
 	<span class="ident">SignedAccountId32AsNative</span><span class="op">&lt;</span><span class="ident">PolkadotNetwork</span>, <span class="ident">Origin</span><span class="op">&gt;</span>,
 );
 
@@ -289,6 +302,7 @@
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">PolkadotForStatemint</span>: (<span class="ident">MultiAssetFilter</span>, <span class="ident">MultiLocation</span>) <span class="op">=</span> (<span class="ident">Polkadot::get</span>(), <span class="ident">Parachain</span>(<span class="number">1000</span>).<span class="ident">into</span>());
 }
 
+<span class="doccomment">/// Polkadot Relay recognizes/respects the Statemint chain as a teleporter.</span>
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">TrustedTeleporters</span> <span class="op">=</span> (<span class="ident">xcm_builder::Case</span><span class="op">&lt;</span><span class="ident">PolkadotForStatemint</span><span class="op">&gt;</span>,);
 
 <span class="macro">match_types!</span> {
@@ -315,6 +329,7 @@
 	<span class="kw">type</span> <span class="ident">XcmSender</span> <span class="op">=</span> <span class="ident">XcmRouter</span>;
 	<span class="kw">type</span> <span class="ident">AssetTransactor</span> <span class="op">=</span> <span class="ident">LocalAssetTransactor</span>;
 	<span class="kw">type</span> <span class="ident">OriginConverter</span> <span class="op">=</span> <span class="ident">LocalOriginConverter</span>;
+	<span class="comment">// Polkadot Relay recognises no chains which act as reserves.</span>
 	<span class="kw">type</span> <span class="ident">IsReserve</span> <span class="op">=</span> ();
 	<span class="kw">type</span> <span class="ident">IsTeleporter</span> <span class="op">=</span> <span class="ident">TrustedTeleporters</span>;
 	<span class="kw">type</span> <span class="ident">LocationInverter</span> <span class="op">=</span> <span class="ident">LocationInverter</span><span class="op">&lt;</span><span class="ident">Ancestry</span><span class="op">&gt;</span>;
@@ -350,15 +365,16 @@
 
 <span class="kw">impl</span> <span class="ident">pallet_xcm::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
 	<span class="kw">type</span> <span class="ident">Event</span> <span class="op">=</span> <span class="ident">Event</span>;
-	<span class="kw">type</span> <span class="ident">SendXcmOrigin</span> <span class="op">=</span> <span class="ident">xcm_builder::EnsureXcmOrigin</span><span class="op">&lt;</span><span class="ident">Origin</span>, <span class="ident">LocalOriginToLocation</span><span class="op">&gt;</span>;
+	<span class="comment">// Not much use in sending XCM at this point.</span>
+	<span class="kw">type</span> <span class="ident">SendXcmOrigin</span> <span class="op">=</span> <span class="ident">xcm_builder::EnsureXcmOrigin</span><span class="op">&lt;</span><span class="ident">Origin</span>, ()<span class="op">&gt;</span>; <span class="comment">// == Deny All</span>
 	<span class="kw">type</span> <span class="ident">XcmRouter</span> <span class="op">=</span> <span class="ident">XcmRouter</span>;
 	<span class="comment">// Anyone can execute XCM messages locally...</span>
 	<span class="kw">type</span> <span class="ident">ExecuteXcmOrigin</span> <span class="op">=</span> <span class="ident">xcm_builder::EnsureXcmOrigin</span><span class="op">&lt;</span><span class="ident">Origin</span>, <span class="ident">LocalOriginToLocation</span><span class="op">&gt;</span>;
 	<span class="comment">// ...but they must match our filter, which rejects all.</span>
-	<span class="kw">type</span> <span class="ident">XcmExecuteFilter</span> <span class="op">=</span> <span class="ident">Nothing</span>;
+	<span class="kw">type</span> <span class="ident">XcmExecuteFilter</span> <span class="op">=</span> <span class="ident">Nothing</span>; <span class="comment">// == Deny All</span>
 	<span class="kw">type</span> <span class="ident">XcmExecutor</span> <span class="op">=</span> <span class="ident">xcm_executor::XcmExecutor</span><span class="op">&lt;</span><span class="ident">XcmConfig</span><span class="op">&gt;</span>;
-	<span class="kw">type</span> <span class="ident">XcmTeleportFilter</span> <span class="op">=</span> <span class="ident">Nothing</span>;
-	<span class="kw">type</span> <span class="ident">XcmReserveTransferFilter</span> <span class="op">=</span> <span class="ident">Nothing</span>;
+	<span class="kw">type</span> <span class="ident">XcmTeleportFilter</span> <span class="op">=</span> <span class="ident">Everything</span>; <span class="comment">// == Allow All</span>
+	<span class="kw">type</span> <span class="ident">XcmReserveTransferFilter</span> <span class="op">=</span> <span class="ident">Everything</span>; <span class="comment">// == Allow All</span>
 	<span class="kw">type</span> <span class="ident">Weigher</span> <span class="op">=</span> <span class="ident">FixedWeightBounds</span><span class="op">&lt;</span><span class="ident">BaseXcmWeight</span>, <span class="ident">Call</span>, <span class="ident">MaxInstructions</span><span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">LocationInverter</span> <span class="op">=</span> <span class="ident">LocationInverter</span><span class="op">&lt;</span><span class="ident">Ancestry</span><span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">Origin</span> <span class="op">=</span> <span class="ident">Origin</span>;

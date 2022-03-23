@@ -1567,6 +1567,12 @@
 <span id="1567">1567</span>
 <span id="1568">1568</span>
 <span id="1569">1569</span>
+<span id="1570">1570</span>
+<span id="1571">1571</span>
+<span id="1572">1572</span>
+<span id="1573">1573</span>
+<span id="1574">1574</span>
+<span id="1575">1575</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020-2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -2043,9 +2049,9 @@
 
 		<span class="doccomment">/// Teleport some assets from the local chain to some destination chain.</span>
 		<span class="doccomment">///</span>
-		<span class="doccomment">/// Fee payment on the destination side is made from the first asset listed in the `assets` vector and</span>
-		<span class="doccomment">/// fee-weight is calculated locally and thus remote weights are assumed to be equal to</span>
-		<span class="doccomment">/// local weights.</span>
+		<span class="doccomment">/// Fee payment on the destination side is made from the asset in the `assets` vector of</span>
+		<span class="doccomment">/// index `fee_asset_item`. The weight limit for fees is not provided and thus is unlimited,</span>
+		<span class="doccomment">/// with all fees taken as needed from the asset.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// - `origin`: Must be capable of withdrawing the `assets` and executing XCM.</span>
 		<span class="doccomment">/// - `dest`: Destination context for the assets. Will typically be `X2(Parent, Parachain(..))` to send</span>
@@ -2081,12 +2087,12 @@
 			<span class="ident"><span class="self">Self</span>::do_teleport_assets</span>(<span class="ident">origin</span>, <span class="ident">dest</span>, <span class="ident">beneficiary</span>, <span class="ident">assets</span>, <span class="ident">fee_asset_item</span>, <span class="prelude-val">None</span>)
 		}
 
-		<span class="doccomment">/// Transfer some assets from the local chain to the sovereign account of a destination chain and forward</span>
-		<span class="doccomment">/// a notification XCM.</span>
+		<span class="doccomment">/// Transfer some assets from the local chain to the sovereign account of a destination</span>
+		<span class="doccomment">/// chain and forward a notification XCM.</span>
 		<span class="doccomment">///</span>
-		<span class="doccomment">/// Fee payment on the destination side is made from the first asset listed in the `assets` vector and</span>
-		<span class="doccomment">/// fee-weight is calculated locally and thus remote weights are assumed to be equal to</span>
-		<span class="doccomment">/// local weights.</span>
+		<span class="doccomment">/// Fee payment on the destination side is made from the asset in the `assets` vector of</span>
+		<span class="doccomment">/// index `fee_asset_item`. The weight limit for fees is not provided and thus is unlimited,</span>
+		<span class="doccomment">/// with all fees taken as needed from the asset.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// - `origin`: Must be capable of withdrawing the `assets` and executing XCM.</span>
 		<span class="doccomment">/// - `dest`: Destination context for the assets. Will typically be `X2(Parent, Parachain(..))` to send</span>
@@ -2241,10 +2247,13 @@
 			})
 		}
 
-		<span class="doccomment">/// Transfer some assets from the local chain to the sovereign account of a destination chain and forward</span>
-		<span class="doccomment">/// a notification XCM.</span>
+		<span class="doccomment">/// Transfer some assets from the local chain to the sovereign account of a destination</span>
+		<span class="doccomment">/// chain and forward a notification XCM.</span>
 		<span class="doccomment">///</span>
-		<span class="doccomment">/// Fee payment on the destination side is made from the first asset listed in the `assets` vector.</span>
+		<span class="doccomment">/// Fee payment on the destination side is made from the asset in the `assets` vector of</span>
+		<span class="doccomment">/// index `fee_asset_item`, up to enough to pay for `weight_limit` of weight. If more weight</span>
+		<span class="doccomment">/// is needed than `weight_limit`, then the operation will fail and the assets send may be</span>
+		<span class="doccomment">/// at risk.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// - `origin`: Must be capable of withdrawing the `assets` and executing XCM.</span>
 		<span class="doccomment">/// - `dest`: Destination context for the assets. Will typically be `X2(Parent, Parachain(..))` to send</span>
@@ -2288,7 +2297,10 @@
 
 		<span class="doccomment">/// Teleport some assets from the local chain to some destination chain.</span>
 		<span class="doccomment">///</span>
-		<span class="doccomment">/// Fee payment on the destination side is made from the first asset listed in the `assets` vector.</span>
+		<span class="doccomment">/// Fee payment on the destination side is made from the asset in the `assets` vector of</span>
+		<span class="doccomment">/// index `fee_asset_item`, up to enough to pay for `weight_limit` of weight. If more weight</span>
+		<span class="doccomment">/// is needed than `weight_limit`, then the operation will fail and the assets send may be</span>
+		<span class="doccomment">/// at risk.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// - `origin`: Must be capable of withdrawing the `assets` and executing XCM.</span>
 		<span class="doccomment">/// - `dest`: Destination context for the assets. Will typically be `X2(Parent, Parachain(..))` to send</span>
