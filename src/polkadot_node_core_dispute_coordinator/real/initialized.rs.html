@@ -1346,7 +1346,7 @@
 
 <span class="kw">use</span> <span class="ident">polkadot_node_primitives</span>::{
 	<span class="ident">CandidateVotes</span>, <span class="ident">DisputeMessage</span>, <span class="ident">DisputeMessageCheckError</span>, <span class="ident">SignedDisputeStatement</span>,
-	<span class="ident">DISPUTE_WINDOW</span>,
+	<span class="ident">DISPUTE_WINDOW</span>, <span class="ident">MAX_FINALITY_LAG</span>,
 };
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem</span>::{
 	<span class="ident">messages</span>::{
@@ -1384,9 +1384,9 @@
 };
 
 <span class="comment">// The capacity and scrape depth are equal to the maximum allowed unfinalized depth.</span>
-<span class="kw">const</span> <span class="ident">LRU_SCRAPED_BLOCKS_CAPACITY</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">500</span>;
-<span class="comment">// This is in sync with `MAX_FINALITY_LAG` in relay chain selection.</span>
-<span class="kw">const</span> <span class="ident">MAX_BATCH_SCRAPE_ANCESTORS</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">500</span>;
+<span class="kw">const</span> <span class="ident">LRU_SCRAPED_BLOCKS_CAPACITY</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="ident">MAX_FINALITY_LAG</span> <span class="kw">as</span> <span class="ident">usize</span>;
+<span class="comment">// This is in sync with `MAX_FINALITY_LAG` in relay chain selection &amp; node primitives.</span>
+<span class="kw">const</span> <span class="ident">MAX_BATCH_SCRAPE_ANCESTORS</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="ident">MAX_FINALITY_LAG</span>;
 
 <span class="doccomment">/// After the first active leaves update we transition to `Initialized` state.</span>
 <span class="doccomment">///</span>
