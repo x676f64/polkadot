@@ -339,6 +339,8 @@
 <span id="339">339</span>
 <span id="340">340</span>
 <span id="341">341</span>
+<span id="342">342</span>
+<span id="343">343</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -404,6 +406,7 @@
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">polkadot_node_core_provisioner::ProvisionerSubsystem</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">polkadot_node_core_pvf_checker::PvfCheckerSubsystem</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">polkadot_node_core_runtime_api::RuntimeApiSubsystem</span>;
+<span class="kw">use</span> <span class="ident">polkadot_node_subsystem_util::rand</span>::{<span class="self">self</span>, <span class="ident">SeedableRng</span>};
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">polkadot_statement_distribution::StatementDistributionSubsystem</span>;
 
 <span class="doccomment">/// Arguments passed for overseer construction.</span>
@@ -486,7 +489,7 @@
 		<span class="ident">CandidateValidationSubsystem</span>,
 		<span class="ident">PvfCheckerSubsystem</span>,
 		<span class="ident">CandidateBackingSubsystem</span><span class="op">&lt;</span><span class="ident">Spawner</span><span class="op">&gt;</span>,
-		<span class="ident">StatementDistributionSubsystem</span>,
+		<span class="ident">StatementDistributionSubsystem</span><span class="op">&lt;</span><span class="ident">rand::rngs::StdRng</span><span class="op">&gt;</span>,
 		<span class="ident">AvailabilityDistributionSubsystem</span>,
 		<span class="ident">AvailabilityRecoverySubsystem</span>,
 		<span class="ident">BitfieldSigningSubsystem</span><span class="op">&lt;</span><span class="ident">Spawner</span><span class="op">&gt;</span>,
@@ -593,6 +596,7 @@
 			<span class="ident">keystore</span>.<span class="ident">clone</span>(),
 			<span class="ident">statement_req_receiver</span>,
 			<span class="ident">Metrics::register</span>(<span class="ident">registry</span>)<span class="question-mark">?</span>,
+			<span class="ident">rand::rngs::StdRng::from_entropy</span>(),
 		))
 		.<span class="ident">approval_distribution</span>(<span class="ident">ApprovalDistributionSubsystem::new</span>(<span class="ident">Metrics::register</span>(<span class="ident">registry</span>)<span class="question-mark">?</span>))
 		.<span class="ident">approval_voting</span>(<span class="ident">ApprovalVotingSubsystem::with_config</span>(

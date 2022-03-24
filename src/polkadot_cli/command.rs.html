@@ -964,7 +964,7 @@
 
 			<span class="prelude-val">Ok</span>(<span class="ident">runner</span>.<span class="ident">async_run</span>(<span class="op">|</span><span class="kw-2">mut</span> <span class="ident">config</span><span class="op">|</span> {
 				<span class="kw">let</span> (<span class="ident">client</span>, <span class="ident">backend</span>, <span class="kw">_</span>, <span class="ident">task_manager</span>) <span class="op">=</span> <span class="ident">service::new_chain_ops</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">config</span>, <span class="prelude-val">None</span>)<span class="question-mark">?</span>;
-				<span class="prelude-val">Ok</span>((<span class="ident">cmd</span>.<span class="ident">run</span>(<span class="ident">client</span>, <span class="ident">backend</span>).<span class="ident">map_err</span>(<span class="ident">Error::SubstrateCli</span>), <span class="ident">task_manager</span>))
+				<span class="prelude-val">Ok</span>((<span class="ident">cmd</span>.<span class="ident">run</span>(<span class="ident">client</span>, <span class="ident">backend</span>, <span class="prelude-val">None</span>).<span class="ident">map_err</span>(<span class="ident">Error::SubstrateCli</span>), <span class="ident">task_manager</span>))
 			})<span class="question-mark">?</span>)
 		},
 		<span class="prelude-val">Some</span>(<span class="ident">Subcommand::PvfPrepareWorker</span>(<span class="ident">cmd</span>)) =&gt; {

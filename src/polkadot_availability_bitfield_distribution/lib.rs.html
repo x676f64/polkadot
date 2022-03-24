@@ -1064,7 +1064,7 @@
 
 	<span class="kw">let</span> <span class="ident">_span</span> <span class="op">=</span> <span class="ident">span</span>.<span class="ident">child</span>(<span class="string">&quot;interested-peers&quot;</span>);
 	<span class="comment">// pass on the bitfield distribution to all interested peers</span>
-	<span class="kw">let</span> <span class="ident">interested_peers</span> <span class="op">=</span> <span class="ident">peer_views</span>
+	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">interested_peers</span> <span class="op">=</span> <span class="ident">peer_views</span>
 		.<span class="ident">iter</span>()
 		.<span class="ident">filter_map</span>(<span class="op">|</span>(<span class="ident">peer</span>, <span class="ident">view</span>)<span class="op">|</span> {
 			<span class="comment">// check interest in the peer in this message&#39;s relay parent</span>
@@ -1081,9 +1081,9 @@
 			}
 		})
 		.<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">PeerId</span><span class="op">&gt;</span><span class="op">&gt;</span>();
-	<span class="kw">let</span> <span class="ident">interested_peers</span> <span class="op">=</span> <span class="ident">util::choose_random_subset</span>(
+	<span class="ident">util::choose_random_subset</span>(
 		<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">gossip_peers</span>.<span class="ident">contains</span>(<span class="ident">e</span>),
-		<span class="ident">interested_peers</span>,
+		<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">interested_peers</span>,
 		<span class="ident">MIN_GOSSIP_PEERS</span>,
 	);
 	<span class="ident">interested_peers</span>.<span class="ident">iter</span>().<span class="ident">for_each</span>(<span class="op">|</span><span class="ident">peer</span><span class="op">|</span> {

@@ -318,7 +318,6 @@
 <span id="318">318</span>
 <span id="319">319</span>
 <span id="320">320</span>
-<span id="321">321</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -345,31 +344,30 @@
 <span class="kw">use</span> <span class="ident">sp_core::storage</span>::{<span class="ident">ChildInfo</span>, <span class="ident">TrackedStorageKey</span>};
 <span class="kw">use</span> <span class="ident">std::any</span>::{<span class="ident">Any</span>, <span class="ident">TypeId</span>};
 
+<span class="comment">// Memory configuration</span>
+<span class="comment">//</span>
+<span class="comment">// When Substrate Runtime is instantiated, a number of WASM pages are allocated for the Substrate</span>
+<span class="comment">// Runtime instance&#39;s linear memory. The exact number of pages is a sum of whatever the WASM blob</span>
+<span class="comment">// itself requests (by default at least enough to hold the data section as well as have some space</span>
+<span class="comment">// left for the stack; this is, of course, overridable at link time when compiling the runtime)</span>
+<span class="comment">// plus the number of pages specified in the `extra_heap_pages` passed to the executor.</span>
+<span class="comment">//</span>
+<span class="comment">// By default, rustc (or `lld` specifically) should allocate 1 MiB for the shadow stack, or 16 pages.</span>
+<span class="comment">// The data section for runtimes are typically rather small and can fit in a single digit number of</span>
+<span class="comment">// WASM pages, so let&#39;s say an extra 16 pages. Thus let&#39;s assume that 32 pages or 2 MiB are used for</span>
+<span class="comment">// these needs by default.</span>
+<span class="kw">const</span> <span class="ident">DEFAULT_HEAP_PAGES_ESTIMATE</span>: <span class="ident">u64</span> <span class="op">=</span> <span class="number">32</span>;
+<span class="kw">const</span> <span class="ident">EXTRA_HEAP_PAGES</span>: <span class="ident">u64</span> <span class="op">=</span> <span class="number">2048</span>;
+
 <span class="kw">const</span> <span class="ident">CONFIG</span>: <span class="ident">Config</span> <span class="op">=</span> <span class="ident">Config</span> {
-	<span class="comment">// Memory configuration</span>
-	<span class="comment">//</span>
-	<span class="comment">// When Substrate Runtime is instantiated, a number of wasm pages are mounted for the Substrate</span>
-	<span class="comment">// Runtime instance. The number of pages is specified by `heap_pages`.</span>
-	<span class="comment">//</span>
-	<span class="comment">// Besides `heap_pages` linear memory requests an initial number of pages. Those pages are</span>
-	<span class="comment">// typically used for placing the so-called shadow stack and the data section.</span>
-	<span class="comment">//</span>
-	<span class="comment">// By default, rustc (or `lld` specifically) allocates 1 MiB for the shadow stack. That is, 16</span>
-	<span class="comment">// wasm pages.</span>
-	<span class="comment">//</span>
-	<span class="comment">// Data section for runtimes are typically rather small and can fit in a single digit number of</span>
-	<span class="comment">// wasm pages.</span>
-	<span class="comment">//</span>
-	<span class="comment">// Thus let&#39;s assume that 32 pages or 2 MiB are used for these needs.</span>
-	<span class="comment">//</span>
-	<span class="comment">// Note that the memory limit is specified in bytes, so we multiply this value</span>
-	<span class="comment">// by wasm page size -- 64 KiB.</span>
-	<span class="ident">max_memory_size</span>: <span class="prelude-val">Some</span>((<span class="number">2048</span> <span class="op">+</span> <span class="number">32</span>) <span class="op">*</span> <span class="number">65536</span>),
-	<span class="ident">heap_pages</span>: <span class="number">2048</span>,
+	<span class="comment">// NOTE: This is specified in bytes, so we multiply by WASM page size.</span>
+	<span class="ident">max_memory_size</span>: <span class="prelude-val">Some</span>(((<span class="ident">DEFAULT_HEAP_PAGES_ESTIMATE</span> <span class="op">+</span> <span class="ident">EXTRA_HEAP_PAGES</span>) <span class="op">*</span> <span class="number">65536</span>) <span class="kw">as</span> <span class="ident">usize</span>),
 
 	<span class="ident">allow_missing_func_imports</span>: <span class="bool-val">true</span>,
 	<span class="ident">cache_path</span>: <span class="prelude-val">None</span>,
 	<span class="ident">semantics</span>: <span class="ident">Semantics</span> {
+		<span class="ident">extra_heap_pages</span>: <span class="ident">EXTRA_HEAP_PAGES</span>,
+
 		<span class="ident">fast_instance_reuse</span>: <span class="bool-val">false</span>,
 		<span class="comment">// Enable deterministic stack limit to pin down the exact number of items the wasmtime stack</span>
 		<span class="comment">// can contain before it traps with stack overflow.</span>
