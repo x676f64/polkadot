@@ -2021,6 +2021,43 @@
 <span id="2021">2021</span>
 <span id="2022">2022</span>
 <span id="2023">2023</span>
+<span id="2024">2024</span>
+<span id="2025">2025</span>
+<span id="2026">2026</span>
+<span id="2027">2027</span>
+<span id="2028">2028</span>
+<span id="2029">2029</span>
+<span id="2030">2030</span>
+<span id="2031">2031</span>
+<span id="2032">2032</span>
+<span id="2033">2033</span>
+<span id="2034">2034</span>
+<span id="2035">2035</span>
+<span id="2036">2036</span>
+<span id="2037">2037</span>
+<span id="2038">2038</span>
+<span id="2039">2039</span>
+<span id="2040">2040</span>
+<span id="2041">2041</span>
+<span id="2042">2042</span>
+<span id="2043">2043</span>
+<span id="2044">2044</span>
+<span id="2045">2045</span>
+<span id="2046">2046</span>
+<span id="2047">2047</span>
+<span id="2048">2048</span>
+<span id="2049">2049</span>
+<span id="2050">2050</span>
+<span id="2051">2051</span>
+<span id="2052">2052</span>
+<span id="2053">2053</span>
+<span id="2054">2054</span>
+<span id="2055">2055</span>
+<span id="2056">2056</span>
+<span id="2057">2057</span>
+<span id="2058">2058</span>
+<span id="2059">2059</span>
+<span id="2060">2060</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -2427,6 +2464,12 @@
 	<span class="kw">fn</span> <span class="ident">force_queue_action</span>() -&gt; <span class="ident">Weight</span>;
 	<span class="kw">fn</span> <span class="ident">add_trusted_validation_code</span>(<span class="ident">c</span>: <span class="ident">u32</span>) -&gt; <span class="ident">Weight</span>;
 	<span class="kw">fn</span> <span class="ident">poke_unused_validation_code</span>() -&gt; <span class="ident">Weight</span>;
+
+	<span class="kw">fn</span> <span class="ident">include_pvf_check_statement_finalize_upgrade_accept</span>() -&gt; <span class="ident">Weight</span>;
+	<span class="kw">fn</span> <span class="ident">include_pvf_check_statement_finalize_upgrade_reject</span>() -&gt; <span class="ident">Weight</span>;
+	<span class="kw">fn</span> <span class="ident">include_pvf_check_statement_finalize_onboarding_accept</span>() -&gt; <span class="ident">Weight</span>;
+	<span class="kw">fn</span> <span class="ident">include_pvf_check_statement_finalize_onboarding_reject</span>() -&gt; <span class="ident">Weight</span>;
+	<span class="kw">fn</span> <span class="ident">include_pvf_check_statement</span>() -&gt; <span class="ident">Weight</span>;
 }
 
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">TestWeightInfo</span>;
@@ -2451,6 +2494,22 @@
 	}
 	<span class="kw">fn</span> <span class="ident">poke_unused_validation_code</span>() -&gt; <span class="ident">Weight</span> {
 		<span class="ident">Weight::MAX</span>
+	}
+	<span class="kw">fn</span> <span class="ident">include_pvf_check_statement_finalize_upgrade_accept</span>() -&gt; <span class="ident">Weight</span> {
+		<span class="ident">Weight::MAX</span>
+	}
+	<span class="kw">fn</span> <span class="ident">include_pvf_check_statement_finalize_upgrade_reject</span>() -&gt; <span class="ident">Weight</span> {
+		<span class="ident">Weight::MAX</span>
+	}
+	<span class="kw">fn</span> <span class="ident">include_pvf_check_statement_finalize_onboarding_accept</span>() -&gt; <span class="ident">Weight</span> {
+		<span class="ident">Weight::MAX</span>
+	}
+	<span class="kw">fn</span> <span class="ident">include_pvf_check_statement_finalize_onboarding_reject</span>() -&gt; <span class="ident">Weight</span> {
+		<span class="ident">Weight::MAX</span>
+	}
+	<span class="kw">fn</span> <span class="ident">include_pvf_check_statement</span>() -&gt; <span class="ident">Weight</span> {
+		<span class="comment">// This special value is to distinguish from the finalizing variants above in tests.</span>
+		<span class="ident">Weight::MAX</span> <span class="op">-</span> <span class="number">1</span>
 	}
 }
 
@@ -2878,12 +2937,23 @@
 
 		<span class="doccomment">/// Includes a statement for a PVF pre-checking vote. Potentially, finalizes the vote and</span>
 		<span class="doccomment">/// enacts the results if that was the last vote before achieving the supermajority.</span>
-		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">Weight::MAX</span>)]</span>
+		<span class="attribute">#[<span class="ident">pallet::weight</span>(
+			<span class="ident">sp_std::cmp::max</span>(
+				<span class="ident">sp_std::cmp::max</span>(
+					<span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">Config</span><span class="op">&gt;</span><span class="ident">::WeightInfo::include_pvf_check_statement_finalize_upgrade_accept</span>(),
+					<span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">Config</span><span class="op">&gt;</span><span class="ident">::WeightInfo::include_pvf_check_statement_finalize_upgrade_reject</span>(),
+				),
+				<span class="ident">sp_std::cmp::max</span>(
+					<span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">Config</span><span class="op">&gt;</span><span class="ident">::WeightInfo::include_pvf_check_statement_finalize_onboarding_accept</span>(),
+					<span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">Config</span><span class="op">&gt;</span><span class="ident">::WeightInfo::include_pvf_check_statement_finalize_onboarding_reject</span>(),
+				)
+			)
+		)]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">include_pvf_check_statement</span>(
 			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 			<span class="ident">stmt</span>: <span class="ident">PvfCheckStatement</span>,
 			<span class="ident">signature</span>: <span class="ident">ValidatorSignature</span>,
-		) -&gt; <span class="ident">DispatchResult</span> {
+		) -&gt; <span class="ident">DispatchResultWithPostInfo</span> {
 			<span class="ident">ensure_none</span>(<span class="ident">origin</span>)<span class="question-mark">?</span>;
 
 			<span class="comment">// Make sure that PVF pre-checking is enabled.</span>
@@ -2954,13 +3024,17 @@
 						<span class="ident"><span class="self">Self</span>::enact_pvf_rejected</span>(<span class="kw-2">&amp;</span><span class="ident">stmt</span>.<span class="ident">subject</span>, <span class="ident">active_vote</span>.<span class="ident">causes</span>);
 					},
 				}
-			} <span class="kw">else</span> {
-				<span class="comment">// No quorum has been achieved. So just store the updated state back into the</span>
-				<span class="comment">// storage.</span>
-				<span class="ident">PvfActiveVoteMap</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="kw-2">&amp;</span><span class="ident">stmt</span>.<span class="ident">subject</span>, <span class="ident">active_vote</span>);
-			}
 
-			<span class="prelude-val">Ok</span>(())
+				<span class="comment">// No weight refund since this statement was the last one and lead to finalization.</span>
+				<span class="prelude-val">Ok</span>(().<span class="ident">into</span>())
+			} <span class="kw">else</span> {
+				<span class="comment">// No quorum has been achieved.</span>
+				<span class="comment">//</span>
+				<span class="comment">// - So just store the updated state back into the storage.</span>
+				<span class="comment">// - Only charge weight for simple vote inclusion.</span>
+				<span class="ident">PvfActiveVoteMap</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="kw-2">&amp;</span><span class="ident">stmt</span>.<span class="ident">subject</span>, <span class="ident">active_vote</span>);
+				<span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">Config</span><span class="op">&gt;</span><span class="ident">::WeightInfo::include_pvf_check_statement</span>()).<span class="ident">into</span>())
+			}
 		}
 	}
 

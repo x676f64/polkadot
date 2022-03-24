@@ -268,7 +268,7 @@
 		<span class="ident">CurrentSessionIndex</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::set</span>(<span class="ident">index</span>);
 	}
 
-	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
+	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">any</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;runtime-benchmarks&quot;</span>, <span class="ident">test</span>))]</span>
 	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">set_active_validators_ascending</span>(<span class="ident">active</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ValidatorId</span><span class="op">&gt;</span>) {
 		<span class="ident">ActiveValidatorIndices</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::set</span>(
 			(<span class="number">0</span>..<span class="ident">active</span>.<span class="ident">len</span>()).<span class="ident">map</span>(<span class="op">|</span><span class="ident">i</span><span class="op">|</span> <span class="ident">ValidatorIndex</span>(<span class="ident">i</span> <span class="kw">as</span> <span class="kw">_</span>)).<span class="ident">collect</span>(),
