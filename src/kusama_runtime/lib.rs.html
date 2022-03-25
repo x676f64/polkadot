@@ -2004,6 +2004,10 @@
 <span id="2004">2004</span>
 <span id="2005">2005</span>
 <span id="2006">2006</span>
+<span id="2007">2007</span>
+<span id="2008">2008</span>
+<span id="2009">2009</span>
+<span id="2010">2010</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -2752,12 +2756,6 @@
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">TipFindersFee</span>: <span class="ident">Percent</span> <span class="op">=</span> <span class="ident">Percent::from_percent</span>(<span class="number">20</span>);
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">TipReportDepositBase</span>: <span class="ident">Balance</span> <span class="op">=</span> <span class="number">100</span> <span class="op">*</span> <span class="ident">CENTS</span>;
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">DataDepositPerByte</span>: <span class="ident">Balance</span> <span class="op">=</span> <span class="number">1</span> <span class="op">*</span> <span class="ident">CENTS</span>;
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">BountyDepositBase</span>: <span class="ident">Balance</span> <span class="op">=</span> <span class="number">100</span> <span class="op">*</span> <span class="ident">CENTS</span>;
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">BountyDepositPayoutDelay</span>: <span class="ident">BlockNumber</span> <span class="op">=</span> <span class="number">4</span> <span class="op">*</span> <span class="ident">DAYS</span>;
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">BountyUpdatePeriod</span>: <span class="ident">BlockNumber</span> <span class="op">=</span> <span class="number">90</span> <span class="op">*</span> <span class="ident">DAYS</span>;
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MaximumReasonLength</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">16384</span>;
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">BountyCuratorDeposit</span>: <span class="ident">Permill</span> <span class="op">=</span> <span class="ident">Permill::from_percent</span>(<span class="number">50</span>);
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">BountyValueMinimum</span>: <span class="ident">Balance</span> <span class="op">=</span> <span class="number">200</span> <span class="op">*</span> <span class="ident">CENTS</span>;
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MaxApprovals</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">100</span>;
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MaxAuthorities</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">100_000</span>;
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MaxKeys</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">10_000</span>;
@@ -2788,11 +2786,24 @@
 	<span class="kw">type</span> <span class="ident">SpendFunds</span> <span class="op">=</span> <span class="ident">Bounties</span>;
 }
 
+<span class="macro">parameter_types!</span> {
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">BountyDepositBase</span>: <span class="ident">Balance</span> <span class="op">=</span> <span class="number">100</span> <span class="op">*</span> <span class="ident">CENTS</span>;
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">BountyDepositPayoutDelay</span>: <span class="ident">BlockNumber</span> <span class="op">=</span> <span class="number">4</span> <span class="op">*</span> <span class="ident">DAYS</span>;
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">BountyUpdatePeriod</span>: <span class="ident">BlockNumber</span> <span class="op">=</span> <span class="number">90</span> <span class="op">*</span> <span class="ident">DAYS</span>;
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MaximumReasonLength</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">16384</span>;
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">CuratorDepositMultiplier</span>: <span class="ident">Permill</span> <span class="op">=</span> <span class="ident">Permill::from_percent</span>(<span class="number">50</span>);
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">CuratorDepositMin</span>: <span class="ident">Balance</span> <span class="op">=</span> <span class="number">10</span> <span class="op">*</span> <span class="ident">CENTS</span>;
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">CuratorDepositMax</span>: <span class="ident">Balance</span> <span class="op">=</span> <span class="number">500</span> <span class="op">*</span> <span class="ident">CENTS</span>;
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">BountyValueMinimum</span>: <span class="ident">Balance</span> <span class="op">=</span> <span class="number">200</span> <span class="op">*</span> <span class="ident">CENTS</span>;
+}
+
 <span class="kw">impl</span> <span class="ident">pallet_bounties::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
 	<span class="kw">type</span> <span class="ident">BountyDepositBase</span> <span class="op">=</span> <span class="ident">BountyDepositBase</span>;
 	<span class="kw">type</span> <span class="ident">BountyDepositPayoutDelay</span> <span class="op">=</span> <span class="ident">BountyDepositPayoutDelay</span>;
 	<span class="kw">type</span> <span class="ident">BountyUpdatePeriod</span> <span class="op">=</span> <span class="ident">BountyUpdatePeriod</span>;
-	<span class="kw">type</span> <span class="ident">BountyCuratorDeposit</span> <span class="op">=</span> <span class="ident">BountyCuratorDeposit</span>;
+	<span class="kw">type</span> <span class="ident">CuratorDepositMultiplier</span> <span class="op">=</span> <span class="ident">CuratorDepositMultiplier</span>;
+	<span class="kw">type</span> <span class="ident">CuratorDepositMin</span> <span class="op">=</span> <span class="ident">CuratorDepositMin</span>;
+	<span class="kw">type</span> <span class="ident">CuratorDepositMax</span> <span class="op">=</span> <span class="ident">CuratorDepositMax</span>;
 	<span class="kw">type</span> <span class="ident">BountyValueMinimum</span> <span class="op">=</span> <span class="ident">BountyValueMinimum</span>;
 	<span class="kw">type</span> <span class="ident">ChildBountyManager</span> <span class="op">=</span> <span class="ident">ChildBounties</span>;
 	<span class="kw">type</span> <span class="ident">DataDepositPerByte</span> <span class="op">=</span> <span class="ident">DataDepositPerByte</span>;
@@ -2804,15 +2815,12 @@
 <span class="macro">parameter_types!</span> {
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MaxActiveChildBountyCount</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">100</span>;
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">ChildBountyValueMinimum</span>: <span class="ident">Balance</span> <span class="op">=</span> <span class="ident">BountyValueMinimum::get</span>() <span class="op">/</span> <span class="number">10</span>;
-	<span class="comment">// This will be 1% of the bounty value.</span>
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">ChildBountyCuratorDepositBase</span>: <span class="ident">Permill</span> <span class="op">=</span> <span class="ident">Permill::from_percent</span>(<span class="number">1</span>);
 }
 
 <span class="kw">impl</span> <span class="ident">pallet_child_bounties::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
 	<span class="kw">type</span> <span class="ident">Event</span> <span class="op">=</span> <span class="ident">Event</span>;
 	<span class="kw">type</span> <span class="ident">MaxActiveChildBountyCount</span> <span class="op">=</span> <span class="ident">MaxActiveChildBountyCount</span>;
 	<span class="kw">type</span> <span class="ident">ChildBountyValueMinimum</span> <span class="op">=</span> <span class="ident">ChildBountyValueMinimum</span>;
-	<span class="kw">type</span> <span class="ident">ChildBountyCuratorDepositBase</span> <span class="op">=</span> <span class="ident">ChildBountyCuratorDepositBase</span>;
 	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> <span class="ident">weights::pallet_child_bounties::WeightInfo</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>;
 }
 
