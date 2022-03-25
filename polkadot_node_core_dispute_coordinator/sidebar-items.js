@@ -1,1 +1,1 @@
-initSidebarItems({"enum":[["DisputeCoordinatorSubsystem","The disputes coordinator subsystem, abstracts `dummy` and `real` implementations."]],"struct":[["Config","Configuration for the dispute coordinator subsystem."]]});
+initSidebarItems({"struct":[["Config","Configuration for the dispute coordinator subsystem."],["DisputeCoordinatorSubsystem","An implementation of the dispute coordinator subsystem."]]});
