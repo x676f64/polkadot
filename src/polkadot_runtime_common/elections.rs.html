@@ -119,6 +119,20 @@
 <span id="119">119</span>
 <span id="120">120</span>
 <span id="121">121</span>
+<span id="122">122</span>
+<span id="123">123</span>
+<span id="124">124</span>
+<span id="125">125</span>
+<span id="126">126</span>
+<span id="127">127</span>
+<span id="128">128</span>
+<span id="129">129</span>
+<span id="130">130</span>
+<span id="131">131</span>
+<span id="132">132</span>
+<span id="133">133</span>
+<span id="134">134</span>
+<span id="135">135</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -137,7 +151,10 @@
 
 <span class="doccomment">//! Code for elections.</span>
 
-<span class="kw">use</span> <span class="ident">frame_election_provider_support::SortedListProvider</span>;
+<span class="kw">use</span> <span class="ident">frame_election_provider_support</span>::{
+	<span class="ident">onchain</span>::{<span class="ident">ExecutionConfig</span>, <span class="ident">UnboundedExecution</span>},
+	<span class="ident">ElectionDataProvider</span>, <span class="ident">SequentialPhragmen</span>, <span class="ident">SortedListProvider</span>,
+};
 <span class="kw">use</span> <span class="ident">sp_std</span>::{<span class="ident">boxed::Box</span>, <span class="ident">marker::PhantomData</span>};
 
 <span class="doccomment">/// Implements the weight types for the elections module and a specific</span>
@@ -185,9 +202,20 @@
 <span class="doccomment">/// The accuracy type used for genesis election provider;</span>
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">OnOnChainAccuracy</span> <span class="op">=</span> <span class="ident">sp_runtime::Perbill</span>;
 
+<span class="doccomment">/// Election Configuration parameters</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">OnChainSeqPhragmen</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">frame_system::Config</span>, <span class="ident">S</span><span class="op">&gt;</span>(<span class="ident">PhantomData</span><span class="op">&lt;</span>(<span class="ident">T</span>, <span class="ident">S</span>)<span class="op">&gt;</span>);
+<span class="kw">impl</span><span class="op">&lt;</span>
+		<span class="ident">T</span>: <span class="ident">frame_system::Config</span>,
+		<span class="ident">S</span>: <span class="ident">ElectionDataProvider</span><span class="op">&lt;</span><span class="ident">AccountId</span> <span class="op">=</span> <span class="ident">T::AccountId</span>, <span class="ident">BlockNumber</span> <span class="op">=</span> <span class="ident">T::BlockNumber</span><span class="op">&gt;</span>,
+	<span class="op">&gt;</span> <span class="ident">ExecutionConfig</span> <span class="kw">for</span> <span class="ident">OnChainSeqPhragmen</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">S</span><span class="op">&gt;</span>
+{
+	<span class="kw">type</span> <span class="ident">System</span> <span class="op">=</span> <span class="ident">T</span>;
+	<span class="kw">type</span> <span class="ident">Solver</span> <span class="op">=</span> <span class="ident">SequentialPhragmen</span><span class="op">&lt;</span><span class="ident">T::AccountId</span>, <span class="ident">OnOnChainAccuracy</span><span class="op">&gt;</span>;
+	<span class="kw">type</span> <span class="ident">DataProvider</span> <span class="op">=</span> <span class="ident">S</span>;
+}
+
 <span class="doccomment">/// The election provider of the genesis</span>
-<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">GenesisElectionOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span>
-	<span class="ident">frame_election_provider_support::onchain::OnChainSequentialPhragmen</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>;
+<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">GenesisElectionOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">S</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">UnboundedExecution</span><span class="op">&lt;</span><span class="ident">OnChainSeqPhragmen</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">S</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 
 <span class="doccomment">/// Implementation of `frame_election_provider_support::SortedListProvider` that updates the</span>
 <span class="doccomment">/// bags-list but uses [`pallet_staking::Nominators`] for `iter`. This is meant to be a transitionary</span>
