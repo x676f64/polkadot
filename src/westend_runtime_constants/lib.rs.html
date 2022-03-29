@@ -122,7 +122,6 @@
 <span id="122">122</span>
 <span id="123">123</span>
 <span id="124">124</span>
-<span id="125">125</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2019-2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -221,7 +220,7 @@
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">tests</span> {
 	<span class="kw">use</span> <span class="kw">super</span>::{
-		<span class="ident">currency</span>::{<span class="ident">CENTS</span>, <span class="ident">MILLICENTS</span>},
+		<span class="ident">currency</span>::{<span class="ident">CENTS</span>, <span class="ident">MILLICENTS</span>, <span class="ident">UNITS</span>},
 		<span class="ident">fee::WeightToFee</span>,
 	};
 	<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::weights::ExtrinsicBaseWeight</span>;
@@ -229,13 +228,12 @@
 	<span class="kw">use</span> <span class="ident">runtime_common::MAXIMUM_BLOCK_WEIGHT</span>;
 
 	<span class="attribute">#[<span class="ident">test</span>]</span>
-	<span class="comment">// This function tests that the fee for `MAXIMUM_BLOCK_WEIGHT` of weight is correct</span>
+	<span class="comment">// Test that the fee for `MAXIMUM_BLOCK_WEIGHT` of weight has sane bounds.</span>
 	<span class="kw">fn</span> <span class="ident">full_block_fee_is_correct</span>() {
-		<span class="comment">// A full block should cost 1,600 CENTS</span>
-		<span class="macro">println!</span>(<span class="string">&quot;Base: {}&quot;</span>, <span class="ident">ExtrinsicBaseWeight::get</span>());
-		<span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="ident">WeightToFee::calc</span>(<span class="kw-2">&amp;</span><span class="ident">MAXIMUM_BLOCK_WEIGHT</span>);
-		<span class="kw">let</span> <span class="ident">y</span> <span class="op">=</span> <span class="number">16</span> <span class="op">*</span> <span class="number">100</span> <span class="op">*</span> <span class="ident">CENTS</span>;
-		<span class="macro">assert!</span>(<span class="ident">x</span>.<span class="ident">max</span>(<span class="ident">y</span>) <span class="op">-</span> <span class="ident">x</span>.<span class="ident">min</span>(<span class="ident">y</span>) <span class="op">&lt;</span> <span class="ident">MILLICENTS</span>);
+		<span class="comment">// A full block should cost between 10 and 100 UNITS.</span>
+		<span class="kw">let</span> <span class="ident">full_block</span> <span class="op">=</span> <span class="ident">WeightToFee::calc</span>(<span class="kw-2">&amp;</span><span class="ident">MAXIMUM_BLOCK_WEIGHT</span>);
+		<span class="macro">assert!</span>(<span class="ident">full_block</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">10</span> <span class="op">*</span> <span class="ident">UNITS</span>);
+		<span class="macro">assert!</span>(<span class="ident">full_block</span> <span class="op">&lt;</span><span class="op">=</span> <span class="number">100</span> <span class="op">*</span> <span class="ident">UNITS</span>);
 	}
 
 	<span class="attribute">#[<span class="ident">test</span>]</span>

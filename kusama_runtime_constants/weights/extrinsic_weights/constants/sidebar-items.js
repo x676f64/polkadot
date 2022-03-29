@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["ExtrinsicBaseWeight","Executing a NO-OP `System::remarks` Extrinsic."]]});

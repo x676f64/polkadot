@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["constants",""]]});
+initSidebarItems({"struct":[["ExtrinsicBaseWeight","Time to execute a NO-OP extrinsic, for example `System::remark`. Calculated by multiplying the Average with `1` and adding `0`."]]});
