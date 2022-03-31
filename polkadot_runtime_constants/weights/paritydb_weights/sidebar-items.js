@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["constants",""]]});
+initSidebarItems({"mod":[["constants","Storage DB weights for the `Polkadot` runtime and `ParityDb`."]]});
