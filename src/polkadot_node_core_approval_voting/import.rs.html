@@ -1313,6 +1313,9 @@
 <span id="1313">1313</span>
 <span id="1314">1314</span>
 <span id="1315">1315</span>
+<span id="1316">1316</span>
+<span id="1317">1317</span>
+<span id="1318">1318</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -1821,18 +1824,6 @@
 			<span class="ident">children</span>: <span class="ident">Vec::new</span>(),
 		};
 
-		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">up_to</span>) <span class="op">=</span> <span class="ident">force_approve</span> {
-			<span class="macro">gum::debug!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="question-mark">?</span><span class="ident">block_hash</span>, <span class="ident">up_to</span>, <span class="string">&quot;Enacting force-approve&quot;</span>);
-
-			<span class="kw">let</span> <span class="ident">approved_hashes</span> <span class="op">=</span> <span class="ident"><span class="kw">crate</span>::ops::force_approve</span>(<span class="ident">db</span>, <span class="ident">block_hash</span>, <span class="ident">up_to</span>)
-				.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">SubsystemError::with_origin</span>(<span class="string">&quot;approval-voting&quot;</span>, <span class="ident">e</span>))<span class="question-mark">?</span>;
-
-			<span class="comment">// Notify chain-selection of all approved hashes.</span>
-			<span class="kw">for</span> <span class="ident">hash</span> <span class="kw">in</span> <span class="ident">approved_hashes</span> {
-				<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">ChainSelectionMessage::Approved</span>(<span class="ident">hash</span>)).<span class="kw">await</span>;
-			}
-		}
-
 		<span class="macro">gum::trace!</span>(
 			<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
 			<span class="question-mark">?</span><span class="ident">block_hash</span>,
@@ -1853,6 +1844,21 @@
 				)
 			})
 			.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">SubsystemError::with_origin</span>(<span class="string">&quot;approval-voting&quot;</span>, <span class="ident">e</span>))<span class="question-mark">?</span>;
+
+		<span class="comment">// force-approve needs to load the current block entry as well as all</span>
+		<span class="comment">// ancestors. this can only be done after writing the block entry above.</span>
+		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">up_to</span>) <span class="op">=</span> <span class="ident">force_approve</span> {
+			<span class="macro">gum::debug!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="question-mark">?</span><span class="ident">block_hash</span>, <span class="ident">up_to</span>, <span class="string">&quot;Enacting force-approve&quot;</span>);
+
+			<span class="kw">let</span> <span class="ident">approved_hashes</span> <span class="op">=</span> <span class="ident"><span class="kw">crate</span>::ops::force_approve</span>(<span class="ident">db</span>, <span class="ident">block_hash</span>, <span class="ident">up_to</span>)
+				.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">SubsystemError::with_origin</span>(<span class="string">&quot;approval-voting&quot;</span>, <span class="ident">e</span>))<span class="question-mark">?</span>;
+
+			<span class="comment">// Notify chain-selection of all approved hashes.</span>
+			<span class="kw">for</span> <span class="ident">hash</span> <span class="kw">in</span> <span class="ident">approved_hashes</span> {
+				<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">ChainSelectionMessage::Approved</span>(<span class="ident">hash</span>)).<span class="kw">await</span>;
+			}
+		}
+
 		<span class="ident">approval_meta</span>.<span class="ident">push</span>(<span class="ident">BlockApprovalMeta</span> {
 			<span class="ident">hash</span>: <span class="ident">block_hash</span>,
 			<span class="ident">number</span>: <span class="ident">block_header</span>.<span class="ident">number</span>,
