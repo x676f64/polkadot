@@ -144,6 +144,13 @@
 <span id="144">144</span>
 <span id="145">145</span>
 <span id="146">146</span>
+<span id="147">147</span>
+<span id="148">148</span>
+<span id="149">149</span>
+<span id="150">150</span>
+<span id="151">151</span>
+<span id="152">152</span>
+<span id="153">153</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -206,6 +213,13 @@
 		<span class="ident">about</span> <span class="op">=</span> <span class="string">&quot;Benchmark the execution time of historic blocks and compare it to their consumed weight.&quot;</span>
 	)]</span>
 	<span class="ident">BenchmarkBlock</span>(<span class="ident">frame_benchmarking_cli::BlockCmd</span>),
+
+	<span class="doccomment">/// Sub command for benchmarking the per-block and per-extrinsic execution overhead.</span>
+	<span class="attribute">#[<span class="ident">clap</span>(
+		<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;benchmark-overhead&quot;</span>,
+		<span class="ident">about</span> <span class="op">=</span> <span class="string">&quot;Benchmark the per-block and per-extrinsic execution overhead.&quot;</span>
+	)]</span>
+	<span class="ident">BenchmarkOverhead</span>(<span class="ident">frame_benchmarking_cli::OverheadCmd</span>),
 
 	<span class="doccomment">/// Sub command for benchmarking the storage speed.</span>
 	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;benchmark-storage&quot;</span>, <span class="ident">about</span> <span class="op">=</span> <span class="string">&quot;Benchmark storage speed.&quot;</span>)]</span>

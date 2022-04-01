@@ -1552,6 +1552,8 @@
 <span id="1552">1552</span>
 <span id="1553">1553</span>
 <span id="1554">1554</span>
+<span id="1555">1555</span>
+<span id="1556">1556</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -1631,6 +1633,8 @@
 <span class="kw">use</span> <span class="ident">bridge_runtime_common::messages</span>::{
 	<span class="ident">source::estimate_message_dispatch_and_delivery_fee</span>, <span class="ident">MessageBridge</span>,
 };
+
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">frame_system::Call</span> <span class="kw">as</span> <span class="ident">SystemCall</span>;
 
 <span class="doccomment">/// Constant values used within the runtime.</span>
 <span class="kw">use</span> <span class="ident">rococo_runtime_constants</span>::{<span class="ident">currency</span>::<span class="kw-2">*</span>, <span class="ident">fee</span>::<span class="kw-2">*</span>, <span class="ident">time</span>::<span class="kw-2">*</span>};
