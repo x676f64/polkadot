@@ -136,6 +136,14 @@
 <span id="136">136</span>
 <span id="137">137</span>
 <span id="138">138</span>
+<span id="139">139</span>
+<span id="140">140</span>
+<span id="141">141</span>
+<span id="142">142</span>
+<span id="143">143</span>
+<span id="144">144</span>
+<span id="145">145</span>
+<span id="146">146</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -192,6 +200,14 @@
 	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;benchmark&quot;</span>, <span class="ident">about</span> <span class="op">=</span> <span class="string">&quot;Benchmark runtime pallets.&quot;</span>)]</span>
 	<span class="ident">Benchmark</span>(<span class="ident">frame_benchmarking_cli::BenchmarkCmd</span>),
 
+	<span class="doccomment">/// Benchmark the execution time of historic blocks and compare it to their consumed weight.</span>
+	<span class="attribute">#[<span class="ident">clap</span>(
+		<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;benchmark-block&quot;</span>,
+		<span class="ident">about</span> <span class="op">=</span> <span class="string">&quot;Benchmark the execution time of historic blocks and compare it to their consumed weight.&quot;</span>
+	)]</span>
+	<span class="ident">BenchmarkBlock</span>(<span class="ident">frame_benchmarking_cli::BlockCmd</span>),
+
+	<span class="doccomment">/// Sub command for benchmarking the storage speed.</span>
 	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;benchmark-storage&quot;</span>, <span class="ident">about</span> <span class="op">=</span> <span class="string">&quot;Benchmark storage speed.&quot;</span>)]</span>
 	<span class="ident">BenchmarkStorage</span>(<span class="ident">frame_benchmarking_cli::StorageCmd</span>),
 
