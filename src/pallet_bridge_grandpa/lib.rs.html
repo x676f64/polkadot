@@ -1210,7 +1210,7 @@
 <span class="kw">use</span> <span class="ident">frame_system</span>::{<span class="ident">ensure_signed</span>, <span class="ident">RawOrigin</span>};
 <span class="kw">use</span> <span class="ident">sp_finality_grandpa</span>::{<span class="ident">ConsensusLog</span>, <span class="ident">GRANDPA_ENGINE_ID</span>};
 <span class="kw">use</span> <span class="ident">sp_runtime::traits</span>::{<span class="ident">BadOrigin</span>, <span class="ident">Header</span> <span class="kw">as</span> <span class="ident">HeaderT</span>, <span class="ident">Zero</span>};
-<span class="kw">use</span> <span class="ident">sp_std</span>::{<span class="ident">boxed::Box</span>, <span class="ident">convert::TryInto</span>};
+<span class="kw">use</span> <span class="ident">sp_std::boxed::Box</span>;
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">mock</span>;

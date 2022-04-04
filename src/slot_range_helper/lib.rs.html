@@ -312,7 +312,7 @@
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">parity_scale_codec</span>::{<span class="ident">Decode</span>, <span class="ident">Encode</span>};
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">paste</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sp_runtime::traits::CheckedSub</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sp_std</span>::{<span class="ident">convert::TryInto</span>, <span class="ident">ops::Add</span>, <span class="ident">result</span>};
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sp_std</span>::{<span class="ident">ops::Add</span>, <span class="ident">result</span>};
 
 <span class="doccomment">/// This macro generates a `SlotRange` enum of arbitrary length for use in the Slot Auction</span>
 <span class="doccomment">/// mechanism on Polkadot.</span>
@@ -458,7 +458,7 @@
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// For example: `SlotRange::new_bounded(1, 2, 3) == SlotRange::OneTwo`.</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_bounded</span><span class="op">&lt;</span>
-			<span class="ident">Index</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::Add</span><span class="op">&lt;</span><span class="ident">Output</span><span class="op">=</span><span class="ident">Index</span><span class="op">&gt;</span> <span class="op">+</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::CheckedSub</span> <span class="op">+</span> <span class="ident">Copy</span> <span class="op">+</span> <span class="ident">Ord</span> <span class="op">+</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> <span class="op">+</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::TryInto</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>
+			<span class="ident">Index</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::Add</span><span class="op">&lt;</span><span class="ident">Output</span><span class="op">=</span><span class="ident">Index</span><span class="op">&gt;</span> <span class="op">+</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">crate::CheckedSub</span> <span class="op">+</span> <span class="ident">Copy</span> <span class="op">+</span> <span class="ident">Ord</span> <span class="op">+</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">TryInto</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>
 		<span class="op">&gt;</span>(
 			<span class="ident">current</span>: <span class="ident">Index</span>,
 			<span class="ident">first</span>: <span class="ident">Index</span>,

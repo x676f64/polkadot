@@ -150,7 +150,6 @@
 <span id="150">150</span>
 <span id="151">151</span>
 <span id="152">152</span>
-<span id="153">153</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -188,7 +187,6 @@
 <span class="kw">impl</span> <span class="ident">Metrics</span> {
 	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">on_chunks_received</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">count</span>: <span class="ident">usize</span>) {
 		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">metrics</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span> {
-			<span class="kw">use</span> <span class="ident">core::convert::TryFrom</span> <span class="kw">as</span> <span class="kw">_</span>;
 			<span class="comment">// assume usize fits into u64</span>
 			<span class="kw">let</span> <span class="ident">by</span> <span class="op">=</span> <span class="ident">u64::try_from</span>(<span class="ident">count</span>).<span class="ident">unwrap_or_default</span>();
 			<span class="ident">metrics</span>.<span class="ident">received_availability_chunks_total</span>.<span class="ident">inc_by</span>(<span class="ident">by</span>);

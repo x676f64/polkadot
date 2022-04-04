@@ -405,9 +405,6 @@
 <span id="405">405</span>
 <span id="406">406</span>
 <span id="407">407</span>
-<span id="408">408</span>
-<span id="409">409</span>
-<span id="410">410</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -429,10 +426,7 @@
 <span class="kw">use</span> <span class="ident"><span class="kw">super</span>::MultiLocation</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::v1</span>::{<span class="ident">MultiAssetFilter</span>, <span class="ident">MultiAssets</span>, <span class="ident">WildMultiAsset</span>};
 <span class="kw">use</span> <span class="ident">alloc</span>::{<span class="ident">vec</span>, <span class="ident">vec::Vec</span>};
-<span class="kw">use</span> <span class="ident">core</span>::{
-	<span class="ident">convert</span>::{<span class="ident">TryFrom</span>, <span class="ident">TryInto</span>},
-	<span class="ident">result</span>,
-};
+<span class="kw">use</span> <span class="ident">core::result</span>;
 <span class="kw">use</span> <span class="ident">parity_scale_codec</span>::{<span class="self">self</span>, <span class="ident">Decode</span>, <span class="ident">Encode</span>};
 <span class="kw">use</span> <span class="ident">scale_info::TypeInfo</span>;
 

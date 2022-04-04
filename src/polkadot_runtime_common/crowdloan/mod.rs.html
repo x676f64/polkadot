@@ -2984,7 +2984,7 @@
 	<span class="kw">use</span> <span class="ident">sp_core::ed25519</span>;
 	<span class="kw">use</span> <span class="ident">sp_io::crypto</span>::{<span class="ident">ed25519_generate</span>, <span class="ident">ed25519_sign</span>};
 	<span class="kw">use</span> <span class="ident">sp_runtime</span>::{<span class="ident">MultiSignature</span>, <span class="ident">MultiSigner</span>};
-	<span class="kw">use</span> <span class="ident">sp_std</span>::{<span class="ident">convert::TryFrom</span>, <span class="ident">vec::Vec</span>};
+	<span class="kw">use</span> <span class="ident">sp_std::vec::Vec</span>;
 
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">create_ed25519_pubkey</span>(<span class="ident">seed</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>) -&gt; <span class="ident">MultiSigner</span> {
 		<span class="ident">ed25519_generate</span>(<span class="number">0</span>.<span class="ident">into</span>(), <span class="prelude-val">Some</span>(<span class="ident">seed</span>)).<span class="ident">into</span>()

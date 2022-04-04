@@ -1049,7 +1049,6 @@
 <span id="1049">1049</span>
 <span id="1050">1050</span>
 <span id="1051">1051</span>
-<span id="1052">1052</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020-2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -1069,7 +1068,7 @@
 <span class="doccomment">//! Cross-Consensus Message format data structures.</span>
 
 <span class="kw">use</span> <span class="ident"><span class="kw">super</span>::Junction</span>;
-<span class="kw">use</span> <span class="ident">core</span>::{<span class="ident">convert::TryFrom</span>, <span class="ident">mem</span>, <span class="ident">result</span>};
+<span class="kw">use</span> <span class="ident">core</span>::{<span class="ident">mem</span>, <span class="ident">result</span>};
 <span class="kw">use</span> <span class="ident">parity_scale_codec</span>::{<span class="ident">Decode</span>, <span class="ident">Encode</span>};
 <span class="kw">use</span> <span class="ident">scale_info::TypeInfo</span>;
 
@@ -2063,7 +2062,6 @@
 	<span class="attribute">#[<span class="ident">test</span>]</span>
 	<span class="kw">fn</span> <span class="ident">conversion_from_other_types_works</span>() {
 		<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::v0</span>;
-		<span class="kw">use</span> <span class="ident">core::convert::TryInto</span>;
 
 		<span class="kw">fn</span> <span class="ident">takes_multilocation</span><span class="op">&lt;</span><span class="ident">Arg</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">MultiLocation</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="ident">_arg</span>: <span class="ident">Arg</span>) {}
 

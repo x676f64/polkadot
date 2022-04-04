@@ -414,8 +414,6 @@
 <span id="414">414</span>
 <span id="415">415</span>
 <span id="416">416</span>
-<span id="417">417</span>
-<span id="418">418</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2018-2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -441,8 +439,6 @@
 <span class="doccomment">//! Each of n validators stores their piece of data. We assume `n = 3f + k`, `0 &lt; k ≤ 3`.</span>
 <span class="doccomment">//! f is the maximum number of faulty validators in the system.</span>
 <span class="doccomment">//! The data is coded so any f+1 chunks can be used to reconstruct the full data.</span>
-
-<span class="kw">use</span> <span class="ident">std::convert::TryFrom</span>;
 
 <span class="kw">use</span> <span class="ident">parity_scale_codec</span>::{<span class="ident">Decode</span>, <span class="ident">Encode</span>};
 <span class="kw">use</span> <span class="ident">polkadot_node_primitives</span>::{<span class="ident">AvailableData</span>, <span class="ident">Proof</span>};
