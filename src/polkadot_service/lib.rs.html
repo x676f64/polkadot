@@ -1359,6 +1359,7 @@
 <span id="1359">1359</span>
 <span id="1360">1360</span>
 <span id="1361">1361</span>
+<span id="1362">1362</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -1873,6 +1874,7 @@
 		<span class="kw">let</span> <span class="ident">transaction_pool</span> <span class="op">=</span> <span class="ident">transaction_pool</span>.<span class="ident">clone</span>();
 		<span class="kw">let</span> <span class="ident">select_chain</span> <span class="op">=</span> <span class="ident">select_chain</span>.<span class="ident">clone</span>();
 		<span class="kw">let</span> <span class="ident">chain_spec</span> <span class="op">=</span> <span class="ident">config</span>.<span class="ident">chain_spec</span>.<span class="ident">cloned_box</span>();
+		<span class="kw">let</span> <span class="ident">backend</span> <span class="op">=</span> <span class="ident">backend</span>.<span class="ident">clone</span>();
 
 		<span class="kw">move</span> <span class="op">|</span><span class="ident">deny_unsafe</span>,
 		      <span class="ident">subscription_executor</span>: <span class="ident">polkadot_rpc::SubscriptionTaskExecutor</span><span class="op">|</span>
@@ -1902,7 +1904,7 @@
 				},
 			};
 
-			<span class="ident">polkadot_rpc::create_full</span>(<span class="ident">deps</span>).<span class="ident">map_err</span>(<span class="ident">Into::into</span>)
+			<span class="ident">polkadot_rpc::create_full</span>(<span class="ident">deps</span>, <span class="ident">backend</span>.<span class="ident">clone</span>()).<span class="ident">map_err</span>(<span class="ident">Into::into</span>)
 		}
 	};
 
