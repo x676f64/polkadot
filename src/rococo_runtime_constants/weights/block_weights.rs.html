@@ -72,10 +72,6 @@
 <span id="72">72</span>
 <span id="73">73</span>
 <span id="74">74</span>
-<span id="75">75</span>
-<span id="76">76</span>
-<span id="77">77</span>
-<span id="78">78</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2022 Parity Technologies (UK) Ltd.</span>
@@ -94,7 +90,7 @@
 <span class="comment">// limitations under the License.</span>
 
 <span class="doccomment">//! THIS FILE WAS AUTO-GENERATED USING THE SUBSTRATE BENCHMARK CLI VERSION 4.0.0-dev</span>
-<span class="doccomment">//! DATE: 2022-03-24 (Y/M/D)</span>
+<span class="doccomment">//! DATE: 2022-04-03 (Y/M/D)</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! SHORT-NAME: `block`, LONG-NAME: `BlockExecution`, RUNTIME: `Development`</span>
 <span class="doccomment">//! WARMUPS: `10`, REPEAT: `100`</span>
@@ -104,16 +100,12 @@
 <span class="comment">// Executed Command:</span>
 <span class="comment">//   ./target/production/polkadot</span>
 <span class="comment">//   benchmark-overhead</span>
-<span class="comment">//   --chain</span>
-<span class="comment">//   rococo-dev</span>
+<span class="comment">//   --chain=rococo-dev</span>
 <span class="comment">//   --execution=wasm</span>
 <span class="comment">//   --wasm-execution=compiled</span>
-<span class="comment">//   --weight-path</span>
-<span class="comment">//   runtime/rococo/constants/src/weights/</span>
-<span class="comment">//   --warmup</span>
-<span class="comment">//   10</span>
-<span class="comment">//   --repeat</span>
-<span class="comment">//   100</span>
+<span class="comment">//   --weight-path=runtime/rococo/constants/src/weights/</span>
+<span class="comment">//   --warmup=10</span>
+<span class="comment">//   --repeat=100</span>
 
 <span class="kw">use</span> <span class="ident">frame_support</span>::{
 	<span class="ident">parameter_types</span>,
@@ -125,16 +117,16 @@
 	<span class="doccomment">/// Calculated by multiplying the *Average* with `1` and adding `0`.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Stats [NS]:</span>
-	<span class="doccomment">///   Min, Max: 3_063_393, 3_278_407</span>
-	<span class="doccomment">///   Average:  3_098_278</span>
-	<span class="doccomment">///   Median:   3_076_394</span>
-	<span class="doccomment">///   Std-Dev:  46158.3</span>
+	<span class="doccomment">///   Min, Max: 3_680_262, 4_938_714</span>
+	<span class="doccomment">///   Average:  3_745_959</span>
+	<span class="doccomment">///   Median:   3_725_848</span>
+	<span class="doccomment">///   Std-Dev:  126490.36</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Percentiles [NS]:</span>
-	<span class="doccomment">///   99th: 3_266_514</span>
-	<span class="doccomment">///   95th: 3_205_264</span>
-	<span class="doccomment">///   75th: 3_101_379</span>
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">BlockExecutionWeight</span>: <span class="ident">Weight</span> <span class="op">=</span> <span class="number">3_098_278</span> <span class="op">*</span> <span class="ident">WEIGHT_PER_NANOS</span>;
+	<span class="doccomment">///   99th: 3_855_334</span>
+	<span class="doccomment">///   95th: 3_815_093</span>
+	<span class="doccomment">///   75th: 3_762_125</span>
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">BlockExecutionWeight</span>: <span class="ident">Weight</span> <span class="op">=</span> <span class="number">3_745_959</span> <span class="op">*</span> <span class="ident">WEIGHT_PER_NANOS</span>;
 }
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
