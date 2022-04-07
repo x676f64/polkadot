@@ -2715,7 +2715,7 @@
 	<span class="ident">Runtime</span>,
 	<span class="ident">AllPalletsWithSystem</span>,
 	(
-		<span class="ident">CrowdloanIndexMigration</span>,
+		<span class="ident">SlotsCrowdloanIndexMigration</span>,
 		<span class="ident">pallet_staking::migrations::v9::InjectValidatorsIntoVoterList</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>,
 	),
 <span class="op">&gt;</span>;
@@ -2723,20 +2723,20 @@
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">SignedPayload</span> <span class="op">=</span> <span class="ident">generic::SignedPayload</span><span class="op">&lt;</span><span class="ident">Call</span>, <span class="ident">SignedExtra</span><span class="op">&gt;</span>;
 
 <span class="comment">// Migration for crowdloan pallet to use fund index for account generation.</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">CrowdloanIndexMigration</span>;
-<span class="kw">impl</span> <span class="ident">OnRuntimeUpgrade</span> <span class="kw">for</span> <span class="ident">CrowdloanIndexMigration</span> {
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SlotsCrowdloanIndexMigration</span>;
+<span class="kw">impl</span> <span class="ident">OnRuntimeUpgrade</span> <span class="kw">for</span> <span class="ident">SlotsCrowdloanIndexMigration</span> {
 	<span class="kw">fn</span> <span class="ident">on_runtime_upgrade</span>() -&gt; <span class="ident">frame_support::weights::Weight</span> {
-		<span class="ident">crowdloan::migration::crowdloan_index_migration::migrate</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>()
+		<span class="ident">slots::migration::slots_crowdloan_index_migration::migrate</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>()
 	}
 
 	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;try-runtime&quot;</span>)]</span>
 	<span class="kw">fn</span> <span class="ident">pre_upgrade</span>() -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span><span class="op">&gt;</span> {
-		<span class="ident">crowdloan::migration::crowdloan_index_migration::pre_migrate</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>()
+		<span class="ident">slots::migration::slots_crowdloan_index_migration::pre_migrate</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>()
 	}
 
 	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;try-runtime&quot;</span>)]</span>
 	<span class="kw">fn</span> <span class="ident">post_upgrade</span>() -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span><span class="op">&gt;</span> {
-		<span class="ident">crowdloan::migration::crowdloan_index_migration::post_migrate</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>()
+		<span class="ident">slots::migration::slots_crowdloan_index_migration::post_migrate</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>()
 	}
 }
 
