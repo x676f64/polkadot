@@ -1897,6 +1897,12 @@
 <span id="1897">1897</span>
 <span id="1898">1898</span>
 <span id="1899">1899</span>
+<span id="1900">1900</span>
+<span id="1901">1901</span>
+<span id="1902">1902</span>
+<span id="1903">1903</span>
+<span id="1904">1904</span>
+<span id="1905">1905</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -2074,6 +2080,12 @@
 	<span class="comment">//</span>
 	<span class="comment">//     &lt;Hrmp as Store&gt;::HrmpEgressChannelsIndex::prefix_hash();</span>
 	<span class="comment">//</span>
+
+	<span class="doccomment">/// The current epoch index.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// The storage item should be access as a `u64` encoded value.</span>
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">EPOCH_INDEX</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>] <span class="op">=</span>
+		<span class="kw-2">&amp;</span><span class="macro">hex!</span>[<span class="string">&quot;1cb6f36e027abb2091cfb5110ab5087f38316cbf8fa0da822a20ac1c55bf1be3&quot;</span>];
 
 	<span class="doccomment">/// The current relay chain block randomness</span>
 	<span class="doccomment">///</span>
