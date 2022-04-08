@@ -1316,6 +1316,31 @@
 <span id="1316">1316</span>
 <span id="1317">1317</span>
 <span id="1318">1318</span>
+<span id="1319">1319</span>
+<span id="1320">1320</span>
+<span id="1321">1321</span>
+<span id="1322">1322</span>
+<span id="1323">1323</span>
+<span id="1324">1324</span>
+<span id="1325">1325</span>
+<span id="1326">1326</span>
+<span id="1327">1327</span>
+<span id="1328">1328</span>
+<span id="1329">1329</span>
+<span id="1330">1330</span>
+<span id="1331">1331</span>
+<span id="1332">1332</span>
+<span id="1333">1333</span>
+<span id="1334">1334</span>
+<span id="1335">1335</span>
+<span id="1336">1336</span>
+<span id="1337">1337</span>
+<span id="1338">1338</span>
+<span id="1339">1339</span>
+<span id="1340">1340</span>
+<span id="1341">1341</span>
+<span id="1342">1342</span>
+<span id="1343">1343</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -1356,7 +1381,7 @@
 		<span class="ident">ApprovalDistributionMessage</span>, <span class="ident">ChainApiMessage</span>, <span class="ident">ChainSelectionMessage</span>, <span class="ident">RuntimeApiMessage</span>,
 		<span class="ident">RuntimeApiRequest</span>,
 	},
-	<span class="ident">overseer</span>, <span class="ident">SubsystemContext</span>, <span class="ident">SubsystemError</span>, <span class="ident">SubsystemResult</span>,
+	<span class="ident">overseer</span>, <span class="ident">RuntimeApiError</span>, <span class="ident">SubsystemContext</span>, <span class="ident">SubsystemError</span>, <span class="ident">SubsystemResult</span>,
 };
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem_util</span>::{
 	<span class="ident">determine_new_blocks</span>,
@@ -1384,6 +1409,7 @@
 
 <span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">State</span>, <span class="ident">LOG_TARGET</span>};
 
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="kw">struct</span> <span class="ident">ImportedBlockInfo</span> {
 	<span class="ident">included_candidates</span>: <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">CandidateHash</span>, <span class="ident">CandidateReceipt</span>, <span class="ident">CoreIndex</span>, <span class="ident">GroupIndex</span>)<span class="op">&gt;</span>,
 	<span class="ident">session_index</span>: <span class="ident">SessionIndex</span>,
@@ -1400,14 +1426,36 @@
 	<span class="ident">keystore</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">LocalKeystore</span>,
 }
 
-<span class="comment">// Computes information about the imported block. Returns `None` if the info couldn&#39;t be extracted -</span>
-<span class="comment">// failure to communicate with overseer,</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">thiserror::Error</span>)]</span>
+<span class="kw">enum</span> <span class="ident">ImportedBlockInfoError</span> {
+	<span class="comment">// NOTE: The `RuntimeApiError` already prints out which request it was,</span>
+	<span class="comment">//       so it&#39;s not necessary to include that here.</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="ident">transparent</span>)]</span>
+	<span class="ident">RuntimeError</span>(<span class="ident">RuntimeApiError</span>),
+
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;future cancalled while requesting {0}&quot;</span>)]</span>
+	<span class="ident">FutureCancelled</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>, <span class="ident">futures::channel::oneshot::Canceled</span>),
+
+	<span class="attribute">#[<span class="ident">error</span>(<span class="ident">transparent</span>)]</span>
+	<span class="ident">ApprovalError</span>(<span class="ident">approval_types::ApprovalError</span>),
+
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;block is from an ancient session&quot;</span>)]</span>
+	<span class="ident">BlockFromAncientSession</span>,
+
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;session info unavailable&quot;</span>)]</span>
+	<span class="ident">SessionInfoUnavailable</span>,
+
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;VRF info unavailable&quot;</span>)]</span>
+	<span class="ident">VrfInfoUnavailable</span>,
+}
+
+<span class="doccomment">/// Computes information about the imported block. Returns an error if the info couldn&#39;t be extracted.</span>
 <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">imported_block_info</span>(
 	<span class="ident">ctx</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> (<span class="kw">impl</span> <span class="ident">SubsystemContext</span> <span class="op">+</span> <span class="ident">overseer::SubsystemContext</span>),
 	<span class="ident">env</span>: <span class="ident">ImportedBlockInfoEnv</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>,
 	<span class="ident">block_hash</span>: <span class="ident">Hash</span>,
 	<span class="ident">block_header</span>: <span class="kw-2">&amp;</span><span class="ident">Header</span>,
-) -&gt; <span class="ident">SubsystemResult</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ImportedBlockInfo</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">ImportedBlockInfo</span>, <span class="ident">ImportedBlockInfoError</span><span class="op">&gt;</span> {
 	<span class="comment">// Ignore any runtime API errors - that means these blocks are old and finalized.</span>
 	<span class="comment">// Only unfinalized blocks factor into the approval voting process.</span>
 
@@ -1422,8 +1470,9 @@
 
 		<span class="kw">let</span> <span class="ident">events</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">CandidateEvent</span><span class="op">&gt;</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">c_rx</span>.<span class="kw">await</span> {
 			<span class="prelude-val">Ok</span>(<span class="prelude-val">Ok</span>(<span class="ident">events</span>)) =&gt; <span class="ident">events</span>,
-			<span class="prelude-val">Ok</span>(<span class="prelude-val">Err</span>(<span class="kw">_</span>)) =&gt; <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>),
-			<span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>),
+			<span class="prelude-val">Ok</span>(<span class="prelude-val">Err</span>(<span class="ident">error</span>)) =&gt; <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ImportedBlockInfoError::RuntimeError</span>(<span class="ident">error</span>)),
+			<span class="prelude-val">Err</span>(<span class="ident">error</span>) =&gt;
+				<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ImportedBlockInfoError::FutureCancelled</span>(<span class="string">&quot;CandidateEvents&quot;</span>, <span class="ident">error</span>)),
 		};
 
 		<span class="ident">events</span>
@@ -1448,8 +1497,9 @@
 
 		<span class="kw">let</span> <span class="ident">session_index</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">s_rx</span>.<span class="kw">await</span> {
 			<span class="prelude-val">Ok</span>(<span class="prelude-val">Ok</span>(<span class="ident">s</span>)) =&gt; <span class="ident">s</span>,
-			<span class="prelude-val">Ok</span>(<span class="prelude-val">Err</span>(<span class="kw">_</span>)) =&gt; <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>),
-			<span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>),
+			<span class="prelude-val">Ok</span>(<span class="prelude-val">Err</span>(<span class="ident">error</span>)) =&gt; <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ImportedBlockInfoError::RuntimeError</span>(<span class="ident">error</span>)),
+			<span class="prelude-val">Err</span>(<span class="ident">error</span>) =&gt;
+				<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ImportedBlockInfoError::FutureCancelled</span>(<span class="string">&quot;SessionIndexForChild&quot;</span>, <span class="ident">error</span>)),
 		};
 
 		<span class="kw">if</span> <span class="ident">env</span>
@@ -1464,7 +1514,7 @@
 				<span class="ident">session_index</span>
 			);
 
-			<span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
+			<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ImportedBlockInfoError::BlockFromAncientSession</span>)
 		}
 
 		<span class="ident">session_index</span>
@@ -1498,8 +1548,9 @@
 
 		<span class="kw">match</span> <span class="ident">s_rx</span>.<span class="kw">await</span> {
 			<span class="prelude-val">Ok</span>(<span class="prelude-val">Ok</span>(<span class="ident">s</span>)) =&gt; <span class="ident">s</span>,
-			<span class="prelude-val">Ok</span>(<span class="prelude-val">Err</span>(<span class="kw">_</span>)) =&gt; <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>),
-			<span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>),
+			<span class="prelude-val">Ok</span>(<span class="prelude-val">Err</span>(<span class="ident">error</span>)) =&gt; <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ImportedBlockInfoError::RuntimeError</span>(<span class="ident">error</span>)),
+			<span class="prelude-val">Err</span>(<span class="ident">error</span>) =&gt;
+				<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ImportedBlockInfoError::FutureCancelled</span>(<span class="string">&quot;CurrentBabeEpoch&quot;</span>, <span class="ident">error</span>)),
 		}
 	};
 
@@ -1509,7 +1560,7 @@
 		<span class="prelude-val">None</span> =&gt; {
 			<span class="macro">gum::debug!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="string">&quot;Session info unavailable for block {}&quot;</span>, <span class="ident">block_hash</span>,);
 
-			<span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
+			<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ImportedBlockInfoError::SessionInfoUnavailable</span>)
 		},
 	};
 
@@ -1538,7 +1589,7 @@
 
 						(<span class="ident">assignments</span>, <span class="ident">slot</span>, <span class="ident">relay_vrf</span>)
 					},
-					<span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>),
+					<span class="prelude-val">Err</span>(<span class="ident">error</span>) =&gt; <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ImportedBlockInfoError::ApprovalError</span>(<span class="ident">error</span>)),
 				}
 			},
 			<span class="prelude-val">None</span> =&gt; {
@@ -1548,7 +1599,7 @@
 					<span class="ident">block_hash</span>,
 				);
 
-				<span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
+				<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ImportedBlockInfoError::VrfInfoUnavailable</span>)
 			},
 		}
 	};
@@ -1582,7 +1633,7 @@
 			},
 		});
 
-	<span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">ImportedBlockInfo</span> {
+	<span class="prelude-val">Ok</span>(<span class="ident">ImportedBlockInfo</span> {
 		<span class="ident">included_candidates</span>,
 		<span class="ident">session_index</span>,
 		<span class="ident">assignments</span>,
@@ -1590,7 +1641,7 @@
 		<span class="ident">relay_vrf_story</span>,
 		<span class="ident">slot</span>,
 		<span class="ident">force_approve</span>,
-	}))
+	})
 }
 
 <span class="doccomment">/// Information about a block and imported candidates.</span>
@@ -1700,9 +1751,9 @@
 				<span class="ident">keystore</span>: <span class="kw-2">&amp;</span><span class="ident">state</span>.<span class="ident">keystore</span>,
 			};
 
-			<span class="kw">match</span> <span class="ident">imported_block_info</span>(<span class="ident">ctx</span>, <span class="ident">env</span>, <span class="ident">block_hash</span>, <span class="kw-2">&amp;</span><span class="ident">block_header</span>).<span class="kw">await</span><span class="question-mark">?</span> {
-				<span class="prelude-val">Some</span>(<span class="ident">i</span>) =&gt; <span class="ident">imported_blocks_and_info</span>.<span class="ident">push</span>((<span class="ident">block_hash</span>, <span class="ident">block_header</span>, <span class="ident">i</span>)),
-				<span class="prelude-val">None</span> =&gt; {
+			<span class="kw">match</span> <span class="ident">imported_block_info</span>(<span class="ident">ctx</span>, <span class="ident">env</span>, <span class="ident">block_hash</span>, <span class="kw-2">&amp;</span><span class="ident">block_header</span>).<span class="kw">await</span> {
+				<span class="prelude-val">Ok</span>(<span class="ident">i</span>) =&gt; <span class="ident">imported_blocks_and_info</span>.<span class="ident">push</span>((<span class="ident">block_hash</span>, <span class="ident">block_header</span>, <span class="ident">i</span>)),
+				<span class="prelude-val">Err</span>(<span class="ident">error</span>) =&gt; {
 					<span class="comment">// It&#39;s possible that we&#39;ve lost a race with finality.</span>
 					<span class="kw">let</span> (<span class="ident">tx</span>, <span class="ident">rx</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
 					<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">ChainApiMessage::FinalizedBlockHash</span>(
@@ -1721,8 +1772,9 @@
 						<span class="comment">// in the approval-db.</span>
 						<span class="macro">gum::warn!</span>(
 							<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
-							<span class="string">&quot;Unable to gather info about imported block {:?}. Skipping chain.&quot;</span>,
+							<span class="string">&quot;Skipping chain: unable to gather info about imported block {:?}: {}&quot;</span>,
 							(<span class="ident">block_hash</span>, <span class="ident">block_header</span>.<span class="ident">number</span>),
+							<span class="ident">error</span>,
 						);
 					}
 
@@ -2075,8 +2127,7 @@
 					<span class="ident">keystore</span>: <span class="kw-2">&amp;</span><span class="ident">LocalKeystore::in_memory</span>(),
 				};
 
-				<span class="kw">let</span> <span class="ident">info</span> <span class="op">=</span>
-					<span class="ident">imported_block_info</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ctx</span>, <span class="ident">env</span>, <span class="ident">hash</span>, <span class="kw-2">&amp;</span><span class="ident">header</span>).<span class="kw">await</span>.<span class="ident">unwrap</span>().<span class="ident">unwrap</span>();
+				<span class="kw">let</span> <span class="ident">info</span> <span class="op">=</span> <span class="ident">imported_block_info</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ctx</span>, <span class="ident">env</span>, <span class="ident">hash</span>, <span class="kw-2">&amp;</span><span class="ident">header</span>).<span class="kw">await</span>.<span class="ident">unwrap</span>();
 
 				<span class="macro">assert_eq!</span>(<span class="ident">info</span>.<span class="ident">included_candidates</span>, <span class="ident">included_candidates</span>);
 				<span class="macro">assert_eq!</span>(<span class="ident">info</span>.<span class="ident">session_index</span>, <span class="ident">session</span>);
@@ -2184,9 +2235,9 @@
 					<span class="ident">keystore</span>: <span class="kw-2">&amp;</span><span class="ident">LocalKeystore::in_memory</span>(),
 				};
 
-				<span class="kw">let</span> <span class="ident">info</span> <span class="op">=</span> <span class="ident">imported_block_info</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ctx</span>, <span class="ident">env</span>, <span class="ident">hash</span>, <span class="kw-2">&amp;</span><span class="ident">header</span>).<span class="kw">await</span>.<span class="ident">unwrap</span>();
+				<span class="kw">let</span> <span class="ident">info</span> <span class="op">=</span> <span class="ident">imported_block_info</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ctx</span>, <span class="ident">env</span>, <span class="ident">hash</span>, <span class="kw-2">&amp;</span><span class="ident">header</span>).<span class="kw">await</span>;
 
-				<span class="macro">assert!</span>(<span class="ident">info</span>.<span class="ident">is_none</span>());
+				<span class="macro">assert_matches!</span>(<span class="ident">info</span>, <span class="prelude-val">Err</span>(<span class="ident">ImportedBlockInfoError::VrfInfoUnavailable</span>));
 			})
 		};
 
@@ -2282,9 +2333,9 @@
 					<span class="ident">keystore</span>: <span class="kw-2">&amp;</span><span class="ident">LocalKeystore::in_memory</span>(),
 				};
 
-				<span class="kw">let</span> <span class="ident">info</span> <span class="op">=</span> <span class="ident">imported_block_info</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ctx</span>, <span class="ident">env</span>, <span class="ident">hash</span>, <span class="kw-2">&amp;</span><span class="ident">header</span>).<span class="kw">await</span>.<span class="ident">unwrap</span>();
+				<span class="kw">let</span> <span class="ident">info</span> <span class="op">=</span> <span class="ident">imported_block_info</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ctx</span>, <span class="ident">env</span>, <span class="ident">hash</span>, <span class="kw-2">&amp;</span><span class="ident">header</span>).<span class="kw">await</span>;
 
-				<span class="macro">assert!</span>(<span class="ident">info</span>.<span class="ident">is_none</span>());
+				<span class="macro">assert_matches!</span>(<span class="ident">info</span>, <span class="prelude-val">Err</span>(<span class="ident">ImportedBlockInfoError::BlockFromAncientSession</span>));
 			})
 		};
 
@@ -2381,8 +2432,7 @@
 					<span class="ident">keystore</span>: <span class="kw-2">&amp;</span><span class="ident">LocalKeystore::in_memory</span>(),
 				};
 
-				<span class="kw">let</span> <span class="ident">info</span> <span class="op">=</span>
-					<span class="ident">imported_block_info</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ctx</span>, <span class="ident">env</span>, <span class="ident">hash</span>, <span class="kw-2">&amp;</span><span class="ident">header</span>).<span class="kw">await</span>.<span class="ident">unwrap</span>().<span class="ident">unwrap</span>();
+				<span class="kw">let</span> <span class="ident">info</span> <span class="op">=</span> <span class="ident">imported_block_info</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ctx</span>, <span class="ident">env</span>, <span class="ident">hash</span>, <span class="kw-2">&amp;</span><span class="ident">header</span>).<span class="kw">await</span>.<span class="ident">unwrap</span>();
 
 				<span class="macro">assert_eq!</span>(<span class="ident">info</span>.<span class="ident">included_candidates</span>, <span class="ident">included_candidates</span>);
 				<span class="macro">assert_eq!</span>(<span class="ident">info</span>.<span class="ident">session_index</span>, <span class="ident">session</span>);
