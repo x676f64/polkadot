@@ -2290,7 +2290,7 @@
 	}
 
 	<span class="attribute">#[<span class="ident">test</span>]</span>
-	<span class="kw">fn</span> <span class="ident">imported_block_info_fails_if_unknown_session</span>() {
+	<span class="kw">fn</span> <span class="ident">imported_block_info_fails_if_ancient_session</span>() {
 		<span class="kw">let</span> <span class="ident">pool</span> <span class="op">=</span> <span class="ident">TaskExecutor::new</span>();
 		<span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">ctx</span>, <span class="kw-2">mut</span> <span class="ident">handle</span>) <span class="op">=</span> <span class="ident">make_subsystem_context</span>::<span class="op">&lt;</span>(), <span class="kw">_</span><span class="op">&gt;</span>(<span class="ident">pool</span>.<span class="ident">clone</span>());
 
