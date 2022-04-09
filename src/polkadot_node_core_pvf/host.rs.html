@@ -1158,23 +1158,6 @@
 <span id="1158">1158</span>
 <span id="1159">1159</span>
 <span id="1160">1160</span>
-<span id="1161">1161</span>
-<span id="1162">1162</span>
-<span id="1163">1163</span>
-<span id="1164">1164</span>
-<span id="1165">1165</span>
-<span id="1166">1166</span>
-<span id="1167">1167</span>
-<span id="1168">1168</span>
-<span id="1169">1169</span>
-<span id="1170">1170</span>
-<span id="1171">1171</span>
-<span id="1172">1172</span>
-<span id="1173">1173</span>
-<span id="1174">1174</span>
-<span id="1175">1175</span>
-<span id="1176">1176</span>
-<span id="1177">1177</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -1378,33 +1361,36 @@
 	<span class="kw">let</span> (<span class="ident">to_sweeper_tx</span>, <span class="ident">to_sweeper_rx</span>) <span class="op">=</span> <span class="ident">mpsc::channel</span>(<span class="number">100</span>);
 	<span class="kw">let</span> <span class="ident">run_sweeper</span> <span class="op">=</span> <span class="ident">sweeper_task</span>(<span class="ident">to_sweeper_rx</span>);
 
-	<span class="kw">let</span> <span class="ident">run</span> <span class="op">=</span> <span class="kw">async</span> <span class="kw">move</span> {
+	<span class="kw">let</span> <span class="ident">run_host</span> <span class="op">=</span> <span class="kw">async</span> <span class="kw">move</span> {
 		<span class="kw">let</span> <span class="ident">artifacts</span> <span class="op">=</span> <span class="ident">Artifacts::new</span>(<span class="kw-2">&amp;</span><span class="ident">config</span>.<span class="ident">cache_path</span>).<span class="kw">await</span>;
 
-		<span class="macro">futures::pin_mut!</span>(<span class="ident">run_prepare_queue</span>, <span class="ident">run_prepare_pool</span>, <span class="ident">run_execute_queue</span>, <span class="ident">run_sweeper</span>);
-
-		<span class="ident">run</span>(
-			<span class="ident">Inner</span> {
-				<span class="ident">cache_path</span>: <span class="ident">config</span>.<span class="ident">cache_path</span>,
-				<span class="ident">cleanup_pulse_interval</span>: <span class="ident">Duration::from_secs</span>(<span class="number">3600</span>),
-				<span class="ident">artifact_ttl</span>: <span class="ident">Duration::from_secs</span>(<span class="number">3600</span> <span class="op">*</span> <span class="number">24</span>),
-				<span class="ident">artifacts</span>,
-				<span class="ident">to_host_rx</span>,
-				<span class="ident">to_prepare_queue_tx</span>,
-				<span class="ident">from_prepare_queue_rx</span>,
-				<span class="ident">to_execute_queue_tx</span>,
-				<span class="ident">to_sweeper_tx</span>,
-				<span class="ident">awaiting_prepare</span>: <span class="ident">AwaitingPrepare::default</span>(),
-			},
-			<span class="ident">run_prepare_pool</span>,
-			<span class="ident">run_prepare_queue</span>,
-			<span class="ident">run_execute_queue</span>,
-			<span class="ident">run_sweeper</span>,
-		)
+		<span class="ident">run</span>(<span class="ident">Inner</span> {
+			<span class="ident">cache_path</span>: <span class="ident">config</span>.<span class="ident">cache_path</span>,
+			<span class="ident">cleanup_pulse_interval</span>: <span class="ident">Duration::from_secs</span>(<span class="number">3600</span>),
+			<span class="ident">artifact_ttl</span>: <span class="ident">Duration::from_secs</span>(<span class="number">3600</span> <span class="op">*</span> <span class="number">24</span>),
+			<span class="ident">artifacts</span>,
+			<span class="ident">to_host_rx</span>,
+			<span class="ident">to_prepare_queue_tx</span>,
+			<span class="ident">from_prepare_queue_rx</span>,
+			<span class="ident">to_execute_queue_tx</span>,
+			<span class="ident">to_sweeper_tx</span>,
+			<span class="ident">awaiting_prepare</span>: <span class="ident">AwaitingPrepare::default</span>(),
+		})
 		.<span class="kw">await</span>
 	};
 
-	(<span class="ident">validation_host</span>, <span class="ident">run</span>)
+	<span class="kw">let</span> <span class="ident">task</span> <span class="op">=</span> <span class="kw">async</span> <span class="kw">move</span> {
+		<span class="comment">// Bundle the sub-components&#39; tasks together into a single future.</span>
+		<span class="macro">futures::select!</span> {
+			<span class="kw">_</span> <span class="op">=</span> <span class="ident">run_host</span>.<span class="ident">fuse</span>() =&gt; {},
+			<span class="kw">_</span> <span class="op">=</span> <span class="ident">run_prepare_queue</span>.<span class="ident">fuse</span>() =&gt; {},
+			<span class="kw">_</span> <span class="op">=</span> <span class="ident">run_prepare_pool</span>.<span class="ident">fuse</span>() =&gt; {},
+			<span class="kw">_</span> <span class="op">=</span> <span class="ident">run_execute_queue</span>.<span class="ident">fuse</span>() =&gt; {},
+			<span class="kw">_</span> <span class="op">=</span> <span class="ident">run_sweeper</span>.<span class="ident">fuse</span>() =&gt; {},
+		};
+	};
+
+	(<span class="ident">validation_host</span>, <span class="ident">task</span>)
 }
 
 <span class="doccomment">/// An execution request that should execute the PVF (known in the context) and send the results</span>
@@ -1474,15 +1460,18 @@
 		<span class="kw-2">mut</span> <span class="ident">to_sweeper_tx</span>,
 		<span class="kw-2">mut</span> <span class="ident">awaiting_prepare</span>,
 	}: <span class="ident">Inner</span>,
-	<span class="ident">prepare_pool</span>: <span class="kw">impl</span> <span class="ident">Future</span><span class="op">&lt;</span><span class="ident">Output</span> <span class="op">=</span> ()<span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Unpin</span>,
-	<span class="ident">prepare_queue</span>: <span class="kw">impl</span> <span class="ident">Future</span><span class="op">&lt;</span><span class="ident">Output</span> <span class="op">=</span> ()<span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Unpin</span>,
-	<span class="ident">execute_queue</span>: <span class="kw">impl</span> <span class="ident">Future</span><span class="op">&lt;</span><span class="ident">Output</span> <span class="op">=</span> ()<span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Unpin</span>,
-	<span class="ident">sweeper</span>: <span class="kw">impl</span> <span class="ident">Future</span><span class="op">&lt;</span><span class="ident">Output</span> <span class="op">=</span> ()<span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Unpin</span>,
 ) {
 	<span class="macro">macro_rules!</span> <span class="ident">break_if_fatal</span> {
 		(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">expr</span>:<span class="ident">expr</span>) =&gt; {
 			<span class="kw">match</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">expr</span> {
-				<span class="prelude-val">Err</span>(<span class="ident">Fatal</span>) =&gt; <span class="kw">break</span>,
+				<span class="prelude-val">Err</span>(<span class="ident">Fatal</span>) =&gt; {
+					<span class="macro">gum::error!</span>(
+						<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
+						<span class="string">&quot;Fatal error occurred, terminating the host. Line: {}&quot;</span>,
+						<span class="macro">line!</span>(),
+					);
+					<span class="kw">break</span>
+				},
 				<span class="prelude-val">Ok</span>(<span class="ident">v</span>) =&gt; <span class="ident">v</span>,
 			}
 		};
@@ -1494,31 +1483,9 @@
 	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">to_host_rx</span> <span class="op">=</span> <span class="ident">to_host_rx</span>.<span class="ident">fuse</span>();
 	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">from_prepare_queue_rx</span> <span class="op">=</span> <span class="ident">from_prepare_queue_rx</span>.<span class="ident">fuse</span>();
 
-	<span class="comment">// Make sure that the task-futures are fused.</span>
-	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">prepare_queue</span> <span class="op">=</span> <span class="ident">prepare_queue</span>.<span class="ident">fuse</span>();
-	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">prepare_pool</span> <span class="op">=</span> <span class="ident">prepare_pool</span>.<span class="ident">fuse</span>();
-	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">execute_queue</span> <span class="op">=</span> <span class="ident">execute_queue</span>.<span class="ident">fuse</span>();
-	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sweeper</span> <span class="op">=</span> <span class="ident">sweeper</span>.<span class="ident">fuse</span>();
-
 	<span class="kw">loop</span> {
 		<span class="comment">// biased to make it behave deterministically for tests.</span>
 		<span class="macro">futures::select_biased!</span> {
-			<span class="kw">_</span> <span class="op">=</span> <span class="ident">prepare_queue</span> =&gt; {
-				<span class="macro">never!</span>(<span class="string">&quot;prepare_pool: long-running task never concludes; qed&quot;</span>);
-				<span class="kw">break</span>;
-			},
-			<span class="kw">_</span> <span class="op">=</span> <span class="ident">prepare_pool</span> =&gt; {
-				<span class="macro">never!</span>(<span class="string">&quot;prepare_pool: long-running task never concludes; qed&quot;</span>);
-				<span class="kw">break</span>;
-			},
-			<span class="kw">_</span> <span class="op">=</span> <span class="ident">execute_queue</span> =&gt; {
-				<span class="macro">never!</span>(<span class="string">&quot;execute_queue: long-running task never concludes; qed&quot;</span>);
-				<span class="kw">break</span>;
-			},
-			<span class="kw">_</span> <span class="op">=</span> <span class="ident">sweeper</span> =&gt; {
-				<span class="macro">never!</span>(<span class="string">&quot;sweeper: long-running task never concludes; qed&quot;</span>);
-				<span class="kw">break</span>;
-			},
 			() <span class="op">=</span> <span class="ident">cleanup_pulse</span>.<span class="ident">select_next_some</span>() =&gt; {
 				<span class="comment">// `select_next_some` because we don&#39;t expect this to fail, but if it does, we</span>
 				<span class="comment">// still don&#39;t fail. The tradeoff is that the compiled cache will start growing</span>
@@ -1533,7 +1500,14 @@
 				).<span class="kw">await</span>);
 			},
 			<span class="ident">to_host</span> <span class="op">=</span> <span class="ident">to_host_rx</span>.<span class="ident">next</span>() =&gt; {
-				<span class="kw">let</span> <span class="ident">to_host</span> <span class="op">=</span> <span class="macro">break_if_fatal!</span>(<span class="ident">to_host</span>.<span class="ident">ok_or</span>(<span class="ident">Fatal</span>));
+				<span class="kw">let</span> <span class="ident">to_host</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">to_host</span> {
+					<span class="prelude-val">None</span> =&gt; {
+						<span class="comment">// The sending half of the channel has been closed, meaning the</span>
+						<span class="comment">// `ValidationHost` struct was dropped. Shutting down gracefully.</span>
+						<span class="kw">break</span>;
+					},
+					<span class="prelude-val">Some</span>(<span class="ident">to_host</span>) =&gt; <span class="ident">to_host</span>,
+				};
 
 				<span class="macro">break_if_fatal!</span>(<span class="ident">handle_to_host</span>(
 					<span class="kw-2">&amp;</span><span class="ident">cache_path</span>,
@@ -1938,26 +1912,18 @@
 			<span class="kw">let</span> (<span class="ident">to_execute_queue_tx</span>, <span class="ident">to_execute_queue_rx</span>) <span class="op">=</span> <span class="ident">mpsc::channel</span>(<span class="number">10</span>);
 			<span class="kw">let</span> (<span class="ident">to_sweeper_tx</span>, <span class="ident">to_sweeper_rx</span>) <span class="op">=</span> <span class="ident">mpsc::channel</span>(<span class="number">10</span>);
 
-			<span class="kw">let</span> <span class="ident">mk_dummy_loop</span> <span class="op">=</span> <span class="op">|</span><span class="op">|</span> <span class="ident">std::future::pending</span>().<span class="ident">boxed</span>();
-
-			<span class="kw">let</span> <span class="ident">run</span> <span class="op">=</span> <span class="ident">run</span>(
-				<span class="ident">Inner</span> {
-					<span class="ident">cache_path</span>,
-					<span class="ident">cleanup_pulse_interval</span>,
-					<span class="ident">artifact_ttl</span>,
-					<span class="ident">artifacts</span>,
-					<span class="ident">to_host_rx</span>,
-					<span class="ident">to_prepare_queue_tx</span>,
-					<span class="ident">from_prepare_queue_rx</span>,
-					<span class="ident">to_execute_queue_tx</span>,
-					<span class="ident">to_sweeper_tx</span>,
-					<span class="ident">awaiting_prepare</span>: <span class="ident">AwaitingPrepare::default</span>(),
-				},
-				<span class="ident">mk_dummy_loop</span>(),
-				<span class="ident">mk_dummy_loop</span>(),
-				<span class="ident">mk_dummy_loop</span>(),
-				<span class="ident">mk_dummy_loop</span>(),
-			)
+			<span class="kw">let</span> <span class="ident">run</span> <span class="op">=</span> <span class="ident">run</span>(<span class="ident">Inner</span> {
+				<span class="ident">cache_path</span>,
+				<span class="ident">cleanup_pulse_interval</span>,
+				<span class="ident">artifact_ttl</span>,
+				<span class="ident">artifacts</span>,
+				<span class="ident">to_host_rx</span>,
+				<span class="ident">to_prepare_queue_tx</span>,
+				<span class="ident">from_prepare_queue_rx</span>,
+				<span class="ident">to_execute_queue_tx</span>,
+				<span class="ident">to_sweeper_tx</span>,
+				<span class="ident">awaiting_prepare</span>: <span class="ident">AwaitingPrepare::default</span>(),
+			})
 			.<span class="ident">boxed</span>();
 
 			<span class="self">Self</span> {
