@@ -1,4 +1,9 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `runtime&#x2F;parachains&#x2F;src&#x2F;paras&#x2F;mod.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>mod.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../polkadot_runtime_parachains/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">   1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `runtime/parachains/src/paras/mod.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>mod.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><script defer src="../../../main.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script>
+    <noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../../polkadot_runtime_parachains/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div>
+        </a><h2 class="location"></h2>
+    </nav>
+    <nav class="sidebar"><a class="sidebar-logo" href="../../../polkadot_runtime_parachains/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div>
+        </a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../../polkadot_runtime_parachains/index.html"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></a><nav class="sub"><div class="theme-picker hidden"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="22" height="22" alt="Pick another theme!" src="../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../wheel.svg"></a></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">   1</span>
 <span id="2">   2</span>
 <span id="3">   3</span>
 <span id="4">   4</span>
@@ -2302,7 +2307,7 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">N</span>: <span class="ident">Ord</span> <span class="op">+</span> <span class="ident">Copy</span> <span class="op">+</span> <span class="ident">PartialEq</span><span class="op">&gt;</span> <span class="ident">ParaPastCodeMeta</span><span class="op">&lt;</span><span class="ident">N</span><span class="op">&gt;</span> {
 	<span class="comment">// note a replacement has occurred at a given block number.</span>
-	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">note_replacement</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">expected_at</span>: <span class="ident">N</span>, <span class="ident">activated_at</span>: <span class="ident">N</span>) {
+	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">note_replacement</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">expected_at</span>: <span class="ident">N</span>, <span class="ident">activated_at</span>: <span class="ident">N</span>) {
 		<span class="self">self</span>.<span class="ident">upgrade_times</span>.<span class="ident">push</span>(<span class="ident">ReplacementTimes</span> { <span class="ident">expected_at</span>, <span class="ident">activated_at</span> })
 	}
 
@@ -2425,13 +2430,13 @@
 
 	<span class="doccomment">/// Resets all votes and resizes the votes vectors corresponding to the number of validators</span>
 	<span class="doccomment">/// in the new session.</span>
-	<span class="kw">fn</span> <span class="ident">reinitialize_ballots</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">n_validators</span>: <span class="ident">usize</span>) {
-		<span class="kw">let</span> <span class="ident">clear_and_resize</span> <span class="op">=</span> <span class="op">|</span><span class="ident">v</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">BitVec</span><span class="op">&lt;</span><span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span><span class="op">|</span> {
+	<span class="kw">fn</span> <span class="ident">reinitialize_ballots</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">n_validators</span>: <span class="ident">usize</span>) {
+		<span class="kw">let</span> <span class="ident">clear_and_resize</span> <span class="op">=</span> <span class="op">|</span><span class="ident">v</span>: <span class="kw-2">&amp;mut</span> <span class="ident">BitVec</span><span class="op">&lt;</span><span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span><span class="op">|</span> {
 			<span class="ident">v</span>.<span class="ident">clear</span>();
 			<span class="ident">v</span>.<span class="ident">resize</span>(<span class="ident">n_validators</span>, <span class="bool-val">false</span>);
 		};
-		<span class="ident">clear_and_resize</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">votes_accept</span>);
-		<span class="ident">clear_and_resize</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">votes_reject</span>);
+		<span class="ident">clear_and_resize</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">votes_accept</span>);
+		<span class="ident">clear_and_resize</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">votes_reject</span>);
 	}
 
 	<span class="doccomment">/// Returns `Some(true)` if the validator at the given index has already cast their vote within</span>
@@ -2769,7 +2774,7 @@
 				<span class="kw">if</span> <span class="ident">genesis_args</span>.<span class="ident">validation_code</span>.<span class="number">0</span>.<span class="ident">is_empty</span>() {
 					<span class="macro">panic!</span>(<span class="string">&quot;empty validation code is not allowed in genesis&quot;</span>);
 				}
-				<span class="ident">Pallet</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::initialize_para_now</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">parachains</span>, <span class="kw-2">*</span><span class="ident">id</span>, <span class="ident">genesis_args</span>);
+				<span class="ident">Pallet</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::initialize_para_now</span>(<span class="kw-2">&amp;mut</span> <span class="ident">parachains</span>, <span class="kw-2">*</span><span class="ident">id</span>, <span class="ident">genesis_args</span>);
 			}
 			<span class="comment">// parachains are flushed on drop</span>
 		}
@@ -3173,7 +3178,7 @@
 				},
 				<span class="prelude-val">Some</span>(<span class="ident">ParaLifecycle::Onboarding</span>) =&gt; {
 					<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">genesis_data</span>) <span class="op">=</span> <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">Store</span><span class="op">&gt;</span><span class="ident">::UpcomingParasGenesis::take</span>(<span class="kw-2">&amp;</span><span class="ident">para</span>) {
-						<span class="ident"><span class="self">Self</span>::initialize_para_now</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">parachains</span>, <span class="ident">para</span>, <span class="kw-2">&amp;</span><span class="ident">genesis_data</span>);
+						<span class="ident"><span class="self">Self</span>::initialize_para_now</span>(<span class="kw-2">&amp;mut</span> <span class="ident">parachains</span>, <span class="ident">para</span>, <span class="kw-2">&amp;</span><span class="ident">genesis_data</span>);
 					}
 				},
 				<span class="comment">// Upgrade a parathread to a parachain</span>
@@ -3281,7 +3286,7 @@
 		<span class="kw">let</span> <span class="ident">pruning_height</span> <span class="op">=</span> <span class="ident">now</span> <span class="op">-</span> (<span class="ident">code_retention_period</span> <span class="op">+</span> <span class="ident">One::one</span>());
 
 		<span class="kw">let</span> <span class="ident">pruning_tasks_done</span> <span class="op">=</span> <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">Store</span><span class="op">&gt;</span><span class="ident">::PastCodePruning::mutate</span>(
-			<span class="op">|</span><span class="ident">pruning_tasks</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="kw">_</span>, <span class="ident">T::BlockNumber</span>)<span class="op">&gt;</span><span class="op">|</span> {
+			<span class="op">|</span><span class="ident">pruning_tasks</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="kw">_</span>, <span class="ident">T::BlockNumber</span>)<span class="op">&gt;</span><span class="op">|</span> {
 				<span class="kw">let</span> (<span class="ident">pruning_tasks_done</span>, <span class="ident">pruning_tasks_to_do</span>) <span class="op">=</span> {
 					<span class="comment">// find all past code that has just exited the pruning window.</span>
 					<span class="kw">let</span> <span class="ident">up_to_idx</span> <span class="op">=</span>
@@ -3334,7 +3339,7 @@
 		<span class="comment">// account weight for `UpcomingUpgrades::mutate`.</span>
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">weight</span> <span class="op">=</span> <span class="ident">T::DbWeight::get</span>().<span class="ident">reads_writes</span>(<span class="number">1</span>, <span class="number">1</span>);
 		<span class="kw">let</span> <span class="ident">upgrades_signaled</span> <span class="op">=</span> <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">Store</span><span class="op">&gt;</span><span class="ident">::UpcomingUpgrades::mutate</span>(
-			<span class="op">|</span><span class="ident">upcoming_upgrades</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">ParaId</span>, <span class="ident">T::BlockNumber</span>)<span class="op">&gt;</span><span class="op">|</span> {
+			<span class="op">|</span><span class="ident">upcoming_upgrades</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">ParaId</span>, <span class="ident">T::BlockNumber</span>)<span class="op">&gt;</span><span class="op">|</span> {
 				<span class="kw">let</span> <span class="ident">num</span> <span class="op">=</span> <span class="ident">upcoming_upgrades</span>.<span class="ident">iter</span>().<span class="ident">take_while</span>(<span class="op">|</span><span class="kw-2">&amp;</span>(<span class="kw">_</span>, <span class="ident">at</span>)<span class="op">|</span> <span class="ident">at</span> <span class="op">&lt;</span><span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">now</span>).<span class="ident">count</span>();
 				<span class="kw">for</span> (<span class="ident">para</span>, <span class="kw">_</span>) <span class="kw">in</span> <span class="ident">upcoming_upgrades</span>.<span class="ident">drain</span>(..<span class="ident">num</span>) {
 					<span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">Store</span><span class="op">&gt;</span><span class="ident">::UpgradeGoAheadSignal::insert</span>(<span class="kw-2">&amp;</span><span class="ident">para</span>, <span class="ident">UpgradeGoAhead::GoAhead</span>);
@@ -3365,7 +3370,7 @@
 	<span class="doccomment">/// See `process_scheduled_upgrade_changes` for more details.</span>
 	<span class="kw">fn</span> <span class="ident">process_scheduled_upgrade_cooldowns</span>(<span class="ident">now</span>: <span class="ident">T::BlockNumber</span>) {
 		<span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">Store</span><span class="op">&gt;</span><span class="ident">::UpgradeCooldowns::mutate</span>(
-			<span class="op">|</span><span class="ident">upgrade_cooldowns</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">ParaId</span>, <span class="ident">T::BlockNumber</span>)<span class="op">&gt;</span><span class="op">|</span> {
+			<span class="op">|</span><span class="ident">upgrade_cooldowns</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">ParaId</span>, <span class="ident">T::BlockNumber</span>)<span class="op">&gt;</span><span class="op">|</span> {
 				<span class="kw">for</span> <span class="kw-2">&amp;</span>(<span class="ident">para</span>, <span class="kw">_</span>) <span class="kw">in</span> <span class="ident">upgrade_cooldowns</span>.<span class="ident">iter</span>().<span class="ident">take_while</span>(<span class="op">|</span><span class="kw-2">&amp;</span>(<span class="kw">_</span>, <span class="ident">at</span>)<span class="op">|</span> <span class="ident">at</span> <span class="op">&lt;</span><span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">now</span>) {
 					<span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">Store</span><span class="op">&gt;</span><span class="ident">::UpgradeRestrictionSignal::remove</span>(<span class="kw-2">&amp;</span><span class="ident">para</span>);
 				}
@@ -3610,7 +3615,7 @@
 		<span class="comment">//</span>
 		<span class="comment">// [soaking issue]: https://github.com/paritytech/polkadot/issues/3918</span>
 		<span class="kw">let</span> <span class="ident">validation_code</span> <span class="op">=</span>
-			<span class="ident">mem::replace</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">genesis_data</span>.<span class="ident">validation_code</span>, <span class="ident">ValidationCode</span>(<span class="ident">Vec::new</span>()));
+			<span class="ident">mem::replace</span>(<span class="kw-2">&amp;mut</span> <span class="ident">genesis_data</span>.<span class="ident">validation_code</span>, <span class="ident">ValidationCode</span>(<span class="ident">Vec::new</span>()));
 		<span class="ident">UpcomingParasGenesis</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="kw-2">&amp;</span><span class="ident">id</span>, <span class="ident">genesis_data</span>);
 		<span class="kw">let</span> <span class="ident">validation_code_hash</span> <span class="op">=</span> <span class="ident">validation_code</span>.<span class="ident">hash</span>();
 		<span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">Store</span><span class="op">&gt;</span><span class="ident">::CurrentCodeHash::insert</span>(<span class="kw-2">&amp;</span><span class="ident">id</span>, <span class="ident">validation_code_hash</span>);
@@ -4050,7 +4055,7 @@
 
 	<span class="doccomment">/// A low-level function to eagerly initialize a given para.</span>
 	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">initialize_para_now</span>(
-		<span class="ident">parachains</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ParachainsCache</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+		<span class="ident">parachains</span>: <span class="kw-2">&amp;mut</span> <span class="ident">ParachainsCache</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 		<span class="ident">id</span>: <span class="ident">ParaId</span>,
 		<span class="ident">genesis_data</span>: <span class="kw-2">&amp;</span><span class="ident">ParaGenesisArgs</span>,
 	) {
@@ -4089,12 +4094,12 @@
 		<span class="self">Self</span> { <span class="ident">parachains</span>: <span class="prelude-val">None</span>, <span class="ident">_config</span>: <span class="ident">PhantomData</span> }
 	}
 
-	<span class="kw">fn</span> <span class="ident">ensure_initialized</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ParaId</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">ensure_initialized</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ParaId</span><span class="op">&gt;</span> {
 		<span class="self">self</span>.<span class="ident">parachains</span>.<span class="ident">get_or_insert_with</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">Parachains</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>())
 	}
 
 	<span class="doccomment">/// Adds the given para id to the list.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">id</span>: <span class="ident">ParaId</span>) {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">add</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">id</span>: <span class="ident">ParaId</span>) {
 		<span class="kw">let</span> <span class="ident">parachains</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">ensure_initialized</span>();
 		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">i</span>) <span class="op">=</span> <span class="ident">parachains</span>.<span class="ident">binary_search</span>(<span class="kw-2">&amp;</span><span class="ident">id</span>) {
 			<span class="ident">parachains</span>.<span class="ident">insert</span>(<span class="ident">i</span>, <span class="ident">id</span>);
@@ -4103,7 +4108,7 @@
 
 	<span class="doccomment">/// Removes the given para id from the list of parachains. Does nothing if the id is not in the</span>
 	<span class="doccomment">/// list.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">remove</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">id</span>: <span class="ident">ParaId</span>) {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">remove</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">id</span>: <span class="ident">ParaId</span>) {
 		<span class="kw">let</span> <span class="ident">parachains</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">ensure_initialized</span>();
 		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">i</span>) <span class="op">=</span> <span class="ident">parachains</span>.<span class="ident">binary_search</span>(<span class="kw-2">&amp;</span><span class="ident">id</span>) {
 			<span class="ident">parachains</span>.<span class="ident">remove</span>(<span class="ident">i</span>);
@@ -4112,13 +4117,12 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> <span class="ident">Drop</span> <span class="kw">for</span> <span class="ident">ParachainsCache</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-	<span class="kw">fn</span> <span class="ident">drop</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
+	<span class="kw">fn</span> <span class="ident">drop</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) {
 		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">parachains</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">parachains</span>.<span class="ident">take</span>() {
 			<span class="ident">Parachains</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::put</span>(<span class="kw-2">&amp;</span><span class="ident">parachains</span>);
 		}
 	}
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="polkadot_runtime_parachains" data-search-index-js="../../../search-index.js" data-search-js="../../../search.js"></div>
-    <script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script>
+</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="polkadot_runtime_parachains" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.60.0 (7737e0b5c 2022-04-04)" ></div>
 </body></html>

@@ -1,4 +1,9 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;git&#x2F;checkouts&#x2F;substrate-7e08433d4c370a21&#x2F;174735e&#x2F;client&#x2F;beefy&#x2F;src&#x2F;worker.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>worker.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../beefy_gadget/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/git/checkouts/substrate-7e08433d4c370a21/174735e/client/beefy/src/worker.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>worker.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
+    <noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../beefy_gadget/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
+        </a><h2 class="location"></h2>
+    </nav>
+    <nav class="sidebar"><a class="sidebar-logo" href="../../beefy_gadget/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
+        </a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../beefy_gadget/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><div class="theme-picker hidden"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="22" height="22" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -1228,7 +1233,7 @@
 	<span class="doccomment">/// Set best BEEFY block to `block_num`.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Also sends/updates the best BEEFY block hash to the RPC worker.</span>
-	<span class="kw">fn</span> <span class="ident">set_best_beefy_block</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">block_num</span>: <span class="ident">NumberFor</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>) {
+	<span class="kw">fn</span> <span class="ident">set_best_beefy_block</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">block_num</span>: <span class="ident">NumberFor</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>) {
 		<span class="kw">if</span> <span class="prelude-val">Some</span>(<span class="ident">block_num</span>) <span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">best_beefy_block</span> {
 			<span class="comment">// Try to get block hash ourselves.</span>
 			<span class="kw">let</span> <span class="ident">block_hash</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">client</span>.<span class="ident">hash</span>(<span class="ident">block_num</span>) {
@@ -1254,7 +1259,7 @@
 	}
 
 	<span class="doccomment">/// Handle session changes by starting new voting round for mandatory blocks.</span>
-	<span class="kw">fn</span> <span class="ident">init_session_at</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">active</span>: <span class="ident">ValidatorSet</span><span class="op">&lt;</span><span class="ident">AuthorityId</span><span class="op">&gt;</span>, <span class="ident">session_start</span>: <span class="ident">NumberFor</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>) {
+	<span class="kw">fn</span> <span class="ident">init_session_at</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">active</span>: <span class="ident">ValidatorSet</span><span class="op">&lt;</span><span class="ident">AuthorityId</span><span class="op">&gt;</span>, <span class="ident">session_start</span>: <span class="ident">NumberFor</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>) {
 		<span class="macro">debug!</span>(<span class="ident">target</span>: <span class="string">&quot;beefy&quot;</span>, <span class="string">&quot;🥩 New active validator set: {:?}&quot;</span>, <span class="ident">active</span>);
 		<span class="macro">metric_set!</span>(<span class="self">self</span>, <span class="ident">beefy_validator_set_id</span>, <span class="ident">active</span>.<span class="ident">id</span>());
 		<span class="comment">// BEEFY should produce a signed commitment for each session</span>
@@ -1278,7 +1283,7 @@
 		<span class="macro">info!</span>(<span class="ident">target</span>: <span class="string">&quot;beefy&quot;</span>, <span class="string">&quot;🥩 New Rounds for validator set id: {:?} with session_start {:?}&quot;</span>, <span class="ident">id</span>, <span class="ident">session_start</span>);
 	}
 
-	<span class="kw">fn</span> <span class="ident">handle_finality_notification</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">notification</span>: <span class="kw-2">&amp;</span><span class="ident">FinalityNotification</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>) {
+	<span class="kw">fn</span> <span class="ident">handle_finality_notification</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">notification</span>: <span class="kw-2">&amp;</span><span class="ident">FinalityNotification</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>) {
 		<span class="macro">trace!</span>(<span class="ident">target</span>: <span class="string">&quot;beefy&quot;</span>, <span class="string">&quot;🥩 Finality notification: {:?}&quot;</span>, <span class="ident">notification</span>);
 		<span class="kw">let</span> <span class="ident">number</span> <span class="op">=</span> <span class="kw-2">*</span><span class="ident">notification</span>.<span class="ident">header</span>.<span class="ident">number</span>();
 
@@ -1294,7 +1299,7 @@
 		<span class="self">self</span>.<span class="ident">handle_finality</span>(<span class="kw-2">&amp;</span><span class="ident">notification</span>.<span class="ident">header</span>);
 	}
 
-	<span class="kw">fn</span> <span class="ident">handle_finality</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">header</span>: <span class="kw-2">&amp;</span><span class="ident">B::Header</span>) {
+	<span class="kw">fn</span> <span class="ident">handle_finality</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">header</span>: <span class="kw-2">&amp;</span><span class="ident">B::Header</span>) {
 		<span class="comment">// Check for and handle potential new session.</span>
 		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">new_validator_set</span>) <span class="op">=</span> <span class="ident">find_authorities_change</span>::<span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>(<span class="ident">header</span>) {
 			<span class="self">self</span>.<span class="ident">init_session_at</span>(<span class="ident">new_validator_set</span>, <span class="kw-2">*</span><span class="ident">header</span>.<span class="ident">number</span>());
@@ -1307,7 +1312,7 @@
 	}
 
 	<span class="kw">fn</span> <span class="ident">handle_vote</span>(
-		<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>,
+		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
 		<span class="ident">round</span>: (<span class="ident">Payload</span>, <span class="ident">NumberFor</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>),
 		<span class="ident">vote</span>: (<span class="ident">AuthorityId</span>, <span class="ident">Signature</span>),
 		<span class="ident">self_vote</span>: <span class="ident">bool</span>,
@@ -1367,7 +1372,7 @@
 	<span class="doccomment">/// Create and gossip Signed Commitment for block number `target_number`.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Also handle this self vote by calling `self.handle_vote()` for it.</span>
-	<span class="kw">fn</span> <span class="ident">do_vote</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">target_number</span>: <span class="ident">NumberFor</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>) {
+	<span class="kw">fn</span> <span class="ident">do_vote</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">target_number</span>: <span class="ident">NumberFor</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>) {
 		<span class="macro">trace!</span>(<span class="ident">target</span>: <span class="string">&quot;beefy&quot;</span>, <span class="string">&quot;🥩 Try voting on {}&quot;</span>, <span class="ident">target_number</span>);
 
 		<span class="comment">// Most of the time we get here, `target` is actually `best_grandpa`,</span>
@@ -1453,7 +1458,7 @@
 
 	<span class="doccomment">/// Wait for BEEFY runtime pallet to be available.</span>
 	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">test</span>))]</span>
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">wait_for_runtime_pallet</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">wait_for_runtime_pallet</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) {
 		<span class="self">self</span>.<span class="ident">client</span>
 			.<span class="ident">finality_notification_stream</span>()
 			.<span class="ident">take_while</span>(<span class="op">|</span><span class="ident">notif</span><span class="op">|</span> {
@@ -1484,7 +1489,7 @@
 
 	<span class="doccomment">/// For tests don&#39;t use runtime pallet. Start rounds from block #1.</span>
 	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">wait_for_runtime_pallet</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">wait_for_runtime_pallet</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) {
 		<span class="kw">let</span> <span class="ident">active</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">test_res</span>.<span class="ident">active_validators</span>.<span class="ident">clone</span>();
 		<span class="self">self</span>.<span class="ident">init_session_at</span>(<span class="ident">active</span>, <span class="number">1u32</span>.<span class="ident">into</span>());
 	}
@@ -1502,7 +1507,7 @@
 				<span class="macro">debug!</span>(<span class="ident">target</span>: <span class="string">&quot;beefy&quot;</span>, <span class="string">&quot;🥩 Got vote message: {:?}&quot;</span>, <span class="ident">notification</span>);
 
 				<span class="ident">VoteMessage</span>::<span class="op">&lt;</span><span class="ident">NumberFor</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>, <span class="ident">AuthorityId</span>, <span class="ident">Signature</span><span class="op">&gt;</span><span class="ident">::decode</span>(
-					<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw-2">&amp;</span><span class="ident">notification</span>.<span class="ident">message</span>[..],
+					<span class="kw-2">&amp;mut</span> <span class="kw-2">&amp;</span><span class="ident">notification</span>.<span class="ident">message</span>[..],
 				)
 				.<span class="ident">ok</span>()
 			},
@@ -1825,7 +1830,7 @@
 		<span class="comment">// rounds not initialized -&gt; should vote: `None`</span>
 		<span class="macro">assert_eq!</span>(<span class="ident">worker</span>.<span class="ident">current_vote_target</span>(), <span class="prelude-val">None</span>);
 
-		<span class="kw">let</span> <span class="ident">set_up</span> <span class="op">=</span> <span class="op">|</span><span class="ident">worker</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">BeefyWorker</span><span class="op">&lt;</span>
+		<span class="kw">let</span> <span class="ident">set_up</span> <span class="op">=</span> <span class="op">|</span><span class="ident">worker</span>: <span class="kw-2">&amp;mut</span> <span class="ident">BeefyWorker</span><span class="op">&lt;</span>
 			<span class="ident">Block</span>,
 			<span class="ident">PeersFullClient</span>,
 			<span class="ident">Backend</span>,
@@ -1850,31 +1855,31 @@
 		};
 
 		<span class="comment">// under min delta</span>
-		<span class="ident">set_up</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">worker</span>, <span class="number">1</span>, <span class="prelude-val">Some</span>(<span class="number">1</span>), <span class="number">1</span>, <span class="number">4</span>);
+		<span class="ident">set_up</span>(<span class="kw-2">&amp;mut</span> <span class="ident">worker</span>, <span class="number">1</span>, <span class="prelude-val">Some</span>(<span class="number">1</span>), <span class="number">1</span>, <span class="number">4</span>);
 		<span class="macro">assert_eq!</span>(<span class="ident">worker</span>.<span class="ident">current_vote_target</span>(), <span class="prelude-val">None</span>);
-		<span class="ident">set_up</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">worker</span>, <span class="number">5</span>, <span class="prelude-val">Some</span>(<span class="number">2</span>), <span class="number">1</span>, <span class="number">4</span>);
+		<span class="ident">set_up</span>(<span class="kw-2">&amp;mut</span> <span class="ident">worker</span>, <span class="number">5</span>, <span class="prelude-val">Some</span>(<span class="number">2</span>), <span class="number">1</span>, <span class="number">4</span>);
 		<span class="macro">assert_eq!</span>(<span class="ident">worker</span>.<span class="ident">current_vote_target</span>(), <span class="prelude-val">None</span>);
 
 		<span class="comment">// vote on min delta</span>
-		<span class="ident">set_up</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">worker</span>, <span class="number">9</span>, <span class="prelude-val">Some</span>(<span class="number">4</span>), <span class="number">1</span>, <span class="number">4</span>);
+		<span class="ident">set_up</span>(<span class="kw-2">&amp;mut</span> <span class="ident">worker</span>, <span class="number">9</span>, <span class="prelude-val">Some</span>(<span class="number">4</span>), <span class="number">1</span>, <span class="number">4</span>);
 		<span class="macro">assert_eq!</span>(<span class="ident">worker</span>.<span class="ident">current_vote_target</span>(), <span class="prelude-val">Some</span>(<span class="number">8</span>));
-		<span class="ident">set_up</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">worker</span>, <span class="number">18</span>, <span class="prelude-val">Some</span>(<span class="number">10</span>), <span class="number">1</span>, <span class="number">8</span>);
+		<span class="ident">set_up</span>(<span class="kw-2">&amp;mut</span> <span class="ident">worker</span>, <span class="number">18</span>, <span class="prelude-val">Some</span>(<span class="number">10</span>), <span class="number">1</span>, <span class="number">8</span>);
 		<span class="macro">assert_eq!</span>(<span class="ident">worker</span>.<span class="ident">current_vote_target</span>(), <span class="prelude-val">Some</span>(<span class="number">18</span>));
 
 		<span class="comment">// vote on power of two</span>
-		<span class="ident">set_up</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">worker</span>, <span class="number">1008</span>, <span class="prelude-val">Some</span>(<span class="number">1000</span>), <span class="number">1</span>, <span class="number">1</span>);
+		<span class="ident">set_up</span>(<span class="kw-2">&amp;mut</span> <span class="ident">worker</span>, <span class="number">1008</span>, <span class="prelude-val">Some</span>(<span class="number">1000</span>), <span class="number">1</span>, <span class="number">1</span>);
 		<span class="macro">assert_eq!</span>(<span class="ident">worker</span>.<span class="ident">current_vote_target</span>(), <span class="prelude-val">Some</span>(<span class="number">1004</span>));
-		<span class="ident">set_up</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">worker</span>, <span class="number">1016</span>, <span class="prelude-val">Some</span>(<span class="number">1000</span>), <span class="number">1</span>, <span class="number">2</span>);
+		<span class="ident">set_up</span>(<span class="kw-2">&amp;mut</span> <span class="ident">worker</span>, <span class="number">1016</span>, <span class="prelude-val">Some</span>(<span class="number">1000</span>), <span class="number">1</span>, <span class="number">2</span>);
 		<span class="macro">assert_eq!</span>(<span class="ident">worker</span>.<span class="ident">current_vote_target</span>(), <span class="prelude-val">Some</span>(<span class="number">1008</span>));
 
 		<span class="comment">// nothing new to vote on</span>
-		<span class="ident">set_up</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">worker</span>, <span class="number">1000</span>, <span class="prelude-val">Some</span>(<span class="number">1000</span>), <span class="number">1</span>, <span class="number">1</span>);
+		<span class="ident">set_up</span>(<span class="kw-2">&amp;mut</span> <span class="ident">worker</span>, <span class="number">1000</span>, <span class="prelude-val">Some</span>(<span class="number">1000</span>), <span class="number">1</span>, <span class="number">1</span>);
 		<span class="macro">assert_eq!</span>(<span class="ident">worker</span>.<span class="ident">current_vote_target</span>(), <span class="prelude-val">None</span>);
 
 		<span class="comment">// vote on mandatory</span>
-		<span class="ident">set_up</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">worker</span>, <span class="number">1008</span>, <span class="prelude-val">None</span>, <span class="number">1000</span>, <span class="number">8</span>);
+		<span class="ident">set_up</span>(<span class="kw-2">&amp;mut</span> <span class="ident">worker</span>, <span class="number">1008</span>, <span class="prelude-val">None</span>, <span class="number">1000</span>, <span class="number">8</span>);
 		<span class="macro">assert_eq!</span>(<span class="ident">worker</span>.<span class="ident">current_vote_target</span>(), <span class="prelude-val">Some</span>(<span class="number">1000</span>));
-		<span class="ident">set_up</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">worker</span>, <span class="number">1008</span>, <span class="prelude-val">Some</span>(<span class="number">1000</span>), <span class="number">1001</span>, <span class="number">8</span>);
+		<span class="ident">set_up</span>(<span class="kw-2">&amp;mut</span> <span class="ident">worker</span>, <span class="number">1008</span>, <span class="prelude-val">Some</span>(<span class="number">1000</span>), <span class="number">1001</span>, <span class="number">8</span>);
 		<span class="macro">assert_eq!</span>(<span class="ident">worker</span>.<span class="ident">current_vote_target</span>(), <span class="prelude-val">Some</span>(<span class="number">1001</span>));
 	}
 
@@ -1910,7 +1915,7 @@
 		<span class="ident">net</span>.<span class="ident">peer</span>(<span class="number">0</span>).<span class="ident">data</span>.<span class="ident">use_validator_set</span>(<span class="kw-2">&amp;</span><span class="ident">validator_set</span>);
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">worker</span> <span class="op">=</span> <span class="ident">create_beefy_worker</span>(<span class="kw-2">&amp;</span><span class="ident">net</span>.<span class="ident">peer</span>(<span class="number">0</span>), <span class="kw-2">&amp;</span><span class="ident">keys</span>[<span class="number">0</span>], <span class="number">1</span>);
 
-		<span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">best_block_streams</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">get_beefy_streams</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">net</span>, <span class="ident">keys</span>);
+		<span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">best_block_streams</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">get_beefy_streams</span>(<span class="kw-2">&amp;mut</span> <span class="ident">net</span>, <span class="ident">keys</span>);
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">best_block_stream</span> <span class="op">=</span> <span class="ident">best_block_streams</span>.<span class="ident">drain</span>(..).<span class="ident">next</span>().<span class="ident">unwrap</span>();
 
 		<span class="comment">// no &#39;best beefy block&#39;</span>
@@ -1921,7 +1926,7 @@
 		}));
 
 		<span class="comment">// unknown hash for block #1</span>
-		<span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">best_block_streams</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">get_beefy_streams</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">net</span>, <span class="ident">keys</span>);
+		<span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">best_block_streams</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">get_beefy_streams</span>(<span class="kw-2">&amp;mut</span> <span class="ident">net</span>, <span class="ident">keys</span>);
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">best_block_stream</span> <span class="op">=</span> <span class="ident">best_block_streams</span>.<span class="ident">drain</span>(..).<span class="ident">next</span>().<span class="ident">unwrap</span>();
 		<span class="ident">worker</span>.<span class="ident">set_best_beefy_block</span>(<span class="number">1</span>);
 		<span class="macro">assert_eq!</span>(<span class="ident">worker</span>.<span class="ident">best_beefy_block</span>, <span class="prelude-val">Some</span>(<span class="number">1</span>));
@@ -1931,7 +1936,7 @@
 		}));
 
 		<span class="comment">// generate 2 blocks, try again expect success</span>
-		<span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">best_block_streams</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">get_beefy_streams</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">net</span>, <span class="ident">keys</span>);
+		<span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">best_block_streams</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">get_beefy_streams</span>(<span class="kw-2">&amp;mut</span> <span class="ident">net</span>, <span class="ident">keys</span>);
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">best_block_stream</span> <span class="op">=</span> <span class="ident">best_block_streams</span>.<span class="ident">drain</span>(..).<span class="ident">next</span>().<span class="ident">unwrap</span>();
 		<span class="ident">net</span>.<span class="ident">generate_blocks</span>(<span class="number">2</span>, <span class="number">10</span>, <span class="kw-2">&amp;</span><span class="ident">validator_set</span>);
 
@@ -1987,6 +1992,5 @@
 	}
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="beefy_gadget" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>
-    <script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script>
+</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="beefy_gadget" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.60.0 (7737e0b5c 2022-04-04)" ></div>
 </body></html>

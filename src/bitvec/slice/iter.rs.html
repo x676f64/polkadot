@@ -1,4 +1,9 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;usr&#x2F;local&#x2F;cargo&#x2F;registry&#x2F;src&#x2F;github.com-1ecc6299db9ec823&#x2F;bitvec-1.0.0&#x2F;src&#x2F;slice&#x2F;iter.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>iter.rs - source</title><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../bitvec/index.html'><div class='logo-container rust-logo'><img src='../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">   1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/registry/src/github.com-1ecc6299db9ec823/bitvec-1.0.0/src/slice/iter.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>iter.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><script defer src="../../../main.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script>
+    <noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../../bitvec/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div>
+        </a><h2 class="location"></h2>
+    </nav>
+    <nav class="sidebar"><a class="sidebar-logo" href="../../../bitvec/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div>
+        </a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../../bitvec/index.html"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></a><nav class="sub"><div class="theme-picker hidden"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="22" height="22" alt="Pick another theme!" src="../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../wheel.svg"></a></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">   1</span>
 <span id="2">   2</span>
 <span id="3">   3</span>
 <span id="4">   4</span>
@@ -2773,7 +2778,7 @@
 	<span class="ident">T</span>: <span class="ident">BitStore</span>,
 	<span class="ident">O</span>: <span class="ident">BitOrder</span>,
 {
-	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">fmt</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Formatter</span>) -&gt; <span class="ident">fmt::Result</span> {
+	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">fmt</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Formatter</span>) -&gt; <span class="ident">fmt::Result</span> {
 		<span class="ident">fmt</span>.<span class="ident">debug_tuple</span>(<span class="string">&quot;Iter&quot;</span>).<span class="ident">field</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">as_bitslice</span>()).<span class="ident">finish</span>()
 	}
 }
@@ -2901,7 +2906,7 @@
 	<span class="ident">T</span>: <span class="ident">BitStore</span>,
 	<span class="ident">O</span>: <span class="ident">BitOrder</span>,
 {
-	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">fmt</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Formatter</span>) -&gt; <span class="ident">fmt::Result</span> {
+	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">fmt</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Formatter</span>) -&gt; <span class="ident">fmt::Result</span> {
 		<span class="ident">fmt</span>.<span class="ident">debug_tuple</span>(<span class="string">&quot;IterMut&quot;</span>)
 			.<span class="ident">field</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">as_bitslice</span>())
 			.<span class="ident">finish</span>()
@@ -2920,11 +2925,11 @@
 		{
 			<span class="kw">type</span> <span class="ident">Item</span> <span class="op">=</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">item</span>;
 
-			<span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+			<span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
 				<span class="self">self</span>.<span class="ident">range</span>.<span class="ident">next</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">bp</span><span class="op">|</span> <span class="kw">unsafe</span> { <span class="ident">BitRef::from_bitptr</span>(<span class="ident">bp</span>) })
 			}
 
-			<span class="kw">fn</span> <span class="ident">nth</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+			<span class="kw">fn</span> <span class="ident">nth</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
 				<span class="self">self</span>.<span class="ident">range</span>.<span class="ident">nth</span>(<span class="ident">n</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">bp</span><span class="op">|</span> <span class="kw">unsafe</span> { <span class="ident">BitRef::from_bitptr</span>(<span class="ident">bp</span>) })
 			}
 
@@ -2938,13 +2943,13 @@
 			<span class="ident">T</span>: <span class="lifetime">&#39;a</span> <span class="op">+</span> <span class="ident">BitStore</span>,
 			<span class="ident">O</span>: <span class="ident">BitOrder</span>,
 		{
-			<span class="kw">fn</span> <span class="ident">next_back</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+			<span class="kw">fn</span> <span class="ident">next_back</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
 				<span class="self">self</span>.<span class="ident">range</span>
 					.<span class="ident">next_back</span>()
 					.<span class="ident">map</span>(<span class="op">|</span><span class="ident">bp</span><span class="op">|</span> <span class="kw">unsafe</span> { <span class="ident">BitRef::from_bitptr</span>(<span class="ident">bp</span>) })
 			}
 
-			<span class="kw">fn</span> <span class="ident">nth_back</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+			<span class="kw">fn</span> <span class="ident">nth_back</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
 				<span class="self">self</span>.<span class="ident">range</span>
 					.<span class="ident">nth_back</span>(<span class="ident">n</span>)
 					.<span class="ident">map</span>(<span class="op">|</span><span class="ident">bp</span><span class="op">|</span> <span class="kw">unsafe</span> { <span class="ident">BitRef::from_bitptr</span>(<span class="ident">bp</span>) })
@@ -3066,7 +3071,7 @@
 }
 
 <span class="macro">group!</span>(<span class="ident">Windows</span> =&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">BitSlice</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">O</span><span class="op">&gt;</span> {
-	<span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
 		<span class="kw">if</span> <span class="self">self</span>.<span class="ident">width</span> <span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">slice</span>.<span class="ident">len</span>() {
 			<span class="self">self</span>.<span class="ident">slice</span> <span class="op">=</span> <span class="ident">Default::default</span>();
 			<span class="kw">return</span> <span class="prelude-val">None</span>;
@@ -3078,7 +3083,7 @@
 		}
 	}
 
-	<span class="kw">fn</span> <span class="ident">nth</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">nth</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> (<span class="ident">end</span>, <span class="ident">ovf</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">width</span>.<span class="ident">overflowing_add</span>(<span class="ident">n</span>);
 		<span class="kw">if</span> <span class="ident">end</span> <span class="op">&gt;</span> <span class="self">self</span>.<span class="ident">slice</span>.<span class="ident">len</span>() <span class="op">|</span><span class="op">|</span> <span class="ident">ovf</span> {
 			<span class="self">self</span>.<span class="ident">slice</span> <span class="op">=</span> <span class="ident">Default::default</span>();
@@ -3091,7 +3096,7 @@
 		}
 	}
 
-	<span class="kw">fn</span> <span class="ident">next_back</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">next_back</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">slice</span>.<span class="ident">len</span>();
 		<span class="kw">if</span> <span class="self">self</span>.<span class="ident">width</span> <span class="op">&gt;</span> <span class="ident">len</span> {
 			<span class="self">self</span>.<span class="ident">slice</span> <span class="op">=</span> <span class="ident">Default::default</span>();
@@ -3104,7 +3109,7 @@
 		}
 	}
 
-	<span class="kw">fn</span> <span class="ident">nth_back</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">nth_back</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> (<span class="ident">end</span>, <span class="ident">ovf</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">slice</span>.<span class="ident">len</span>().<span class="ident">overflowing_sub</span>(<span class="ident">n</span>);
 		<span class="kw">if</span> <span class="ident">end</span> <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">width</span> <span class="op">|</span><span class="op">|</span> <span class="ident">ovf</span> {
 			<span class="self">self</span>.<span class="ident">slice</span> <span class="op">=</span> <span class="ident">Default::default</span>();
@@ -3142,7 +3147,7 @@
 }
 
 <span class="macro">group!</span>(<span class="ident">Chunks</span> =&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">BitSlice</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">O</span><span class="op">&gt;</span> {
-	<span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">slice</span>.<span class="ident">len</span>();
 		<span class="kw">if</span> <span class="ident">len</span> <span class="op">==</span> <span class="number">0</span> {
 			<span class="kw">return</span> <span class="prelude-val">None</span>;
@@ -3153,7 +3158,7 @@
 		<span class="prelude-val">Some</span>(<span class="ident">out</span>)
 	}
 
-	<span class="kw">fn</span> <span class="ident">nth</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">nth</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">slice</span>.<span class="ident">len</span>();
 		<span class="kw">let</span> (<span class="ident">start</span>, <span class="ident">ovf</span>) <span class="op">=</span> <span class="ident">n</span>.<span class="ident">overflowing_mul</span>(<span class="self">self</span>.<span class="ident">width</span>);
 		<span class="kw">if</span> <span class="ident">start</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">len</span> <span class="op">|</span><span class="op">|</span> <span class="ident">ovf</span> {
@@ -3170,7 +3175,7 @@
 		}
 	}
 
-	<span class="kw">fn</span> <span class="ident">next_back</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">next_back</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
 		<span class="kw">match</span> <span class="self">self</span>.<span class="ident">slice</span>.<span class="ident">len</span>() {
 			<span class="number">0</span> =&gt; <span class="prelude-val">None</span>,
 			<span class="ident">len</span> =&gt; {
@@ -3185,7 +3190,7 @@
 		}
 	}
 
-	<span class="kw">fn</span> <span class="ident">nth_back</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">nth_back</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">len</span>();
 		<span class="kw">if</span> <span class="ident">n</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">len</span> {
 			<span class="self">self</span>.<span class="ident">slice</span> <span class="op">=</span> <span class="ident">Default::default</span>();
@@ -3227,8 +3232,8 @@
 }
 
 <span class="macro">group!</span>(<span class="ident">ChunksMut</span> =&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">BitSlice</span><span class="op">&lt;</span><span class="ident">T::Alias</span>, <span class="ident">O</span><span class="op">&gt;</span> {
-	<span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="ident">slice</span> <span class="op">=</span> <span class="ident">mem::take</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">slice</span>);
+	<span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+		<span class="kw">let</span> <span class="ident">slice</span> <span class="op">=</span> <span class="ident">mem::take</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">slice</span>);
 		<span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="ident">slice</span>.<span class="ident">len</span>();
 		<span class="kw">if</span> <span class="ident">len</span> <span class="op">==</span> <span class="number">0</span> {
 			<span class="kw">return</span> <span class="prelude-val">None</span>;
@@ -3239,8 +3244,8 @@
 		<span class="prelude-val">Some</span>(<span class="ident">out</span>)
 	}
 
-	<span class="kw">fn</span> <span class="ident">nth</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="ident">slice</span> <span class="op">=</span> <span class="ident">mem::take</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">slice</span>);
+	<span class="kw">fn</span> <span class="ident">nth</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+		<span class="kw">let</span> <span class="ident">slice</span> <span class="op">=</span> <span class="ident">mem::take</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">slice</span>);
 		<span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="ident">slice</span>.<span class="ident">len</span>();
 		<span class="kw">let</span> (<span class="ident">start</span>, <span class="ident">ovf</span>) <span class="op">=</span> <span class="ident">n</span>.<span class="ident">overflowing_mul</span>(<span class="self">self</span>.<span class="ident">width</span>);
 		<span class="kw">if</span> <span class="ident">start</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">len</span> <span class="op">|</span><span class="op">|</span> <span class="ident">ovf</span> {
@@ -3255,8 +3260,8 @@
 		<span class="prelude-val">Some</span>(<span class="ident">out</span>)
 	}
 
-	<span class="kw">fn</span> <span class="ident">next_back</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="ident">slice</span> <span class="op">=</span> <span class="ident">mem::take</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">slice</span>);
+	<span class="kw">fn</span> <span class="ident">next_back</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+		<span class="kw">let</span> <span class="ident">slice</span> <span class="op">=</span> <span class="ident">mem::take</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">slice</span>);
 		<span class="kw">match</span> <span class="ident">slice</span>.<span class="ident">len</span>() {
 			<span class="number">0</span> =&gt; <span class="prelude-val">None</span>,
 			<span class="ident">len</span> =&gt; {
@@ -3271,9 +3276,9 @@
 		}
 	}
 
-	<span class="kw">fn</span> <span class="ident">nth_back</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">nth_back</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">len</span>();
-		<span class="kw">let</span> <span class="ident">slice</span> <span class="op">=</span> <span class="ident">mem::take</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">slice</span>);
+		<span class="kw">let</span> <span class="ident">slice</span> <span class="op">=</span> <span class="ident">mem::take</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">slice</span>);
 		<span class="kw">if</span> <span class="ident">n</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">len</span> {
 			<span class="kw">return</span> <span class="prelude-val">None</span>;
 		}
@@ -3344,7 +3349,7 @@
 }
 
 <span class="macro">group!</span>(<span class="ident">ChunksExact</span> =&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">BitSlice</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">O</span><span class="op">&gt;</span> {
-	<span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
 		<span class="kw">if</span> <span class="self">self</span>.<span class="ident">slice</span>.<span class="ident">len</span>() <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">width</span> {
 			<span class="kw">return</span> <span class="prelude-val">None</span>;
 		}
@@ -3353,7 +3358,7 @@
 		<span class="prelude-val">Some</span>(<span class="ident">out</span>)
 	}
 
-	<span class="kw">fn</span> <span class="ident">nth</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">nth</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> (<span class="ident">start</span>, <span class="ident">ovf</span>) <span class="op">=</span> <span class="ident">n</span>.<span class="ident">overflowing_mul</span>(<span class="self">self</span>.<span class="ident">width</span>);
 		<span class="kw">if</span> <span class="ident">start</span> <span class="op">&gt;</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">slice</span>.<span class="ident">len</span>() <span class="op">|</span><span class="op">|</span> <span class="ident">ovf</span> {
 			<span class="self">self</span>.<span class="ident">slice</span> <span class="op">=</span> <span class="ident">Default::default</span>();
@@ -3368,7 +3373,7 @@
 		<span class="prelude-val">Some</span>(<span class="ident">out</span>)
 	}
 
-	<span class="kw">fn</span> <span class="ident">next_back</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">next_back</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">slice</span>.<span class="ident">len</span>();
 		<span class="kw">if</span> <span class="ident">len</span> <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">width</span> {
 			<span class="kw">return</span> <span class="prelude-val">None</span>;
@@ -3379,7 +3384,7 @@
 		<span class="prelude-val">Some</span>(<span class="ident">out</span>)
 	}
 
-	<span class="kw">fn</span> <span class="ident">nth_back</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">nth_back</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">len</span>();
 		<span class="kw">if</span> <span class="ident">n</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">len</span> {
 			<span class="self">self</span>.<span class="ident">slice</span> <span class="op">=</span> <span class="ident">Default::default</span>();
@@ -3462,14 +3467,14 @@
 	<span class="doccomment">/// assert_eq!(chunks.take_remainder(), bits![0; 2]);</span>
 	<span class="doccomment">/// assert!(chunks.take_remainder().is_empty());</span>
 	<span class="doccomment">/// ```</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">take_remainder</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">BitSlice</span><span class="op">&lt;</span><span class="ident">T::Alias</span>, <span class="ident">O</span><span class="op">&gt;</span> {
-		<span class="ident">mem::take</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">extra</span>)
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">take_remainder</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">BitSlice</span><span class="op">&lt;</span><span class="ident">T::Alias</span>, <span class="ident">O</span><span class="op">&gt;</span> {
+		<span class="ident">mem::take</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">extra</span>)
 	}
 }
 
 <span class="macro">group!</span>(<span class="ident">ChunksExactMut</span> =&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">BitSlice</span><span class="op">&lt;</span><span class="ident">T::Alias</span>, <span class="ident">O</span><span class="op">&gt;</span> {
-	<span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="ident">slice</span> <span class="op">=</span> <span class="ident">mem::take</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">slice</span>);
+	<span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+		<span class="kw">let</span> <span class="ident">slice</span> <span class="op">=</span> <span class="ident">mem::take</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">slice</span>);
 		<span class="kw">if</span> <span class="ident">slice</span>.<span class="ident">len</span>() <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">width</span> {
 			<span class="kw">return</span> <span class="prelude-val">None</span>;
 		}
@@ -3479,8 +3484,8 @@
 		<span class="prelude-val">Some</span>(<span class="ident">out</span>)
 	}
 
-	<span class="kw">fn</span> <span class="ident">nth</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="ident">slice</span> <span class="op">=</span> <span class="ident">mem::take</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">slice</span>);
+	<span class="kw">fn</span> <span class="ident">nth</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+		<span class="kw">let</span> <span class="ident">slice</span> <span class="op">=</span> <span class="ident">mem::take</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">slice</span>);
 		<span class="kw">let</span> (<span class="ident">start</span>, <span class="ident">ovf</span>) <span class="op">=</span> <span class="ident">n</span>.<span class="ident">overflowing_mul</span>(<span class="self">self</span>.<span class="ident">width</span>);
 		<span class="kw">if</span> <span class="ident">start</span> <span class="op">+</span> <span class="self">self</span>.<span class="ident">width</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">slice</span>.<span class="ident">len</span>() <span class="op">|</span><span class="op">|</span> <span class="ident">ovf</span> {
 			<span class="kw">return</span> <span class="prelude-val">None</span>;
@@ -3493,8 +3498,8 @@
 		<span class="prelude-val">Some</span>(<span class="ident">out</span>)
 	}
 
-	<span class="kw">fn</span> <span class="ident">next_back</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="ident">slice</span> <span class="op">=</span> <span class="ident">mem::take</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">slice</span>);
+	<span class="kw">fn</span> <span class="ident">next_back</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+		<span class="kw">let</span> <span class="ident">slice</span> <span class="op">=</span> <span class="ident">mem::take</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">slice</span>);
 		<span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="ident">slice</span>.<span class="ident">len</span>();
 		<span class="kw">if</span> <span class="ident">len</span> <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">width</span> {
 			<span class="kw">return</span> <span class="prelude-val">None</span>;
@@ -3505,9 +3510,9 @@
 		<span class="prelude-val">Some</span>(<span class="ident">out</span>)
 	}
 
-	<span class="kw">fn</span> <span class="ident">nth_back</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">nth_back</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">len</span>();
-		<span class="kw">let</span> <span class="ident">slice</span> <span class="op">=</span> <span class="ident">mem::take</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">slice</span>);
+		<span class="kw">let</span> <span class="ident">slice</span> <span class="op">=</span> <span class="ident">mem::take</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">slice</span>);
 		<span class="kw">if</span> <span class="ident">n</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">len</span> {
 			<span class="kw">return</span> <span class="prelude-val">None</span>;
 		}
@@ -3539,7 +3544,7 @@
 }
 
 <span class="macro">group!</span>(<span class="ident">RChunks</span> =&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">BitSlice</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">O</span><span class="op">&gt;</span> {
-	<span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">slice</span>.<span class="ident">len</span>();
 		<span class="kw">if</span> <span class="ident">len</span> <span class="op">==</span> <span class="number">0</span> {
 			<span class="kw">return</span> <span class="prelude-val">None</span>;
@@ -3550,7 +3555,7 @@
 		<span class="prelude-val">Some</span>(<span class="ident">out</span>)
 	}
 
-	<span class="kw">fn</span> <span class="ident">nth</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">nth</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">slice</span>.<span class="ident">len</span>();
 		<span class="kw">let</span> (<span class="ident">num</span>, <span class="ident">ovf</span>) <span class="op">=</span> <span class="ident">n</span>.<span class="ident">overflowing_mul</span>(<span class="self">self</span>.<span class="ident">width</span>);
 		<span class="kw">if</span> <span class="ident">num</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">len</span> <span class="op">|</span><span class="op">|</span> <span class="ident">ovf</span> {
@@ -3568,7 +3573,7 @@
 		<span class="prelude-val">Some</span>(<span class="ident">out</span>)
 	}
 
-	<span class="kw">fn</span> <span class="ident">next_back</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">next_back</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
 		<span class="kw">match</span> <span class="self">self</span>.<span class="ident">slice</span>.<span class="ident">len</span>() {
 			<span class="number">0</span> =&gt; <span class="prelude-val">None</span>,
 			<span class="ident">n</span> =&gt; {
@@ -3581,7 +3586,7 @@
 		}
 	}
 
-	<span class="kw">fn</span> <span class="ident">nth_back</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">nth_back</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">len</span>();
 		<span class="kw">if</span> <span class="ident">n</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">len</span> {
 			<span class="self">self</span>.<span class="ident">slice</span> <span class="op">=</span> <span class="ident">Default::default</span>();
@@ -3639,8 +3644,8 @@
 }
 
 <span class="macro">group!</span>(<span class="ident">RChunksMut</span> =&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">BitSlice</span><span class="op">&lt;</span><span class="ident">T::Alias</span>, <span class="ident">O</span><span class="op">&gt;</span> {
-	<span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="ident">slice</span> <span class="op">=</span> <span class="ident">mem::take</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">slice</span>);
+	<span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+		<span class="kw">let</span> <span class="ident">slice</span> <span class="op">=</span> <span class="ident">mem::take</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">slice</span>);
 		<span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="ident">slice</span>.<span class="ident">len</span>();
 		<span class="kw">if</span> <span class="ident">len</span> <span class="op">==</span> <span class="number">0</span> {
 			<span class="kw">return</span> <span class="prelude-val">None</span>;
@@ -3651,8 +3656,8 @@
 		<span class="prelude-val">Some</span>(<span class="ident">out</span>)
 	}
 
-	<span class="kw">fn</span> <span class="ident">nth</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="ident">slice</span> <span class="op">=</span> <span class="ident">mem::take</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">slice</span>);
+	<span class="kw">fn</span> <span class="ident">nth</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+		<span class="kw">let</span> <span class="ident">slice</span> <span class="op">=</span> <span class="ident">mem::take</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">slice</span>);
 		<span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="ident">slice</span>.<span class="ident">len</span>();
 		<span class="kw">let</span> (<span class="ident">num</span>, <span class="ident">ovf</span>) <span class="op">=</span> <span class="ident">n</span>.<span class="ident">overflowing_mul</span>(<span class="self">self</span>.<span class="ident">width</span>);
 		<span class="kw">if</span> <span class="ident">num</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">len</span> <span class="op">|</span><span class="op">|</span> <span class="ident">ovf</span> {
@@ -3668,8 +3673,8 @@
 		<span class="prelude-val">Some</span>(<span class="ident">out</span>)
 	}
 
-	<span class="kw">fn</span> <span class="ident">next_back</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="ident">slice</span> <span class="op">=</span> <span class="ident">mem::take</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">slice</span>);
+	<span class="kw">fn</span> <span class="ident">next_back</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+		<span class="kw">let</span> <span class="ident">slice</span> <span class="op">=</span> <span class="ident">mem::take</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">slice</span>);
 		<span class="kw">match</span> <span class="ident">slice</span>.<span class="ident">len</span>() {
 			<span class="number">0</span> =&gt; <span class="prelude-val">None</span>,
 			<span class="ident">n</span> =&gt; {
@@ -3683,9 +3688,9 @@
 		}
 	}
 
-	<span class="kw">fn</span> <span class="ident">nth_back</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">nth_back</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">len</span>();
-		<span class="kw">let</span> <span class="ident">slice</span> <span class="op">=</span> <span class="ident">mem::take</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">slice</span>);
+		<span class="kw">let</span> <span class="ident">slice</span> <span class="op">=</span> <span class="ident">mem::take</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">slice</span>);
 		<span class="kw">if</span> <span class="ident">n</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">len</span> {
 			<span class="kw">return</span> <span class="prelude-val">None</span>;
 		}
@@ -3752,7 +3757,7 @@
 }
 
 <span class="macro">group!</span>(<span class="ident">RChunksExact</span> =&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">BitSlice</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">O</span><span class="op">&gt;</span> {
-	<span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">slice</span>.<span class="ident">len</span>();
 		<span class="kw">if</span> <span class="ident">len</span> <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">width</span> {
 			<span class="kw">return</span> <span class="prelude-val">None</span>;
@@ -3763,7 +3768,7 @@
 		<span class="prelude-val">Some</span>(<span class="ident">out</span>)
 	}
 
-	<span class="kw">fn</span> <span class="ident">nth</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">nth</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">slice</span>.<span class="ident">len</span>();
 		<span class="kw">let</span> (<span class="ident">split</span>, <span class="ident">ovf</span>) <span class="op">=</span> <span class="ident">n</span>.<span class="ident">overflowing_mul</span>(<span class="self">self</span>.<span class="ident">width</span>);
 		<span class="kw">if</span> <span class="ident">split</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">len</span> <span class="op">|</span><span class="op">|</span> <span class="ident">ovf</span> {
@@ -3780,7 +3785,7 @@
 		<span class="prelude-val">Some</span>(<span class="ident">out</span>)
 	}
 
-	<span class="kw">fn</span> <span class="ident">next_back</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">next_back</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
 		<span class="kw">if</span> <span class="self">self</span>.<span class="ident">slice</span>.<span class="ident">len</span>() <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">width</span> {
 			<span class="kw">return</span> <span class="prelude-val">None</span>;
 		}
@@ -3789,7 +3794,7 @@
 		<span class="prelude-val">Some</span>(<span class="ident">out</span>)
 	}
 
-	<span class="kw">fn</span> <span class="ident">nth_back</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">nth_back</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">slice</span>.<span class="ident">len</span>();
 		<span class="kw">let</span> (<span class="ident">start</span>, <span class="ident">ovf</span>) <span class="op">=</span> <span class="ident">n</span>.<span class="ident">overflowing_mul</span>(<span class="self">self</span>.<span class="ident">width</span>);
 		<span class="kw">if</span> <span class="ident">start</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">len</span> <span class="op">|</span><span class="op">|</span> <span class="ident">ovf</span> {
@@ -3870,14 +3875,14 @@
 	<span class="doccomment">/// assert_eq!(chunks.take_remainder(), bits![0; 2]);</span>
 	<span class="doccomment">/// assert!(chunks.take_remainder().is_empty());</span>
 	<span class="doccomment">/// ```</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">take_remainder</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">BitSlice</span><span class="op">&lt;</span><span class="ident">T::Alias</span>, <span class="ident">O</span><span class="op">&gt;</span> {
-		<span class="ident">mem::take</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">extra</span>)
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">take_remainder</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">BitSlice</span><span class="op">&lt;</span><span class="ident">T::Alias</span>, <span class="ident">O</span><span class="op">&gt;</span> {
+		<span class="ident">mem::take</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">extra</span>)
 	}
 }
 
 <span class="macro">group!</span>(<span class="ident">RChunksExactMut</span> =&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">BitSlice</span><span class="op">&lt;</span><span class="ident">T::Alias</span>, <span class="ident">O</span><span class="op">&gt;</span> {
-	<span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="ident">slice</span> <span class="op">=</span> <span class="ident">mem::take</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">slice</span>);
+	<span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+		<span class="kw">let</span> <span class="ident">slice</span> <span class="op">=</span> <span class="ident">mem::take</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">slice</span>);
 		<span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="ident">slice</span>.<span class="ident">len</span>();
 		<span class="kw">if</span> <span class="ident">len</span> <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">width</span> {
 			<span class="kw">return</span> <span class="prelude-val">None</span>;
@@ -3888,8 +3893,8 @@
 		<span class="prelude-val">Some</span>(<span class="ident">out</span>)
 	}
 
-	<span class="kw">fn</span> <span class="ident">nth</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="ident">slice</span> <span class="op">=</span> <span class="ident">mem::take</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">slice</span>);
+	<span class="kw">fn</span> <span class="ident">nth</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+		<span class="kw">let</span> <span class="ident">slice</span> <span class="op">=</span> <span class="ident">mem::take</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">slice</span>);
 		<span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="ident">slice</span>.<span class="ident">len</span>();
 		<span class="kw">let</span> (<span class="ident">split</span>, <span class="ident">ovf</span>) <span class="op">=</span> <span class="ident">n</span>.<span class="ident">overflowing_mul</span>(<span class="self">self</span>.<span class="ident">width</span>);
 		<span class="kw">if</span> <span class="ident">split</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">len</span> <span class="op">|</span><span class="op">|</span> <span class="ident">ovf</span> {
@@ -3904,8 +3909,8 @@
 		<span class="prelude-val">Some</span>(<span class="ident">out</span>)
 	}
 
-	<span class="kw">fn</span> <span class="ident">next_back</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="ident">slice</span> <span class="op">=</span> <span class="ident">mem::take</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">slice</span>);
+	<span class="kw">fn</span> <span class="ident">next_back</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+		<span class="kw">let</span> <span class="ident">slice</span> <span class="op">=</span> <span class="ident">mem::take</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">slice</span>);
 		<span class="kw">if</span> <span class="ident">slice</span>.<span class="ident">len</span>() <span class="op">&lt;</span> <span class="self">self</span>.<span class="ident">width</span> {
 			<span class="kw">return</span> <span class="prelude-val">None</span>;
 		}
@@ -3915,8 +3920,8 @@
 		<span class="prelude-val">Some</span>(<span class="ident">out</span>)
 	}
 
-	<span class="kw">fn</span> <span class="ident">nth_back</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="ident">slice</span> <span class="op">=</span> <span class="ident">mem::take</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">slice</span>);
+	<span class="kw">fn</span> <span class="ident">nth_back</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+		<span class="kw">let</span> <span class="ident">slice</span> <span class="op">=</span> <span class="ident">mem::take</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">slice</span>);
 		<span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="ident">slice</span>.<span class="ident">len</span>();
 		<span class="kw">let</span> (<span class="ident">start</span>, <span class="ident">ovf</span>) <span class="op">=</span> <span class="ident">n</span>.<span class="ident">overflowing_mul</span>(<span class="self">self</span>.<span class="ident">width</span>);
 		<span class="kw">if</span> <span class="ident">start</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">len</span> <span class="op">|</span><span class="op">|</span> <span class="ident">ovf</span> {
@@ -3993,7 +3998,7 @@
 			<span class="ident">O</span>: <span class="ident">BitOrder</span>,
 			<span class="ident">P</span>: <span class="ident">FnMut</span>(<span class="ident">usize</span>, <span class="kw-2">&amp;</span><span class="ident">bool</span>) -&gt; <span class="ident">bool</span>,
 		{
-			<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">fmt</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Formatter</span>) -&gt; <span class="ident">fmt::Result</span> {
+			<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">fmt</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Formatter</span>) -&gt; <span class="ident">fmt::Result</span> {
 				<span class="ident">fmt</span>.<span class="ident">debug_struct</span>(<span class="macro">stringify!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">iter</span>))
 					.<span class="ident">field</span>(<span class="string">&quot;slice&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">slice</span>)
 					.<span class="ident">field</span>(<span class="string">&quot;done&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">done</span>)
@@ -4044,13 +4049,13 @@
 			<span class="ident">O</span>: <span class="ident">BitOrder</span>,
 			<span class="ident">P</span>: <span class="ident">FnMut</span>(<span class="ident">usize</span>, <span class="kw-2">&amp;</span><span class="ident">bool</span>) -&gt; <span class="ident">bool</span>,
 		{
-			<span class="kw">fn</span> <span class="ident">finish</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+			<span class="kw">fn</span> <span class="ident">finish</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
 				<span class="kw">if</span> <span class="self">self</span>.<span class="ident">done</span> {
 					<span class="prelude-val">None</span>
 				}
 				<span class="kw">else</span> {
 					<span class="self">self</span>.<span class="ident">done</span> <span class="op">=</span> <span class="bool-val">true</span>;
-					<span class="prelude-val">Some</span>(<span class="ident">mem::take</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">slice</span>))
+					<span class="prelude-val">Some</span>(<span class="ident">mem::take</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">slice</span>))
 				}
 			}
 		}
@@ -4076,7 +4081,7 @@
 }
 
 <span class="macro">split!</span>(<span class="ident">Split</span> =&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">BitSlice</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">O</span><span class="op">&gt;</span> {
-	<span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
 		<span class="kw">if</span> <span class="self">self</span>.<span class="ident">done</span> {
 			<span class="kw">return</span> <span class="prelude-val">None</span>;
 		}
@@ -4095,7 +4100,7 @@
 		}
 	}
 
-	<span class="kw">fn</span> <span class="ident">next_back</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">next_back</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
 		<span class="kw">if</span> <span class="self">self</span>.<span class="ident">done</span> {
 			<span class="kw">return</span> <span class="prelude-val">None</span>;
 		}
@@ -4131,12 +4136,12 @@
 }
 
 <span class="macro">split!</span>(<span class="ident">SplitMut</span> =&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">BitSlice</span><span class="op">&lt;</span><span class="ident">T::Alias</span>, <span class="ident">O</span><span class="op">&gt;</span> {
-	<span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
 		<span class="kw">if</span> <span class="self">self</span>.<span class="ident">done</span> {
 			<span class="kw">return</span> <span class="prelude-val">None</span>;
 		}
 		<span class="kw">let</span> <span class="ident">idx_opt</span> <span class="op">=</span> {
-			<span class="kw">let</span> <span class="ident">pred</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">pred</span>;
+			<span class="kw">let</span> <span class="ident">pred</span> <span class="op">=</span> <span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">pred</span>;
 			<span class="self">self</span>.<span class="ident">slice</span>
 				.<span class="ident">iter</span>()
 				.<span class="ident">by_refs</span>()
@@ -4147,7 +4152,7 @@
 		{
 			<span class="prelude-val">None</span> =&gt; <span class="self">self</span>.<span class="ident">finish</span>(),
 			<span class="prelude-val">Some</span>(<span class="ident">idx</span>) =&gt; <span class="kw">unsafe</span> {
-				<span class="kw">let</span> <span class="ident">slice</span> <span class="op">=</span> <span class="ident">mem::take</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">slice</span>);
+				<span class="kw">let</span> <span class="ident">slice</span> <span class="op">=</span> <span class="ident">mem::take</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">slice</span>);
 				<span class="kw">let</span> (<span class="ident">out</span>, <span class="ident">rest</span>) <span class="op">=</span> <span class="ident">slice</span>.<span class="ident">split_at_unchecked_mut_noalias</span>(<span class="ident">idx</span>);
 				<span class="self">self</span>.<span class="ident">slice</span> <span class="op">=</span> <span class="ident">rest</span>.<span class="ident">get_unchecked_mut</span>(<span class="number">1</span> ..);
 				<span class="prelude-val">Some</span>(<span class="ident">out</span>)
@@ -4155,12 +4160,12 @@
 		}
 	}
 
-	<span class="kw">fn</span> <span class="ident">next_back</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">next_back</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
 		<span class="kw">if</span> <span class="self">self</span>.<span class="ident">done</span> {
 			<span class="kw">return</span> <span class="prelude-val">None</span>;
 		}
 		<span class="kw">let</span> <span class="ident">idx_opt</span> <span class="op">=</span> {
-			<span class="kw">let</span> <span class="ident">pred</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">pred</span>;
+			<span class="kw">let</span> <span class="ident">pred</span> <span class="op">=</span> <span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">pred</span>;
 			<span class="self">self</span>.<span class="ident">slice</span>
 				.<span class="ident">iter</span>()
 				.<span class="ident">by_refs</span>()
@@ -4171,7 +4176,7 @@
 		{
 			<span class="prelude-val">None</span> =&gt; <span class="self">self</span>.<span class="ident">finish</span>(),
 			<span class="prelude-val">Some</span>(<span class="ident">idx</span>) =&gt; <span class="kw">unsafe</span> {
-				<span class="kw">let</span> <span class="ident">slice</span> <span class="op">=</span> <span class="ident">mem::take</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">slice</span>);
+				<span class="kw">let</span> <span class="ident">slice</span> <span class="op">=</span> <span class="ident">mem::take</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">slice</span>);
 				<span class="kw">let</span> (<span class="ident">rest</span>, <span class="ident">out</span>) <span class="op">=</span> <span class="ident">slice</span>.<span class="ident">split_at_unchecked_mut_noalias</span>(<span class="ident">idx</span>);
 				<span class="self">self</span>.<span class="ident">slice</span> <span class="op">=</span> <span class="ident">rest</span>;
 				<span class="prelude-val">Some</span>(<span class="ident">out</span>.<span class="ident">get_unchecked_mut</span>(<span class="number">1</span> ..))
@@ -4197,7 +4202,7 @@
 }
 
 <span class="macro">split!</span>(<span class="ident">SplitInclusive</span> =&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">BitSlice</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">O</span><span class="op">&gt;</span> {
-	<span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
 		<span class="kw">if</span> <span class="self">self</span>.<span class="ident">done</span> {
 			<span class="kw">return</span> <span class="prelude-val">None</span>;
 		}
@@ -4216,7 +4221,7 @@
 		<span class="prelude-val">Some</span>(<span class="ident">out</span>)
 	}
 
-	<span class="kw">fn</span> <span class="ident">next_back</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">next_back</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
 		<span class="kw">if</span> <span class="self">self</span>.<span class="ident">done</span> {
 			<span class="kw">return</span> <span class="prelude-val">None</span>;
 		}
@@ -4258,11 +4263,11 @@
 }
 
 <span class="macro">split!</span>(<span class="ident">SplitInclusiveMut</span> =&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">BitSlice</span><span class="op">&lt;</span><span class="ident">T::Alias</span>, <span class="ident">O</span><span class="op">&gt;</span> {
-	<span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
 		<span class="kw">if</span> <span class="self">self</span>.<span class="ident">done</span> {
 			<span class="kw">return</span> <span class="prelude-val">None</span>;
 		}
-		<span class="kw">let</span> <span class="ident">pred</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">pred</span>;
+		<span class="kw">let</span> <span class="ident">pred</span> <span class="op">=</span> <span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">pred</span>;
 		<span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">slice</span>.<span class="ident">len</span>();
 		<span class="kw">let</span> <span class="ident">idx</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">slice</span>.<span class="ident">iter</span>()
 			.<span class="ident">by_refs</span>()
@@ -4274,18 +4279,18 @@
 			<span class="self">self</span>.<span class="ident">done</span> <span class="op">=</span> <span class="bool-val">true</span>;
 		}
 		<span class="kw">let</span> (<span class="ident">out</span>, <span class="ident">rest</span>) <span class="op">=</span> <span class="kw">unsafe</span> {
-			<span class="ident">mem::take</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">slice</span>)
+			<span class="ident">mem::take</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">slice</span>)
 				.<span class="ident">split_at_unchecked_mut_noalias</span>(<span class="ident">idx</span>)
 		};
 		<span class="self">self</span>.<span class="ident">slice</span> <span class="op">=</span> <span class="ident">rest</span>;
 		<span class="prelude-val">Some</span>(<span class="ident">out</span>)
 	}
 
-	<span class="kw">fn</span> <span class="ident">next_back</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">next_back</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
 		<span class="kw">if</span> <span class="self">self</span>.<span class="ident">done</span> {
 			<span class="kw">return</span> <span class="prelude-val">None</span>;
 		}
-		<span class="kw">let</span> <span class="ident">pred</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">pred</span>;
+		<span class="kw">let</span> <span class="ident">pred</span> <span class="op">=</span> <span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">pred</span>;
 		<span class="kw">let</span> <span class="ident">idx</span> <span class="op">=</span> <span class="kw">if</span> <span class="self">self</span>.<span class="ident">slice</span>.<span class="ident">is_empty</span>() {
 			<span class="number">0</span>
 		}
@@ -4302,7 +4307,7 @@
 			<span class="self">self</span>.<span class="ident">done</span> <span class="op">=</span> <span class="bool-val">true</span>;
 		}
 		<span class="kw">let</span> (<span class="ident">rest</span>, <span class="ident">out</span>) <span class="op">=</span> <span class="kw">unsafe</span> {
-			<span class="ident">mem::take</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">slice</span>)
+			<span class="ident">mem::take</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">slice</span>)
 				.<span class="ident">split_at_unchecked_mut_noalias</span>(<span class="ident">idx</span>)
 		};
 		<span class="self">self</span>.<span class="ident">slice</span> <span class="op">=</span>  <span class="ident">rest</span>;
@@ -4327,10 +4332,10 @@
 }
 
 <span class="macro">split!</span>(<span class="ident">RSplit</span> =&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">BitSlice</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">O</span><span class="op">&gt;</span> {
-	<span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">split</span> <span class="op">=</span> <span class="ident">Split</span>::<span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T</span>, <span class="ident">O</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">P</span><span class="op">&gt;</span> {
-			<span class="ident">slice</span>: <span class="ident">mem::take</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">slice</span>),
-			<span class="ident">pred</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">pred</span>,
+	<span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">split</span> <span class="op">=</span> <span class="ident">Split</span>::<span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T</span>, <span class="ident">O</span>, <span class="kw-2">&amp;mut</span> <span class="ident">P</span><span class="op">&gt;</span> {
+			<span class="ident">slice</span>: <span class="ident">mem::take</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">slice</span>),
+			<span class="ident">pred</span>: <span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">pred</span>,
 			<span class="ident">done</span>: <span class="self">self</span>.<span class="ident">done</span>,
 		};
 		<span class="kw">let</span> <span class="ident">out</span> <span class="op">=</span> <span class="ident">split</span>.<span class="ident">next_back</span>();
@@ -4340,10 +4345,10 @@
 		<span class="ident">out</span>
 	}
 
-	<span class="kw">fn</span> <span class="ident">next_back</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">split</span> <span class="op">=</span> <span class="ident">Split</span>::<span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T</span>, <span class="ident">O</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">P</span><span class="op">&gt;</span> {
-			<span class="ident">slice</span>: <span class="ident">mem::take</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">slice</span>),
-			<span class="ident">pred</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">pred</span>,
+	<span class="kw">fn</span> <span class="ident">next_back</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">split</span> <span class="op">=</span> <span class="ident">Split</span>::<span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T</span>, <span class="ident">O</span>, <span class="kw-2">&amp;mut</span> <span class="ident">P</span><span class="op">&gt;</span> {
+			<span class="ident">slice</span>: <span class="ident">mem::take</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">slice</span>),
+			<span class="ident">pred</span>: <span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">pred</span>,
 			<span class="ident">done</span>: <span class="self">self</span>.<span class="ident">done</span>,
 		};
 		<span class="kw">let</span> <span class="ident">out</span> <span class="op">=</span> <span class="ident">split</span>.<span class="ident">next</span>();
@@ -4370,10 +4375,10 @@
 }
 
 <span class="macro">split!</span>(<span class="ident">RSplitMut</span> =&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">BitSlice</span><span class="op">&lt;</span><span class="ident">T::Alias</span>, <span class="ident">O</span><span class="op">&gt;</span> {
-	<span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">split</span> <span class="op">=</span> <span class="ident">SplitMut</span>::<span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T</span>, <span class="ident">O</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">P</span><span class="op">&gt;</span> {
-			<span class="ident">slice</span>: <span class="ident">mem::take</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">slice</span>),
-			<span class="ident">pred</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">pred</span>,
+	<span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">split</span> <span class="op">=</span> <span class="ident">SplitMut</span>::<span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T</span>, <span class="ident">O</span>, <span class="kw-2">&amp;mut</span> <span class="ident">P</span><span class="op">&gt;</span> {
+			<span class="ident">slice</span>: <span class="ident">mem::take</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">slice</span>),
+			<span class="ident">pred</span>: <span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">pred</span>,
 			<span class="ident">done</span>: <span class="self">self</span>.<span class="ident">done</span>,
 		};
 		<span class="kw">let</span> <span class="ident">out</span> <span class="op">=</span> <span class="ident">split</span>.<span class="ident">next_back</span>();
@@ -4383,10 +4388,10 @@
 		<span class="ident">out</span>
 	}
 
-	<span class="kw">fn</span> <span class="ident">next_back</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">split</span> <span class="op">=</span> <span class="ident">SplitMut</span>::<span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T</span>, <span class="ident">O</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">P</span><span class="op">&gt;</span> {
-			<span class="ident">slice</span>: <span class="ident">mem::take</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">slice</span>),
-			<span class="ident">pred</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">pred</span>,
+	<span class="kw">fn</span> <span class="ident">next_back</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">split</span> <span class="op">=</span> <span class="ident">SplitMut</span>::<span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T</span>, <span class="ident">O</span>, <span class="kw-2">&amp;mut</span> <span class="ident">P</span><span class="op">&gt;</span> {
+			<span class="ident">slice</span>: <span class="ident">mem::take</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">slice</span>),
+			<span class="ident">pred</span>: <span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">pred</span>,
 			<span class="ident">done</span>: <span class="self">self</span>.<span class="ident">done</span>,
 		};
 		<span class="kw">let</span> <span class="ident">out</span> <span class="op">=</span> <span class="ident">split</span>.<span class="ident">next</span>();
@@ -4401,7 +4406,7 @@
 <span class="kw">trait</span> <span class="ident">SplitIter</span>: <span class="ident">DoubleEndedIterator</span> {
 	<span class="doccomment">/// Marks the underlying iterator as complete, and extracts the remaining</span>
 	<span class="doccomment">/// portion of the bit-slice.</span>
-	<span class="kw">fn</span> <span class="ident">finish</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span>;
+	<span class="kw">fn</span> <span class="ident">finish</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span>;
 }
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
@@ -4489,7 +4494,7 @@
 			<span class="ident">P</span>: <span class="ident">FnMut</span>(<span class="ident">usize</span>, <span class="kw-2">&amp;</span><span class="ident">bool</span>) -&gt; <span class="ident">bool</span>
 		{
 			<span class="attribute">#[<span class="ident">inline</span>]</span>
-			<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">fmt</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Formatter</span>) -&gt; <span class="ident">fmt::Result</span> {
+			<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">fmt</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Formatter</span>) -&gt; <span class="ident">fmt::Result</span> {
 				<span class="ident">fmt</span>.<span class="ident">debug_struct</span>(<span class="macro">stringify!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">outer</span>))
 					.<span class="ident">field</span>(<span class="string">&quot;slice&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">slice</span>)
 					.<span class="ident">field</span>(<span class="string">&quot;count&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">count</span>)
@@ -4506,7 +4511,7 @@
 		{
 			<span class="kw">type</span> <span class="ident">Item</span> <span class="op">=</span> <span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">inner</span> <span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T</span>, <span class="ident">O</span>, <span class="ident">P</span><span class="op">&gt;</span> <span class="kw">as</span> <span class="ident">Iterator</span><span class="op">&gt;</span><span class="ident">::Item</span>;
 
-			<span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+			<span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
 				<span class="kw">match</span> <span class="self">self</span>.<span class="ident">count</span> {
 					<span class="number">0</span> =&gt; <span class="prelude-val">None</span>,
 					<span class="number">1</span> =&gt; {
@@ -4594,7 +4599,7 @@
 
 	<span class="macro">easy_iter!</span>();
 
-	<span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">pos</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">bits</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">coerce</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">Lsb0</span><span class="op">&gt;</span>() {
 			<span class="ident">bits</span>.<span class="ident">sp_first_one</span>()
 		}
@@ -4629,7 +4634,7 @@
 	<span class="ident">T</span>: <span class="ident">BitStore</span>,
 	<span class="ident">O</span>: <span class="ident">BitOrder</span>,
 {
-	<span class="kw">fn</span> <span class="ident">next_back</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">next_back</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">pos</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">bits</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">coerce</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">Lsb0</span><span class="op">&gt;</span>() {
 			<span class="ident">bits</span>.<span class="ident">sp_last_one</span>()
 		}
@@ -4721,7 +4726,7 @@
 
 	<span class="macro">easy_iter!</span>();
 
-	<span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">pos</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">bits</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">coerce</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">Lsb0</span><span class="op">&gt;</span>() {
 			<span class="ident">bits</span>.<span class="ident">sp_first_zero</span>()
 		}
@@ -4753,7 +4758,7 @@
 	<span class="ident">T</span>: <span class="ident">BitStore</span>,
 	<span class="ident">O</span>: <span class="ident">BitOrder</span>,
 {
-	<span class="kw">fn</span> <span class="ident">next_back</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">next_back</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">pos</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">bits</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">coerce</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">Lsb0</span><span class="op">&gt;</span>() {
 			<span class="ident">bits</span>.<span class="ident">sp_last_zero</span>()
 		}
@@ -4873,11 +4878,11 @@ the source iterator must also be provided so that methods on it can be named.
 		{
 			<span class="kw">type</span> <span class="ident">Item</span> <span class="op">=</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">item</span>;
 
-			<span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+			<span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
 				<span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">next</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">item</span><span class="op">|</span> <span class="kw">unsafe</span> { <span class="macro-nonterminal">$</span><span class="macro-nonterminal">map</span>(<span class="ident">item</span>) })
 			}
 
-			<span class="kw">fn</span> <span class="ident">nth</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+			<span class="kw">fn</span> <span class="ident">nth</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
 				<span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">nth</span>(<span class="ident">n</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">item</span><span class="op">|</span> <span class="kw">unsafe</span> { <span class="macro-nonterminal">$</span><span class="macro-nonterminal">map</span>(<span class="ident">item</span>) })
 			}
 
@@ -4901,11 +4906,11 @@ the source iterator must also be provided so that methods on it can be named.
 			$(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">p</span>: <span class="ident">FnMut</span>(<span class="ident">usize</span>, <span class="kw-2">&amp;</span><span class="ident">bool</span>) -&gt; <span class="ident">bool</span>,)<span class="question-mark">?</span>
 			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">from</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T</span>, <span class="ident">O</span>$(, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">p</span>)<span class="question-mark">?</span><span class="op">&gt;</span>: <span class="ident">DoubleEndedIterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">alias</span><span class="op">&gt;</span>,
 		{
-			<span class="kw">fn</span> <span class="ident">next_back</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+			<span class="kw">fn</span> <span class="ident">next_back</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
 				<span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">next_back</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">item</span><span class="op">|</span> <span class="kw">unsafe</span> { <span class="macro-nonterminal">$</span><span class="macro-nonterminal">map</span>(<span class="ident">item</span>) })
 			}
 
-			<span class="kw">fn</span> <span class="ident">nth_back</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+			<span class="kw">fn</span> <span class="ident">nth_back</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">n</span>: <span class="ident">usize</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
 				<span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">nth_back</span>(<span class="ident">n</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">item</span><span class="op">|</span> <span class="kw">unsafe</span> { <span class="macro-nonterminal">$</span><span class="macro-nonterminal">map</span>(<span class="ident">item</span>) })
 			}
 		}
@@ -4990,7 +4995,7 @@ the source iterator must also be provided so that methods on it can be named.
 	<span class="doccomment">/// See [`ChunksExactMut::take_remainder()`][0]</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// [0]: crate::slice::ChunksExactMut::take_remainder</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">take_remainder</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">BitSlice</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">O</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">take_remainder</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">BitSlice</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">O</span><span class="op">&gt;</span> {
 		<span class="kw">unsafe</span> { <span class="ident">BitSlice::unalias_mut</span>(<span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">take_remainder</span>()) }
 	}
 }
@@ -5010,11 +5015,10 @@ the source iterator must also be provided so that methods on it can be named.
 	<span class="doccomment">/// See [`RChunksExactMut::take_remainder()`][0]</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// [0]:  crate::slice::RChunksExactMut::take_remainder</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">take_remainder</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">BitSlice</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">O</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">take_remainder</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">BitSlice</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">O</span><span class="op">&gt;</span> {
 		<span class="kw">unsafe</span> { <span class="ident">BitSlice::unalias_mut</span>(<span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">take_remainder</span>()) }
 	}
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="bitvec" data-search-index-js="../../../search-index.js" data-search-js="../../../search.js"></div>
-    <script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script>
+</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="bitvec" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.60.0 (7737e0b5c 2022-04-04)" ></div>
 </body></html>
