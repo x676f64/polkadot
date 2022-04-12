@@ -1632,6 +1632,10 @@
 <span id="1627">1627</span>
 <span id="1628">1628</span>
 <span id="1629">1629</span>
+<span id="1630">1630</span>
+<span id="1631">1631</span>
+<span id="1632">1632</span>
+<span id="1633">1633</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -1671,11 +1675,11 @@
 <span class="kw">use</span> <span class="ident">pallet_transaction_payment</span>::{<span class="ident">CurrencyAdapter</span>, <span class="ident">FeeDetails</span>, <span class="ident">RuntimeDispatchInfo</span>};
 <span class="kw">use</span> <span class="ident">parity_scale_codec</span>::{<span class="ident">Decode</span>, <span class="ident">Encode</span>, <span class="ident">MaxEncodedLen</span>};
 <span class="kw">use</span> <span class="ident">primitives::v2</span>::{
-	<span class="ident">AccountId</span>, <span class="ident">AccountIndex</span>, <span class="ident">Balance</span>, <span class="ident">BlockNumber</span>, <span class="ident">CandidateEvent</span>, <span class="ident">CommittedCandidateReceipt</span>,
-	<span class="ident">CoreState</span>, <span class="ident">GroupRotationInfo</span>, <span class="ident">Hash</span>, <span class="ident">Id</span> <span class="kw">as</span> <span class="ident">ParaId</span>, <span class="ident">InboundDownwardMessage</span>, <span class="ident">InboundHrmpMessage</span>,
-	<span class="ident">Moment</span>, <span class="ident">Nonce</span>, <span class="ident">OccupiedCoreAssumption</span>, <span class="ident">PersistedValidationData</span>, <span class="ident">PvfCheckStatement</span>,
-	<span class="ident">ScrapedOnChainVotes</span>, <span class="ident">SessionInfo</span>, <span class="ident">Signature</span>, <span class="ident">ValidationCode</span>, <span class="ident">ValidationCodeHash</span>, <span class="ident">ValidatorId</span>,
-	<span class="ident">ValidatorIndex</span>, <span class="ident">ValidatorSignature</span>,
+	<span class="ident">AccountId</span>, <span class="ident">AccountIndex</span>, <span class="ident">Balance</span>, <span class="ident">BlockNumber</span>, <span class="ident">CandidateEvent</span>, <span class="ident">CandidateHash</span>,
+	<span class="ident">CommittedCandidateReceipt</span>, <span class="ident">CoreState</span>, <span class="ident">DisputeState</span>, <span class="ident">GroupRotationInfo</span>, <span class="ident">Hash</span>, <span class="ident">Id</span> <span class="kw">as</span> <span class="ident">ParaId</span>,
+	<span class="ident">InboundDownwardMessage</span>, <span class="ident">InboundHrmpMessage</span>, <span class="ident">Moment</span>, <span class="ident">Nonce</span>, <span class="ident">OccupiedCoreAssumption</span>,
+	<span class="ident">PersistedValidationData</span>, <span class="ident">PvfCheckStatement</span>, <span class="ident">ScrapedOnChainVotes</span>, <span class="ident">SessionInfo</span>, <span class="ident">Signature</span>,
+	<span class="ident">ValidationCode</span>, <span class="ident">ValidationCodeHash</span>, <span class="ident">ValidatorId</span>, <span class="ident">ValidatorIndex</span>, <span class="ident">ValidatorSignature</span>,
 };
 <span class="kw">use</span> <span class="ident">runtime_common</span>::{
 	<span class="ident">assigned_slots</span>, <span class="ident">auctions</span>, <span class="ident">crowdloan</span>, <span class="ident">elections::OnChainSeqPhragmen</span>, <span class="ident">impl_runtime_weights</span>,
@@ -2850,7 +2854,7 @@
 		}
 	}
 
-	<span class="kw">impl</span> <span class="ident">primitives::v2::ParachainHost</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">Hash</span>, <span class="ident">BlockNumber</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
+	<span class="kw">impl</span> <span class="ident">primitives::runtime_api::ParachainHost</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">Hash</span>, <span class="ident">BlockNumber</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
 		<span class="kw">fn</span> <span class="ident">validators</span>() -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ValidatorId</span><span class="op">&gt;</span> {
 			<span class="ident">parachains_runtime_api_impl::validators</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>()
 		}
@@ -2946,6 +2950,10 @@
 			-&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ValidationCodeHash</span><span class="op">&gt;</span>
 		{
 			<span class="ident">parachains_runtime_api_impl::validation_code_hash</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>(<span class="ident">para_id</span>, <span class="ident">assumption</span>)
+		}
+
+		<span class="kw">fn</span> <span class="ident">staging_get_disputes</span>() -&gt; <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">SessionIndex</span>, <span class="ident">CandidateHash</span>, <span class="ident">DisputeState</span><span class="op">&lt;</span><span class="ident">BlockNumber</span><span class="op">&gt;</span>)<span class="op">&gt;</span> {
+			<span class="ident">runtime_parachains::runtime_api_impl::vstaging::get_session_disputes</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>()
 		}
 	}
 

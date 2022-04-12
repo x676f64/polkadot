@@ -588,6 +588,9 @@
 <span id="583">583</span>
 <span id="584">584</span>
 <span id="585">585</span>
+<span id="586">586</span>
+<span id="587">587</span>
+<span id="588">588</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -613,7 +616,10 @@
 <span class="attribute">#![<span class="ident">warn</span>(<span class="ident">missing_docs</span>)]</span>
 
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem_util::metrics</span>::{<span class="self">self</span>, <span class="ident">prometheus</span>};
-<span class="kw">use</span> <span class="ident">polkadot_primitives::v2</span>::{<span class="ident">Block</span>, <span class="ident">BlockId</span>, <span class="ident">Hash</span>, <span class="ident">ParachainHost</span>};
+<span class="kw">use</span> <span class="ident">polkadot_primitives</span>::{
+	<span class="ident">runtime_api::ParachainHost</span>,
+	<span class="ident">v2</span>::{<span class="ident">Block</span>, <span class="ident">BlockId</span>, <span class="ident">Hash</span>},
+};
 <span class="kw">use</span> <span class="ident">polkadot_subsystem</span>::{
 	<span class="ident">errors::RuntimeApiError</span>,
 	<span class="ident">messages</span>::{<span class="ident">RuntimeApiMessage</span>, <span class="ident">RuntimeApiRequest</span> <span class="kw">as</span> <span class="ident">Request</span>},
