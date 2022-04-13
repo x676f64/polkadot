@@ -1563,6 +1563,10 @@
 <span id="1558">1558</span>
 <span id="1559">1559</span>
 <span id="1560">1560</span>
+<span id="1561">1561</span>
+<span id="1562">1562</span>
+<span id="1563">1563</span>
+<span id="1564">1564</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -1598,7 +1602,6 @@
 <span class="kw">use</span> <span class="ident">frame_system::EnsureRoot</span>;
 <span class="kw">use</span> <span class="ident">pallet_grandpa</span>::{<span class="ident">fg_primitives</span>, <span class="ident">AuthorityId</span> <span class="kw">as</span> <span class="ident">GrandpaId</span>};
 <span class="kw">use</span> <span class="ident">pallet_im_online::sr25519::AuthorityId</span> <span class="kw">as</span> <span class="ident">ImOnlineId</span>;
-<span class="kw">use</span> <span class="ident">pallet_mmr_primitives</span> <span class="kw">as</span> <span class="ident">mmr</span>;
 <span class="kw">use</span> <span class="ident">pallet_session::historical</span> <span class="kw">as</span> <span class="ident">session_historical</span>;
 <span class="kw">use</span> <span class="ident">pallet_transaction_payment</span>::{<span class="ident">CurrencyAdapter</span>, <span class="ident">FeeDetails</span>, <span class="ident">RuntimeDispatchInfo</span>};
 <span class="kw">use</span> <span class="ident">parity_scale_codec</span>::{<span class="ident">Decode</span>, <span class="ident">Encode</span>, <span class="ident">MaxEncodedLen</span>};
@@ -1616,6 +1619,7 @@
 <span class="kw">use</span> <span class="ident">runtime_parachains</span>::{<span class="self">self</span>, <span class="ident">runtime_api_impl::v2</span> <span class="kw">as</span> <span class="ident">runtime_api_impl</span>};
 <span class="kw">use</span> <span class="ident">scale_info::TypeInfo</span>;
 <span class="kw">use</span> <span class="ident">sp_core</span>::{<span class="ident">OpaqueMetadata</span>, <span class="ident">RuntimeDebug</span>, <span class="ident">H256</span>};
+<span class="kw">use</span> <span class="ident">sp_mmr_primitives</span> <span class="kw">as</span> <span class="ident">mmr</span>;
 <span class="kw">use</span> <span class="ident">sp_runtime</span>::{
 	<span class="ident">create_runtime_str</span>, <span class="ident">generic</span>, <span class="ident">impl_opaque_keys</span>,
 	<span class="ident">traits</span>::{
@@ -2936,7 +2940,7 @@
 		}
 	}
 
-	<span class="kw">impl</span> <span class="ident">pallet_mmr_primitives::MmrApi</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">Hash</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
+	<span class="kw">impl</span> <span class="ident">mmr::MmrApi</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">Hash</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
 		<span class="kw">fn</span> <span class="ident">generate_proof</span>(<span class="ident">leaf_index</span>: <span class="ident">u64</span>)
 			-&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">mmr::EncodableOpaqueLeaf</span>, <span class="ident">mmr::Proof</span><span class="op">&lt;</span><span class="ident">Hash</span><span class="op">&gt;</span>), <span class="ident">mmr::Error</span><span class="op">&gt;</span>
 		{
@@ -2948,7 +2952,7 @@
 			-&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">mmr::Error</span><span class="op">&gt;</span>
 		{
 			<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">Leaf</span> <span class="op">=</span> <span class="op">&lt;</span>
-				<span class="op">&lt;</span><span class="ident">Runtime</span> <span class="kw">as</span> <span class="ident">pallet_mmr::Config</span><span class="op">&gt;</span><span class="ident">::LeafData</span> <span class="kw">as</span> <span class="ident">mmr::LeafDataProvider</span>
+				<span class="op">&lt;</span><span class="ident">Runtime</span> <span class="kw">as</span> <span class="ident">pallet_mmr::Config</span><span class="op">&gt;</span><span class="ident">::LeafData</span> <span class="kw">as</span> <span class="ident">pallet_mmr::LeafDataProvider</span>
 			<span class="op">&gt;</span><span class="ident">::LeafData</span>;
 
 			<span class="kw">let</span> <span class="ident">leaf</span>: <span class="ident">Leaf</span> <span class="op">=</span> <span class="ident">leaf</span>
@@ -2966,6 +2970,10 @@
 			<span class="kw">type</span> <span class="ident">MmrHashing</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">Runtime</span> <span class="kw">as</span> <span class="ident">pallet_mmr::Config</span><span class="op">&gt;</span><span class="ident">::Hashing</span>;
 			<span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">mmr::DataOrHash::Data</span>(<span class="ident">leaf</span>.<span class="ident">into_opaque_leaf</span>());
 			<span class="ident">pallet_mmr::verify_leaf_proof</span>::<span class="op">&lt;</span><span class="ident">MmrHashing</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="ident">root</span>, <span class="ident">node</span>, <span class="ident">proof</span>)
+		}
+
+		<span class="kw">fn</span> <span class="ident">mmr_root</span>() -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Hash</span>, <span class="ident">mmr::Error</span><span class="op">&gt;</span> {
+			<span class="prelude-val">Ok</span>(<span class="ident">Mmr::mmr_root</span>())
 		}
 	}
 

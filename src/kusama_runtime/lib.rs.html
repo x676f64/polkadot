@@ -2018,6 +2018,12 @@
 <span id="2013">2013</span>
 <span id="2014">2014</span>
 <span id="2015">2015</span>
+<span id="2016">2016</span>
+<span id="2017">2017</span>
+<span id="2018">2018</span>
+<span id="2019">2019</span>
+<span id="2020">2020</span>
+<span id="2021">2021</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -2082,10 +2088,10 @@
 <span class="kw">use</span> <span class="ident">frame_system::EnsureRoot</span>;
 <span class="kw">use</span> <span class="ident">pallet_grandpa</span>::{<span class="ident">fg_primitives</span>, <span class="ident">AuthorityId</span> <span class="kw">as</span> <span class="ident">GrandpaId</span>};
 <span class="kw">use</span> <span class="ident">pallet_im_online::sr25519::AuthorityId</span> <span class="kw">as</span> <span class="ident">ImOnlineId</span>;
-<span class="kw">use</span> <span class="ident">pallet_mmr_primitives</span> <span class="kw">as</span> <span class="ident">mmr</span>;
 <span class="kw">use</span> <span class="ident">pallet_session::historical</span> <span class="kw">as</span> <span class="ident">session_historical</span>;
 <span class="kw">use</span> <span class="ident">pallet_transaction_payment</span>::{<span class="ident">FeeDetails</span>, <span class="ident">RuntimeDispatchInfo</span>};
 <span class="kw">use</span> <span class="ident">sp_core::OpaqueMetadata</span>;
+<span class="kw">use</span> <span class="ident">sp_mmr_primitives</span> <span class="kw">as</span> <span class="ident">mmr</span>;
 <span class="kw">use</span> <span class="ident">sp_runtime</span>::{
 	<span class="ident">create_runtime_str</span>, <span class="ident">generic</span>, <span class="ident">impl_opaque_keys</span>,
 	<span class="ident">traits</span>::{
@@ -3815,6 +3821,12 @@
 			<span class="comment">// dummy implementation due to lack of MMR pallet.</span>
 			<span class="prelude-val">Err</span>(<span class="ident">mmr::Error::Verify</span>)
 		}
+
+		<span class="kw">fn</span> <span class="ident">mmr_root</span>() -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Hash</span>, <span class="ident">mmr::Error</span><span class="op">&gt;</span> {
+			<span class="comment">// dummy implementation due to lack of MMR pallet.</span>
+			<span class="prelude-val">Err</span>(<span class="ident">mmr::Error::Verify</span>)
+		}
+
 	}
 
 	<span class="kw">impl</span> <span class="ident">fg_primitives::GrandpaApi</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Runtime</span> {

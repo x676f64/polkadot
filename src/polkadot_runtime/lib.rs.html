@@ -2310,6 +2310,11 @@
 <span id="2305">2305</span>
 <span id="2306">2306</span>
 <span id="2307">2307</span>
+<span id="2308">2308</span>
+<span id="2309">2309</span>
+<span id="2310">2310</span>
+<span id="2311">2311</span>
+<span id="2312">2312</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -2365,7 +2370,6 @@
 <span class="kw">use</span> <span class="ident">frame_system::EnsureRoot</span>;
 <span class="kw">use</span> <span class="ident">pallet_grandpa</span>::{<span class="ident">fg_primitives</span>, <span class="ident">AuthorityId</span> <span class="kw">as</span> <span class="ident">GrandpaId</span>};
 <span class="kw">use</span> <span class="ident">pallet_im_online::sr25519::AuthorityId</span> <span class="kw">as</span> <span class="ident">ImOnlineId</span>;
-<span class="kw">use</span> <span class="ident">pallet_mmr_primitives</span> <span class="kw">as</span> <span class="ident">mmr</span>;
 <span class="kw">use</span> <span class="ident">pallet_session::historical</span> <span class="kw">as</span> <span class="ident">session_historical</span>;
 <span class="kw">use</span> <span class="ident">pallet_transaction_payment</span>::{<span class="ident">FeeDetails</span>, <span class="ident">RuntimeDispatchInfo</span>};
 <span class="kw">use</span> <span class="ident">parity_scale_codec</span>::{<span class="ident">Decode</span>, <span class="ident">Encode</span>, <span class="ident">MaxEncodedLen</span>};
@@ -2377,6 +2381,7 @@
 	<span class="ident">ValidationCodeHash</span>, <span class="ident">ValidatorId</span>, <span class="ident">ValidatorIndex</span>,
 };
 <span class="kw">use</span> <span class="ident">sp_core::OpaqueMetadata</span>;
+<span class="kw">use</span> <span class="ident">sp_mmr_primitives</span> <span class="kw">as</span> <span class="ident">mmr</span>;
 <span class="kw">use</span> <span class="ident">sp_runtime</span>::{
 	<span class="ident">create_runtime_str</span>,
 	<span class="ident">curve::PiecewiseLinear</span>,
@@ -4252,6 +4257,11 @@
 			<span class="ident">_leaf</span>: <span class="ident">mmr::EncodableOpaqueLeaf</span>,
 			<span class="ident">_proof</span>: <span class="ident">mmr::Proof</span><span class="op">&lt;</span><span class="ident">Hash</span><span class="op">&gt;</span>
 		) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">mmr::Error</span><span class="op">&gt;</span> {
+			<span class="comment">// dummy implementation due to lack of MMR pallet.</span>
+			<span class="prelude-val">Err</span>(<span class="ident">mmr::Error::Verify</span>)
+		}
+
+		<span class="kw">fn</span> <span class="ident">mmr_root</span>() -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Hash</span>, <span class="ident">mmr::Error</span><span class="op">&gt;</span> {
 			<span class="comment">// dummy implementation due to lack of MMR pallet.</span>
 			<span class="prelude-val">Err</span>(<span class="ident">mmr::Error::Verify</span>)
 		}

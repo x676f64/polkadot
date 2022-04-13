@@ -127,7 +127,7 @@ which is capped at CompactAssignments::LIMIT (T::MaxNominations).</li>
 <li>Writes are limited to the <code>origin</code> account key.</li>
 </ul>
 <h5 id="-9"><a href="#-9"></weight></a></h5></div></details><details class="rustdoc-toggle method-toggle" open><summary><section id="method.set_payee" class="method has-srclink"><span class="rightside"><a class="srclink" href="../src/pallet_staking/pallet/mod.rs.html#1127-1136">source</a></span><a href="#method.set_payee" class="anchor"></a><h4 class="code-header">pub fn <a href="#method.set_payee" class="fnname">set_payee</a>(<br>&nbsp;&nbsp;&nbsp;&nbsp;origin: <a class="type" href="../frame_system/pallet_prelude/type.OriginFor.html" title="type frame_system::pallet_prelude::OriginFor">OriginFor</a>&lt;T&gt;, <br>&nbsp;&nbsp;&nbsp;&nbsp;payee: <a class="enum" href="enum.RewardDestination.html" title="enum pallet_staking::RewardDestination">RewardDestination</a>&lt;T::<a class="associatedtype" href="../frame_system/pallet/trait.Config.html#associatedtype.AccountId" title="type frame_system::pallet::Config::AccountId">AccountId</a>&gt;<br>) -&gt; <a class="type" href="../frame_support/dispatch/type.DispatchResult.html" title="type frame_support::dispatch::DispatchResult">DispatchResult</a></h4></section></summary><div class="docblock"><p>(Re-)set the payment target for a controller.</p>
-<p>Effects will be felt at the beginning of the next era.</p>
+<p>Effects will be felt instantly (as soon as this function is completed successfully).</p>
 <p>The dispatch origin for this call must be <em>Signed</em> by the controller, not the stash.</p>
 <h5 id="-10"><a href="#-10"><weight></a></h5>
 <ul>
@@ -146,7 +146,7 @@ which is capped at CompactAssignments::LIMIT (T::MaxNominations).</li>
 </li>
 </ul>
 <h5 id="-11"><a href="#-11"></weight></a></h5></div></details><details class="rustdoc-toggle method-toggle" open><summary><section id="method.set_controller" class="method has-srclink"><span class="rightside"><a class="srclink" href="../src/pallet_staking/pallet/mod.rs.html#1155-1172">source</a></span><a href="#method.set_controller" class="anchor"></a><h4 class="code-header">pub fn <a href="#method.set_controller" class="fnname">set_controller</a>(<br>&nbsp;&nbsp;&nbsp;&nbsp;origin: <a class="type" href="../frame_system/pallet_prelude/type.OriginFor.html" title="type frame_system::pallet_prelude::OriginFor">OriginFor</a>&lt;T&gt;, <br>&nbsp;&nbsp;&nbsp;&nbsp;controller: &lt;T::<a class="associatedtype" href="../frame_system/pallet/trait.Config.html#associatedtype.Lookup" title="type frame_system::pallet::Config::Lookup">Lookup</a> as <a class="trait" href="../sp_runtime/traits/trait.StaticLookup.html" title="trait sp_runtime::traits::StaticLookup">StaticLookup</a>&gt;::<a class="associatedtype" href="../sp_runtime/traits/trait.StaticLookup.html#associatedtype.Source" title="type sp_runtime::traits::StaticLookup::Source">Source</a><br>) -&gt; <a class="type" href="../frame_support/dispatch/type.DispatchResult.html" title="type frame_support::dispatch::DispatchResult">DispatchResult</a></h4></section></summary><div class="docblock"><p>(Re-)set the controller of a stash.</p>
-<p>Effects will be felt at the beginning of the next era.</p>
+<p>Effects will be felt instantly (as soon as this function is completed successfully).</p>
 <p>The dispatch origin for this call must be <em>Signed</em> by the stash, not the controller.</p>
 <h5 id="-12"><a href="#-12"><weight></a></h5>
 <ul>
