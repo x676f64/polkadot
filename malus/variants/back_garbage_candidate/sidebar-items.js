@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["BackGarbageCandidate","Generates an overseer that exposes bad behavior."],["BribedPassage",""],["BribedPassageInner",""]]});
+initSidebarItems({"struct":[["BackGarbageCandidate","Generates an overseer that replaces the candidate validation subsystem with our malicious variant."]]});

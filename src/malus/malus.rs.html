@@ -129,6 +129,8 @@
 <span id="124">124</span>
 <span id="125">125</span>
 <span id="126">126</span>
+<span id="127">127</span>
+<span id="128">128</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -168,7 +170,7 @@
 	<span class="doccomment">/// Back a candidate with a specifically crafted proof of validity.</span>
 	<span class="ident">BackGarbageCandidate</span>(<span class="ident">RunCmd</span>),
 	<span class="doccomment">/// Delayed disputing of ancestors that are perfectly fine.</span>
-	<span class="ident">DisputeAncestor</span>(<span class="ident">RunCmd</span>),
+	<span class="ident">DisputeAncestor</span>(<span class="ident">DisputeAncestorOptions</span>),
 
 	<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">missing_docs</span>)]</span>
 	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">name</span> <span class="op">=</span> <span class="string">&quot;prepare-worker&quot;</span>, <span class="ident">hide</span> <span class="op">=</span> <span class="bool-val">true</span>)]</span>
@@ -197,9 +199,11 @@
 			<span class="ident">NemesisVariant::BackGarbageCandidate</span>(<span class="ident">cmd</span>) =&gt;
 				<span class="ident">polkadot_cli::run_node</span>(<span class="ident">run_cmd</span>(<span class="ident">cmd</span>), <span class="ident">BackGarbageCandidate</span>)<span class="question-mark">?</span>,
 			<span class="ident">NemesisVariant::SuggestGarbageCandidate</span>(<span class="ident">cmd</span>) =&gt;
-				<span class="ident">polkadot_cli::run_node</span>(<span class="ident">run_cmd</span>(<span class="ident">cmd</span>), <span class="ident">SuggestGarbageCandidate</span>)<span class="question-mark">?</span>,
-			<span class="ident">NemesisVariant::DisputeAncestor</span>(<span class="ident">cmd</span>) =&gt;
-				<span class="ident">polkadot_cli::run_node</span>(<span class="ident">run_cmd</span>(<span class="ident">cmd</span>), <span class="ident">DisputeValidCandidates</span>)<span class="question-mark">?</span>,
+				<span class="ident">polkadot_cli::run_node</span>(<span class="ident">run_cmd</span>(<span class="ident">cmd</span>), <span class="ident">BackGarbageCandidateWrapper</span>)<span class="question-mark">?</span>,
+			<span class="ident">NemesisVariant::DisputeAncestor</span>(<span class="ident">opts</span>) =&gt; <span class="ident">polkadot_cli::run_node</span>(
+				<span class="ident">run_cmd</span>(<span class="ident">opts</span>.<span class="ident">clone</span>().<span class="ident">cmd</span>),
+				<span class="ident">DisputeValidCandidates::new</span>(<span class="ident">opts</span>),
+			)<span class="question-mark">?</span>,
 			<span class="ident">NemesisVariant::PvfPrepareWorker</span>(<span class="ident">cmd</span>) =&gt; {
 				<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">target_os</span> <span class="op">=</span> <span class="string">&quot;android&quot;</span>)]</span>
 				{
@@ -251,7 +255,7 @@
 			<span class="ident">variant</span>: <span class="ident">NemesisVariant::DisputeAncestor</span>(<span class="ident">run</span>),
 			..
 		} =&gt; {
-			<span class="macro">assert!</span>(<span class="ident">run</span>.<span class="ident">base</span>.<span class="ident">bob</span>);
+			<span class="macro">assert!</span>(<span class="ident">run</span>.<span class="ident">cmd</span>.<span class="ident">base</span>.<span class="ident">bob</span>);
 		});
 	}
 }

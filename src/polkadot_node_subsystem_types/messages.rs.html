@@ -964,13 +964,13 @@
 	<span class="ident">SignedFullStatement</span>, <span class="ident">ValidationResult</span>,
 };
 <span class="kw">use</span> <span class="ident">polkadot_primitives::v2</span>::{
-	<span class="ident">AuthorityDiscoveryId</span>, <span class="ident">BackedCandidate</span>, <span class="ident">BlockNumber</span>, <span class="ident">CandidateDescriptor</span>, <span class="ident">CandidateEvent</span>,
-	<span class="ident">CandidateHash</span>, <span class="ident">CandidateIndex</span>, <span class="ident">CandidateReceipt</span>, <span class="ident">CollatorId</span>, <span class="ident">CommittedCandidateReceipt</span>,
-	<span class="ident">CoreState</span>, <span class="ident">GroupIndex</span>, <span class="ident">GroupRotationInfo</span>, <span class="ident">Hash</span>, <span class="ident">Header</span> <span class="kw">as</span> <span class="ident">BlockHeader</span>, <span class="ident">Id</span> <span class="kw">as</span> <span class="ident">ParaId</span>,
-	<span class="ident">InboundDownwardMessage</span>, <span class="ident">InboundHrmpMessage</span>, <span class="ident">MultiDisputeStatementSet</span>, <span class="ident">OccupiedCoreAssumption</span>,
-	<span class="ident">PersistedValidationData</span>, <span class="ident">PvfCheckStatement</span>, <span class="ident">SessionIndex</span>, <span class="ident">SessionInfo</span>,
-	<span class="ident">SignedAvailabilityBitfield</span>, <span class="ident">SignedAvailabilityBitfields</span>, <span class="ident">ValidationCode</span>, <span class="ident">ValidationCodeHash</span>,
-	<span class="ident">ValidatorId</span>, <span class="ident">ValidatorIndex</span>, <span class="ident">ValidatorSignature</span>,
+	<span class="ident">AuthorityDiscoveryId</span>, <span class="ident">BackedCandidate</span>, <span class="ident">BlockNumber</span>, <span class="ident">CandidateEvent</span>, <span class="ident">CandidateHash</span>,
+	<span class="ident">CandidateIndex</span>, <span class="ident">CandidateReceipt</span>, <span class="ident">CollatorId</span>, <span class="ident">CommittedCandidateReceipt</span>, <span class="ident">CoreState</span>, <span class="ident">GroupIndex</span>,
+	<span class="ident">GroupRotationInfo</span>, <span class="ident">Hash</span>, <span class="ident">Header</span> <span class="kw">as</span> <span class="ident">BlockHeader</span>, <span class="ident">Id</span> <span class="kw">as</span> <span class="ident">ParaId</span>, <span class="ident">InboundDownwardMessage</span>,
+	<span class="ident">InboundHrmpMessage</span>, <span class="ident">MultiDisputeStatementSet</span>, <span class="ident">OccupiedCoreAssumption</span>, <span class="ident">PersistedValidationData</span>,
+	<span class="ident">PvfCheckStatement</span>, <span class="ident">SessionIndex</span>, <span class="ident">SessionInfo</span>, <span class="ident">SignedAvailabilityBitfield</span>,
+	<span class="ident">SignedAvailabilityBitfields</span>, <span class="ident">ValidationCode</span>, <span class="ident">ValidationCodeHash</span>, <span class="ident">ValidatorId</span>, <span class="ident">ValidatorIndex</span>,
+	<span class="ident">ValidatorSignature</span>,
 };
 <span class="kw">use</span> <span class="ident">polkadot_statement_table::v2::Misbehavior</span>;
 <span class="kw">use</span> <span class="ident">std</span>::{
@@ -1051,14 +1051,14 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// This will implicitly attempt to gather the `PersistedValidationData` and `ValidationCode`</span>
 	<span class="doccomment">/// from the runtime API of the chain, based on the `relay_parent`</span>
-	<span class="doccomment">/// of the `CandidateDescriptor`.</span>
+	<span class="doccomment">/// of the `CandidateReceipt`.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// This will also perform checking of validation outputs against the acceptance criteria.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// If there is no state available which can provide this data or the core for</span>
 	<span class="doccomment">/// the para is not free at the relay-parent, an error is returned.</span>
 	<span class="ident">ValidateFromChainState</span>(
-		<span class="ident">CandidateDescriptor</span>,
+		<span class="ident">CandidateReceipt</span>,
 		<span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">PoV</span><span class="op">&gt;</span>,
 		<span class="doccomment">/// Execution timeout</span>
 		<span class="ident">Duration</span>,
@@ -1076,7 +1076,7 @@
 	<span class="ident">ValidateFromExhaustive</span>(
 		<span class="ident">PersistedValidationData</span>,
 		<span class="ident">ValidationCode</span>,
-		<span class="ident">CandidateDescriptor</span>,
+		<span class="ident">CandidateReceipt</span>,
 		<span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">PoV</span><span class="op">&gt;</span>,
 		<span class="doccomment">/// Execution timeout</span>
 		<span class="ident">Duration</span>,

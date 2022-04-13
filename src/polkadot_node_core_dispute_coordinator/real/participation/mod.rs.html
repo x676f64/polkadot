@@ -429,16 +429,6 @@
 <span id="424">424</span>
 <span id="425">425</span>
 <span id="426">426</span>
-<span id="427">427</span>
-<span id="428">428</span>
-<span id="429">429</span>
-<span id="430">430</span>
-<span id="431">431</span>
-<span id="432">432</span>
-<span id="433">433</span>
-<span id="434">434</span>
-<span id="435">435</span>
-<span id="436">436</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -803,7 +793,7 @@
 			<span class="ident">CandidateValidationMessage::ValidateFromExhaustive</span>(
 				<span class="ident">available_data</span>.<span class="ident">validation_data</span>,
 				<span class="ident">validation_code</span>,
-				<span class="ident">req</span>.<span class="ident">candidate_receipt</span>().<span class="ident">descriptor</span>.<span class="ident">clone</span>(),
+				<span class="ident">req</span>.<span class="ident">candidate_receipt</span>().<span class="ident">clone</span>(),
 				<span class="ident">available_data</span>.<span class="ident">pov</span>,
 				<span class="ident">APPROVAL_EXECUTION_TIMEOUT</span>,
 				<span class="ident">validation_tx</span>,
@@ -834,6 +824,7 @@
 
 			<span class="ident">send_result</span>(<span class="kw-2">&amp;mut</span> <span class="ident">result_sender</span>, <span class="ident">req</span>, <span class="ident">ParticipationOutcome::Invalid</span>).<span class="kw">await</span>;
 		},
+
 		<span class="prelude-val">Ok</span>(<span class="prelude-val">Ok</span>(<span class="ident">ValidationResult::Invalid</span>(<span class="ident">invalid</span>))) =&gt; {
 			<span class="macro">gum::warn!</span>(
 				<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
@@ -844,19 +835,8 @@
 
 			<span class="ident">send_result</span>(<span class="kw-2">&amp;mut</span> <span class="ident">result_sender</span>, <span class="ident">req</span>, <span class="ident">ParticipationOutcome::Invalid</span>).<span class="kw">await</span>;
 		},
-		<span class="prelude-val">Ok</span>(<span class="prelude-val">Ok</span>(<span class="ident">ValidationResult::Valid</span>(<span class="ident">commitments</span>, <span class="kw">_</span>))) =&gt; {
-			<span class="kw">if</span> <span class="ident">commitments</span>.<span class="ident">hash</span>() <span class="op">!</span><span class="op">=</span> <span class="ident">req</span>.<span class="ident">candidate_receipt</span>().<span class="ident">commitments_hash</span> {
-				<span class="macro">gum::warn!</span>(
-					<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
-					<span class="ident">expected</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">req</span>.<span class="ident">candidate_receipt</span>().<span class="ident">commitments_hash</span>,
-					<span class="ident">got</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">commitments</span>.<span class="ident">hash</span>(),
-					<span class="string">&quot;Candidate is valid but commitments hash doesn&#39;t match&quot;</span>,
-				);
-
-				<span class="ident">send_result</span>(<span class="kw-2">&amp;mut</span> <span class="ident">result_sender</span>, <span class="ident">req</span>, <span class="ident">ParticipationOutcome::Invalid</span>).<span class="kw">await</span>;
-			} <span class="kw">else</span> {
-				<span class="ident">send_result</span>(<span class="kw-2">&amp;mut</span> <span class="ident">result_sender</span>, <span class="ident">req</span>, <span class="ident">ParticipationOutcome::Valid</span>).<span class="kw">await</span>;
-			}
+		<span class="prelude-val">Ok</span>(<span class="prelude-val">Ok</span>(<span class="ident">ValidationResult::Valid</span>(<span class="kw">_</span>, <span class="kw">_</span>))) =&gt; {
+			<span class="ident">send_result</span>(<span class="kw-2">&amp;mut</span> <span class="ident">result_sender</span>, <span class="ident">req</span>, <span class="ident">ParticipationOutcome::Valid</span>).<span class="kw">await</span>;
 		},
 	}
 }
