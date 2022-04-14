@@ -192,6 +192,8 @@
 <span id="187">187</span>
 <span id="188">188</span>
 <span id="189">189</span>
+<span id="190">190</span>
+<span id="191">191</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2022 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -223,7 +225,7 @@
 	<span class="ident">ChildParachainAsNative</span>, <span class="ident">ChildParachainConvertsVia</span>, <span class="ident">ChildSystemParachainAsSuperuser</span>,
 	<span class="ident">CurrencyAdapter</span> <span class="kw">as</span> <span class="ident">XcmCurrencyAdapter</span>, <span class="ident">FixedWeightBounds</span>, <span class="ident">IsChildSystemParachain</span>, <span class="ident">IsConcrete</span>,
 	<span class="ident">LocationInverter</span>, <span class="ident">SignedAccountId32AsNative</span>, <span class="ident">SignedToAccountId32</span>, <span class="ident">SovereignSignedViaLocation</span>,
-	<span class="ident">TakeWeightCredit</span>, <span class="ident">UsingComponents</span>,
+	<span class="ident">TakeWeightCredit</span>, <span class="ident">UsingComponents</span>, <span class="ident">WeightInfoBounds</span>,
 };
 
 <span class="macro">parameter_types!</span> {
@@ -295,7 +297,8 @@
 
 <span class="macro">parameter_types!</span> {
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">Kusama</span>: <span class="ident">MultiAssetFilter</span> <span class="op">=</span> <span class="ident">Wild</span>(<span class="ident">AllOf</span> { <span class="ident">fun</span>: <span class="ident">WildFungible</span>, <span class="ident">id</span>: <span class="ident">Concrete</span>(<span class="ident">KsmLocation::get</span>()) });
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">KusamaForStatemine</span>: (<span class="ident">MultiAssetFilter</span>, <span class="ident">MultiLocation</span>) <span class="op">=</span> (<span class="ident">Kusama::get</span>(), <span class="ident">Parachain</span>(<span class="number">1000</span>).<span class="ident">into</span>());
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">Statemine</span>: <span class="ident">MultiLocation</span> <span class="op">=</span> <span class="ident">Parachain</span>(<span class="number">1000</span>).<span class="ident">into</span>();
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">KusamaForStatemine</span>: (<span class="ident">MultiAssetFilter</span>, <span class="ident">MultiLocation</span>) <span class="op">=</span> (<span class="ident">Kusama::get</span>(), <span class="ident">Statemine::get</span>());
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">KusamaForEncointer</span>: (<span class="ident">MultiAssetFilter</span>, <span class="ident">MultiLocation</span>) <span class="op">=</span> (<span class="ident">Kusama::get</span>(), <span class="ident">Parachain</span>(<span class="number">1001</span>).<span class="ident">into</span>());
 }
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">TrustedTeleporters</span> <span class="op">=</span>
@@ -331,7 +334,8 @@
 	<span class="kw">type</span> <span class="ident">IsTeleporter</span> <span class="op">=</span> <span class="ident">TrustedTeleporters</span>;
 	<span class="kw">type</span> <span class="ident">LocationInverter</span> <span class="op">=</span> <span class="ident">LocationInverter</span><span class="op">&lt;</span><span class="ident">Ancestry</span><span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">Barrier</span> <span class="op">=</span> <span class="ident">Barrier</span>;
-	<span class="kw">type</span> <span class="ident">Weigher</span> <span class="op">=</span> <span class="ident">FixedWeightBounds</span><span class="op">&lt;</span><span class="ident">BaseXcmWeight</span>, <span class="ident">Call</span>, <span class="ident">MaxInstructions</span><span class="op">&gt;</span>;
+	<span class="kw">type</span> <span class="ident">Weigher</span> <span class="op">=</span>
+		<span class="ident">WeightInfoBounds</span><span class="op">&lt;</span><span class="ident"><span class="kw">crate</span>::weights::xcm::KusamaXcmWeight</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span>, <span class="ident">Call</span>, <span class="ident">MaxInstructions</span><span class="op">&gt;</span>;
 	<span class="comment">// The weight trader piggybacks on the existing transaction-fee conversion logic.</span>
 	<span class="kw">type</span> <span class="ident">Trader</span> <span class="op">=</span> <span class="ident">UsingComponents</span><span class="op">&lt;</span><span class="ident">WeightToFee</span>, <span class="ident">KsmLocation</span>, <span class="ident">AccountId</span>, <span class="ident">Balances</span>, <span class="ident">ToAuthor</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">ResponseHandler</span> <span class="op">=</span> <span class="ident">XcmPallet</span>;

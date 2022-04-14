@@ -2024,6 +2024,76 @@
 <span id="2019">2019</span>
 <span id="2020">2020</span>
 <span id="2021">2021</span>
+<span id="2022">2022</span>
+<span id="2023">2023</span>
+<span id="2024">2024</span>
+<span id="2025">2025</span>
+<span id="2026">2026</span>
+<span id="2027">2027</span>
+<span id="2028">2028</span>
+<span id="2029">2029</span>
+<span id="2030">2030</span>
+<span id="2031">2031</span>
+<span id="2032">2032</span>
+<span id="2033">2033</span>
+<span id="2034">2034</span>
+<span id="2035">2035</span>
+<span id="2036">2036</span>
+<span id="2037">2037</span>
+<span id="2038">2038</span>
+<span id="2039">2039</span>
+<span id="2040">2040</span>
+<span id="2041">2041</span>
+<span id="2042">2042</span>
+<span id="2043">2043</span>
+<span id="2044">2044</span>
+<span id="2045">2045</span>
+<span id="2046">2046</span>
+<span id="2047">2047</span>
+<span id="2048">2048</span>
+<span id="2049">2049</span>
+<span id="2050">2050</span>
+<span id="2051">2051</span>
+<span id="2052">2052</span>
+<span id="2053">2053</span>
+<span id="2054">2054</span>
+<span id="2055">2055</span>
+<span id="2056">2056</span>
+<span id="2057">2057</span>
+<span id="2058">2058</span>
+<span id="2059">2059</span>
+<span id="2060">2060</span>
+<span id="2061">2061</span>
+<span id="2062">2062</span>
+<span id="2063">2063</span>
+<span id="2064">2064</span>
+<span id="2065">2065</span>
+<span id="2066">2066</span>
+<span id="2067">2067</span>
+<span id="2068">2068</span>
+<span id="2069">2069</span>
+<span id="2070">2070</span>
+<span id="2071">2071</span>
+<span id="2072">2072</span>
+<span id="2073">2073</span>
+<span id="2074">2074</span>
+<span id="2075">2075</span>
+<span id="2076">2076</span>
+<span id="2077">2077</span>
+<span id="2078">2078</span>
+<span id="2079">2079</span>
+<span id="2080">2080</span>
+<span id="2081">2081</span>
+<span id="2082">2082</span>
+<span id="2083">2083</span>
+<span id="2084">2084</span>
+<span id="2085">2085</span>
+<span id="2086">2086</span>
+<span id="2087">2087</span>
+<span id="2088">2088</span>
+<span id="2089">2089</span>
+<span id="2090">2090</span>
+<span id="2091">2091</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -3626,6 +3696,9 @@
 		[<span class="ident">pallet_treasury</span>, <span class="ident">Treasury</span>]
 		[<span class="ident">pallet_utility</span>, <span class="ident">Utility</span>]
 		[<span class="ident">pallet_vesting</span>, <span class="ident">Vesting</span>]
+		<span class="comment">// XCM</span>
+		[<span class="ident">pallet_xcm_benchmarks::fungible</span>, <span class="ident">pallet_xcm_benchmarks::fungible::Pallet</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>]
+		[<span class="ident">pallet_xcm_benchmarks::generic</span>, <span class="ident">pallet_xcm_benchmarks::generic::Pallet</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>]
 	);
 }
 
@@ -3993,18 +4066,84 @@
 			<span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">frame_benchmarking::BenchmarkBatch</span><span class="op">&gt;</span>,
 			<span class="ident">sp_runtime::RuntimeString</span>,
 		<span class="op">&gt;</span> {
-			<span class="kw">use</span> <span class="ident">frame_benchmarking</span>::{<span class="ident">Benchmarking</span>, <span class="ident">BenchmarkBatch</span>, <span class="ident">TrackedStorageKey</span>};
+			<span class="kw">use</span> <span class="ident">frame_benchmarking</span>::{<span class="ident">Benchmarking</span>, <span class="ident">BenchmarkBatch</span>, <span class="ident">TrackedStorageKey</span>, <span class="ident">BenchmarkError</span>};
 			<span class="comment">// Trying to add benchmarks directly to some pallets caused cyclic dependency issues.</span>
 			<span class="comment">// To get around that, we separated the benchmarks into its own crate.</span>
 			<span class="kw">use</span> <span class="ident">pallet_session_benchmarking::Pallet</span> <span class="kw">as</span> <span class="ident">SessionBench</span>;
 			<span class="kw">use</span> <span class="ident">pallet_offences_benchmarking::Pallet</span> <span class="kw">as</span> <span class="ident">OffencesBench</span>;
 			<span class="kw">use</span> <span class="ident">frame_system_benchmarking::Pallet</span> <span class="kw">as</span> <span class="ident">SystemBench</span>;
 			<span class="kw">use</span> <span class="ident">frame_benchmarking::baseline::Pallet</span> <span class="kw">as</span> <span class="ident">Baseline</span>;
+			<span class="kw">use</span> <span class="ident">xcm::latest::prelude</span>::<span class="kw-2">*</span>;
+			<span class="kw">use</span> <span class="ident">xcm_config</span>::{<span class="ident">CheckAccount</span>, <span class="ident">KsmLocation</span>, <span class="ident">SovereignAccountOf</span>, <span class="ident">Statemine</span>, <span class="ident">XcmConfig</span>};
 
 			<span class="kw">impl</span> <span class="ident">pallet_session_benchmarking::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {}
 			<span class="kw">impl</span> <span class="ident">pallet_offences_benchmarking::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {}
 			<span class="kw">impl</span> <span class="ident">frame_system_benchmarking::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {}
 			<span class="kw">impl</span> <span class="ident">frame_benchmarking::baseline::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {}
+
+			<span class="kw">impl</span> <span class="ident">pallet_xcm_benchmarks::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
+				<span class="kw">type</span> <span class="ident">XcmConfig</span> <span class="op">=</span> <span class="ident">XcmConfig</span>;
+				<span class="kw">type</span> <span class="ident">AccountIdConverter</span> <span class="op">=</span> <span class="ident">SovereignAccountOf</span>;
+				<span class="kw">fn</span> <span class="ident">valid_destination</span>() -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">MultiLocation</span>, <span class="ident">BenchmarkError</span><span class="op">&gt;</span> {
+					<span class="prelude-val">Ok</span>(<span class="ident">Statemine::get</span>())
+				}
+				<span class="kw">fn</span> <span class="ident">worst_case_holding</span>() -&gt; <span class="ident">MultiAssets</span> {
+					<span class="comment">// Kusama only knows about KSM.</span>
+					<span class="macro">vec!</span>[<span class="ident">MultiAsset</span>{
+						<span class="ident">id</span>: <span class="ident">Concrete</span>(<span class="ident">KsmLocation::get</span>()),
+						<span class="ident">fun</span>: <span class="ident">Fungible</span>(<span class="number">1_000_000</span> <span class="op">*</span> <span class="ident">UNITS</span>),
+					}].<span class="ident">into</span>()
+				}
+			}
+
+			<span class="macro">parameter_types!</span> {
+				<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">TrustedTeleporter</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">MultiLocation</span>, <span class="ident">MultiAsset</span>)<span class="op">&gt;</span> <span class="op">=</span> <span class="prelude-val">Some</span>((
+					<span class="ident">Statemine::get</span>(),
+					<span class="ident">MultiAsset</span> { <span class="ident">fun</span>: <span class="ident">Fungible</span>(<span class="number">1</span> <span class="op">*</span> <span class="ident">UNITS</span>), <span class="ident">id</span>: <span class="ident">Concrete</span>(<span class="ident">KsmLocation::get</span>()) },
+				));
+				<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">TrustedReserve</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">MultiLocation</span>, <span class="ident">MultiAsset</span>)<span class="op">&gt;</span> <span class="op">=</span> <span class="prelude-val">Some</span>((
+					<span class="ident">Statemine::get</span>(),
+					<span class="ident">MultiAsset</span> { <span class="ident">fun</span>: <span class="ident">Fungible</span>(<span class="number">1</span> <span class="op">*</span> <span class="ident">UNITS</span>), <span class="ident">id</span>: <span class="ident">Concrete</span>(<span class="ident">KsmLocation::get</span>()) },
+				));
+			}
+
+			<span class="kw">impl</span> <span class="ident">pallet_xcm_benchmarks::fungible::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
+				<span class="kw">type</span> <span class="ident">TransactAsset</span> <span class="op">=</span> <span class="ident">Balances</span>;
+
+				<span class="kw">type</span> <span class="ident">CheckedAccount</span> <span class="op">=</span> <span class="ident">CheckAccount</span>;
+				<span class="kw">type</span> <span class="ident">TrustedTeleporter</span> <span class="op">=</span> <span class="ident">TrustedTeleporter</span>;
+				<span class="kw">type</span> <span class="ident">TrustedReserve</span> <span class="op">=</span> <span class="ident">TrustedReserve</span>;
+
+				<span class="kw">fn</span> <span class="ident">get_multi_asset</span>() -&gt; <span class="ident">MultiAsset</span> {
+					<span class="ident">MultiAsset</span> {
+						<span class="ident">id</span>: <span class="ident">Concrete</span>(<span class="ident">KsmLocation::get</span>()),
+						<span class="ident">fun</span>: <span class="ident">Fungible</span>(<span class="number">1</span> <span class="op">*</span> <span class="ident">UNITS</span>),
+					}
+				}
+			}
+
+			<span class="kw">impl</span> <span class="ident">pallet_xcm_benchmarks::generic::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
+				<span class="kw">type</span> <span class="ident">Call</span> <span class="op">=</span> <span class="ident">Call</span>;
+
+				<span class="kw">fn</span> <span class="ident">worst_case_response</span>() -&gt; (<span class="ident">u64</span>, <span class="ident">Response</span>) {
+					(<span class="number">0u64</span>, <span class="ident">Response::Version</span>(<span class="ident">Default::default</span>()))
+				}
+
+				<span class="kw">fn</span> <span class="ident">transact_origin</span>() -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">MultiLocation</span>, <span class="ident">BenchmarkError</span><span class="op">&gt;</span> {
+					<span class="prelude-val">Ok</span>(<span class="ident">Statemine::get</span>())
+				}
+
+				<span class="kw">fn</span> <span class="ident">subscribe_origin</span>() -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">MultiLocation</span>, <span class="ident">BenchmarkError</span><span class="op">&gt;</span> {
+					<span class="prelude-val">Ok</span>(<span class="ident">Statemine::get</span>())
+				}
+
+				<span class="kw">fn</span> <span class="ident">claimable_asset</span>() -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">MultiLocation</span>, <span class="ident">MultiLocation</span>, <span class="ident">MultiAssets</span>), <span class="ident">BenchmarkError</span><span class="op">&gt;</span> {
+					<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">Statemine::get</span>();
+					<span class="kw">let</span> <span class="ident">assets</span>: <span class="ident">MultiAssets</span> <span class="op">=</span> (<span class="ident">Concrete</span>(<span class="ident">KsmLocation::get</span>()), <span class="number">1_000</span> <span class="op">*</span> <span class="ident">UNITS</span>).<span class="ident">into</span>();
+					<span class="kw">let</span> <span class="ident">ticket</span> <span class="op">=</span> <span class="ident">MultiLocation</span> { <span class="ident">parents</span>: <span class="number">0</span>, <span class="ident">interior</span>: <span class="ident">Here</span> };
+					<span class="prelude-val">Ok</span>((<span class="ident">origin</span>, <span class="ident">ticket</span>, <span class="ident">assets</span>))
+				}
+			}
 
 			<span class="kw">let</span> <span class="ident">whitelist</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">TrackedStorageKey</span><span class="op">&gt;</span> <span class="op">=</span> <span class="macro">vec!</span>[
 				<span class="comment">// Block Number</span>
@@ -4019,6 +4158,8 @@
 				<span class="macro">hex_literal::hex!</span>(<span class="string">&quot;26aa394eea5630e07c48ae0c9558cef780d41e5e16056765bc8461851072c9d7&quot;</span>).<span class="ident">to_vec</span>().<span class="ident">into</span>(),
 				<span class="comment">// Treasury Account</span>
 				<span class="macro">hex_literal::hex!</span>(<span class="string">&quot;26aa394eea5630e07c48ae0c9558cef7b99d880ec681799c0cf30e8886371da95ecffd7b6c0f78751baa9d281e0bfa3a6d6f646c70792f74727372790000000000000000000000000000000000000000&quot;</span>).<span class="ident">to_vec</span>().<span class="ident">into</span>(),
+				<span class="comment">// Configuration ActiveConfig</span>
+				<span class="macro">hex_literal::hex!</span>(<span class="string">&quot;06de3d8a54d27e44a9d5ce189618f22db4b49d95320d9021994c850f25b8e385&quot;</span>).<span class="ident">to_vec</span>().<span class="ident">into</span>(),
 			];
 
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">batches</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="op">&lt;</span><span class="ident">BenchmarkBatch</span><span class="op">&gt;</span><span class="ident">::new</span>();
@@ -4026,7 +4167,6 @@
 
 			<span class="macro">add_benchmarks!</span>(<span class="ident">params</span>, <span class="ident">batches</span>);
 
-			<span class="kw">if</span> <span class="ident">batches</span>.<span class="ident">is_empty</span>() { <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="string">&quot;Benchmark not found for this pallet.&quot;</span>.<span class="ident">into</span>()) }
 			<span class="prelude-val">Ok</span>(<span class="ident">batches</span>)
 		}
 	}
