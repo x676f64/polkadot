@@ -1641,6 +1641,18 @@
 <span id="1636">1636</span>
 <span id="1637">1637</span>
 <span id="1638">1638</span>
+<span id="1639">1639</span>
+<span id="1640">1640</span>
+<span id="1641">1641</span>
+<span id="1642">1642</span>
+<span id="1643">1643</span>
+<span id="1644">1644</span>
+<span id="1645">1645</span>
+<span id="1646">1646</span>
+<span id="1647">1647</span>
+<span id="1648">1648</span>
+<span id="1649">1649</span>
+<span id="1650">1650</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -1665,7 +1677,7 @@
 
 <span class="kw">use</span> <span class="ident">authority_discovery_primitives::AuthorityId</span> <span class="kw">as</span> <span class="ident">AuthorityDiscoveryId</span>;
 <span class="kw">use</span> <span class="ident">beefy_primitives::crypto::AuthorityId</span> <span class="kw">as</span> <span class="ident">BeefyId</span>;
-<span class="kw">use</span> <span class="ident">frame_election_provider_support</span>::{<span class="ident">onchain::UnboundedExecution</span>, <span class="ident">SequentialPhragmen</span>};
+<span class="kw">use</span> <span class="ident">frame_election_provider_support</span>::{<span class="ident">onchain</span>, <span class="ident">SequentialPhragmen</span>};
 <span class="kw">use</span> <span class="ident">frame_support</span>::{
 	<span class="ident">construct_runtime</span>, <span class="ident">parameter_types</span>,
 	<span class="ident">traits</span>::{<span class="ident">Contains</span>, <span class="ident">InstanceFilter</span>, <span class="ident">KeyOwnerProofSystem</span>, <span class="ident">OnRuntimeUpgrade</span>},
@@ -1686,7 +1698,7 @@
 	<span class="ident">ValidationCode</span>, <span class="ident">ValidationCodeHash</span>, <span class="ident">ValidatorId</span>, <span class="ident">ValidatorIndex</span>, <span class="ident">ValidatorSignature</span>,
 };
 <span class="kw">use</span> <span class="ident">runtime_common</span>::{
-	<span class="ident">assigned_slots</span>, <span class="ident">auctions</span>, <span class="ident">crowdloan</span>, <span class="ident">elections::OnChainSeqPhragmen</span>, <span class="ident">impl_runtime_weights</span>,
+	<span class="ident">assigned_slots</span>, <span class="ident">auctions</span>, <span class="ident">crowdloan</span>, <span class="ident">elections::OnChainAccuracy</span>, <span class="ident">impl_runtime_weights</span>,
 	<span class="ident">impls::ToAuthor</span>, <span class="ident">paras_registrar</span>, <span class="ident">paras_sudo_wrapper</span>, <span class="ident">slots</span>, <span class="ident">BlockHashCount</span>, <span class="ident">BlockLength</span>,
 	<span class="ident">CurrencyToVote</span>, <span class="ident">SlowAdjustingFeeUpdate</span>,
 };
@@ -2015,6 +2027,14 @@
 	<span class="op">&gt;</span>(<span class="number">16</span>)
 );
 
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">OnChainSeqPhragmen</span>;
+<span class="kw">impl</span> <span class="ident">onchain::Config</span> <span class="kw">for</span> <span class="ident">OnChainSeqPhragmen</span> {
+	<span class="kw">type</span> <span class="ident">System</span> <span class="op">=</span> <span class="ident">Runtime</span>;
+	<span class="kw">type</span> <span class="ident">Solver</span> <span class="op">=</span> <span class="ident">SequentialPhragmen</span><span class="op">&lt;</span><span class="ident">AccountId</span>, <span class="ident">OnChainAccuracy</span><span class="op">&gt;</span>;
+	<span class="kw">type</span> <span class="ident">DataProvider</span> <span class="op">=</span> <span class="ident">Staking</span>;
+	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> <span class="ident">weights::frame_election_provider_support::WeightInfo</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>;
+}
+
 <span class="kw">impl</span> <span class="ident">pallet_election_provider_multi_phase::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
 	<span class="kw">type</span> <span class="ident">Event</span> <span class="op">=</span> <span class="ident">Event</span>;
 	<span class="kw">type</span> <span class="ident">Currency</span> <span class="op">=</span> <span class="ident">Balances</span>;
@@ -2037,7 +2057,7 @@
 	<span class="kw">type</span> <span class="ident">DataProvider</span> <span class="op">=</span> <span class="ident">Staking</span>;
 	<span class="kw">type</span> <span class="ident">Solution</span> <span class="op">=</span> <span class="ident">NposCompactSolution16</span>;
 	<span class="kw">type</span> <span class="ident">Fallback</span> <span class="op">=</span> <span class="ident">pallet_election_provider_multi_phase::NoFallback</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>;
-	<span class="kw">type</span> <span class="ident">GovernanceFallback</span> <span class="op">=</span> <span class="ident">UnboundedExecution</span><span class="op">&lt;</span><span class="ident">OnChainSeqPhragmen</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">Staking</span><span class="op">&gt;</span><span class="op">&gt;</span>;
+	<span class="kw">type</span> <span class="ident">GovernanceFallback</span> <span class="op">=</span> <span class="ident">onchain::UnboundedExecution</span><span class="op">&lt;</span><span class="ident">OnChainSeqPhragmen</span><span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">Solver</span> <span class="op">=</span> <span class="ident">SequentialPhragmen</span><span class="op">&lt;</span>
 		<span class="ident">AccountId</span>,
 		<span class="ident">pallet_election_provider_multi_phase::SolutionAccuracyOf</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>,
@@ -2106,7 +2126,7 @@
 	<span class="kw">type</span> <span class="ident">OffendingValidatorsThreshold</span> <span class="op">=</span> <span class="ident">OffendingValidatorsThreshold</span>;
 	<span class="kw">type</span> <span class="ident">NextNewSession</span> <span class="op">=</span> <span class="ident">Session</span>;
 	<span class="kw">type</span> <span class="ident">ElectionProvider</span> <span class="op">=</span> <span class="ident">ElectionProviderMultiPhase</span>;
-	<span class="kw">type</span> <span class="ident">GenesisElectionProvider</span> <span class="op">=</span> <span class="ident">runtime_common::elections::GenesisElectionOf</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">Staking</span><span class="op">&gt;</span>;
+	<span class="kw">type</span> <span class="ident">GenesisElectionProvider</span> <span class="op">=</span> <span class="ident">onchain::UnboundedExecution</span><span class="op">&lt;</span><span class="ident">OnChainSeqPhragmen</span><span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">VoterList</span> <span class="op">=</span> <span class="ident">BagsList</span>;
 	<span class="kw">type</span> <span class="ident">MaxUnlockingChunks</span> <span class="op">=</span> <span class="ident">frame_support::traits::ConstU32</span><span class="op">&lt;</span><span class="number">32</span><span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">BenchmarkingConfig</span> <span class="op">=</span> <span class="ident">runtime_common::StakingBenchmarkingConfig</span>;
@@ -2779,6 +2799,7 @@
 		[<span class="ident">pallet_bags_list</span>, <span class="ident">BagsList</span>]
 		[<span class="ident">pallet_balances</span>, <span class="ident">Balances</span>]
 		[<span class="ident">pallet_election_provider_multi_phase</span>, <span class="ident">ElectionProviderMultiPhase</span>]
+		[<span class="ident">frame_election_provider_support</span>, <span class="ident">ElectionProviderBench</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>]
 		[<span class="ident">pallet_identity</span>, <span class="ident">Identity</span>]
 		[<span class="ident">pallet_im_online</span>, <span class="ident">ImOnline</span>]
 		[<span class="ident">pallet_indices</span>, <span class="ident">Indices</span>]
@@ -3147,6 +3168,7 @@
 
 			<span class="kw">use</span> <span class="ident">pallet_session_benchmarking::Pallet</span> <span class="kw">as</span> <span class="ident">SessionBench</span>;
 			<span class="kw">use</span> <span class="ident">pallet_offences_benchmarking::Pallet</span> <span class="kw">as</span> <span class="ident">OffencesBench</span>;
+			<span class="kw">use</span> <span class="ident">pallet_election_provider_support_benchmarking::Pallet</span> <span class="kw">as</span> <span class="ident">ElectionProviderBench</span>;
 			<span class="kw">use</span> <span class="ident">frame_system_benchmarking::Pallet</span> <span class="kw">as</span> <span class="ident">SystemBench</span>;
 
 			<span class="kw">type</span> <span class="ident">XcmBalances</span> <span class="op">=</span> <span class="ident">pallet_xcm_benchmarks::fungible::Pallet</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>;
@@ -3170,10 +3192,12 @@
 			<span class="comment">// To get around that, we separated the benchmarks into its own crate.</span>
 			<span class="kw">use</span> <span class="ident">pallet_session_benchmarking::Pallet</span> <span class="kw">as</span> <span class="ident">SessionBench</span>;
 			<span class="kw">use</span> <span class="ident">pallet_offences_benchmarking::Pallet</span> <span class="kw">as</span> <span class="ident">OffencesBench</span>;
+			<span class="kw">use</span> <span class="ident">pallet_election_provider_support_benchmarking::Pallet</span> <span class="kw">as</span> <span class="ident">ElectionProviderBench</span>;
 			<span class="kw">use</span> <span class="ident">frame_system_benchmarking::Pallet</span> <span class="kw">as</span> <span class="ident">SystemBench</span>;
 
 			<span class="kw">impl</span> <span class="ident">pallet_session_benchmarking::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {}
 			<span class="kw">impl</span> <span class="ident">pallet_offences_benchmarking::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {}
+			<span class="kw">impl</span> <span class="ident">pallet_election_provider_support_benchmarking::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {}
 			<span class="kw">impl</span> <span class="ident">frame_system_benchmarking::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {}
 
 			<span class="kw">use</span> <span class="ident">xcm::latest</span>::{

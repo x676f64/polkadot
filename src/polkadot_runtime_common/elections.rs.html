@@ -65,27 +65,6 @@
 <span id="60">60</span>
 <span id="61">61</span>
 <span id="62">62</span>
-<span id="63">63</span>
-<span id="64">64</span>
-<span id="65">65</span>
-<span id="66">66</span>
-<span id="67">67</span>
-<span id="68">68</span>
-<span id="69">69</span>
-<span id="70">70</span>
-<span id="71">71</span>
-<span id="72">72</span>
-<span id="73">73</span>
-<span id="74">74</span>
-<span id="75">75</span>
-<span id="76">76</span>
-<span id="77">77</span>
-<span id="78">78</span>
-<span id="79">79</span>
-<span id="80">80</span>
-<span id="81">81</span>
-<span id="82">82</span>
-<span id="83">83</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -103,12 +82,6 @@
 <span class="comment">// along with Polkadot.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
 
 <span class="doccomment">//! Code for elections.</span>
-
-<span class="kw">use</span> <span class="ident">frame_election_provider_support</span>::{
-	<span class="ident">onchain</span>::{<span class="ident">ExecutionConfig</span>, <span class="ident">UnboundedExecution</span>},
-	<span class="ident">ElectionDataProvider</span>, <span class="ident">SequentialPhragmen</span>,
-};
-<span class="kw">use</span> <span class="ident">sp_std::marker::PhantomData</span>;
 
 <span class="doccomment">/// Implements the weight types for the elections module and a specific</span>
 <span class="doccomment">/// runtime.</span>
@@ -153,22 +126,7 @@
 }
 
 <span class="doccomment">/// The accuracy type used for genesis election provider;</span>
-<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">OnOnChainAccuracy</span> <span class="op">=</span> <span class="ident">sp_runtime::Perbill</span>;
-
-<span class="doccomment">/// Election Configuration parameters</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">OnChainSeqPhragmen</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">frame_system::Config</span>, <span class="ident">S</span><span class="op">&gt;</span>(<span class="ident">PhantomData</span><span class="op">&lt;</span>(<span class="ident">T</span>, <span class="ident">S</span>)<span class="op">&gt;</span>);
-<span class="kw">impl</span><span class="op">&lt;</span>
-		<span class="ident">T</span>: <span class="ident">frame_system::Config</span>,
-		<span class="ident">S</span>: <span class="ident">ElectionDataProvider</span><span class="op">&lt;</span><span class="ident">AccountId</span> <span class="op">=</span> <span class="ident">T::AccountId</span>, <span class="ident">BlockNumber</span> <span class="op">=</span> <span class="ident">T::BlockNumber</span><span class="op">&gt;</span>,
-	<span class="op">&gt;</span> <span class="ident">ExecutionConfig</span> <span class="kw">for</span> <span class="ident">OnChainSeqPhragmen</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">S</span><span class="op">&gt;</span>
-{
-	<span class="kw">type</span> <span class="ident">System</span> <span class="op">=</span> <span class="ident">T</span>;
-	<span class="kw">type</span> <span class="ident">Solver</span> <span class="op">=</span> <span class="ident">SequentialPhragmen</span><span class="op">&lt;</span><span class="ident">T::AccountId</span>, <span class="ident">OnOnChainAccuracy</span><span class="op">&gt;</span>;
-	<span class="kw">type</span> <span class="ident">DataProvider</span> <span class="op">=</span> <span class="ident">S</span>;
-}
-
-<span class="doccomment">/// The election provider of the genesis</span>
-<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">GenesisElectionOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">S</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">UnboundedExecution</span><span class="op">&lt;</span><span class="ident">OnChainSeqPhragmen</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">S</span><span class="op">&gt;</span><span class="op">&gt;</span>;
+<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">OnChainAccuracy</span> <span class="op">=</span> <span class="ident">sp_runtime::Perbill</span>;
 </code></pre></div>
 </section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="polkadot_runtime_common" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.60.0 (7737e0b5c 2022-04-04)" ></div>
 </body></html>
