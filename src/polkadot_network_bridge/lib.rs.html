@@ -1122,6 +1122,38 @@
 <span id="1117">1117</span>
 <span id="1118">1118</span>
 <span id="1119">1119</span>
+<span id="1120">1120</span>
+<span id="1121">1121</span>
+<span id="1122">1122</span>
+<span id="1123">1123</span>
+<span id="1124">1124</span>
+<span id="1125">1125</span>
+<span id="1126">1126</span>
+<span id="1127">1127</span>
+<span id="1128">1128</span>
+<span id="1129">1129</span>
+<span id="1130">1130</span>
+<span id="1131">1131</span>
+<span id="1132">1132</span>
+<span id="1133">1133</span>
+<span id="1134">1134</span>
+<span id="1135">1135</span>
+<span id="1136">1136</span>
+<span id="1137">1137</span>
+<span id="1138">1138</span>
+<span id="1139">1139</span>
+<span id="1140">1140</span>
+<span id="1141">1141</span>
+<span id="1142">1142</span>
+<span id="1143">1143</span>
+<span id="1144">1144</span>
+<span id="1145">1145</span>
+<span id="1146">1146</span>
+<span id="1147">1147</span>
+<span id="1148">1148</span>
+<span id="1149">1149</span>
+<span id="1150">1150</span>
+<span id="1151">1151</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -1155,10 +1187,13 @@
 };
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem_util::metrics</span>::{<span class="self">self</span>, <span class="ident">prometheus</span>};
 <span class="kw">use</span> <span class="ident">polkadot_overseer::gen</span>::{<span class="ident">OverseerError</span>, <span class="ident">Subsystem</span>};
-<span class="kw">use</span> <span class="ident">polkadot_primitives::v2</span>::{<span class="ident">BlockNumber</span>, <span class="ident">Hash</span>};
+<span class="kw">use</span> <span class="ident">polkadot_primitives::v2</span>::{<span class="ident">AuthorityDiscoveryId</span>, <span class="ident">BlockNumber</span>, <span class="ident">Hash</span>, <span class="ident">ValidatorIndex</span>};
 <span class="kw">use</span> <span class="ident">polkadot_subsystem</span>::{
 	<span class="ident">errors</span>::{<span class="ident">SubsystemError</span>, <span class="ident">SubsystemResult</span>},
-	<span class="ident">messages</span>::{<span class="ident">AllMessages</span>, <span class="ident">CollatorProtocolMessage</span>, <span class="ident">NetworkBridgeEvent</span>, <span class="ident">NetworkBridgeMessage</span>},
+	<span class="ident">messages</span>::{
+		<span class="ident">network_bridge_event</span>::{<span class="ident">NewGossipTopology</span>, <span class="ident">TopologyPeerInfo</span>},
+		<span class="ident">AllMessages</span>, <span class="ident">CollatorProtocolMessage</span>, <span class="ident">NetworkBridgeEvent</span>, <span class="ident">NetworkBridgeMessage</span>,
+	},
 	<span class="ident">overseer</span>, <span class="ident">ActivatedLeaf</span>, <span class="ident">ActiveLeavesUpdate</span>, <span class="ident">FromOverseer</span>, <span class="ident">OverseerSignal</span>, <span class="ident">SpawnedSubsystem</span>,
 	<span class="ident">SubsystemContext</span>, <span class="ident">SubsystemSender</span>,
 };
@@ -1169,7 +1204,8 @@
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">polkadot_node_network_protocol::peer_set</span>::{<span class="ident">peer_sets_info</span>, <span class="ident">IsAuthority</span>};
 
 <span class="kw">use</span> <span class="ident">std</span>::{
-	<span class="ident">collections</span>::{<span class="ident">hash_map</span>, <span class="ident">HashMap</span>, <span class="ident">HashSet</span>},
+	<span class="ident">collections</span>::{<span class="ident">hash_map</span>, <span class="ident">HashMap</span>},
+	<span class="ident">iter::ExactSizeIterator</span>,
 	<span class="ident">sync::Arc</span>,
 };
 
@@ -1714,30 +1750,36 @@
 						).<span class="kw">await</span>;
 					}
 					<span class="ident">NetworkBridgeMessage::NewGossipTopology</span> {
-						<span class="ident">our_neighbors</span>,
+						<span class="ident">session</span>,
+						<span class="ident">our_neighbors_x</span>,
+						<span class="ident">our_neighbors_y</span>,
 					} =&gt; {
 						<span class="macro">gum::debug!</span>(
 							<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
 							<span class="ident">action</span> <span class="op">=</span> <span class="string">&quot;NewGossipTopology&quot;</span>,
-							<span class="ident">neighbors</span> <span class="op">=</span> <span class="ident">our_neighbors</span>.<span class="ident">len</span>(),
+							<span class="ident">neighbors_x</span> <span class="op">=</span> <span class="ident">our_neighbors_x</span>.<span class="ident">len</span>(),
+							<span class="ident">neighbors_y</span> <span class="op">=</span> <span class="ident">our_neighbors_y</span>.<span class="ident">len</span>(),
 							<span class="string">&quot;Gossip topology has changed&quot;</span>,
 						);
 
-						<span class="kw">let</span> <span class="ident">ads</span> <span class="op">=</span> <span class="kw-2">&amp;mut</span> <span class="ident">authority_discovery_service</span>;
-						<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">gossip_peers</span> <span class="op">=</span> <span class="ident">HashSet::with_capacity</span>(<span class="ident">our_neighbors</span>.<span class="ident">len</span>());
-						<span class="kw">for</span> <span class="ident">authority</span> <span class="kw">in</span> <span class="ident">our_neighbors</span> {
-							<span class="kw">let</span> <span class="ident">addr</span> <span class="op">=</span> <span class="ident">get_peer_id_by_authority_id</span>(
-								<span class="ident">ads</span>,
-								<span class="ident">authority</span>.<span class="ident">clone</span>(),
-							).<span class="kw">await</span>;
+						<span class="kw">let</span> <span class="ident">gossip_peers_x</span> <span class="op">=</span> <span class="ident">update_gossip_peers_1d</span>(
+							<span class="kw-2">&amp;mut</span> <span class="ident">authority_discovery_service</span>,
+							<span class="ident">our_neighbors_x</span>,
+						).<span class="kw">await</span>;
 
-							<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">peer_id</span>) <span class="op">=</span> <span class="ident">addr</span> {
-								<span class="ident">gossip_peers</span>.<span class="ident">insert</span>(<span class="ident">peer_id</span>);
-							}
-						}
+						<span class="kw">let</span> <span class="ident">gossip_peers_y</span> <span class="op">=</span> <span class="ident">update_gossip_peers_1d</span>(
+							<span class="kw-2">&amp;mut</span> <span class="ident">authority_discovery_service</span>,
+							<span class="ident">our_neighbors_y</span>,
+						).<span class="kw">await</span>;
 
 						<span class="ident">dispatch_validation_event_to_all_unbounded</span>(
-							<span class="ident">NetworkBridgeEvent::NewGossipTopology</span>(<span class="ident">gossip_peers</span>),
+							<span class="ident">NetworkBridgeEvent::NewGossipTopology</span>(
+								<span class="ident">NewGossipTopology</span> {
+									<span class="ident">session</span>,
+									<span class="ident">our_neighbors_x</span>: <span class="ident">gossip_peers_x</span>,
+									<span class="ident">our_neighbors_y</span>: <span class="ident">gossip_peers_y</span>,
+								}
+							),
 							<span class="ident">ctx</span>.<span class="ident">sender</span>(),
 						);
 					}
@@ -1746,6 +1788,28 @@
 			},
 		}
 	}
+}
+
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">update_gossip_peers_1d</span><span class="op">&lt;</span><span class="ident">AD</span>, <span class="ident">N</span><span class="op">&gt;</span>(
+	<span class="ident">ads</span>: <span class="kw-2">&amp;mut</span> <span class="ident">AD</span>,
+	<span class="ident">neighbors</span>: <span class="ident">N</span>,
+) -&gt; <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">AuthorityDiscoveryId</span>, <span class="ident">TopologyPeerInfo</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+	<span class="ident">AD</span>: <span class="ident">validator_discovery::AuthorityDiscovery</span>,
+	<span class="ident">N</span>: <span class="ident">IntoIterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> (<span class="ident">AuthorityDiscoveryId</span>, <span class="ident">ValidatorIndex</span>)<span class="op">&gt;</span>,
+	<span class="ident">N::IntoIter</span>: <span class="ident">std::iter::ExactSizeIterator</span>,
+{
+	<span class="kw">let</span> <span class="ident">neighbors</span> <span class="op">=</span> <span class="ident">neighbors</span>.<span class="ident">into_iter</span>();
+	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">peers</span> <span class="op">=</span> <span class="ident">HashMap::with_capacity</span>(<span class="ident">neighbors</span>.<span class="ident">len</span>());
+	<span class="kw">for</span> (<span class="ident">authority</span>, <span class="ident">validator_index</span>) <span class="kw">in</span> <span class="ident">neighbors</span> {
+		<span class="kw">let</span> <span class="ident">addr</span> <span class="op">=</span> <span class="ident">get_peer_id_by_authority_id</span>(<span class="ident">ads</span>, <span class="ident">authority</span>.<span class="ident">clone</span>()).<span class="kw">await</span>;
+
+		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">peer_id</span>) <span class="op">=</span> <span class="ident">addr</span> {
+			<span class="ident">peers</span>.<span class="ident">insert</span>(<span class="ident">authority</span>, <span class="ident">TopologyPeerInfo</span> { <span class="ident">peer_ids</span>: <span class="macro">vec!</span>[<span class="ident">peer_id</span>], <span class="ident">validator_index</span> });
+		}
+	}
+
+	<span class="ident">peers</span>
 }
 
 <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle_network_messages</span><span class="op">&lt;</span><span class="ident">AD</span>: <span class="ident">validator_discovery::AuthorityDiscovery</span><span class="op">&gt;</span>(

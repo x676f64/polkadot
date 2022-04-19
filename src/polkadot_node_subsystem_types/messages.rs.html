@@ -923,6 +923,17 @@
 <span id="918">918</span>
 <span id="919">919</span>
 <span id="920">920</span>
+<span id="921">921</span>
+<span id="922">922</span>
+<span id="923">923</span>
+<span id="924">924</span>
+<span id="925">925</span>
+<span id="926">926</span>
+<span id="927">927</span>
+<span id="928">928</span>
+<span id="929">929</span>
+<span id="930">930</span>
+<span id="931">931</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -974,7 +985,7 @@
 };
 <span class="kw">use</span> <span class="ident">polkadot_statement_table::v2::Misbehavior</span>;
 <span class="kw">use</span> <span class="ident">std</span>::{
-	<span class="ident">collections</span>::{<span class="ident">BTreeMap</span>, <span class="ident">HashSet</span>},
+	<span class="ident">collections</span>::{<span class="ident">BTreeMap</span>, <span class="ident">HashMap</span>, <span class="ident">HashSet</span>},
 	<span class="ident">sync::Arc</span>,
 	<span class="ident">time::Duration</span>,
 };
@@ -1303,9 +1314,20 @@
 	<span class="doccomment">/// Inform the distribution subsystems about the new</span>
 	<span class="doccomment">/// gossip network topology formed.</span>
 	<span class="ident">NewGossipTopology</span> {
-		<span class="doccomment">/// Ids of our neighbors in the new gossip topology.</span>
-		<span class="doccomment">/// We&#39;re not necessarily connected to all of them, but we should.</span>
-		<span class="ident">our_neighbors</span>: <span class="ident">HashSet</span><span class="op">&lt;</span><span class="ident">AuthorityDiscoveryId</span><span class="op">&gt;</span>,
+		<span class="doccomment">/// The session info this gossip topology is concerned with.</span>
+		<span class="ident">session</span>: <span class="ident">SessionIndex</span>,
+		<span class="doccomment">/// Ids of our neighbors in the X dimensions of the new gossip topology,</span>
+		<span class="doccomment">/// along with their validator indices within the session.</span>
+		<span class="doccomment">///</span>
+		<span class="doccomment">/// We&#39;re not necessarily connected to all of them, but we should</span>
+		<span class="doccomment">/// try to be.</span>
+		<span class="ident">our_neighbors_x</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">AuthorityDiscoveryId</span>, <span class="ident">ValidatorIndex</span><span class="op">&gt;</span>,
+		<span class="doccomment">/// Ids of our neighbors in the X dimensions of the new gossip topology,</span>
+		<span class="doccomment">/// along with their validator indices within the session.</span>
+		<span class="doccomment">///</span>
+		<span class="doccomment">/// We&#39;re not necessarily connected to all of them, but we should</span>
+		<span class="doccomment">/// try to be.</span>
+		<span class="ident">our_neighbors_y</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">AuthorityDiscoveryId</span>, <span class="ident">ValidatorIndex</span><span class="op">&gt;</span>,
 	},
 }
 

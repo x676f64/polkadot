@@ -565,6 +565,79 @@
 <span id="560">560</span>
 <span id="561">561</span>
 <span id="562">562</span>
+<span id="563">563</span>
+<span id="564">564</span>
+<span id="565">565</span>
+<span id="566">566</span>
+<span id="567">567</span>
+<span id="568">568</span>
+<span id="569">569</span>
+<span id="570">570</span>
+<span id="571">571</span>
+<span id="572">572</span>
+<span id="573">573</span>
+<span id="574">574</span>
+<span id="575">575</span>
+<span id="576">576</span>
+<span id="577">577</span>
+<span id="578">578</span>
+<span id="579">579</span>
+<span id="580">580</span>
+<span id="581">581</span>
+<span id="582">582</span>
+<span id="583">583</span>
+<span id="584">584</span>
+<span id="585">585</span>
+<span id="586">586</span>
+<span id="587">587</span>
+<span id="588">588</span>
+<span id="589">589</span>
+<span id="590">590</span>
+<span id="591">591</span>
+<span id="592">592</span>
+<span id="593">593</span>
+<span id="594">594</span>
+<span id="595">595</span>
+<span id="596">596</span>
+<span id="597">597</span>
+<span id="598">598</span>
+<span id="599">599</span>
+<span id="600">600</span>
+<span id="601">601</span>
+<span id="602">602</span>
+<span id="603">603</span>
+<span id="604">604</span>
+<span id="605">605</span>
+<span id="606">606</span>
+<span id="607">607</span>
+<span id="608">608</span>
+<span id="609">609</span>
+<span id="610">610</span>
+<span id="611">611</span>
+<span id="612">612</span>
+<span id="613">613</span>
+<span id="614">614</span>
+<span id="615">615</span>
+<span id="616">616</span>
+<span id="617">617</span>
+<span id="618">618</span>
+<span id="619">619</span>
+<span id="620">620</span>
+<span id="621">621</span>
+<span id="622">622</span>
+<span id="623">623</span>
+<span id="624">624</span>
+<span id="625">625</span>
+<span id="626">626</span>
+<span id="627">627</span>
+<span id="628">628</span>
+<span id="629">629</span>
+<span id="630">630</span>
+<span id="631">631</span>
+<span id="632">632</span>
+<span id="633">633</span>
+<span id="634">634</span>
+<span id="635">635</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -616,10 +689,12 @@
 		<span class="ident">RuntimeApiRequest</span>,
 	},
 	<span class="ident">overseer</span>, <span class="ident">ActiveLeavesUpdate</span>, <span class="ident">FromOverseer</span>, <span class="ident">OverseerSignal</span>, <span class="ident">SpawnedSubsystem</span>, <span class="ident">SubsystemContext</span>,
-	<span class="ident">SubsystemError</span>, <span class="ident">SubsystemSender</span>,
+	<span class="ident">SubsystemError</span>,
 };
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem_util</span> <span class="kw">as</span> <span class="ident">util</span>;
-<span class="kw">use</span> <span class="ident">polkadot_primitives::v2</span>::{<span class="ident">AuthorityDiscoveryId</span>, <span class="ident">Hash</span>, <span class="ident">SessionIndex</span>};
+<span class="kw">use</span> <span class="ident">polkadot_primitives::v2</span>::{
+	<span class="ident">AuthorityDiscoveryId</span>, <span class="ident">Hash</span>, <span class="ident">SessionIndex</span>, <span class="ident">SessionInfo</span>, <span class="ident">ValidatorIndex</span>,
+};
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">tests</span>;
@@ -780,6 +855,24 @@
 				<span class="kw">if</span> <span class="ident">force_request</span> { <span class="ident">leaf_session</span> } <span class="kw">else</span> { <span class="ident">maybe_new_session</span> };
 
 			<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">session_index</span>, <span class="ident">relay_parent</span>)) <span class="op">=</span> <span class="ident">maybe_issue_connection</span> {
+				<span class="kw">let</span> <span class="ident">session_info</span> <span class="op">=</span>
+					<span class="ident">util::request_session_info</span>(<span class="ident">leaf</span>, <span class="ident">session_index</span>, <span class="ident">ctx</span>.<span class="ident">sender</span>()).<span class="kw">await</span>.<span class="kw">await</span><span class="question-mark">?</span><span class="question-mark">?</span>;
+
+				<span class="kw">let</span> <span class="ident">session_info</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">session_info</span> {
+					<span class="prelude-val">Some</span>(<span class="ident">s</span>) =&gt; <span class="ident">s</span>,
+					<span class="prelude-val">None</span> =&gt; {
+						<span class="macro">gum::warn!</span>(
+							<span class="ident">relay_parent</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">leaf</span>,
+							<span class="ident">session_index</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">last_session_index</span>,
+							<span class="string">&quot;Failed to get session info.&quot;</span>,
+						);
+
+						<span class="kw">continue</span>
+					},
+				};
+
+				<span class="comment">// Note: we only update `last_session_index` once we&#39;ve</span>
+				<span class="comment">// successfully gotten the `SessionInfo`.</span>
 				<span class="kw">let</span> <span class="ident">is_new_session</span> <span class="op">=</span> <span class="ident">maybe_new_session</span>.<span class="ident">is_some</span>();
 				<span class="kw">if</span> <span class="ident">is_new_session</span> {
 					<span class="macro">gum::debug!</span>(
@@ -790,45 +883,52 @@
 					<span class="self">self</span>.<span class="ident">last_session_index</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">session_index</span>);
 				}
 
-				<span class="kw">let</span> <span class="ident">all_authorities</span> <span class="op">=</span> <span class="ident">determine_relevant_authorities</span>(<span class="ident">ctx</span>, <span class="ident">relay_parent</span>).<span class="kw">await</span><span class="question-mark">?</span>;
-				<span class="kw">let</span> <span class="ident">our_index</span> <span class="op">=</span> <span class="ident">ensure_i_am_an_authority</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">keystore</span>, <span class="kw-2">&amp;</span><span class="ident">all_authorities</span>).<span class="kw">await</span><span class="question-mark">?</span>;
-				<span class="kw">let</span> <span class="ident">other_authorities</span> <span class="op">=</span> {
-					<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">authorities</span> <span class="op">=</span> <span class="ident">all_authorities</span>.<span class="ident">clone</span>();
-					<span class="ident">authorities</span>.<span class="ident">swap_remove</span>(<span class="ident">our_index</span>);
-					<span class="ident">authorities</span>
-				};
+				<span class="comment">// Connect to authorities from the past/present/future.</span>
+				<span class="comment">//</span>
+				<span class="comment">// This is maybe not the right place for this logic to live,</span>
+				<span class="comment">// but at the moment we&#39;re limited by the network bridge&#39;s ability</span>
+				<span class="comment">// to handle connection requests (it only allows one, globally).</span>
+				<span class="comment">//</span>
+				<span class="comment">// Certain network protocols - mostly req/res, but some gossip,</span>
+				<span class="comment">// will require being connected to past/future validators as well</span>
+				<span class="comment">// as current. That is, the old authority sets are not made obsolete</span>
+				<span class="comment">// by virtue of a new session being entered. Therefore we maintain</span>
+				<span class="comment">// connections to a much broader set of validators.</span>
+				{
+					<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">connections</span> <span class="op">=</span> <span class="ident">authorities_past_present_future</span>(<span class="ident">ctx</span>, <span class="ident">leaf</span>).<span class="kw">await</span><span class="question-mark">?</span>;
 
-				<span class="self">self</span>.<span class="ident">issue_connection_request</span>(<span class="ident">ctx</span>, <span class="ident">other_authorities</span>).<span class="kw">await</span>;
+					<span class="comment">// Remove all of our locally controlled validator indices so we don&#39;t connect to ourself.</span>
+					<span class="comment">// If we control none of them, don&#39;t issue connection requests - we&#39;re outside</span>
+					<span class="comment">// of the &#39;clique&#39; of recent validators.</span>
+					<span class="kw">if</span> <span class="ident">remove_all_controlled</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">keystore</span>, <span class="kw-2">&amp;mut</span> <span class="ident">connections</span>).<span class="kw">await</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span> {
+						<span class="self">self</span>.<span class="ident">issue_connection_request</span>(<span class="ident">ctx</span>, <span class="ident">connections</span>).<span class="kw">await</span>;
+					}
+				}
+
+				<span class="comment">// Gossip topology is only relevant for authorities in the current session.</span>
+				<span class="kw">let</span> <span class="ident">our_index</span> <span class="op">=</span>
+					<span class="ident">ensure_i_am_an_authority</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">keystore</span>, <span class="kw-2">&amp;</span><span class="ident">session_info</span>.<span class="ident">discovery_keys</span>).<span class="kw">await</span><span class="question-mark">?</span>;
 
 				<span class="kw">if</span> <span class="ident">is_new_session</span> {
-					<span class="ident">update_gossip_topology</span>(<span class="ident">ctx</span>, <span class="ident">our_index</span>, <span class="ident">all_authorities</span>, <span class="ident">relay_parent</span>).<span class="kw">await</span><span class="question-mark">?</span>;
-					<span class="self">self</span>.<span class="ident">update_authority_status_metrics</span>(<span class="ident">leaf</span>, <span class="ident">ctx</span>.<span class="ident">sender</span>()).<span class="kw">await</span><span class="question-mark">?</span>;
+					<span class="self">self</span>.<span class="ident">update_authority_status_metrics</span>(<span class="kw-2">&amp;</span><span class="ident">session_info</span>).<span class="kw">await</span>;
+
+					<span class="ident">update_gossip_topology</span>(
+						<span class="ident">ctx</span>,
+						<span class="ident">our_index</span>,
+						<span class="ident">session_info</span>.<span class="ident">discovery_keys</span>,
+						<span class="ident">relay_parent</span>,
+						<span class="ident">session_index</span>,
+					)
+					.<span class="kw">await</span><span class="question-mark">?</span>;
 				}
 			}
 		}
 		<span class="prelude-val">Ok</span>(())
 	}
 
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">update_authority_status_metrics</span>(
-		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
-		<span class="ident">leaf</span>: <span class="ident">Hash</span>,
-		<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">SubsystemSender</span>,
-	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">util::Error</span><span class="op">&gt;</span> {
-		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">session_info</span>) <span class="op">=</span> <span class="ident">util::request_session_info</span>(
-			<span class="ident">leaf</span>,
-			<span class="self">self</span>.<span class="ident">last_session_index</span>
-				.<span class="ident">expect</span>(<span class="string">&quot;Last session index is always set on every session index change&quot;</span>),
-			<span class="ident">sender</span>,
-		)
-		.<span class="kw">await</span>
-		.<span class="kw">await</span><span class="question-mark">?</span><span class="question-mark">?</span>
-		{
-			<span class="kw">let</span> <span class="ident">maybe_index</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">ensure_i_am_an_authority</span>(
-				<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">keystore</span>,
-				<span class="kw-2">&amp;</span><span class="ident">session_info</span>.<span class="ident">discovery_keys</span>,
-			)
-			.<span class="kw">await</span>
-			{
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">update_authority_status_metrics</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">session_info</span>: <span class="kw-2">&amp;</span><span class="ident">SessionInfo</span>) {
+		<span class="kw">let</span> <span class="ident">maybe_index</span> <span class="op">=</span>
+			<span class="kw">match</span> <span class="ident">ensure_i_am_an_authority</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">keystore</span>, <span class="kw-2">&amp;</span><span class="ident">session_info</span>.<span class="ident">discovery_keys</span>).<span class="kw">await</span> {
 				<span class="prelude-val">Ok</span>(<span class="ident">index</span>) =&gt; {
 					<span class="self">self</span>.<span class="ident">metrics</span>.<span class="ident">on_is_authority</span>();
 					<span class="prelude-val">Some</span>(<span class="ident">index</span>)
@@ -842,21 +942,19 @@
 				<span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; <span class="prelude-val">None</span>,
 			};
 
-			<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">validator_index</span>) <span class="op">=</span> <span class="ident">maybe_index</span> {
-				<span class="comment">// The subset of authorities participating in parachain consensus.</span>
-				<span class="kw">let</span> <span class="ident">parachain_validators_this_session</span> <span class="op">=</span> <span class="ident">session_info</span>.<span class="ident">validators</span>;
+		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">validator_index</span>) <span class="op">=</span> <span class="ident">maybe_index</span> {
+			<span class="comment">// The subset of authorities participating in parachain consensus.</span>
+			<span class="kw">let</span> <span class="ident">parachain_validators_this_session</span> <span class="op">=</span> <span class="ident">session_info</span>.<span class="ident">validators</span>.<span class="ident">len</span>();
 
-				<span class="comment">// First `maxValidators` entries are the parachain validators. We&#39;ll check</span>
-				<span class="comment">// if our index is in this set to avoid searching for the keys.</span>
-				<span class="comment">// https://github.com/paritytech/polkadot/blob/a52dca2be7840b23c19c153cf7e110b1e3e475f8/runtime/parachains/src/configuration.rs#L148</span>
-				<span class="kw">if</span> <span class="ident">validator_index</span> <span class="op">&lt;</span> <span class="ident">parachain_validators_this_session</span>.<span class="ident">len</span>() {
-					<span class="self">self</span>.<span class="ident">metrics</span>.<span class="ident">on_is_parachain_validator</span>();
-				} <span class="kw">else</span> {
-					<span class="self">self</span>.<span class="ident">metrics</span>.<span class="ident">on_is_not_parachain_validator</span>();
-				}
+			<span class="comment">// First `maxValidators` entries are the parachain validators. We&#39;ll check</span>
+			<span class="comment">// if our index is in this set to avoid searching for the keys.</span>
+			<span class="comment">// https://github.com/paritytech/polkadot/blob/a52dca2be7840b23c19c153cf7e110b1e3e475f8/runtime/parachains/src/configuration.rs#L148</span>
+			<span class="kw">if</span> <span class="ident">validator_index</span> <span class="op">&lt;</span> <span class="ident">parachain_validators_this_session</span> {
+				<span class="self">self</span>.<span class="ident">metrics</span>.<span class="ident">on_is_parachain_validator</span>();
+			} <span class="kw">else</span> {
+				<span class="self">self</span>.<span class="ident">metrics</span>.<span class="ident">on_is_not_parachain_validator</span>();
 			}
 		}
-		<span class="prelude-val">Ok</span>(())
 	}
 
 	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">issue_connection_request</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
@@ -945,7 +1043,7 @@
 			},
 			<span class="ident">NetworkBridgeEvent::OurViewChange</span>(<span class="kw">_</span>) =&gt; {},
 			<span class="ident">NetworkBridgeEvent::PeerViewChange</span>(<span class="kw">_</span>, <span class="kw">_</span>) =&gt; {},
-			<span class="ident">NetworkBridgeEvent::NewGossipTopology</span>(<span class="kw">_</span>) =&gt; {},
+			<span class="ident">NetworkBridgeEvent::NewGossipTopology</span> { .. } =&gt; {},
 			<span class="ident">NetworkBridgeEvent::PeerMessage</span>(<span class="kw">_</span>, <span class="ident">v</span>) =&gt; {
 				<span class="kw">match</span> <span class="ident">v</span> {};
 			},
@@ -983,7 +1081,8 @@
 	}
 }
 
-<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">determine_relevant_authorities</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
+<span class="comment">// Get the authorities of the past, present, and future.</span>
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">authorities_past_present_future</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
 	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 	<span class="ident">relay_parent</span>: <span class="ident">Hash</span>,
 ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">AuthorityDiscoveryId</span><span class="op">&gt;</span>, <span class="ident">util::Error</span><span class="op">&gt;</span>
@@ -995,7 +1094,7 @@
 	<span class="macro">gum::debug!</span>(
 		<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
 		<span class="ident">authority_count</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">authorities</span>.<span class="ident">len</span>(),
-		<span class="string">&quot;Determined relevant authorities&quot;</span>,
+		<span class="string">&quot;Determined past/present/future authorities&quot;</span>,
 	);
 	<span class="prelude-val">Ok</span>(<span class="ident">authorities</span>)
 }
@@ -1014,6 +1113,25 @@
 	<span class="prelude-val">Err</span>(<span class="ident">util::Error::NotAValidator</span>)
 }
 
+<span class="doccomment">/// Filter out all controlled keys in the given set. Returns the number of keys removed.</span>
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">remove_all_controlled</span>(
+	<span class="ident">keystore</span>: <span class="kw-2">&amp;</span><span class="ident">SyncCryptoStorePtr</span>,
+	<span class="ident">authorities</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">AuthorityDiscoveryId</span><span class="op">&gt;</span>,
+) -&gt; <span class="ident">usize</span> {
+	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">to_remove</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
+	<span class="kw">for</span> (<span class="ident">i</span>, <span class="ident">v</span>) <span class="kw">in</span> <span class="ident">authorities</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
+		<span class="kw">if</span> <span class="ident">CryptoStore::has_keys</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="kw-2">*</span><span class="ident">keystore</span>, <span class="kw-2">&amp;</span>[(<span class="ident">v</span>.<span class="ident">to_raw_vec</span>(), <span class="ident">AuthorityDiscoveryId::ID</span>)]).<span class="kw">await</span> {
+			<span class="ident">to_remove</span>.<span class="ident">push</span>(<span class="ident">i</span>);
+		}
+	}
+
+	<span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="ident">to_remove</span>.<span class="ident">iter</span>().<span class="ident">rev</span>().<span class="ident">copied</span>() {
+		<span class="ident">authorities</span>.<span class="ident">remove</span>(<span class="ident">i</span>);
+	}
+
+	<span class="ident">to_remove</span>.<span class="ident">len</span>()
+}
+
 <span class="doccomment">/// We partition the list of all sorted `authorities` into `sqrt(len)` groups of `sqrt(len)` size</span>
 <span class="doccomment">/// and form a matrix where each validator is connected to all validators in its row and column.</span>
 <span class="doccomment">/// This is similar to `[web3]` research proposed topology, except for the groups are not parachain</span>
@@ -1027,6 +1145,7 @@
 	<span class="ident">our_index</span>: <span class="ident">usize</span>,
 	<span class="ident">authorities</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">AuthorityDiscoveryId</span><span class="op">&gt;</span>,
 	<span class="ident">relay_parent</span>: <span class="ident">Hash</span>,
+	<span class="ident">session_index</span>: <span class="ident">SessionIndex</span>,
 ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">util::Error</span><span class="op">&gt;</span>
 <span class="kw">where</span>
 	<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">GossipSupportMessage</span><span class="op">&gt;</span>,
@@ -1036,6 +1155,8 @@
 	<span class="kw">let</span> <span class="ident">random_seed</span> <span class="op">=</span> {
 		<span class="kw">let</span> (<span class="ident">tx</span>, <span class="ident">rx</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
 
+		<span class="comment">// TODO https://github.com/paritytech/polkadot/issues/5316:</span>
+		<span class="comment">// get the random seed from the `SessionInfo` instead.</span>
 		<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">RuntimeApiMessage::Request</span>(
 			<span class="ident">relay_parent</span>,
 			<span class="ident">RuntimeApiRequest::CurrentBabeEpoch</span>(<span class="ident">tx</span>),
@@ -1060,16 +1181,38 @@
 		.<span class="ident">expect</span>(<span class="string">&quot;our_index &lt; len; indices contains it; qed&quot;</span>);
 
 	<span class="kw">let</span> <span class="ident">neighbors</span> <span class="op">=</span> <span class="ident">matrix_neighbors</span>(<span class="ident">our_shuffled_position</span>, <span class="ident">len</span>);
-	<span class="kw">let</span> <span class="ident">our_neighbors</span> <span class="op">=</span> <span class="ident">neighbors</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">i</span><span class="op">|</span> <span class="ident">authorities</span>[<span class="ident">indices</span>[<span class="ident">i</span>]].<span class="ident">clone</span>()).<span class="ident">collect</span>();
+	<span class="kw">let</span> <span class="ident">row_neighbors</span> <span class="op">=</span> <span class="ident">neighbors</span>
+		.<span class="ident">row_neighbors</span>
+		.<span class="ident">map</span>(<span class="op">|</span><span class="ident">i</span><span class="op">|</span> <span class="ident">indices</span>[<span class="ident">i</span>])
+		.<span class="ident">map</span>(<span class="op">|</span><span class="ident">i</span><span class="op">|</span> (<span class="ident">authorities</span>[<span class="ident">i</span>].<span class="ident">clone</span>(), <span class="ident">ValidatorIndex::from</span>(<span class="ident">i</span> <span class="kw">as</span> <span class="ident">u32</span>)))
+		.<span class="ident">collect</span>();
 
-	<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeMessage::NewGossipTopology</span> { <span class="ident">our_neighbors</span> })
-		.<span class="kw">await</span>;
+	<span class="kw">let</span> <span class="ident">column_neighbors</span> <span class="op">=</span> <span class="ident">neighbors</span>
+		.<span class="ident">column_neighbors</span>
+		.<span class="ident">map</span>(<span class="op">|</span><span class="ident">i</span><span class="op">|</span> <span class="ident">indices</span>[<span class="ident">i</span>])
+		.<span class="ident">map</span>(<span class="op">|</span><span class="ident">i</span><span class="op">|</span> (<span class="ident">authorities</span>[<span class="ident">i</span>].<span class="ident">clone</span>(), <span class="ident">ValidatorIndex::from</span>(<span class="ident">i</span> <span class="kw">as</span> <span class="ident">u32</span>)))
+		.<span class="ident">collect</span>();
+
+	<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeMessage::NewGossipTopology</span> {
+		<span class="ident">session</span>: <span class="ident">session_index</span>,
+		<span class="ident">our_neighbors_x</span>: <span class="ident">row_neighbors</span>,
+		<span class="ident">our_neighbors_y</span>: <span class="ident">column_neighbors</span>,
+	})
+	.<span class="kw">await</span>;
 
 	<span class="prelude-val">Ok</span>(())
 }
 
+<span class="kw">struct</span> <span class="ident">MatrixNeighbors</span><span class="op">&lt;</span><span class="ident">R</span>, <span class="ident">C</span><span class="op">&gt;</span> {
+	<span class="ident">row_neighbors</span>: <span class="ident">R</span>,
+	<span class="ident">column_neighbors</span>: <span class="ident">C</span>,
+}
+
 <span class="doccomment">/// Compute our row and column neighbors in a matrix</span>
-<span class="kw">fn</span> <span class="ident">matrix_neighbors</span>(<span class="ident">our_index</span>: <span class="ident">usize</span>, <span class="ident">len</span>: <span class="ident">usize</span>) -&gt; <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">usize</span><span class="op">&gt;</span> {
+<span class="kw">fn</span> <span class="ident">matrix_neighbors</span>(
+	<span class="ident">our_index</span>: <span class="ident">usize</span>,
+	<span class="ident">len</span>: <span class="ident">usize</span>,
+) -&gt; <span class="ident">MatrixNeighbors</span><span class="op">&lt;</span><span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">usize</span><span class="op">&gt;</span>, <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">usize</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 	<span class="macro">assert!</span>(<span class="ident">our_index</span> <span class="op">&lt;</span> <span class="ident">len</span>, <span class="string">&quot;our_index is computed using `enumerate`; qed&quot;</span>);
 
 	<span class="comment">// e.g. for size 11 the matrix would be</span>
@@ -1087,7 +1230,10 @@
 	<span class="kw">let</span> <span class="ident">row_neighbors</span> <span class="op">=</span> <span class="ident">our_row</span> <span class="op">*</span> <span class="ident">sqrt</span>..<span class="ident">std::cmp::min</span>(<span class="ident">our_row</span> <span class="op">*</span> <span class="ident">sqrt</span> <span class="op">+</span> <span class="ident">sqrt</span>, <span class="ident">len</span>);
 	<span class="kw">let</span> <span class="ident">column_neighbors</span> <span class="op">=</span> (<span class="ident">our_column</span>..<span class="ident">len</span>).<span class="ident">step_by</span>(<span class="ident">sqrt</span>);
 
-	<span class="ident">row_neighbors</span>.<span class="ident">chain</span>(<span class="ident">column_neighbors</span>).<span class="ident">filter</span>(<span class="kw">move</span> <span class="op">|</span><span class="ident">i</span><span class="op">|</span> <span class="kw-2">*</span><span class="ident">i</span> <span class="op">!</span><span class="op">=</span> <span class="ident">our_index</span>)
+	<span class="ident">MatrixNeighbors</span> {
+		<span class="ident">row_neighbors</span>: <span class="ident">row_neighbors</span>.<span class="ident">filter</span>(<span class="kw">move</span> <span class="op">|</span><span class="ident">i</span><span class="op">|</span> <span class="kw-2">*</span><span class="ident">i</span> <span class="op">!</span><span class="op">=</span> <span class="ident">our_index</span>),
+		<span class="ident">column_neighbors</span>: <span class="ident">column_neighbors</span>.<span class="ident">filter</span>(<span class="kw">move</span> <span class="op">|</span><span class="ident">i</span><span class="op">|</span> <span class="kw-2">*</span><span class="ident">i</span> <span class="op">!</span><span class="op">=</span> <span class="ident">our_index</span>),
+	}
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Context</span>, <span class="ident">AD</span><span class="op">&gt;</span> <span class="ident">overseer::Subsystem</span><span class="op">&lt;</span><span class="ident">Context</span>, <span class="ident">SubsystemError</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">GossipSupport</span><span class="op">&lt;</span><span class="ident">AD</span><span class="op">&gt;</span>

@@ -2093,6 +2093,13 @@
 <span id="2088">2088</span>
 <span id="2089">2089</span>
 <span id="2090">2090</span>
+<span id="2091">2091</span>
+<span id="2092">2092</span>
+<span id="2093">2093</span>
+<span id="2094">2094</span>
+<span id="2095">2095</span>
+<span id="2096">2096</span>
+<span id="2097">2097</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -3727,7 +3734,14 @@
 				});
 			}
 		},
-		<span class="ident">NetworkBridgeEvent::NewGossipTopology</span>(<span class="ident">new_peers</span>) =&gt; {
+		<span class="ident">NetworkBridgeEvent::NewGossipTopology</span>(<span class="ident">topology</span>) =&gt; {
+			<span class="comment">// Combine all peers in the x &amp; y direction as we don&#39;t make any distinction.</span>
+			<span class="kw">let</span> <span class="ident">new_peers</span>: <span class="ident">HashSet</span><span class="op">&lt;</span><span class="ident">PeerId</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">topology</span>
+				.<span class="ident">our_neighbors_x</span>
+				.<span class="ident">values</span>()
+				.<span class="ident">chain</span>(<span class="ident">topology</span>.<span class="ident">our_neighbors_y</span>.<span class="ident">values</span>())
+				.<span class="ident">flat_map</span>(<span class="op">|</span><span class="ident">peer_info</span><span class="op">|</span> <span class="ident">peer_info</span>.<span class="ident">peer_ids</span>.<span class="ident">iter</span>().<span class="ident">cloned</span>())
+				.<span class="ident">collect</span>();
 			<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">metrics</span>.<span class="ident">time_network_bridge_update_v1</span>(<span class="string">&quot;new_gossip_topology&quot;</span>);
 			<span class="kw">let</span> <span class="ident">newly_added</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">PeerId</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">new_peers</span>.<span class="ident">difference</span>(<span class="ident">gossip_peers</span>).<span class="ident">cloned</span>().<span class="ident">collect</span>();
 			<span class="kw-2">*</span><span class="ident">gossip_peers</span> <span class="op">=</span> <span class="ident">new_peers</span>;

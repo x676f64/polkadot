@@ -1858,7 +1858,7 @@
 
 	<span class="kw">impl</span> <span class="ident">authority_discovery_primitives::AuthorityDiscoveryApi</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
 		<span class="kw">fn</span> <span class="ident">authorities</span>() -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">AuthorityDiscoveryId</span><span class="op">&gt;</span> {
-			<span class="ident">AuthorityDiscovery::authorities</span>()
+			<span class="ident">runtime_impl::relevant_authority_ids</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>()
 		}
 	}
 

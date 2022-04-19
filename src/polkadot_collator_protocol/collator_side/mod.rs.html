@@ -2071,7 +2071,7 @@
 		<span class="ident">PeerMessage</span>(<span class="ident">remote</span>, <span class="ident">msg</span>) =&gt; {
 			<span class="ident">handle_incoming_peer_message</span>(<span class="ident">ctx</span>, <span class="ident">runtime</span>, <span class="ident">state</span>, <span class="ident">remote</span>, <span class="ident">msg</span>).<span class="kw">await</span><span class="question-mark">?</span>;
 		},
-		<span class="ident">NewGossipTopology</span>(..) =&gt; {
+		<span class="ident">NewGossipTopology</span> { .. } =&gt; {
 			<span class="comment">// impossible!</span>
 		},
 	}
