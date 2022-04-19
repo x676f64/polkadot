@@ -331,6 +331,18 @@
 <span id="326">326</span>
 <span id="327">327</span>
 <span id="328">328</span>
+<span id="329">329</span>
+<span id="330">330</span>
+<span id="331">331</span>
+<span id="332">332</span>
+<span id="333">333</span>
+<span id="334">334</span>
+<span id="335">335</span>
+<span id="336">336</span>
+<span id="337">337</span>
+<span id="338">338</span>
+<span id="339">339</span>
+<span id="340">340</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -361,13 +373,14 @@
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem</span>::{<span class="ident">SubsystemContext</span>, <span class="ident">SubsystemSender</span>};
 <span class="kw">use</span> <span class="ident">polkadot_primitives::v2</span>::{
 	<span class="ident">CandidateEvent</span>, <span class="ident">CoreState</span>, <span class="ident">EncodeAs</span>, <span class="ident">GroupIndex</span>, <span class="ident">GroupRotationInfo</span>, <span class="ident">Hash</span>, <span class="ident">OccupiedCore</span>,
-	<span class="ident">SessionIndex</span>, <span class="ident">SessionInfo</span>, <span class="ident">Signed</span>, <span class="ident">SigningContext</span>, <span class="ident">UncheckedSigned</span>, <span class="ident">ValidationCode</span>,
-	<span class="ident">ValidationCodeHash</span>, <span class="ident">ValidatorId</span>, <span class="ident">ValidatorIndex</span>,
+	<span class="ident">ScrapedOnChainVotes</span>, <span class="ident">SessionIndex</span>, <span class="ident">SessionInfo</span>, <span class="ident">Signed</span>, <span class="ident">SigningContext</span>, <span class="ident">UncheckedSigned</span>,
+	<span class="ident">ValidationCode</span>, <span class="ident">ValidationCodeHash</span>, <span class="ident">ValidatorId</span>, <span class="ident">ValidatorIndex</span>,
 };
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
-	<span class="ident">request_availability_cores</span>, <span class="ident">request_candidate_events</span>, <span class="ident">request_session_index_for_child</span>,
-	<span class="ident">request_session_info</span>, <span class="ident">request_validation_code_by_hash</span>, <span class="ident">request_validator_groups</span>,
+	<span class="ident">request_availability_cores</span>, <span class="ident">request_candidate_events</span>, <span class="ident">request_on_chain_votes</span>,
+	<span class="ident">request_session_index_for_child</span>, <span class="ident">request_session_info</span>, <span class="ident">request_validation_code_by_hash</span>,
+	<span class="ident">request_validator_groups</span>,
 };
 
 <span class="doccomment">/// Errors that can happen on runtime fetches.</span>
@@ -645,6 +658,17 @@
 	<span class="ident">Sender</span>: <span class="ident">SubsystemSender</span>,
 {
 	<span class="ident">recv_runtime</span>(<span class="ident">request_candidate_events</span>(<span class="ident">relay_parent</span>, <span class="ident">sender</span>).<span class="kw">await</span>).<span class="kw">await</span>
+}
+
+<span class="doccomment">/// Get on chain votes.</span>
+<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">get_on_chain_votes</span><span class="op">&lt;</span><span class="ident">Sender</span><span class="op">&gt;</span>(
+	<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Sender</span>,
+	<span class="ident">relay_parent</span>: <span class="ident">Hash</span>,
+) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ScrapedOnChainVotes</span><span class="op">&gt;</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+	<span class="ident">Sender</span>: <span class="ident">SubsystemSender</span>,
+{
+	<span class="ident">recv_runtime</span>(<span class="ident">request_on_chain_votes</span>(<span class="ident">relay_parent</span>, <span class="ident">sender</span>).<span class="kw">await</span>).<span class="kw">await</span>
 }
 
 <span class="doccomment">/// Fetch `ValidationCode` by hash from the runtime.</span>

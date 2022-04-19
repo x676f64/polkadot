@@ -408,9 +408,6 @@
 <span id="403">403</span>
 <span id="404">404</span>
 <span id="405">405</span>
-<span id="406">406</span>
-<span id="407">407</span>
-<span id="408">408</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -451,7 +448,7 @@
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem_util</span>::{
 	<span class="ident">database::Database</span>, <span class="ident">rolling_session_window::RollingSessionWindow</span>,
 };
-<span class="kw">use</span> <span class="ident">polkadot_primitives::v2</span>::{<span class="ident">ValidatorIndex</span>, <span class="ident">ValidatorPair</span>};
+<span class="kw">use</span> <span class="ident">polkadot_primitives::v2</span>::{<span class="ident">ScrapedOnChainVotes</span>, <span class="ident">ValidatorIndex</span>, <span class="ident">ValidatorPair</span>};
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
 	<span class="ident">error</span>::{<span class="ident">FatalResult</span>, <span class="ident">JfyiError</span>, <span class="prelude-ty">Result</span>},
@@ -463,8 +460,7 @@
 <span class="kw">use</span> <span class="ident">fatality::Split</span>;
 
 <span class="kw">use</span> <span class="self">self</span>::{
-	<span class="ident">ordering::CandidateComparator</span>,
-	<span class="ident">participation::ParticipationRequest</span>,
+	<span class="ident">participation</span>::{<span class="ident">ParticipationPriority</span>, <span class="ident">ParticipationRequest</span>},
 	<span class="ident">spam_slots</span>::{<span class="ident">SpamSlots</span>, <span class="ident">UnconfirmedDisputes</span>},
 };
 
@@ -475,8 +471,7 @@
 <span class="kw">mod</span> <span class="ident">initialized</span>;
 <span class="kw">use</span> <span class="ident">initialized::Initialized</span>;
 
-<span class="doccomment">/// Provider of an ordering for candidates for dispute participation, see</span>
-<span class="doccomment">/// [`participation`] below.</span>
+<span class="doccomment">/// Provider of data scraped from chain.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// If we have seen a candidate included somewhere, we should treat it as priority and will be able</span>
 <span class="doccomment">/// to provide an ordering for participation. Thus a dispute for a candidate where we can get some</span>
@@ -484,8 +479,8 @@
 <span class="doccomment">/// `participation` based on `relay_parent` block number and other metrics, so each validator will</span>
 <span class="doccomment">/// participate in disputes in a similar order, which ensures we will be resolving disputes, even</span>
 <span class="doccomment">/// under heavy load.</span>
-<span class="kw">mod</span> <span class="ident">ordering</span>;
-<span class="kw">use</span> <span class="ident">ordering::OrderingProvider</span>;
+<span class="kw">mod</span> <span class="ident">scraping</span>;
+<span class="kw">use</span> <span class="ident">scraping::ChainScraper</span>;
 
 <span class="doccomment">/// When importing votes we will check via the `ordering` module, whether or not we know of the</span>
 <span class="doccomment">/// candidate to be included somewhere. If not, the votes might be spam, in this case we want to</span>
@@ -575,13 +570,15 @@
 	{
 		<span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">initialize</span>(<span class="kw-2">&amp;mut</span> <span class="ident">ctx</span>, <span class="ident">backend</span>, <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">clock</span>).<span class="kw">await</span><span class="question-mark">?</span>;
 
-		<span class="kw">let</span> (<span class="ident">participations</span>, <span class="ident">first_leaf</span>, <span class="ident">initialized</span>, <span class="ident">backend</span>) <span class="op">=</span> <span class="kw">match</span> <span class="ident">res</span> {
+		<span class="kw">let</span> (<span class="ident">participations</span>, <span class="ident">votes</span>, <span class="ident">first_leaf</span>, <span class="ident">initialized</span>, <span class="ident">backend</span>) <span class="op">=</span> <span class="kw">match</span> <span class="ident">res</span> {
 			<span class="comment">// Concluded:</span>
 			<span class="prelude-val">None</span> =&gt; <span class="kw">return</span> <span class="prelude-val">Ok</span>(()),
 			<span class="prelude-val">Some</span>(<span class="ident">r</span>) =&gt; <span class="ident">r</span>,
 		};
 
-		<span class="ident">initialized</span>.<span class="ident">run</span>(<span class="ident">ctx</span>, <span class="ident">backend</span>, <span class="ident">participations</span>, <span class="prelude-val">Some</span>(<span class="ident">first_leaf</span>), <span class="ident">clock</span>).<span class="kw">await</span>
+		<span class="ident">initialized</span>
+			.<span class="ident">run</span>(<span class="ident">ctx</span>, <span class="ident">backend</span>, <span class="ident">participations</span>, <span class="ident">votes</span>, <span class="prelude-val">Some</span>(<span class="ident">first_leaf</span>), <span class="ident">clock</span>)
+			.<span class="kw">await</span>
 	}
 
 	<span class="doccomment">/// Make sure to recover participations properly on startup.</span>
@@ -592,7 +589,8 @@
 		<span class="ident">clock</span>: <span class="kw-2">&amp;</span>(<span class="kw">dyn</span> <span class="ident">Clock</span>),
 	) -&gt; <span class="ident">FatalResult</span><span class="op">&lt;</span>
 		<span class="prelude-ty">Option</span><span class="op">&lt;</span>(
-			<span class="ident">Vec</span><span class="op">&lt;</span>(<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">CandidateComparator</span><span class="op">&gt;</span>, <span class="ident">ParticipationRequest</span>)<span class="op">&gt;</span>,
+			<span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">ParticipationPriority</span>, <span class="ident">ParticipationRequest</span>)<span class="op">&gt;</span>,
+			<span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ScrapedOnChainVotes</span><span class="op">&gt;</span>,
 			<span class="ident">ActivatedLeaf</span>,
 			<span class="ident">Initialized</span>,
 			<span class="ident">B</span>,
@@ -616,12 +614,8 @@
 				},
 			};
 
-			<span class="comment">// Before we move to the initialized state we need to check if we got at</span>
-			<span class="comment">// least on finality notification to prevent large ancestry block scraping,</span>
-			<span class="comment">// when the node is syncing.</span>
-
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">overlay_db</span> <span class="op">=</span> <span class="ident">OverlayedBackend::new</span>(<span class="kw-2">&amp;mut</span> <span class="ident">backend</span>);
-			<span class="kw">let</span> (<span class="ident">participations</span>, <span class="ident">spam_slots</span>, <span class="ident">ordering_provider</span>) <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>
+			<span class="kw">let</span> (<span class="ident">participations</span>, <span class="ident">votes</span>, <span class="ident">spam_slots</span>, <span class="ident">ordering_provider</span>) <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>
 				.<span class="ident">handle_startup</span>(
 					<span class="ident">ctx</span>,
 					<span class="ident">first_leaf</span>.<span class="ident">clone</span>(),
@@ -644,6 +638,7 @@
 
 			<span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>((
 				<span class="ident">participations</span>,
+				<span class="ident">votes</span>,
 				<span class="ident">first_leaf</span>,
 				<span class="ident">Initialized::new</span>(<span class="self">self</span>, <span class="ident">rolling_session_window</span>, <span class="ident">spam_slots</span>, <span class="ident">ordering_provider</span>),
 				<span class="ident">backend</span>,
@@ -664,9 +659,10 @@
 		<span class="ident">overlay_db</span>: <span class="kw-2">&amp;mut</span> <span class="ident">OverlayedBackend</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="kw">impl</span> <span class="ident">Backend</span><span class="op">&gt;</span>,
 		<span class="ident">clock</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Clock</span>,
 	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(
-		<span class="ident">Vec</span><span class="op">&lt;</span>(<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">CandidateComparator</span><span class="op">&gt;</span>, <span class="ident">ParticipationRequest</span>)<span class="op">&gt;</span>,
+		<span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">ParticipationPriority</span>, <span class="ident">ParticipationRequest</span>)<span class="op">&gt;</span>,
+		<span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ScrapedOnChainVotes</span><span class="op">&gt;</span>,
 		<span class="ident">SpamSlots</span>,
-		<span class="ident">OrderingProvider</span>,
+		<span class="ident">ChainScraper</span>,
 	)<span class="op">&gt;</span>
 	<span class="kw">where</span>
 		<span class="ident">Context</span>: <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">DisputeCoordinatorMessage</span><span class="op">&gt;</span>,
@@ -687,7 +683,7 @@
 
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">participation_requests</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">unconfirmed_disputes</span>: <span class="ident">UnconfirmedDisputes</span> <span class="op">=</span> <span class="ident">UnconfirmedDisputes::new</span>();
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ordering_provider</span> <span class="op">=</span> <span class="ident">OrderingProvider::new</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="ident">initial_head</span>).<span class="kw">await</span><span class="question-mark">?</span>;
+		<span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">scraper</span>, <span class="ident">votes</span>) <span class="op">=</span> <span class="ident">ChainScraper::new</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="ident">initial_head</span>).<span class="kw">await</span><span class="question-mark">?</span>;
 		<span class="kw">for</span> ((<span class="ident">session</span>, <span class="kw-2">ref</span> <span class="ident">candidate_hash</span>), <span class="ident">status</span>) <span class="kw">in</span> <span class="ident">active_disputes</span> {
 			<span class="kw">let</span> <span class="ident">votes</span>: <span class="ident">CandidateVotes</span> <span class="op">=</span>
 				<span class="kw">match</span> <span class="ident">overlay_db</span>.<span class="ident">load_candidate_votes</span>(<span class="ident">session</span>, <span class="ident">candidate_hash</span>) {
@@ -735,10 +731,7 @@
 							.<span class="ident">map_or</span>(<span class="bool-val">false</span>, <span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">v</span>.<span class="ident">is_some</span>())
 				});
 
-			<span class="kw">let</span> <span class="ident">candidate_comparator</span> <span class="op">=</span> <span class="ident">ordering_provider</span>
-				.<span class="ident">candidate_comparator</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="kw-2">&amp;</span><span class="ident">votes</span>.<span class="ident">candidate_receipt</span>)
-				.<span class="kw">await</span><span class="question-mark">?</span>;
-			<span class="kw">let</span> <span class="ident">is_included</span> <span class="op">=</span> <span class="ident">candidate_comparator</span>.<span class="ident">is_some</span>();
+			<span class="kw">let</span> <span class="ident">is_included</span> <span class="op">=</span> <span class="ident">scraper</span>.<span class="ident">is_candidate_included</span>(<span class="kw-2">&amp;</span><span class="ident">votes</span>.<span class="ident">candidate_receipt</span>.<span class="ident">hash</span>());
 
 			<span class="kw">if</span> <span class="op">!</span><span class="ident">status</span>.<span class="ident">is_confirmed_concluded</span>() <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident">is_included</span> {
 				<span class="ident">unconfirmed_disputes</span>.<span class="ident">insert</span>((<span class="ident">session</span>, <span class="kw-2">*</span><span class="ident">candidate_hash</span>), <span class="ident">voted_indices</span>);
@@ -748,7 +741,7 @@
 			<span class="comment">// recorded local statement.</span>
 			<span class="kw">if</span> <span class="ident">missing_local_statement</span> {
 				<span class="ident">participation_requests</span>.<span class="ident">push</span>((
-					<span class="ident">candidate_comparator</span>,
+					<span class="ident">ParticipationPriority::with_priority_if</span>(<span class="ident">is_included</span>),
 					<span class="ident">ParticipationRequest::new</span>(
 						<span class="ident">votes</span>.<span class="ident">candidate_receipt</span>.<span class="ident">clone</span>(),
 						<span class="ident">session</span>,
@@ -760,8 +753,9 @@
 
 		<span class="prelude-val">Ok</span>((
 			<span class="ident">participation_requests</span>,
+			<span class="ident">votes</span>,
 			<span class="ident">SpamSlots::recover_from_state</span>(<span class="ident">unconfirmed_disputes</span>),
-			<span class="ident">ordering_provider</span>,
+			<span class="ident">scraper</span>,
 		))
 	}
 }

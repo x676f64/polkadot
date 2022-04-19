@@ -669,7 +669,7 @@
 					<span class="ident">candidate_receipt</span>,
 					<span class="ident">session</span>: <span class="ident">valid_vote</span>.<span class="number">0</span>.<span class="ident">session_index</span>(),
 					<span class="ident">statements</span>: <span class="macro">vec!</span>[<span class="ident">valid_vote</span>, <span class="ident">invalid_vote</span>],
-					<span class="ident">pending_confirmation</span>,
+					<span class="ident">pending_confirmation</span>: <span class="prelude-val">Some</span>(<span class="ident">pending_confirmation</span>),
 				},
 			))
 			.<span class="kw">await</span>;

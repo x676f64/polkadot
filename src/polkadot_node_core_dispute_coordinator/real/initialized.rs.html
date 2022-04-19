@@ -1221,103 +1221,6 @@
 <span id="1216">1216</span>
 <span id="1217">1217</span>
 <span id="1218">1218</span>
-<span id="1219">1219</span>
-<span id="1220">1220</span>
-<span id="1221">1221</span>
-<span id="1222">1222</span>
-<span id="1223">1223</span>
-<span id="1224">1224</span>
-<span id="1225">1225</span>
-<span id="1226">1226</span>
-<span id="1227">1227</span>
-<span id="1228">1228</span>
-<span id="1229">1229</span>
-<span id="1230">1230</span>
-<span id="1231">1231</span>
-<span id="1232">1232</span>
-<span id="1233">1233</span>
-<span id="1234">1234</span>
-<span id="1235">1235</span>
-<span id="1236">1236</span>
-<span id="1237">1237</span>
-<span id="1238">1238</span>
-<span id="1239">1239</span>
-<span id="1240">1240</span>
-<span id="1241">1241</span>
-<span id="1242">1242</span>
-<span id="1243">1243</span>
-<span id="1244">1244</span>
-<span id="1245">1245</span>
-<span id="1246">1246</span>
-<span id="1247">1247</span>
-<span id="1248">1248</span>
-<span id="1249">1249</span>
-<span id="1250">1250</span>
-<span id="1251">1251</span>
-<span id="1252">1252</span>
-<span id="1253">1253</span>
-<span id="1254">1254</span>
-<span id="1255">1255</span>
-<span id="1256">1256</span>
-<span id="1257">1257</span>
-<span id="1258">1258</span>
-<span id="1259">1259</span>
-<span id="1260">1260</span>
-<span id="1261">1261</span>
-<span id="1262">1262</span>
-<span id="1263">1263</span>
-<span id="1264">1264</span>
-<span id="1265">1265</span>
-<span id="1266">1266</span>
-<span id="1267">1267</span>
-<span id="1268">1268</span>
-<span id="1269">1269</span>
-<span id="1270">1270</span>
-<span id="1271">1271</span>
-<span id="1272">1272</span>
-<span id="1273">1273</span>
-<span id="1274">1274</span>
-<span id="1275">1275</span>
-<span id="1276">1276</span>
-<span id="1277">1277</span>
-<span id="1278">1278</span>
-<span id="1279">1279</span>
-<span id="1280">1280</span>
-<span id="1281">1281</span>
-<span id="1282">1282</span>
-<span id="1283">1283</span>
-<span id="1284">1284</span>
-<span id="1285">1285</span>
-<span id="1286">1286</span>
-<span id="1287">1287</span>
-<span id="1288">1288</span>
-<span id="1289">1289</span>
-<span id="1290">1290</span>
-<span id="1291">1291</span>
-<span id="1292">1292</span>
-<span id="1293">1293</span>
-<span id="1294">1294</span>
-<span id="1295">1295</span>
-<span id="1296">1296</span>
-<span id="1297">1297</span>
-<span id="1298">1298</span>
-<span id="1299">1299</span>
-<span id="1300">1300</span>
-<span id="1301">1301</span>
-<span id="1302">1302</span>
-<span id="1303">1303</span>
-<span id="1304">1304</span>
-<span id="1305">1305</span>
-<span id="1306">1306</span>
-<span id="1307">1307</span>
-<span id="1308">1308</span>
-<span id="1309">1309</span>
-<span id="1310">1310</span>
-<span id="1311">1311</span>
-<span id="1312">1312</span>
-<span id="1313">1313</span>
-<span id="1314">1314</span>
-<span id="1315">1315</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -1341,22 +1244,18 @@
 	<span class="ident">sync::Arc</span>,
 };
 
-<span class="kw">use</span> <span class="ident">futures</span>::{
-	<span class="ident">channel</span>::{<span class="ident">mpsc</span>, <span class="ident">oneshot</span>},
-	<span class="ident">FutureExt</span>, <span class="ident">StreamExt</span>,
-};
-<span class="kw">use</span> <span class="ident">lru::LruCache</span>;
+<span class="kw">use</span> <span class="ident">futures</span>::{<span class="ident">channel::mpsc</span>, <span class="ident">FutureExt</span>, <span class="ident">StreamExt</span>};
 
 <span class="kw">use</span> <span class="ident">sc_keystore::LocalKeystore</span>;
 
 <span class="kw">use</span> <span class="ident">polkadot_node_primitives</span>::{
 	<span class="ident">CandidateVotes</span>, <span class="ident">DisputeMessage</span>, <span class="ident">DisputeMessageCheckError</span>, <span class="ident">SignedDisputeStatement</span>,
-	<span class="ident">DISPUTE_WINDOW</span>, <span class="ident">MAX_FINALITY_LAG</span>,
+	<span class="ident">DISPUTE_WINDOW</span>,
 };
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem</span>::{
 	<span class="ident">messages</span>::{
 		<span class="ident">BlockDescription</span>, <span class="ident">DisputeCoordinatorMessage</span>, <span class="ident">DisputeDistributionMessage</span>,
-		<span class="ident">ImportStatementsResult</span>, <span class="ident">RuntimeApiMessage</span>, <span class="ident">RuntimeApiRequest</span>,
+		<span class="ident">ImportStatementsResult</span>,
 	},
 	<span class="ident">overseer</span>, <span class="ident">ActivatedLeaf</span>, <span class="ident">ActiveLeavesUpdate</span>, <span class="ident">FromOverseer</span>, <span class="ident">OverseerSignal</span>, <span class="ident">SubsystemContext</span>,
 };
@@ -1372,7 +1271,7 @@
 <span class="kw">use</span> <span class="kw">crate</span>::{
 	<span class="ident">error</span>::{<span class="ident">log_error</span>, <span class="ident">Error</span>, <span class="ident">FatalError</span>, <span class="ident">FatalResult</span>, <span class="ident">JfyiError</span>, <span class="ident">JfyiResult</span>, <span class="prelude-ty">Result</span>},
 	<span class="ident">metrics::Metrics</span>,
-	<span class="ident">real</span>::{<span class="ident">ordering::get_finalized_block_number</span>, <span class="ident">DisputeCoordinatorSubsystem</span>},
+	<span class="ident">real::DisputeCoordinatorSubsystem</span>,
 	<span class="ident">status</span>::{<span class="ident">get_active_with_status</span>, <span class="ident">Clock</span>, <span class="ident">DisputeStatus</span>, <span class="ident">Timestamp</span>},
 	<span class="ident">LOG_TARGET</span>,
 };
@@ -1380,18 +1279,14 @@
 <span class="kw">use</span> <span class="kw">super</span>::{
 	<span class="ident">backend::Backend</span>,
 	<span class="ident">db</span>,
-	<span class="ident">ordering</span>::{<span class="ident">CandidateComparator</span>, <span class="ident">OrderingProvider</span>},
 	<span class="ident">participation</span>::{
-		<span class="self">self</span>, <span class="ident">Participation</span>, <span class="ident">ParticipationRequest</span>, <span class="ident">ParticipationStatement</span>, <span class="ident">WorkerMessageReceiver</span>,
+		<span class="self">self</span>, <span class="ident">Participation</span>, <span class="ident">ParticipationPriority</span>, <span class="ident">ParticipationRequest</span>, <span class="ident">ParticipationStatement</span>,
+		<span class="ident">WorkerMessageReceiver</span>,
 	},
+	<span class="ident">scraping::ChainScraper</span>,
 	<span class="ident">spam_slots::SpamSlots</span>,
 	<span class="ident">OverlayedBackend</span>,
 };
-
-<span class="comment">// The capacity and scrape depth are equal to the maximum allowed unfinalized depth.</span>
-<span class="kw">const</span> <span class="ident">LRU_SCRAPED_BLOCKS_CAPACITY</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="ident">MAX_FINALITY_LAG</span> <span class="kw">as</span> <span class="ident">usize</span>;
-<span class="comment">// This is in sync with `MAX_FINALITY_LAG` in relay chain selection &amp; node primitives.</span>
-<span class="kw">const</span> <span class="ident">MAX_BATCH_SCRAPE_ANCESTORS</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="ident">MAX_FINALITY_LAG</span>;
 
 <span class="doccomment">/// After the first active leaves update we transition to `Initialized` state.</span>
 <span class="doccomment">///</span>
@@ -1404,14 +1299,12 @@
 	<span class="ident">highest_session</span>: <span class="ident">SessionIndex</span>,
 	<span class="ident">spam_slots</span>: <span class="ident">SpamSlots</span>,
 	<span class="ident">participation</span>: <span class="ident">Participation</span>,
-	<span class="ident">ordering_provider</span>: <span class="ident">OrderingProvider</span>,
+	<span class="ident">scraper</span>: <span class="ident">ChainScraper</span>,
 	<span class="ident">participation_receiver</span>: <span class="ident">WorkerMessageReceiver</span>,
 	<span class="ident">metrics</span>: <span class="ident">Metrics</span>,
 	<span class="comment">// This tracks only rolling session window failures.</span>
 	<span class="comment">// It can be a `Vec` if the need to track more arises.</span>
 	<span class="ident">error</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">SessionsUnavailable</span><span class="op">&gt;</span>,
-	<span class="doccomment">/// Latest relay blocks that have been successfully scraped.</span>
-	<span class="ident">last_scraped_blocks</span>: <span class="ident">LruCache</span><span class="op">&lt;</span><span class="ident">Hash</span>, ()<span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">Initialized</span> {
@@ -1420,7 +1313,7 @@
 		<span class="ident">subsystem</span>: <span class="ident">DisputeCoordinatorSubsystem</span>,
 		<span class="ident">rolling_session_window</span>: <span class="ident">RollingSessionWindow</span>,
 		<span class="ident">spam_slots</span>: <span class="ident">SpamSlots</span>,
-		<span class="ident">ordering_provider</span>: <span class="ident">OrderingProvider</span>,
+		<span class="ident">scraper</span>: <span class="ident">ChainScraper</span>,
 	) -&gt; <span class="self">Self</span> {
 		<span class="kw">let</span> <span class="ident">DisputeCoordinatorSubsystem</span> { <span class="ident">config</span>: <span class="kw">_</span>, <span class="ident">store</span>: <span class="kw">_</span>, <span class="ident">keystore</span>, <span class="ident">metrics</span> } <span class="op">=</span> <span class="ident">subsystem</span>;
 
@@ -1433,12 +1326,11 @@
 			<span class="ident">rolling_session_window</span>,
 			<span class="ident">highest_session</span>,
 			<span class="ident">spam_slots</span>,
-			<span class="ident">ordering_provider</span>,
+			<span class="ident">scraper</span>,
 			<span class="ident">participation</span>,
 			<span class="ident">participation_receiver</span>,
 			<span class="ident">metrics</span>,
 			<span class="ident">error</span>: <span class="prelude-val">None</span>,
-			<span class="ident">last_scraped_blocks</span>: <span class="ident">LruCache::new</span>(<span class="ident">LRU_SCRAPED_BLOCKS_CAPACITY</span>),
 		}
 	}
 
@@ -1449,7 +1341,8 @@
 		<span class="kw-2">mut</span> <span class="self">self</span>,
 		<span class="kw-2">mut</span> <span class="ident">ctx</span>: <span class="ident">Context</span>,
 		<span class="kw-2">mut</span> <span class="ident">backend</span>: <span class="ident">B</span>,
-		<span class="kw-2">mut</span> <span class="ident">participations</span>: <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">CandidateComparator</span><span class="op">&gt;</span>, <span class="ident">ParticipationRequest</span>)<span class="op">&gt;</span>,
+		<span class="kw-2">mut</span> <span class="ident">participations</span>: <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">ParticipationPriority</span>, <span class="ident">ParticipationRequest</span>)<span class="op">&gt;</span>,
+		<span class="kw-2">mut</span> <span class="ident">votes</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ScrapedOnChainVotes</span><span class="op">&gt;</span>,
 		<span class="kw-2">mut</span> <span class="ident">first_leaf</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ActivatedLeaf</span><span class="op">&gt;</span>,
 		<span class="ident">clock</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Clock</span><span class="op">&gt;</span>,
 	) -&gt; <span class="ident">FatalResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
@@ -1464,6 +1357,7 @@
 					<span class="kw-2">&amp;mut</span> <span class="ident">ctx</span>,
 					<span class="kw-2">&amp;mut</span> <span class="ident">backend</span>,
 					<span class="kw-2">&amp;mut</span> <span class="ident">participations</span>,
+					<span class="kw-2">&amp;mut</span> <span class="ident">votes</span>,
 					<span class="kw-2">&amp;mut</span> <span class="ident">first_leaf</span>,
 					<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">clock</span>,
 				)
@@ -1485,7 +1379,8 @@
 		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
 		<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 		<span class="ident">backend</span>: <span class="kw-2">&amp;mut</span> <span class="ident">B</span>,
-		<span class="ident">participations</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">CandidateComparator</span><span class="op">&gt;</span>, <span class="ident">ParticipationRequest</span>)<span class="op">&gt;</span>,
+		<span class="ident">participations</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">ParticipationPriority</span>, <span class="ident">ParticipationRequest</span>)<span class="op">&gt;</span>,
+		<span class="ident">on_chain_votes</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ScrapedOnChainVotes</span><span class="op">&gt;</span>,
 		<span class="ident">first_leaf</span>: <span class="kw-2">&amp;mut</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ActivatedLeaf</span><span class="op">&gt;</span>,
 		<span class="ident">clock</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Clock</span>,
 	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
@@ -1494,17 +1389,31 @@
 		<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">DisputeCoordinatorMessage</span><span class="op">&gt;</span>,
 		<span class="ident">B</span>: <span class="ident">Backend</span>,
 	{
-		<span class="kw">for</span> (<span class="ident">comparator</span>, <span class="ident">request</span>) <span class="kw">in</span> <span class="ident">participations</span>.<span class="ident">drain</span>(..) {
-			<span class="self">self</span>.<span class="ident">participation</span>.<span class="ident">queue_participation</span>(<span class="ident">ctx</span>, <span class="ident">comparator</span>, <span class="ident">request</span>).<span class="kw">await</span><span class="question-mark">?</span>;
+		<span class="kw">for</span> (<span class="ident">priority</span>, <span class="ident">request</span>) <span class="kw">in</span> <span class="ident">participations</span>.<span class="ident">drain</span>(..) {
+			<span class="self">self</span>.<span class="ident">participation</span>.<span class="ident">queue_participation</span>(<span class="ident">ctx</span>, <span class="ident">priority</span>, <span class="ident">request</span>).<span class="kw">await</span><span class="question-mark">?</span>;
 		}
-		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">first_leaf</span>) <span class="op">=</span> <span class="ident">first_leaf</span>.<span class="ident">take</span>() {
+
+		{
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">overlay_db</span> <span class="op">=</span> <span class="ident">OverlayedBackend::new</span>(<span class="ident">backend</span>);
-			<span class="self">self</span>.<span class="ident">scrape_on_chain_votes</span>(<span class="ident">ctx</span>, <span class="kw-2">&amp;mut</span> <span class="ident">overlay_db</span>, <span class="ident">first_leaf</span>.<span class="ident">hash</span>, <span class="ident">clock</span>.<span class="ident">now</span>())
-				.<span class="kw">await</span><span class="question-mark">?</span>;
+			<span class="kw">for</span> <span class="ident">votes</span> <span class="kw">in</span> <span class="ident">on_chain_votes</span>.<span class="ident">drain</span>(..) {
+				<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="self">self</span>
+					.<span class="ident">process_on_chain_votes</span>(<span class="ident">ctx</span>, <span class="kw-2">&amp;mut</span> <span class="ident">overlay_db</span>, <span class="ident">votes</span>, <span class="ident">clock</span>.<span class="ident">now</span>())
+					.<span class="kw">await</span>
+					.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">error</span><span class="op">|</span> {
+						<span class="macro">gum::warn!</span>(
+							<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
+							<span class="question-mark">?</span><span class="ident">error</span>,
+							<span class="string">&quot;Skipping scraping block due to error&quot;</span>,
+						);
+					});
+			}
 			<span class="kw">if</span> <span class="op">!</span><span class="ident">overlay_db</span>.<span class="ident">is_empty</span>() {
 				<span class="kw">let</span> <span class="ident">ops</span> <span class="op">=</span> <span class="ident">overlay_db</span>.<span class="ident">into_write_ops</span>();
 				<span class="ident">backend</span>.<span class="ident">write</span>(<span class="ident">ops</span>)<span class="question-mark">?</span>;
 			}
+		}
+
+		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">first_leaf</span>) <span class="op">=</span> <span class="ident">first_leaf</span>.<span class="ident">take</span>() {
 			<span class="comment">// Also provide first leaf to participation for good measure.</span>
 			<span class="self">self</span>.<span class="ident">participation</span>
 				.<span class="ident">process_active_leaves_update</span>(<span class="ident">ctx</span>, <span class="kw-2">&amp;</span><span class="ident">ActiveLeavesUpdate::start_work</span>(<span class="ident">first_leaf</span>))
@@ -1550,7 +1459,7 @@
 							<span class="ident">default_confirm</span>
 						},
 						<span class="ident">FromOverseer::Signal</span>(<span class="ident">OverseerSignal::BlockFinalized</span>(<span class="kw">_</span>, <span class="ident">n</span>)) =&gt; {
-							<span class="self">self</span>.<span class="ident">ordering_provider</span>.<span class="ident">process_finalized_block</span>(<span class="kw-2">&amp;</span><span class="ident">n</span>);
+							<span class="self">self</span>.<span class="ident">scraper</span>.<span class="ident">process_finalized_block</span>(<span class="kw-2">&amp;</span><span class="ident">n</span>);
 							<span class="ident">default_confirm</span>
 						},
 						<span class="ident">FromOverseer::Communication</span> { <span class="ident">msg</span> } =&gt;
@@ -1576,9 +1485,8 @@
 		<span class="ident">update</span>: <span class="ident">ActiveLeavesUpdate</span>,
 		<span class="ident">now</span>: <span class="ident">u64</span>,
 	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-		<span class="self">self</span>.<span class="ident">ordering_provider</span>
-			.<span class="ident">process_active_leaves_update</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="kw-2">&amp;</span><span class="ident">update</span>)
-			.<span class="kw">await</span><span class="question-mark">?</span>;
+		<span class="kw">let</span> <span class="ident">on_chain_votes</span> <span class="op">=</span>
+			<span class="self">self</span>.<span class="ident">scraper</span>.<span class="ident">process_active_leaves_update</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="kw-2">&amp;</span><span class="ident">update</span>).<span class="kw">await</span><span class="question-mark">?</span>;
 		<span class="self">self</span>.<span class="ident">participation</span>.<span class="ident">process_active_leaves_update</span>(<span class="ident">ctx</span>, <span class="kw-2">&amp;</span><span class="ident">update</span>).<span class="kw">await</span><span class="question-mark">?</span>;
 
 		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">new_leaf</span>) <span class="op">=</span> <span class="ident">update</span>.<span class="ident">activated</span> {
@@ -1614,76 +1522,14 @@
 				<span class="prelude-val">Ok</span>(<span class="ident">SessionWindowUpdate::Unchanged</span>) =&gt; {},
 			};
 
-			<span class="comment">// Scrape the head if above rolling session update went well.</span>
-			<span class="kw">if</span> <span class="self">self</span>.<span class="ident">error</span>.<span class="ident">is_none</span>() {
-				<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="self">self</span>
-					.<span class="ident">scrape_on_chain_votes</span>(<span class="ident">ctx</span>, <span class="ident">overlay_db</span>, <span class="ident">new_leaf</span>.<span class="ident">hash</span>, <span class="ident">now</span>)
-					.<span class="kw">await</span>
-					.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> {
-						<span class="macro">gum::warn!</span>(
-							<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
-							<span class="string">&quot;Skipping scraping block #{}({}) due to error: {}&quot;</span>,
-							<span class="ident">new_leaf</span>.<span class="ident">number</span>,
-							<span class="ident">new_leaf</span>.<span class="ident">hash</span>,
-							<span class="ident">err</span>
-						);
-					});
-			}
-
-			<span class="comment">// Try to scrape any blocks for which we could not get the current session or did not receive an</span>
-			<span class="comment">// active leaves update.</span>
-			<span class="kw">let</span> <span class="ident">ancestors</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">get_finalized_block_number</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>()).<span class="kw">await</span> {
-				<span class="prelude-val">Ok</span>(<span class="ident">block_number</span>) =&gt; {
-					<span class="comment">// Limit our search to last finalized block, or up to max finality lag.</span>
-					<span class="kw">let</span> <span class="ident">block_number</span> <span class="op">=</span> <span class="ident">std::cmp::max</span>(
-						<span class="ident">block_number</span>,
-						<span class="ident">new_leaf</span>.<span class="ident">number</span>.<span class="ident">saturating_sub</span>(<span class="ident">MAX_BATCH_SCRAPE_ANCESTORS</span>),
-					);
-					<span class="comment">// Fetch ancestry up to and including the last finalized block.</span>
-					<span class="comment">// `get_block_ancestors()` doesn&#39;t include the target block in the ancestry, so we&#39;ll need to</span>
-					<span class="comment">// pass in it&#39;s parent.</span>
-					<span class="ident">OrderingProvider::get_block_ancestors</span>(
-						<span class="ident">ctx</span>.<span class="ident">sender</span>(),
-						<span class="ident">new_leaf</span>.<span class="ident">hash</span>,
-						<span class="ident">new_leaf</span>.<span class="ident">number</span>,
-						<span class="ident">block_number</span>.<span class="ident">saturating_sub</span>(<span class="number">1</span>),
-						<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">last_scraped_blocks</span>,
-					)
-					.<span class="kw">await</span>
-					.<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> {
-						<span class="macro">gum::debug!</span>(
-							<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
-							<span class="ident">activated_leaf</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">new_leaf</span>,
-							<span class="ident">error</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">err</span>,
-							<span class="string">&quot;Skipping leaf ancestors due to an error&quot;</span>,
-						);
-						<span class="comment">// We assume this is a spurious error so we&#39;ll move forward with an</span>
-						<span class="comment">// empty ancestry.</span>
-						<span class="ident">Vec::new</span>()
-					})
-				},
-				<span class="prelude-val">Err</span>(<span class="ident">err</span>) =&gt; {
-					<span class="macro">gum::debug!</span>(
-						<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
-						<span class="ident">activated_leaf</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">new_leaf</span>,
-						<span class="ident">error</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">err</span>,
-						<span class="string">&quot;Skipping leaf ancestors scraping&quot;</span>,
-					);
-					<span class="comment">// We assume this is a spurious error so we&#39;ll move forward with an</span>
-					<span class="comment">// empty ancestry.</span>
-					<span class="ident">Vec::new</span>()
-				},
-			};
-
 			<span class="comment">// The `runtime-api` subsystem has an internal queue which serializes the execution,</span>
 			<span class="comment">// so there is no point in running these in parallel.</span>
-			<span class="kw">for</span> <span class="ident">ancestor</span> <span class="kw">in</span> <span class="ident">ancestors</span> {
-				<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">scrape_on_chain_votes</span>(<span class="ident">ctx</span>, <span class="ident">overlay_db</span>, <span class="ident">ancestor</span>, <span class="ident">now</span>).<span class="kw">await</span>.<span class="ident">map_err</span>(
-					<span class="op">|</span><span class="ident">err</span><span class="op">|</span> {
+			<span class="kw">for</span> <span class="ident">votes</span> <span class="kw">in</span> <span class="ident">on_chain_votes</span> {
+				<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">process_on_chain_votes</span>(<span class="ident">ctx</span>, <span class="ident">overlay_db</span>, <span class="ident">votes</span>, <span class="ident">now</span>).<span class="kw">await</span>.<span class="ident">map_err</span>(
+					<span class="op">|</span><span class="ident">error</span><span class="op">|</span> {
 						<span class="macro">gum::warn!</span>(
 							<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
-							<span class="ident">hash</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">ancestor</span>,
-							<span class="ident">error</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">err</span>,
+							<span class="question-mark">?</span><span class="ident">error</span>,
 							<span class="string">&quot;Skipping scraping block due to error&quot;</span>,
 						);
 					},
@@ -1696,60 +1542,17 @@
 
 	<span class="doccomment">/// Scrapes on-chain votes (backing votes and concluded disputes) for a active leaf of the</span>
 	<span class="doccomment">/// relay chain.</span>
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">scrape_on_chain_votes</span>(
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">process_on_chain_votes</span>(
 		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
 		<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">DisputeCoordinatorMessage</span><span class="op">&gt;</span>
 		          <span class="op">+</span> <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">DisputeCoordinatorMessage</span><span class="op">&gt;</span>),
 		<span class="ident">overlay_db</span>: <span class="kw-2">&amp;mut</span> <span class="ident">OverlayedBackend</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="kw">impl</span> <span class="ident">Backend</span><span class="op">&gt;</span>,
-		<span class="ident">new_leaf</span>: <span class="ident">Hash</span>,
+		<span class="ident">votes</span>: <span class="ident">ScrapedOnChainVotes</span>,
 		<span class="ident">now</span>: <span class="ident">u64</span>,
 	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-		<span class="comment">// Avoid scraping twice.</span>
-		<span class="kw">if</span> <span class="self">self</span>.<span class="ident">last_scraped_blocks</span>.<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="ident">new_leaf</span>).<span class="ident">is_some</span>() {
-			<span class="kw">return</span> <span class="prelude-val">Ok</span>(())
-		}
-
-		<span class="comment">// obtain the concluded disputes as well as the candidate backing votes</span>
-		<span class="comment">// from the new leaf</span>
-		<span class="kw">let</span> <span class="ident">ScrapedOnChainVotes</span> { <span class="ident">session</span>, <span class="ident">backing_validators_per_candidate</span>, <span class="ident">disputes</span> } <span class="op">=</span> {
-			<span class="kw">let</span> (<span class="ident">tx</span>, <span class="ident">rx</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
-			<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">RuntimeApiMessage::Request</span>(
-				<span class="ident">new_leaf</span>,
-				<span class="ident">RuntimeApiRequest::FetchOnChainVotes</span>(<span class="ident">tx</span>),
-			))
-			.<span class="kw">await</span>;
-			<span class="kw">match</span> <span class="ident">rx</span>.<span class="kw">await</span> {
-				<span class="prelude-val">Ok</span>(<span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">val</span>))) =&gt; <span class="ident">val</span>,
-				<span class="prelude-val">Ok</span>(<span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)) =&gt; {
-					<span class="macro">gum::trace!</span>(
-						<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
-						<span class="ident">relay_parent</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">new_leaf</span>,
-						<span class="string">&quot;No on chain votes stored for relay chain leaf&quot;</span>);
-					<span class="kw">return</span> <span class="prelude-val">Ok</span>(())
-				},
-				<span class="prelude-val">Ok</span>(<span class="prelude-val">Err</span>(<span class="ident">e</span>)) =&gt; {
-					<span class="macro">gum::debug!</span>(
-						<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
-						<span class="ident">relay_parent</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">new_leaf</span>,
-						<span class="ident">error</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">e</span>,
-						<span class="string">&quot;Could not retrieve on chain votes due to an API error&quot;</span>);
-					<span class="kw">return</span> <span class="prelude-val">Ok</span>(())
-				},
-				<span class="prelude-val">Err</span>(<span class="ident">e</span>) =&gt; {
-					<span class="macro">gum::debug!</span>(
-						<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
-						<span class="ident">relay_parent</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">new_leaf</span>,
-						<span class="ident">error</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">e</span>,
-						<span class="string">&quot;Could not retrieve onchain votes due to oneshot cancellation&quot;</span>);
-					<span class="kw">return</span> <span class="prelude-val">Ok</span>(())
-				},
-			}
-		};
+		<span class="kw">let</span> <span class="ident">ScrapedOnChainVotes</span> { <span class="ident">session</span>, <span class="ident">backing_validators_per_candidate</span>, <span class="ident">disputes</span> } <span class="op">=</span> <span class="ident">votes</span>;
 
 		<span class="kw">if</span> <span class="ident">backing_validators_per_candidate</span>.<span class="ident">is_empty</span>() <span class="op">&amp;&amp;</span> <span class="ident">disputes</span>.<span class="ident">is_empty</span>() {
-			<span class="comment">// This block is not interesting as it doesnt contain any backing votes or disputes. We&#39;ll</span>
-			<span class="comment">// mark it here as scraped to prevent further processing.</span>
-			<span class="self">self</span>.<span class="ident">last_scraped_blocks</span>.<span class="ident">put</span>(<span class="ident">new_leaf</span>, ());
 			<span class="kw">return</span> <span class="prelude-val">Ok</span>(())
 		}
 
@@ -1764,7 +1567,6 @@
 			} <span class="kw">else</span> {
 				<span class="macro">gum::warn!</span>(
 					<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
-					<span class="ident">relay_parent</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">new_leaf</span>,
 					<span class="question-mark">?</span><span class="ident">session</span>,
 					<span class="string">&quot;Could not retrieve session info from rolling session window&quot;</span>,
 				);
@@ -1774,6 +1576,7 @@
 		<span class="comment">// Scraped on-chain backing votes for the candidates with</span>
 		<span class="comment">// the new active leaf as if we received them via gossip.</span>
 		<span class="kw">for</span> (<span class="ident">candidate_receipt</span>, <span class="ident">backers</span>) <span class="kw">in</span> <span class="ident">backing_validators_per_candidate</span> {
+			<span class="kw">let</span> <span class="ident">relay_parent</span> <span class="op">=</span> <span class="ident">candidate_receipt</span>.<span class="ident">descriptor</span>.<span class="ident">relay_parent</span>;
 			<span class="kw">let</span> <span class="ident">candidate_hash</span> <span class="op">=</span> <span class="ident">candidate_receipt</span>.<span class="ident">hash</span>();
 			<span class="kw">let</span> <span class="ident">statements</span> <span class="op">=</span> <span class="ident">backers</span>
 				.<span class="ident">into_iter</span>()
@@ -1783,10 +1586,11 @@
 						.<span class="ident">get</span>(<span class="ident">validator_index</span>.<span class="number">0</span> <span class="kw">as</span> <span class="ident">usize</span>)
 						.<span class="ident">or_else</span>(<span class="op">|</span><span class="op">|</span> {
 							<span class="macro">gum::error!</span>(
-							<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
-							<span class="ident">relay_parent</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">new_leaf</span>,
-							<span class="string">&quot;Missing public key for validator {:?}&quot;</span>,
-							<span class="kw-2">&amp;</span><span class="ident">validator_index</span>);
+								<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
+								<span class="question-mark">?</span><span class="ident">session</span>,
+								<span class="question-mark">?</span><span class="ident">validator_index</span>,
+								<span class="string">&quot;Missing public key for validator&quot;</span>,
+							);
 							<span class="prelude-val">None</span>
 						})
 						.<span class="ident">cloned</span>()<span class="question-mark">?</span>;
@@ -1794,9 +1598,9 @@
 					<span class="kw">let</span> <span class="ident">valid_statement_kind</span> <span class="op">=</span>
 						<span class="kw">match</span> <span class="ident">attestation</span>.<span class="ident">to_compact_statement</span>(<span class="ident">candidate_hash</span>) {
 							<span class="ident">CompactStatement::Seconded</span>(<span class="kw">_</span>) =&gt;
-								<span class="ident">ValidDisputeStatementKind::BackingSeconded</span>(<span class="ident">new_leaf</span>),
+								<span class="ident">ValidDisputeStatementKind::BackingSeconded</span>(<span class="ident">relay_parent</span>),
 							<span class="ident">CompactStatement::Valid</span>(<span class="kw">_</span>) =&gt;
-								<span class="ident">ValidDisputeStatementKind::BackingValid</span>(<span class="ident">new_leaf</span>),
+								<span class="ident">ValidDisputeStatementKind::BackingValid</span>(<span class="ident">relay_parent</span>),
 						};
 					<span class="kw">let</span> <span class="ident">signed_dispute_statement</span> <span class="op">=</span>
 						<span class="ident">SignedDisputeStatement::new_unchecked_from_trusted_source</span>(
@@ -1822,20 +1626,19 @@
 				)
 				.<span class="kw">await</span><span class="question-mark">?</span>;
 			<span class="kw">match</span> <span class="ident">import_result</span> {
-				<span class="ident">ImportStatementsResult::ValidImport</span> =&gt; <span class="macro">gum::trace!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
-																	   <span class="ident">relay_parent</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">new_leaf</span>,
-																	   <span class="question-mark">?</span><span class="ident">session</span>,
-																	   <span class="string">&quot;Imported backing vote from on-chain&quot;</span>),
-				<span class="ident">ImportStatementsResult::InvalidImport</span> =&gt; <span class="macro">gum::warn!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
-																		<span class="ident">relay_parent</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">new_leaf</span>,
-																		<span class="question-mark">?</span><span class="ident">session</span>,
-																		<span class="string">&quot;Attempted import of on-chain backing votes failed&quot;</span>),
+				<span class="ident">ImportStatementsResult::ValidImport</span> =&gt; <span class="macro">gum::trace!</span>(
+					<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
+					<span class="question-mark">?</span><span class="ident">relay_parent</span>,
+					<span class="question-mark">?</span><span class="ident">session</span>,
+					<span class="string">&quot;Imported backing votes from chain&quot;</span>
+				),
+				<span class="ident">ImportStatementsResult::InvalidImport</span> =&gt; <span class="macro">gum::warn!</span>(
+					<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
+					<span class="question-mark">?</span><span class="ident">relay_parent</span>,
+					<span class="question-mark">?</span><span class="ident">session</span>,
+					<span class="string">&quot;Attempted import of on-chain backing votes failed&quot;</span>
+				),
 			}
-		}
-
-		<span class="kw">if</span> <span class="ident">disputes</span>.<span class="ident">is_empty</span>() {
-			<span class="self">self</span>.<span class="ident">last_scraped_blocks</span>.<span class="ident">put</span>(<span class="ident">new_leaf</span>, ());
-			<span class="kw">return</span> <span class="prelude-val">Ok</span>(())
 		}
 
 		<span class="comment">// Import concluded disputes from on-chain, this already went through a vote so it&#39;s assumed</span>
@@ -1855,7 +1658,7 @@
 					} <span class="kw">else</span> {
 						<span class="macro">gum::warn!</span>(
 								<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
-								<span class="ident">relay_parent</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">new_leaf</span>,
+								<span class="question-mark">?</span><span class="ident">candidate_hash</span>,
 								<span class="question-mark">?</span><span class="ident">session</span>,
 								<span class="string">&quot;Could not retrieve session info from rolling session window for recently concluded dispute&quot;</span>);
 						<span class="kw">return</span> <span class="prelude-val">None</span>
@@ -1867,7 +1670,7 @@
 						.<span class="ident">or_else</span>(<span class="op">|</span><span class="op">|</span> {
 							<span class="macro">gum::error!</span>(
 								<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
-								<span class="ident">relay_parent</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">new_leaf</span>,
+								<span class="question-mark">?</span><span class="ident">candidate_hash</span>,
 								<span class="question-mark">?</span><span class="ident">session</span>,
 								<span class="string">&quot;Missing public key for validator {:?} that participated in concluded dispute&quot;</span>,
 								<span class="kw-2">&amp;</span><span class="ident">validator_index</span>);
@@ -1900,20 +1703,21 @@
 				)
 				.<span class="kw">await</span><span class="question-mark">?</span>;
 			<span class="kw">match</span> <span class="ident">import_result</span> {
-				<span class="ident">ImportStatementsResult::ValidImport</span> =&gt; <span class="macro">gum::trace!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
-																	   <span class="ident">relay_parent</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">new_leaf</span>,
-																	   <span class="question-mark">?</span><span class="ident">candidate_hash</span>,
-																	   <span class="question-mark">?</span><span class="ident">session</span>,
-																	   <span class="string">&quot;Imported statement of concluded dispute from on-chain&quot;</span>),
-				<span class="ident">ImportStatementsResult::InvalidImport</span> =&gt; <span class="macro">gum::warn!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
-																		<span class="ident">relay_parent</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">new_leaf</span>,
-																		<span class="question-mark">?</span><span class="ident">candidate_hash</span>,
-																		<span class="question-mark">?</span><span class="ident">session</span>,
-																		<span class="string">&quot;Attempted import of on-chain statement of concluded dispute failed&quot;</span>),
+				<span class="ident">ImportStatementsResult::ValidImport</span> =&gt; <span class="macro">gum::trace!</span>(
+					<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
+					<span class="question-mark">?</span><span class="ident">candidate_hash</span>,
+					<span class="question-mark">?</span><span class="ident">session</span>,
+					<span class="string">&quot;Imported statement of concluded dispute from on-chain&quot;</span>
+				),
+				<span class="ident">ImportStatementsResult::InvalidImport</span> =&gt; <span class="macro">gum::warn!</span>(
+					<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
+					<span class="question-mark">?</span><span class="ident">candidate_hash</span>,
+					<span class="question-mark">?</span><span class="ident">session</span>,
+					<span class="string">&quot;Attempted import of on-chain statement of concluded dispute failed&quot;</span>
+				),
 			}
 		}
 
-		<span class="self">self</span>.<span class="ident">last_scraped_blocks</span>.<span class="ident">put</span>(<span class="ident">new_leaf</span>, ());
 		<span class="prelude-val">Ok</span>(())
 	}
 
@@ -1943,11 +1747,13 @@
 						<span class="ident">now</span>,
 					)
 					.<span class="kw">await</span><span class="question-mark">?</span>;
-				<span class="kw">let</span> <span class="ident">report</span> <span class="op">=</span> <span class="kw">move</span> <span class="op">|</span><span class="op">|</span> {
-					<span class="ident">pending_confirmation</span>
+				<span class="kw">let</span> <span class="ident">report</span> <span class="op">=</span> <span class="kw">move</span> <span class="op">|</span><span class="op">|</span> <span class="kw">match</span> <span class="ident">pending_confirmation</span> {
+					<span class="prelude-val">Some</span>(<span class="ident">pending_confirmation</span>) =&gt; <span class="ident">pending_confirmation</span>
 						.<span class="ident">send</span>(<span class="ident">outcome</span>)
-						.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">JfyiError::DisputeImportOneshotSend</span>)
+						.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">JfyiError::DisputeImportOneshotSend</span>),
+					<span class="prelude-val">None</span> =&gt; <span class="prelude-val">Ok</span>(()),
 				};
+
 				<span class="kw">match</span> <span class="ident">outcome</span> {
 					<span class="ident">ImportStatementsResult::InvalidImport</span> =&gt; {
 						<span class="ident">report</span>()<span class="question-mark">?</span>;
@@ -2131,14 +1937,13 @@
 			<span class="ident">our_votes</span>.<span class="ident">retain</span>(<span class="op">|</span><span class="ident">index</span><span class="op">|</span> <span class="ident">controlled_indices</span>.<span class="ident">contains</span>(<span class="ident">index</span>));
 			<span class="op">!</span><span class="ident">our_votes</span>.<span class="ident">is_empty</span>()
 		};
+
 		<span class="kw">let</span> <span class="ident">was_confirmed</span> <span class="op">=</span> <span class="ident">recent_disputes</span>
 			.<span class="ident">get</span>(<span class="kw-2">&amp;</span>(<span class="ident">session</span>, <span class="ident">candidate_hash</span>))
 			.<span class="ident">map_or</span>(<span class="bool-val">false</span>, <span class="op">|</span><span class="ident">s</span><span class="op">|</span> <span class="ident">s</span>.<span class="ident">is_confirmed_concluded</span>());
-		<span class="kw">let</span> <span class="ident">comparator</span> <span class="op">=</span> <span class="self">self</span>
-			.<span class="ident">ordering_provider</span>
-			.<span class="ident">candidate_comparator</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="kw-2">&amp;</span><span class="ident">candidate_receipt</span>)
-			.<span class="kw">await</span><span class="question-mark">?</span>;
-		<span class="kw">let</span> <span class="ident">is_included</span> <span class="op">=</span> <span class="ident">comparator</span>.<span class="ident">is_some</span>();
+
+		<span class="kw">let</span> <span class="ident">is_included</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">scraper</span>.<span class="ident">is_candidate_included</span>(<span class="kw-2">&amp;</span><span class="ident">candidate_receipt</span>.<span class="ident">hash</span>());
+
 		<span class="kw">let</span> <span class="ident">is_local</span> <span class="op">=</span> <span class="ident">statements</span>
 			.<span class="ident">iter</span>()
 			.<span class="ident">find</span>(<span class="op">|</span>(<span class="kw">_</span>, <span class="ident">index</span>)<span class="op">|</span> <span class="ident">controlled_indices</span>.<span class="ident">contains</span>(<span class="ident">index</span>))
@@ -2247,13 +2052,14 @@
 		<span class="comment">// Participate in dispute if the imported vote was not local, we did not vote before either</span>
 		<span class="comment">// and we actually have keys to issue a local vote.</span>
 		<span class="kw">if</span> <span class="op">!</span><span class="ident">is_local</span> <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident">voted_already</span> <span class="op">&amp;&amp;</span> <span class="ident">is_disputed</span> <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident">controlled_indices</span>.<span class="ident">is_empty</span>() {
+			<span class="kw">let</span> <span class="ident">priority</span> <span class="op">=</span> <span class="ident">ParticipationPriority::with_priority_if</span>(<span class="ident">is_included</span>);
 			<span class="macro">gum::trace!</span>(
 				<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
 				<span class="ident">candidate_hash</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">candidate_receipt</span>.<span class="ident">hash</span>(),
-				<span class="ident">priority</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">comparator</span>.<span class="ident">is_some</span>(),
+				<span class="question-mark">?</span><span class="ident">priority</span>,
 				<span class="string">&quot;Queuing participation for candidate&quot;</span>
 			);
-			<span class="kw">if</span> <span class="ident">comparator</span>.<span class="ident">is_some</span>() {
+			<span class="kw">if</span> <span class="ident">priority</span>.<span class="ident">is_priority</span>() {
 				<span class="self">self</span>.<span class="ident">metrics</span>.<span class="ident">on_queued_priority_participation</span>();
 			} <span class="kw">else</span> {
 				<span class="self">self</span>.<span class="ident">metrics</span>.<span class="ident">on_queued_best_effort_participation</span>();
@@ -2264,7 +2070,7 @@
 				.<span class="ident">participation</span>
 				.<span class="ident">queue_participation</span>(
 					<span class="ident">ctx</span>,
-					<span class="ident">comparator</span>,
+					<span class="ident">priority</span>,
 					<span class="ident">ParticipationRequest::new</span>(<span class="ident">candidate_receipt</span>, <span class="ident">session</span>, <span class="ident">n_validators</span>),
 				)
 				.<span class="kw">await</span>;

@@ -1179,7 +1179,7 @@
 		<span class="doccomment">/// The validator index passed alongside each statement should correspond to the index</span>
 		<span class="doccomment">/// of the validator in the set.</span>
 		<span class="ident">statements</span>: <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">SignedDisputeStatement</span>, <span class="ident">ValidatorIndex</span>)<span class="op">&gt;</span>,
-		<span class="doccomment">/// Inform the requester once we finished importing.</span>
+		<span class="doccomment">/// Inform the requester once we finished importing (if a sender was provided).</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// This is:</span>
 		<span class="doccomment">/// - we discarded the votes because</span>
@@ -1193,7 +1193,7 @@
 		<span class="doccomment">///		- or other explicit votes on that candidate already recorded</span>
 		<span class="doccomment">///		- or recovered availability for the candidate</span>
 		<span class="doccomment">///		- or the imported statements are backing/approval votes, which are always accepted.</span>
-		<span class="ident">pending_confirmation</span>: <span class="ident">oneshot::Sender</span><span class="op">&lt;</span><span class="ident">ImportStatementsResult</span><span class="op">&gt;</span>,
+		<span class="ident">pending_confirmation</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">oneshot::Sender</span><span class="op">&lt;</span><span class="ident">ImportStatementsResult</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	},
 	<span class="doccomment">/// Fetch a list of all recent disputes the co-ordinator is aware of.</span>
 	<span class="doccomment">/// These are disputes which have occurred any time in recent sessions,</span>

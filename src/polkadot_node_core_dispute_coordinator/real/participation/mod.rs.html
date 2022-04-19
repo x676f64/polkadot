@@ -429,6 +429,12 @@
 <span id="424">424</span>
 <span id="425">425</span>
 <span id="426">426</span>
+<span id="427">427</span>
+<span id="428">428</span>
+<span id="429">429</span>
+<span id="430">430</span>
+<span id="431">431</span>
+<span id="432">432</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -446,11 +452,15 @@
 <span class="comment">// along with Polkadot.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
 
 <span class="kw">use</span> <span class="ident">std::collections::HashSet</span>;
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
+<span class="kw">use</span> <span class="ident">std::time::Duration</span>;
 
 <span class="kw">use</span> <span class="ident">futures</span>::{
 	<span class="ident">channel</span>::{<span class="ident">mpsc</span>, <span class="ident">oneshot</span>},
 	<span class="ident">FutureExt</span>, <span class="ident">SinkExt</span>,
 };
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
+<span class="kw">use</span> <span class="ident">futures_timer::Delay</span>;
 
 <span class="kw">use</span> <span class="ident">polkadot_node_primitives</span>::{<span class="ident">ValidationResult</span>, <span class="ident">APPROVAL_EXECUTION_TIMEOUT</span>};
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem</span>::{
@@ -462,8 +472,7 @@
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::real::LOG_TARGET</span>;
 
-<span class="kw">use</span> <span class="ident"><span class="kw">super</span>::ordering::CandidateComparator</span>;
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::error</span>::{<span class="ident">FatalError</span>, <span class="ident">FatalResult</span>, <span class="ident">JfyiError</span>, <span class="prelude-ty">Result</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::error</span>::{<span class="ident">FatalError</span>, <span class="ident">FatalResult</span>, <span class="prelude-ty">Result</span>};
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">tests</span>;
@@ -472,7 +481,7 @@
 
 <span class="kw">mod</span> <span class="ident">queues</span>;
 <span class="kw">use</span> <span class="ident">queues::Queues</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">queues</span>::{<span class="ident">ParticipationRequest</span>, <span class="ident">QueueError</span>};
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">queues</span>::{<span class="ident">ParticipationPriority</span>, <span class="ident">ParticipationRequest</span>, <span class="ident">QueueError</span>};
 
 <span class="doccomment">/// How many participation processes do we want to run in parallel the most.</span>
 <span class="doccomment">///</span>
@@ -575,7 +584,7 @@
 	<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">queue_participation</span><span class="op">&lt;</span><span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&gt;</span>(
 		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
 		<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
-		<span class="ident">comparator</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">CandidateComparator</span><span class="op">&gt;</span>,
+		<span class="ident">priority</span>: <span class="ident">ParticipationPriority</span>,
 		<span class="ident">req</span>: <span class="ident">ParticipationRequest</span>,
 	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 		<span class="comment">// Participation already running - we can ignore that request:</span>
@@ -590,7 +599,7 @@
 			}
 		}
 		<span class="comment">// Out of capacity/no recent block yet - queue:</span>
-		<span class="prelude-val">Ok</span>(<span class="self">self</span>.<span class="ident">queue</span>.<span class="ident">queue</span>(<span class="ident">comparator</span>, <span class="ident">req</span>).<span class="ident">map_err</span>(<span class="ident">JfyiError::QueueError</span>)<span class="question-mark">?</span>)
+		<span class="self">self</span>.<span class="ident">queue</span>.<span class="ident">queue</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="ident">priority</span>, <span class="ident">req</span>).<span class="kw">await</span>
 	}
 
 	<span class="doccomment">/// Message from a worker task was received - get the outcome.</span>
@@ -680,6 +689,9 @@
 	<span class="ident">block_hash</span>: <span class="ident">Hash</span>,
 	<span class="ident">req</span>: <span class="ident">ParticipationRequest</span>,
 ) {
+	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
+	<span class="comment">// Hack for tests, so we get recovery messages not too early.</span>
+	<span class="ident">Delay::new</span>(<span class="ident">Duration::from_millis</span>(<span class="number">100</span>)).<span class="kw">await</span>;
 	<span class="comment">// in order to validate a candidate we need to start by recovering the</span>
 	<span class="comment">// available data</span>
 	<span class="kw">let</span> (<span class="ident">recover_available_data_tx</span>, <span class="ident">recover_available_data_rx</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();

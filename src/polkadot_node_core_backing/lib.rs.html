@@ -1398,9 +1398,6 @@
 <span id="1393">1393</span>
 <span id="1394">1394</span>
 <span id="1395">1395</span>
-<span id="1396">1396</span>
-<span id="1397">1397</span>
-<span id="1398">1398</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020-2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -2290,16 +2287,13 @@
 		<span class="kw">if</span> <span class="kw">let</span> (<span class="prelude-val">Some</span>(<span class="ident">candidate_receipt</span>), <span class="prelude-val">Some</span>(<span class="ident">dispute_statement</span>)) <span class="op">=</span>
 			(<span class="ident">maybe_candidate_receipt</span>, <span class="ident">maybe_signed_dispute_statement</span>)
 		{
-			<span class="comment">// TODO: Log confirmation results in an efficient way:</span>
-			<span class="comment">// https://github.com/paritytech/polkadot/issues/5156</span>
-			<span class="kw">let</span> (<span class="ident">pending_confirmation</span>, <span class="ident">_confirmation_rx</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
 			<span class="ident">sender</span>
 				.<span class="ident">send_message</span>(<span class="ident">DisputeCoordinatorMessage::ImportStatements</span> {
 					<span class="ident">candidate_hash</span>,
 					<span class="ident">candidate_receipt</span>,
 					<span class="ident">session</span>: <span class="self">self</span>.<span class="ident">session_index</span>,
 					<span class="ident">statements</span>: <span class="macro">vec!</span>[(<span class="ident">dispute_statement</span>, <span class="ident">validator_index</span>)],
-					<span class="ident">pending_confirmation</span>,
+					<span class="ident">pending_confirmation</span>: <span class="prelude-val">None</span>,
 				})
 				.<span class="kw">await</span>;
 		}
