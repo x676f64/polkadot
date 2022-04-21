@@ -680,8 +680,8 @@
 <span class="kw">use</span> <span class="ident">sp_keystore</span>::{<span class="ident">CryptoStore</span>, <span class="ident">SyncCryptoStorePtr</span>};
 
 <span class="kw">use</span> <span class="ident">polkadot_node_network_protocol</span>::{
-	<span class="ident">authority_discovery::AuthorityDiscovery</span>, <span class="ident">peer_set::PeerSet</span>, <span class="ident">v1::GossipSuppportNetworkMessage</span>,
-	<span class="ident">PeerId</span>,
+	<span class="ident">authority_discovery::AuthorityDiscovery</span>, <span class="ident">peer_set::PeerSet</span>, <span class="ident">GossipSupportNetworkMessage</span>,
+	<span class="ident">PeerId</span>, <span class="ident">Versioned</span>,
 };
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem</span>::{
 	<span class="ident">messages</span>::{
@@ -809,7 +809,7 @@
 			);
 			<span class="kw">match</span> <span class="ident">message</span> {
 				<span class="ident">FromOverseer::Communication</span> {
-					<span class="ident">msg</span>: <span class="ident">GossipSupportMessage::NetworkBridgeUpdateV1</span>(<span class="ident">ev</span>),
+					<span class="ident">msg</span>: <span class="ident">GossipSupportMessage::NetworkBridgeUpdate</span>(<span class="ident">ev</span>),
 				} =&gt; <span class="self">self</span>.<span class="ident">handle_connect_disconnect</span>(<span class="ident">ev</span>),
 				<span class="ident">FromOverseer::Signal</span>(<span class="ident">OverseerSignal::ActiveLeaves</span>(<span class="ident">ActiveLeavesUpdate</span> {
 					<span class="ident">activated</span>,
@@ -1023,9 +1023,9 @@
 		};
 	}
 
-	<span class="kw">fn</span> <span class="ident">handle_connect_disconnect</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">ev</span>: <span class="ident">NetworkBridgeEvent</span><span class="op">&lt;</span><span class="ident">GossipSuppportNetworkMessage</span><span class="op">&gt;</span>) {
+	<span class="kw">fn</span> <span class="ident">handle_connect_disconnect</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">ev</span>: <span class="ident">NetworkBridgeEvent</span><span class="op">&lt;</span><span class="ident">GossipSupportNetworkMessage</span><span class="op">&gt;</span>) {
 		<span class="kw">match</span> <span class="ident">ev</span> {
-			<span class="ident">NetworkBridgeEvent::PeerConnected</span>(<span class="ident">peer_id</span>, <span class="kw">_</span>, <span class="ident">o_authority</span>) =&gt; {
+			<span class="ident">NetworkBridgeEvent::PeerConnected</span>(<span class="ident">peer_id</span>, <span class="kw">_</span>, <span class="kw">_</span>, <span class="ident">o_authority</span>) =&gt; {
 				<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">authority_ids</span>) <span class="op">=</span> <span class="ident">o_authority</span> {
 					<span class="ident">authority_ids</span>.<span class="ident">iter</span>().<span class="ident">for_each</span>(<span class="op">|</span><span class="ident">a</span><span class="op">|</span> {
 						<span class="self">self</span>.<span class="ident">connected_authorities</span>.<span class="ident">insert</span>(<span class="ident">a</span>.<span class="ident">clone</span>(), <span class="ident">peer_id</span>);
@@ -1044,7 +1044,7 @@
 			<span class="ident">NetworkBridgeEvent::OurViewChange</span>(<span class="kw">_</span>) =&gt; {},
 			<span class="ident">NetworkBridgeEvent::PeerViewChange</span>(<span class="kw">_</span>, <span class="kw">_</span>) =&gt; {},
 			<span class="ident">NetworkBridgeEvent::NewGossipTopology</span> { .. } =&gt; {},
-			<span class="ident">NetworkBridgeEvent::PeerMessage</span>(<span class="kw">_</span>, <span class="ident">v</span>) =&gt; {
+			<span class="ident">NetworkBridgeEvent::PeerMessage</span>(<span class="kw">_</span>, <span class="ident">Versioned::V1</span>(<span class="ident">v</span>)) =&gt; {
 				<span class="kw">match</span> <span class="ident">v</span> {};
 			},
 		}

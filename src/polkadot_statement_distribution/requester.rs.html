@@ -342,7 +342,7 @@
 			<span class="kw">let</span> (<span class="ident">outgoing</span>, <span class="ident">pending_response</span>) <span class="op">=</span>
 				<span class="ident">OutgoingRequest::new</span>(<span class="ident">Recipient::Peer</span>(<span class="ident">peer</span>), <span class="ident">req</span>.<span class="ident">clone</span>());
 			<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span> <span class="ident">sender</span>
-				.<span class="ident">feed</span>(<span class="ident">RequesterMessage::SendRequest</span>(<span class="ident">Requests::StatementFetching</span>(<span class="ident">outgoing</span>)))
+				.<span class="ident">feed</span>(<span class="ident">RequesterMessage::SendRequest</span>(<span class="ident">Requests::StatementFetchingV1</span>(<span class="ident">outgoing</span>)))
 				.<span class="kw">await</span>
 			{
 				<span class="macro">gum::info!</span>(

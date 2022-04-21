@@ -883,7 +883,7 @@
 };
 <span class="kw">use</span> <span class="ident">sp_api</span>::{<span class="ident">ApiExt</span>, <span class="ident">ProvideRuntimeApi</span>};
 
-<span class="kw">use</span> <span class="ident">polkadot_node_network_protocol::v1</span> <span class="kw">as</span> <span class="ident">protocol_v1</span>;
+<span class="kw">use</span> <span class="ident">polkadot_node_network_protocol::VersionedValidationProtocol</span>;
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem_types::messages</span>::{
 	<span class="ident">ApprovalDistributionMessage</span>, <span class="ident">ApprovalVotingMessage</span>, <span class="ident">AvailabilityDistributionMessage</span>,
 	<span class="ident">AvailabilityRecoveryMessage</span>, <span class="ident">AvailabilityStoreMessage</span>, <span class="ident">BitfieldDistributionMessage</span>,
@@ -1220,7 +1220,7 @@
 	<span class="ident">event</span><span class="op">=</span><span class="ident">Event</span>,
 	<span class="ident">signal</span><span class="op">=</span><span class="ident">OverseerSignal</span>,
 	<span class="ident">error</span><span class="op">=</span><span class="ident">SubsystemError</span>,
-	<span class="ident">network</span><span class="op">=</span><span class="ident">NetworkBridgeEvent</span><span class="op">&lt;</span><span class="ident">protocol_v1::ValidationProtocol</span><span class="op">&gt;</span>,
+	<span class="ident">network</span><span class="op">=</span><span class="ident">NetworkBridgeEvent</span><span class="op">&lt;</span><span class="ident">VersionedValidationProtocol</span><span class="op">&gt;</span>,
 )]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Overseer</span><span class="op">&lt;</span><span class="ident">SupportsParachains</span><span class="op">&gt;</span> {
 	<span class="attribute">#[<span class="ident">subsystem</span>(<span class="ident">no_dispatch</span>, <span class="ident">CandidateValidationMessage</span>)]</span>

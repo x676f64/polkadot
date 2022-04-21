@@ -215,29 +215,29 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Requests</span> {
 	<span class="doccomment">/// Request an availability chunk from a node.</span>
-	<span class="ident">ChunkFetching</span>(<span class="ident">OutgoingRequest</span><span class="op">&lt;</span><span class="ident">v1::ChunkFetchingRequest</span><span class="op">&gt;</span>),
+	<span class="ident">ChunkFetchingV1</span>(<span class="ident">OutgoingRequest</span><span class="op">&lt;</span><span class="ident">v1::ChunkFetchingRequest</span><span class="op">&gt;</span>),
 	<span class="doccomment">/// Fetch a collation from a collator which previously announced it.</span>
-	<span class="ident">CollationFetching</span>(<span class="ident">OutgoingRequest</span><span class="op">&lt;</span><span class="ident">v1::CollationFetchingRequest</span><span class="op">&gt;</span>),
+	<span class="ident">CollationFetchingV1</span>(<span class="ident">OutgoingRequest</span><span class="op">&lt;</span><span class="ident">v1::CollationFetchingRequest</span><span class="op">&gt;</span>),
 	<span class="doccomment">/// Fetch a PoV from a validator which previously sent out a seconded statement.</span>
-	<span class="ident">PoVFetching</span>(<span class="ident">OutgoingRequest</span><span class="op">&lt;</span><span class="ident">v1::PoVFetchingRequest</span><span class="op">&gt;</span>),
+	<span class="ident">PoVFetchingV1</span>(<span class="ident">OutgoingRequest</span><span class="op">&lt;</span><span class="ident">v1::PoVFetchingRequest</span><span class="op">&gt;</span>),
 	<span class="doccomment">/// Request full available data from a node.</span>
-	<span class="ident">AvailableDataFetching</span>(<span class="ident">OutgoingRequest</span><span class="op">&lt;</span><span class="ident">v1::AvailableDataFetchingRequest</span><span class="op">&gt;</span>),
+	<span class="ident">AvailableDataFetchingV1</span>(<span class="ident">OutgoingRequest</span><span class="op">&lt;</span><span class="ident">v1::AvailableDataFetchingRequest</span><span class="op">&gt;</span>),
 	<span class="doccomment">/// Requests for fetching large statements as part of statement distribution.</span>
-	<span class="ident">StatementFetching</span>(<span class="ident">OutgoingRequest</span><span class="op">&lt;</span><span class="ident">v1::StatementFetchingRequest</span><span class="op">&gt;</span>),
+	<span class="ident">StatementFetchingV1</span>(<span class="ident">OutgoingRequest</span><span class="op">&lt;</span><span class="ident">v1::StatementFetchingRequest</span><span class="op">&gt;</span>),
 	<span class="doccomment">/// Requests for notifying about an ongoing dispute.</span>
-	<span class="ident">DisputeSending</span>(<span class="ident">OutgoingRequest</span><span class="op">&lt;</span><span class="ident">v1::DisputeRequest</span><span class="op">&gt;</span>),
+	<span class="ident">DisputeSendingV1</span>(<span class="ident">OutgoingRequest</span><span class="op">&lt;</span><span class="ident">v1::DisputeRequest</span><span class="op">&gt;</span>),
 }
 
 <span class="kw">impl</span> <span class="ident">Requests</span> {
 	<span class="doccomment">/// Get the protocol this request conforms to.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_protocol</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">Protocol</span> {
 		<span class="kw">match</span> <span class="self">self</span> {
-			<span class="ident"><span class="self">Self</span>::ChunkFetching</span>(<span class="kw">_</span>) =&gt; <span class="ident">Protocol::ChunkFetching</span>,
-			<span class="ident"><span class="self">Self</span>::CollationFetching</span>(<span class="kw">_</span>) =&gt; <span class="ident">Protocol::CollationFetching</span>,
-			<span class="ident"><span class="self">Self</span>::PoVFetching</span>(<span class="kw">_</span>) =&gt; <span class="ident">Protocol::PoVFetching</span>,
-			<span class="ident"><span class="self">Self</span>::AvailableDataFetching</span>(<span class="kw">_</span>) =&gt; <span class="ident">Protocol::AvailableDataFetching</span>,
-			<span class="ident"><span class="self">Self</span>::StatementFetching</span>(<span class="kw">_</span>) =&gt; <span class="ident">Protocol::StatementFetching</span>,
-			<span class="ident"><span class="self">Self</span>::DisputeSending</span>(<span class="kw">_</span>) =&gt; <span class="ident">Protocol::DisputeSending</span>,
+			<span class="ident"><span class="self">Self</span>::ChunkFetchingV1</span>(<span class="kw">_</span>) =&gt; <span class="ident">Protocol::ChunkFetchingV1</span>,
+			<span class="ident"><span class="self">Self</span>::CollationFetchingV1</span>(<span class="kw">_</span>) =&gt; <span class="ident">Protocol::CollationFetchingV1</span>,
+			<span class="ident"><span class="self">Self</span>::PoVFetchingV1</span>(<span class="kw">_</span>) =&gt; <span class="ident">Protocol::PoVFetchingV1</span>,
+			<span class="ident"><span class="self">Self</span>::AvailableDataFetchingV1</span>(<span class="kw">_</span>) =&gt; <span class="ident">Protocol::AvailableDataFetchingV1</span>,
+			<span class="ident"><span class="self">Self</span>::StatementFetchingV1</span>(<span class="kw">_</span>) =&gt; <span class="ident">Protocol::StatementFetchingV1</span>,
+			<span class="ident"><span class="self">Self</span>::DisputeSendingV1</span>(<span class="kw">_</span>) =&gt; <span class="ident">Protocol::DisputeSendingV1</span>,
 		}
 	}
 
@@ -250,12 +250,12 @@
 	<span class="doccomment">/// contained in the `enum`.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">encode_request</span>(<span class="self">self</span>) -&gt; (<span class="ident">Protocol</span>, <span class="ident">OutgoingRequest</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span>) {
 		<span class="kw">match</span> <span class="self">self</span> {
-			<span class="ident"><span class="self">Self</span>::ChunkFetching</span>(<span class="ident">r</span>) =&gt; <span class="ident">r</span>.<span class="ident">encode_request</span>(),
-			<span class="ident"><span class="self">Self</span>::CollationFetching</span>(<span class="ident">r</span>) =&gt; <span class="ident">r</span>.<span class="ident">encode_request</span>(),
-			<span class="ident"><span class="self">Self</span>::PoVFetching</span>(<span class="ident">r</span>) =&gt; <span class="ident">r</span>.<span class="ident">encode_request</span>(),
-			<span class="ident"><span class="self">Self</span>::AvailableDataFetching</span>(<span class="ident">r</span>) =&gt; <span class="ident">r</span>.<span class="ident">encode_request</span>(),
-			<span class="ident"><span class="self">Self</span>::StatementFetching</span>(<span class="ident">r</span>) =&gt; <span class="ident">r</span>.<span class="ident">encode_request</span>(),
-			<span class="ident"><span class="self">Self</span>::DisputeSending</span>(<span class="ident">r</span>) =&gt; <span class="ident">r</span>.<span class="ident">encode_request</span>(),
+			<span class="ident"><span class="self">Self</span>::ChunkFetchingV1</span>(<span class="ident">r</span>) =&gt; <span class="ident">r</span>.<span class="ident">encode_request</span>(),
+			<span class="ident"><span class="self">Self</span>::CollationFetchingV1</span>(<span class="ident">r</span>) =&gt; <span class="ident">r</span>.<span class="ident">encode_request</span>(),
+			<span class="ident"><span class="self">Self</span>::PoVFetchingV1</span>(<span class="ident">r</span>) =&gt; <span class="ident">r</span>.<span class="ident">encode_request</span>(),
+			<span class="ident"><span class="self">Self</span>::AvailableDataFetchingV1</span>(<span class="ident">r</span>) =&gt; <span class="ident">r</span>.<span class="ident">encode_request</span>(),
+			<span class="ident"><span class="self">Self</span>::StatementFetchingV1</span>(<span class="ident">r</span>) =&gt; <span class="ident">r</span>.<span class="ident">encode_request</span>(),
+			<span class="ident"><span class="self">Self</span>::DisputeSendingV1</span>(<span class="ident">r</span>) =&gt; <span class="ident">r</span>.<span class="ident">encode_request</span>(),
 		}
 	}
 }

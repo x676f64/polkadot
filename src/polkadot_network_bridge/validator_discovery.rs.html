@@ -359,6 +359,12 @@
 <span id="354">354</span>
 <span id="355">355</span>
 <span id="356">356</span>
+<span id="357">357</span>
+<span id="358">358</span>
+<span id="359">359</span>
+<span id="360">360</span>
+<span id="361">361</span>
+<span id="362">362</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -436,15 +442,21 @@
 		);
 		<span class="comment">// ask the network to connect to these nodes and not disconnect</span>
 		<span class="comment">// from them until removed from the set</span>
+		<span class="comment">//</span>
+		<span class="comment">// for peer-set management, the default should be used regardless of</span>
+		<span class="comment">// the negotiated version.</span>
 		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="ident">network_service</span>
-			.<span class="ident">set_reserved_peers</span>(<span class="ident">peer_set</span>.<span class="ident">into_protocol_name</span>(), <span class="ident">newly_requested</span>)
+			.<span class="ident">set_reserved_peers</span>(<span class="ident">peer_set</span>.<span class="ident">into_default_protocol_name</span>(), <span class="ident">newly_requested</span>)
 			.<span class="kw">await</span>
 		{
 			<span class="macro">gum::warn!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="ident">err</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">e</span>, <span class="string">&quot;AuthorityDiscoveryService returned an invalid multiaddress&quot;</span>);
 		}
 		<span class="comment">// the addresses are known to be valid</span>
+		<span class="comment">//</span>
+		<span class="comment">// for peer-set management, the default should be used regardless of</span>
+		<span class="comment">// the negotiated version.</span>
 		<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">network_service</span>
-			.<span class="ident">remove_from_peers_set</span>(<span class="ident">peer_set</span>.<span class="ident">into_protocol_name</span>(), <span class="ident">peers_to_remove</span>)
+			.<span class="ident">remove_from_peers_set</span>(<span class="ident">peer_set</span>.<span class="ident">into_default_protocol_name</span>(), <span class="ident">peers_to_remove</span>)
 			.<span class="kw">await</span>;
 
 		<span class="ident">network_service</span>

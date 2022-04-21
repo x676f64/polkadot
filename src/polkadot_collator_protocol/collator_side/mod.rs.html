@@ -1098,6 +1098,8 @@
 <span id="1093">1093</span>
 <span id="1094">1094</span>
 <span id="1095">1095</span>
+<span id="1096">1096</span>
+<span id="1097">1097</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -1126,13 +1128,14 @@
 <span class="kw">use</span> <span class="ident">sp_core::Pair</span>;
 
 <span class="kw">use</span> <span class="ident">polkadot_node_network_protocol</span>::{
+	<span class="self">self</span> <span class="kw">as</span> <span class="ident">net_protocol</span>,
 	<span class="ident">peer_set::PeerSet</span>,
 	<span class="ident">request_response</span>::{
 		<span class="ident">incoming</span>::{<span class="self">self</span>, <span class="ident">OutgoingResponse</span>},
 		<span class="ident">v1</span>::{<span class="self">self</span> <span class="kw">as</span> <span class="ident">request_v1</span>, <span class="ident">CollationFetchingRequest</span>, <span class="ident">CollationFetchingResponse</span>},
 		<span class="ident">IncomingRequest</span>, <span class="ident">IncomingRequestReceiver</span>,
 	},
-	<span class="ident">v1</span> <span class="kw">as</span> <span class="ident">protocol_v1</span>, <span class="ident">OurView</span>, <span class="ident">PeerId</span>, <span class="ident">UnifiedReputationChange</span> <span class="kw">as</span> <span class="ident">Rep</span>, <span class="ident">View</span>,
+	<span class="ident">v1</span> <span class="kw">as</span> <span class="ident">protocol_v1</span>, <span class="ident">OurView</span>, <span class="ident">PeerId</span>, <span class="ident">UnifiedReputationChange</span> <span class="kw">as</span> <span class="ident">Rep</span>, <span class="ident">Versioned</span>, <span class="ident">View</span>,
 };
 <span class="kw">use</span> <span class="ident">polkadot_node_primitives</span>::{<span class="ident">CollationSecondedSignal</span>, <span class="ident">PoV</span>, <span class="ident">Statement</span>};
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem_util</span>::{
@@ -1645,7 +1648,7 @@
 
 		<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeMessage::SendCollationMessage</span>(
 			<span class="macro">vec!</span>[<span class="ident">peer</span>],
-			<span class="ident">protocol_v1::CollationProtocol::CollatorProtocol</span>(<span class="ident">wire_message</span>),
+			<span class="ident">Versioned::V1</span>(<span class="ident">protocol_v1::CollationProtocol::CollatorProtocol</span>(<span class="ident">wire_message</span>)),
 		))
 		.<span class="kw">await</span>;
 	}
@@ -1722,7 +1725,7 @@
 
 	<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeMessage::SendCollationMessage</span>(
 		<span class="macro">vec!</span>[<span class="ident">peer</span>.<span class="ident">clone</span>()],
-		<span class="ident">protocol_v1::CollationProtocol::CollatorProtocol</span>(<span class="ident">wire_message</span>),
+		<span class="ident">Versioned::V1</span>(<span class="ident">protocol_v1::CollationProtocol::CollatorProtocol</span>(<span class="ident">wire_message</span>)),
 	))
 	.<span class="kw">await</span>;
 
@@ -1787,9 +1790,10 @@
 				<span class="string">&quot;ReportCollator message is not expected on the collator side of the protocol&quot;</span>,
 			);
 		},
-		<span class="ident">NetworkBridgeUpdateV1</span>(<span class="ident">event</span>) =&gt; {
+		<span class="ident">NetworkBridgeUpdate</span>(<span class="ident">event</span>) =&gt; {
 			<span class="comment">// We should count only this shoulder in the histogram, as other shoulders are just introducing noise</span>
 			<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">state</span>.<span class="ident">metrics</span>.<span class="ident">time_process_msg</span>();
+
 			<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="ident">handle_network_msg</span>(<span class="ident">ctx</span>, <span class="ident">runtime</span>, <span class="ident">state</span>, <span class="ident">event</span>).<span class="kw">await</span> {
 				<span class="macro">gum::warn!</span>(
 					<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
@@ -2030,7 +2034,7 @@
 	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 	<span class="ident">runtime</span>: <span class="kw-2">&amp;mut</span> <span class="ident">RuntimeInfo</span>,
 	<span class="ident">state</span>: <span class="kw-2">&amp;mut</span> <span class="ident">State</span>,
-	<span class="ident">bridge_message</span>: <span class="ident">NetworkBridgeEvent</span><span class="op">&lt;</span><span class="ident">protocol_v1::CollatorProtocolMessage</span><span class="op">&gt;</span>,
+	<span class="ident">bridge_message</span>: <span class="ident">NetworkBridgeEvent</span><span class="op">&lt;</span><span class="ident">net_protocol::CollatorProtocolMessage</span><span class="op">&gt;</span>,
 ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 <span class="kw">where</span>
 	<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">CollatorProtocolMessage</span><span class="op">&gt;</span>,
@@ -2039,7 +2043,7 @@
 	<span class="kw">use</span> <span class="ident">NetworkBridgeEvent</span>::<span class="kw-2">*</span>;
 
 	<span class="kw">match</span> <span class="ident">bridge_message</span> {
-		<span class="ident">PeerConnected</span>(<span class="ident">peer_id</span>, <span class="ident">observed_role</span>, <span class="ident">maybe_authority</span>) =&gt; {
+		<span class="ident">PeerConnected</span>(<span class="ident">peer_id</span>, <span class="ident">observed_role</span>, <span class="kw">_</span>, <span class="ident">maybe_authority</span>) =&gt; {
 			<span class="comment">// If it is possible that a disconnected validator would attempt a reconnect</span>
 			<span class="comment">// it should be handled here.</span>
 			<span class="macro">gum::trace!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="question-mark">?</span><span class="ident">peer_id</span>, <span class="question-mark">?</span><span class="ident">observed_role</span>, <span class="string">&quot;Peer connected&quot;</span>);
@@ -2068,7 +2072,7 @@
 			<span class="macro">gum::trace!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="question-mark">?</span><span class="ident">view</span>, <span class="string">&quot;Own view change&quot;</span>);
 			<span class="ident">handle_our_view_change</span>(<span class="ident">state</span>, <span class="ident">view</span>).<span class="kw">await</span><span class="question-mark">?</span>;
 		},
-		<span class="ident">PeerMessage</span>(<span class="ident">remote</span>, <span class="ident">msg</span>) =&gt; {
+		<span class="ident">PeerMessage</span>(<span class="ident">remote</span>, <span class="ident">Versioned::V1</span>(<span class="ident">msg</span>)) =&gt; {
 			<span class="ident">handle_incoming_peer_message</span>(<span class="ident">ctx</span>, <span class="ident">runtime</span>, <span class="ident">state</span>, <span class="ident">remote</span>, <span class="ident">msg</span>).<span class="kw">await</span><span class="question-mark">?</span>;
 		},
 		<span class="ident">NewGossipTopology</span> { .. } =&gt; {

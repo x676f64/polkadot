@@ -149,6 +149,46 @@
 <span id="144">144</span>
 <span id="145">145</span>
 <span id="146">146</span>
+<span id="147">147</span>
+<span id="148">148</span>
+<span id="149">149</span>
+<span id="150">150</span>
+<span id="151">151</span>
+<span id="152">152</span>
+<span id="153">153</span>
+<span id="154">154</span>
+<span id="155">155</span>
+<span id="156">156</span>
+<span id="157">157</span>
+<span id="158">158</span>
+<span id="159">159</span>
+<span id="160">160</span>
+<span id="161">161</span>
+<span id="162">162</span>
+<span id="163">163</span>
+<span id="164">164</span>
+<span id="165">165</span>
+<span id="166">166</span>
+<span id="167">167</span>
+<span id="168">168</span>
+<span id="169">169</span>
+<span id="170">170</span>
+<span id="171">171</span>
+<span id="172">172</span>
+<span id="173">173</span>
+<span id="174">174</span>
+<span id="175">175</span>
+<span id="176">176</span>
+<span id="177">177</span>
+<span id="178">178</span>
+<span id="179">179</span>
+<span id="180">180</span>
+<span id="181">181</span>
+<span id="182">182</span>
+<span id="183">183</span>
+<span id="184">184</span>
+<span id="185">185</span>
+<span id="186">186</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -167,12 +207,23 @@
 
 <span class="doccomment">//! All peersets and protocols used for parachains.</span>
 
+<span class="kw">use</span> <span class="ident"><span class="kw">super</span>::ProtocolVersion</span>;
 <span class="kw">use</span> <span class="ident">sc_network::config</span>::{<span class="ident">NonDefaultSetConfig</span>, <span class="ident">SetConfig</span>};
 <span class="kw">use</span> <span class="ident">std</span>::{
 	<span class="ident">borrow::Cow</span>,
 	<span class="ident">ops</span>::{<span class="ident">Index</span>, <span class="ident">IndexMut</span>},
 };
 <span class="kw">use</span> <span class="ident">strum</span>::{<span class="ident">EnumIter</span>, <span class="ident">IntoEnumIterator</span>};
+
+<span class="comment">// Only supported protocol versions should be defined here.</span>
+<span class="kw">const</span> <span class="ident">VALIDATION_PROTOCOL_V1</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;/polkadot/validation/1&quot;</span>;
+<span class="kw">const</span> <span class="ident">COLLATION_PROTOCOL_V1</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;/polkadot/collation/1&quot;</span>;
+
+<span class="doccomment">/// The default validation protocol version.</span>
+<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">DEFAULT_VALIDATION_PROTOCOL_VERSION</span>: <span class="ident">ProtocolVersion</span> <span class="op">=</span> <span class="number">1</span>;
+
+<span class="doccomment">/// The default collation protocol version.</span>
+<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">DEFAULT_COLLATION_PROTOCOL_VERSION</span>: <span class="ident">ProtocolVersion</span> <span class="op">=</span> <span class="number">1</span>;
 
 <span class="doccomment">/// The peer-sets and thus the protocols which are used for the network.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Hash</span>, <span class="ident">EnumIter</span>)]</span>
@@ -196,12 +247,15 @@
 }
 
 <span class="kw">impl</span> <span class="ident">PeerSet</span> {
-	<span class="doccomment">/// Get `sc_network` peer set configurations for each peerset.</span>
+	<span class="doccomment">/// Get `sc_network` peer set configurations for each peerset on the default version.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Those should be used in the network configuration to register the protocols with the</span>
 	<span class="doccomment">/// network service.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_info</span>(<span class="self">self</span>, <span class="ident">is_authority</span>: <span class="ident">IsAuthority</span>) -&gt; <span class="ident">NonDefaultSetConfig</span> {
-		<span class="kw">let</span> <span class="ident">protocol</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">into_protocol_name</span>();
+		<span class="kw">let</span> <span class="ident">version</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_default_version</span>();
+		<span class="kw">let</span> <span class="ident">protocol</span> <span class="op">=</span> <span class="self">self</span>
+			.<span class="ident">into_protocol_name</span>(<span class="ident">version</span>)
+			.<span class="ident">expect</span>(<span class="string">&quot;default version always has protocol name; qed&quot;</span>);
 		<span class="kw">let</span> <span class="ident">max_notification_size</span> <span class="op">=</span> <span class="number">100</span> <span class="op">*</span> <span class="number">1024</span>;
 
 		<span class="kw">match</span> <span class="self">self</span> {
@@ -239,24 +293,50 @@
 		}
 	}
 
-	<span class="doccomment">/// Get the protocol name associated with each peer set as static str.</span>
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">get_protocol_name_static</span>(<span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> {
+	<span class="doccomment">/// Get the default protocol version for this peer set.</span>
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">get_default_version</span>(<span class="self">self</span>) -&gt; <span class="ident">ProtocolVersion</span> {
 		<span class="kw">match</span> <span class="self">self</span> {
-			<span class="ident">PeerSet::Validation</span> =&gt; <span class="string">&quot;/polkadot/validation/1&quot;</span>,
-			<span class="ident">PeerSet::Collation</span> =&gt; <span class="string">&quot;/polkadot/collation/1&quot;</span>,
+			<span class="ident">PeerSet::Validation</span> =&gt; <span class="ident">DEFAULT_VALIDATION_PROTOCOL_VERSION</span>,
+			<span class="ident">PeerSet::Collation</span> =&gt; <span class="ident">DEFAULT_COLLATION_PROTOCOL_VERSION</span>,
 		}
 	}
 
-	<span class="doccomment">/// Convert a peer set into a protocol name as understood by Substrate.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">into_protocol_name</span>(<span class="self">self</span>) -&gt; <span class="ident">Cow</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span>, <span class="ident">str</span><span class="op">&gt;</span> {
-		<span class="self">self</span>.<span class="ident">get_protocol_name_static</span>().<span class="ident">into</span>()
+	<span class="doccomment">/// Get the default protocol name as a static str.</span>
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">get_default_protocol_name</span>(<span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> {
+		<span class="kw">match</span> <span class="self">self</span> {
+			<span class="ident">PeerSet::Validation</span> =&gt; <span class="ident">VALIDATION_PROTOCOL_V1</span>,
+			<span class="ident">PeerSet::Collation</span> =&gt; <span class="ident">COLLATION_PROTOCOL_V1</span>,
+		}
 	}
 
-	<span class="doccomment">/// Try parsing a protocol name into a peer set.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">try_from_protocol_name</span>(<span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">Cow</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span>, <span class="ident">str</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PeerSet</span><span class="op">&gt;</span> {
+	<span class="doccomment">/// Get the protocol name associated with each peer set</span>
+	<span class="doccomment">/// and the given version, if any, as static str.</span>
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">get_protocol_name_static</span>(<span class="self">self</span>, <span class="ident">version</span>: <span class="ident">ProtocolVersion</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span><span class="op">&gt;</span> {
+		<span class="kw">match</span> (<span class="self">self</span>, <span class="ident">version</span>) {
+			(<span class="ident">PeerSet::Validation</span>, <span class="number">1</span>) =&gt; <span class="prelude-val">Some</span>(<span class="ident">VALIDATION_PROTOCOL_V1</span>),
+			(<span class="ident">PeerSet::Collation</span>, <span class="number">1</span>) =&gt; <span class="prelude-val">Some</span>(<span class="ident">COLLATION_PROTOCOL_V1</span>),
+			<span class="kw">_</span> =&gt; <span class="prelude-val">None</span>,
+		}
+	}
+
+	<span class="doccomment">/// Get the protocol name associated with each peer set as understood by Substrate.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">into_default_protocol_name</span>(<span class="self">self</span>) -&gt; <span class="ident">Cow</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span>, <span class="ident">str</span><span class="op">&gt;</span> {
+		<span class="self">self</span>.<span class="ident">get_default_protocol_name</span>().<span class="ident">into</span>()
+	}
+
+	<span class="doccomment">/// Convert a peer set and the given version into a protocol name, if any,</span>
+	<span class="doccomment">/// as understood by Substrate.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">into_protocol_name</span>(<span class="self">self</span>, <span class="ident">version</span>: <span class="ident">ProtocolVersion</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Cow</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span>, <span class="ident">str</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+		<span class="self">self</span>.<span class="ident">get_protocol_name_static</span>(<span class="ident">version</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">n</span><span class="op">|</span> <span class="ident">n</span>.<span class="ident">into</span>())
+	}
+
+	<span class="doccomment">/// Try parsing a protocol name into a peer set and protocol version.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// This only succeeds on supported versions.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">try_from_protocol_name</span>(<span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">Cow</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span>, <span class="ident">str</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">PeerSet</span>, <span class="ident">ProtocolVersion</span>)<span class="op">&gt;</span> {
 		<span class="kw">match</span> <span class="ident">name</span> {
-			<span class="ident">n</span> <span class="kw">if</span> <span class="ident">n</span> <span class="op">==</span> <span class="kw-2">&amp;</span><span class="ident">PeerSet::Validation</span>.<span class="ident">into_protocol_name</span>() =&gt; <span class="prelude-val">Some</span>(<span class="ident">PeerSet::Validation</span>),
-			<span class="ident">n</span> <span class="kw">if</span> <span class="ident">n</span> <span class="op">==</span> <span class="kw-2">&amp;</span><span class="ident">PeerSet::Collation</span>.<span class="ident">into_protocol_name</span>() =&gt; <span class="prelude-val">Some</span>(<span class="ident">PeerSet::Collation</span>),
+			<span class="ident">n</span> <span class="kw">if</span> <span class="ident">n</span> <span class="op">==</span> <span class="ident">VALIDATION_PROTOCOL_V1</span> =&gt; <span class="prelude-val">Some</span>((<span class="ident">PeerSet::Validation</span>, <span class="number">1</span>)),
+			<span class="ident">n</span> <span class="kw">if</span> <span class="ident">n</span> <span class="op">==</span> <span class="ident">COLLATION_PROTOCOL_V1</span> =&gt; <span class="prelude-val">Some</span>((<span class="ident">PeerSet::Collation</span>, <span class="number">1</span>)),
 			<span class="kw">_</span> =&gt; <span class="prelude-val">None</span>,
 		}
 	}
@@ -288,7 +368,7 @@
 	}
 }
 
-<span class="doccomment">/// Get `NonDefaultSetConfig`s for all available peer sets.</span>
+<span class="doccomment">/// Get `NonDefaultSetConfig`s for all available peer sets, at their default versions.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// Should be used during network configuration (added to [`NetworkConfiguration::extra_sets`])</span>
 <span class="doccomment">/// or shortly after startup to register the protocols with the network service.</span>

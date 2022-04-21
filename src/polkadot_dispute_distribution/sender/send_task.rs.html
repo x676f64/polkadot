@@ -559,7 +559,7 @@
 		<span class="kw">let</span> (<span class="ident">outgoing</span>, <span class="ident">pending_response</span>) <span class="op">=</span>
 			<span class="ident">OutgoingRequest::new</span>(<span class="ident">Recipient::Authority</span>(<span class="ident">receiver</span>.<span class="ident">clone</span>()), <span class="ident">req</span>.<span class="ident">clone</span>());
 
-		<span class="ident">reqs</span>.<span class="ident">push</span>(<span class="ident">Requests::DisputeSending</span>(<span class="ident">outgoing</span>));
+		<span class="ident">reqs</span>.<span class="ident">push</span>(<span class="ident">Requests::DisputeSendingV1</span>(<span class="ident">outgoing</span>));
 
 		<span class="kw">let</span> <span class="ident">fut</span> <span class="op">=</span> <span class="ident">wait_response_task</span>(
 			<span class="ident">pending_response</span>,

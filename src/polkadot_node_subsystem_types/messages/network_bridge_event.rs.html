@@ -115,6 +115,15 @@
 <span id="110">110</span>
 <span id="111">111</span>
 <span id="112">112</span>
+<span id="113">113</span>
+<span id="114">114</span>
+<span id="115">115</span>
+<span id="116">116</span>
+<span id="117">117</span>
+<span id="118">118</span>
+<span id="119">119</span>
+<span id="120">120</span>
+<span id="121">121</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -138,7 +147,7 @@
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sc_network</span>::{<span class="ident">PeerId</span>, <span class="ident">ReputationChange</span>};
 
-<span class="kw">use</span> <span class="ident">polkadot_node_network_protocol</span>::{<span class="ident">ObservedRole</span>, <span class="ident">OurView</span>, <span class="ident">View</span>, <span class="ident">WrongVariant</span>};
+<span class="kw">use</span> <span class="ident">polkadot_node_network_protocol</span>::{<span class="ident">ObservedRole</span>, <span class="ident">OurView</span>, <span class="ident">ProtocolVersion</span>, <span class="ident">View</span>, <span class="ident">WrongVariant</span>};
 <span class="kw">use</span> <span class="ident">polkadot_primitives::v2</span>::{<span class="ident">AuthorityDiscoveryId</span>, <span class="ident">SessionIndex</span>, <span class="ident">ValidatorIndex</span>};
 
 <span class="doccomment">/// Information about a peer in the gossip topology for a session.</span>
@@ -166,7 +175,7 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">NetworkBridgeEvent</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// A peer has connected.</span>
-	<span class="ident">PeerConnected</span>(<span class="ident">PeerId</span>, <span class="ident">ObservedRole</span>, <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HashSet</span><span class="op">&lt;</span><span class="ident">AuthorityDiscoveryId</span><span class="op">&gt;</span><span class="op">&gt;</span>),
+	<span class="ident">PeerConnected</span>(<span class="ident">PeerId</span>, <span class="ident">ObservedRole</span>, <span class="ident">ProtocolVersion</span>, <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HashSet</span><span class="op">&lt;</span><span class="ident">AuthorityDiscoveryId</span><span class="op">&gt;</span><span class="op">&gt;</span>),
 
 	<span class="doccomment">/// A peer has disconnected.</span>
 	<span class="ident">PeerDisconnected</span>(<span class="ident">PeerId</span>),
@@ -209,13 +218,22 @@
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">focus</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">NetworkBridgeEvent</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">WrongVariant</span><span class="op">&gt;</span>
 	<span class="kw">where</span>
 		<span class="ident">T</span>: <span class="lifetime">&#39;a</span> <span class="op">+</span> <span class="ident">Clone</span>,
-		<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">T</span>: <span class="ident">TryFrom</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">M</span>, <span class="ident">Error</span> <span class="op">=</span> <span class="ident">WrongVariant</span><span class="op">&gt;</span>,
+		<span class="ident">T</span>: <span class="ident">TryFrom</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">M</span>, <span class="ident">Error</span> <span class="op">=</span> <span class="ident">WrongVariant</span><span class="op">&gt;</span>,
 	{
 		<span class="prelude-val">Ok</span>(<span class="kw">match</span> <span class="kw-2">*</span><span class="self">self</span> {
 			<span class="ident">NetworkBridgeEvent::PeerMessage</span>(<span class="kw-2">ref</span> <span class="ident">peer</span>, <span class="kw-2">ref</span> <span class="ident">msg</span>) =&gt;
-				<span class="ident">NetworkBridgeEvent::PeerMessage</span>(<span class="ident">peer</span>.<span class="ident">clone</span>(), <span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">T</span><span class="op">&gt;</span><span class="ident">::try_from</span>(<span class="ident">msg</span>)<span class="question-mark">?</span>.<span class="ident">clone</span>()),
-			<span class="ident">NetworkBridgeEvent::PeerConnected</span>(<span class="kw-2">ref</span> <span class="ident">peer</span>, <span class="kw-2">ref</span> <span class="ident">role</span>, <span class="kw-2">ref</span> <span class="ident">authority_id</span>) =&gt;
-				<span class="ident">NetworkBridgeEvent::PeerConnected</span>(<span class="ident">peer</span>.<span class="ident">clone</span>(), <span class="ident">role</span>.<span class="ident">clone</span>(), <span class="ident">authority_id</span>.<span class="ident">clone</span>()),
+				<span class="ident">NetworkBridgeEvent::PeerMessage</span>(<span class="ident">peer</span>.<span class="ident">clone</span>(), <span class="ident">T::try_from</span>(<span class="ident">msg</span>)<span class="question-mark">?</span>),
+			<span class="ident">NetworkBridgeEvent::PeerConnected</span>(
+				<span class="kw-2">ref</span> <span class="ident">peer</span>,
+				<span class="kw-2">ref</span> <span class="ident">role</span>,
+				<span class="kw-2">ref</span> <span class="ident">version</span>,
+				<span class="kw-2">ref</span> <span class="ident">authority_id</span>,
+			) =&gt; <span class="ident">NetworkBridgeEvent::PeerConnected</span>(
+				<span class="ident">peer</span>.<span class="ident">clone</span>(),
+				<span class="ident">role</span>.<span class="ident">clone</span>(),
+				<span class="kw-2">*</span><span class="ident">version</span>,
+				<span class="ident">authority_id</span>.<span class="ident">clone</span>(),
+			),
 			<span class="ident">NetworkBridgeEvent::PeerDisconnected</span>(<span class="kw-2">ref</span> <span class="ident">peer</span>) =&gt;
 				<span class="ident">NetworkBridgeEvent::PeerDisconnected</span>(<span class="ident">peer</span>.<span class="ident">clone</span>()),
 			<span class="ident">NetworkBridgeEvent::NewGossipTopology</span>(<span class="kw-2">ref</span> <span class="ident">topology</span>) =&gt;

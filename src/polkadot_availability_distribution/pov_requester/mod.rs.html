@@ -290,7 +290,7 @@
 		<span class="ident">Recipient::Authority</span>(<span class="ident">authority_id</span>.<span class="ident">clone</span>()),
 		<span class="ident">PoVFetchingRequest</span> { <span class="ident">candidate_hash</span> },
 	);
-	<span class="kw">let</span> <span class="ident">full_req</span> <span class="op">=</span> <span class="ident">Requests::PoVFetching</span>(<span class="ident">req</span>);
+	<span class="kw">let</span> <span class="ident">full_req</span> <span class="op">=</span> <span class="ident">Requests::PoVFetchingV1</span>(<span class="ident">req</span>);
 
 	<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeMessage::SendRequests</span>(
 		<span class="macro">vec!</span>[<span class="ident">full_req</span>],
@@ -428,7 +428,7 @@
 					<span class="ident">AllMessages::NetworkBridge</span>(<span class="ident">NetworkBridgeMessage::SendRequests</span>(<span class="kw-2">mut</span> <span class="ident">reqs</span>, <span class="kw">_</span>)) =&gt; {
 						<span class="kw">let</span> <span class="ident">req</span> <span class="op">=</span> <span class="macro">assert_matches!</span>(
 							<span class="ident">reqs</span>.<span class="ident">pop</span>(),
-							<span class="prelude-val">Some</span>(<span class="ident">Requests::PoVFetching</span>(<span class="ident">outgoing</span>)) =&gt; {<span class="ident">outgoing</span>}
+							<span class="prelude-val">Some</span>(<span class="ident">Requests::PoVFetchingV1</span>(<span class="ident">outgoing</span>)) =&gt; {<span class="ident">outgoing</span>}
 						);
 						<span class="ident">req</span>.<span class="ident">pending_response</span>
 							.<span class="ident">send</span>(<span class="prelude-val">Ok</span>(<span class="ident">PoVFetchingResponse::PoV</span>(<span class="ident">pov</span>.<span class="ident">clone</span>()).<span class="ident">encode</span>()))

@@ -1250,7 +1250,7 @@
 			<span class="ident">sender</span>
 				.<span class="ident">send_message</span>(
 					<span class="ident">NetworkBridgeMessage::SendRequests</span>(
-						<span class="macro">vec!</span>[<span class="ident">Requests::AvailableDataFetching</span>(<span class="ident">req</span>)],
+						<span class="macro">vec!</span>[<span class="ident">Requests::AvailableDataFetchingV1</span>(<span class="ident">req</span>)],
 						<span class="ident">IfDisconnected::ImmediateError</span>,
 					)
 					.<span class="ident">into</span>(),
@@ -1374,7 +1374,7 @@
 
 				<span class="kw">let</span> (<span class="ident">req</span>, <span class="ident">res</span>) <span class="op">=</span>
 					<span class="ident">OutgoingRequest::new</span>(<span class="ident">Recipient::Authority</span>(<span class="ident">validator</span>), <span class="ident">raw_request</span>.<span class="ident">clone</span>());
-				<span class="ident">requests</span>.<span class="ident">push</span>(<span class="ident">Requests::ChunkFetching</span>(<span class="ident">req</span>));
+				<span class="ident">requests</span>.<span class="ident">push</span>(<span class="ident">Requests::ChunkFetchingV1</span>(<span class="ident">req</span>));
 
 				<span class="ident">params</span>.<span class="ident">metrics</span>.<span class="ident">on_chunk_request_issued</span>();
 				<span class="kw">let</span> <span class="ident">timer</span> <span class="op">=</span> <span class="ident">params</span>.<span class="ident">metrics</span>.<span class="ident">time_chunk_request</span>();
