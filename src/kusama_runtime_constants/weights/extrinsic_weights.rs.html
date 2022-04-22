@@ -78,9 +78,6 @@
 <span id="73">73</span>
 <span id="74">74</span>
 <span id="75">75</span>
-<span id="76">76</span>
-<span id="77">77</span>
-<span id="78">78</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2022 Parity Technologies (UK) Ltd.</span>
@@ -99,7 +96,7 @@
 <span class="comment">// limitations under the License.</span>
 
 <span class="doccomment">//! THIS FILE WAS AUTO-GENERATED USING THE SUBSTRATE BENCHMARK CLI VERSION 4.0.0-dev</span>
-<span class="doccomment">//! DATE: 2022-03-24 (Y/M/D)</span>
+<span class="doccomment">//! DATE: 2022-04-20 (Y/M/D)</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! SHORT-NAME: `extrinsic`, LONG-NAME: `ExtrinsicBase`, RUNTIME: `Development`</span>
 <span class="doccomment">//! WARMUPS: `10`, REPEAT: `100`</span>
@@ -108,17 +105,14 @@
 
 <span class="comment">// Executed Command:</span>
 <span class="comment">//   ./target/production/polkadot</span>
-<span class="comment">//   benchmark-overhead</span>
-<span class="comment">//   --chain</span>
-<span class="comment">//   kusama-dev</span>
+<span class="comment">//   benchmark</span>
+<span class="comment">//   overhead</span>
+<span class="comment">//   --chain=kusama-dev</span>
 <span class="comment">//   --execution=wasm</span>
 <span class="comment">//   --wasm-execution=compiled</span>
-<span class="comment">//   --weight-path</span>
-<span class="comment">//   runtime/kusama/constants/src/weights/</span>
-<span class="comment">//   --warmup</span>
-<span class="comment">//   10</span>
-<span class="comment">//   --repeat</span>
-<span class="comment">//   100</span>
+<span class="comment">//   --weight-path=runtime/kusama/constants/src/weights/</span>
+<span class="comment">//   --warmup=10</span>
+<span class="comment">//   --repeat=100</span>
 
 <span class="kw">use</span> <span class="ident">frame_support</span>::{
 	<span class="ident">parameter_types</span>,
@@ -130,16 +124,16 @@
 	<span class="doccomment">/// Calculated by multiplying the *Average* with `1` and adding `0`.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Stats [NS]:</span>
-	<span class="doccomment">///   Min, Max: 80_176, 81_558</span>
-	<span class="doccomment">///   Average:  80_350</span>
-	<span class="doccomment">///   Median:   80_335</span>
-	<span class="doccomment">///   Std-Dev:  136.56</span>
+	<span class="doccomment">///   Min, Max: 85_946, 88_408</span>
+	<span class="doccomment">///   Average:  86_309</span>
+	<span class="doccomment">///   Median:   86_213</span>
+	<span class="doccomment">///   Std-Dev:  345.03</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Percentiles [NS]:</span>
-	<span class="doccomment">///   99th: 80_492</span>
-	<span class="doccomment">///   95th: 80_459</span>
-	<span class="doccomment">///   75th: 80_377</span>
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">ExtrinsicBaseWeight</span>: <span class="ident">Weight</span> <span class="op">=</span> <span class="number">80_350</span> <span class="op">*</span> <span class="ident">WEIGHT_PER_NANOS</span>;
+	<span class="doccomment">///   99th: 87_527</span>
+	<span class="doccomment">///   95th: 86_901</span>
+	<span class="doccomment">///   75th: 86_308</span>
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">ExtrinsicBaseWeight</span>: <span class="ident">Weight</span> <span class="op">=</span> <span class="number">86_309</span> <span class="op">*</span> <span class="ident">WEIGHT_PER_NANOS</span>;
 }
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
