@@ -1,1 +1,1 @@
-initSidebarItems({"enum":[["BoundedVecOutOfBounds","BoundedVec errors"]],"struct":[["BoundedVec","Non-empty Vec bounded with minimal (L - lower bound) and maximal (U - upper bound) items quantity"]]});
+initSidebarItems({"enum":[["BoundedVecOutOfBounds","BoundedVec errors"]],"struct":[["BoundedVec","Non-empty Vec bounded with minimal (L - lower bound) and maximal (U - upper bound) items quantity"]],"type":[["NonEmptyVec","A non-empty Vec with no effective upper-bound on its length"]]});
