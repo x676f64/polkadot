@@ -2089,27 +2089,6 @@
 <span id="2084">2084</span>
 <span id="2085">2085</span>
 <span id="2086">2086</span>
-<span id="2087">2087</span>
-<span id="2088">2088</span>
-<span id="2089">2089</span>
-<span id="2090">2090</span>
-<span id="2091">2091</span>
-<span id="2092">2092</span>
-<span id="2093">2093</span>
-<span id="2094">2094</span>
-<span id="2095">2095</span>
-<span id="2096">2096</span>
-<span id="2097">2097</span>
-<span id="2098">2098</span>
-<span id="2099">2099</span>
-<span id="2100">2100</span>
-<span id="2101">2101</span>
-<span id="2102">2102</span>
-<span id="2103">2103</span>
-<span id="2104">2104</span>
-<span id="2105">2105</span>
-<span id="2106">2106</span>
-<span id="2107">2107</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -2164,8 +2143,7 @@
 <span class="kw">use</span> <span class="ident">frame_support</span>::{
 	<span class="ident">construct_runtime</span>, <span class="ident">parameter_types</span>,
 	<span class="ident">traits</span>::{
-		<span class="ident">Contains</span>, <span class="ident">EnsureOneOf</span>, <span class="ident">InstanceFilter</span>, <span class="ident">KeyOwnerProofSystem</span>, <span class="ident">LockIdentifier</span>,
-		<span class="ident">OnRuntimeUpgrade</span>, <span class="ident">PrivilegeCmp</span>,
+		<span class="ident">Contains</span>, <span class="ident">EnsureOneOf</span>, <span class="ident">InstanceFilter</span>, <span class="ident">KeyOwnerProofSystem</span>, <span class="ident">LockIdentifier</span>, <span class="ident">PrivilegeCmp</span>,
 	},
 	<span class="ident">weights::ConstantMultiplier</span>,
 	<span class="ident">PalletId</span>, <span class="ident">RuntimeDebug</span>,
@@ -3648,30 +3626,10 @@
 	<span class="ident">frame_system::ChainContext</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>,
 	<span class="ident">Runtime</span>,
 	<span class="ident">AllPalletsWithSystem</span>,
-	(
-		<span class="ident">SlotsCrowdloanIndexMigration</span>,
-		<span class="ident">pallet_staking::migrations::v9::InjectValidatorsIntoVoterList</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>,
-	),
+	(),
 <span class="op">&gt;</span>;
 <span class="doccomment">/// The payload being signed in the transactions.</span>
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">SignedPayload</span> <span class="op">=</span> <span class="ident">generic::SignedPayload</span><span class="op">&lt;</span><span class="ident">Call</span>, <span class="ident">SignedExtra</span><span class="op">&gt;</span>;
-
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SlotsCrowdloanIndexMigration</span>;
-<span class="kw">impl</span> <span class="ident">OnRuntimeUpgrade</span> <span class="kw">for</span> <span class="ident">SlotsCrowdloanIndexMigration</span> {
-	<span class="kw">fn</span> <span class="ident">on_runtime_upgrade</span>() -&gt; <span class="ident">frame_support::weights::Weight</span> {
-		<span class="ident">slots::migration::slots_crowdloan_index_migration::migrate</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>()
-	}
-
-	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;try-runtime&quot;</span>)]</span>
-	<span class="kw">fn</span> <span class="ident">pre_upgrade</span>() -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span><span class="op">&gt;</span> {
-		<span class="ident">slots::migration::slots_crowdloan_index_migration::pre_migrate</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>()
-	}
-
-	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;try-runtime&quot;</span>)]</span>
-	<span class="kw">fn</span> <span class="ident">post_upgrade</span>() -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span><span class="op">&gt;</span> {
-		<span class="ident">slots::migration::slots_crowdloan_index_migration::post_migrate</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>()
-	}
-}
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;runtime-benchmarks&quot;</span>)]</span>
 <span class="attribute">#[<span class="ident">macro_use</span>]</span>
