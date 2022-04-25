@@ -1312,93 +1312,7 @@
 <span id="1307">1307</span>
 <span id="1308">1308</span>
 <span id="1309">1309</span>
-<span id="1310">1310</span>
-<span id="1311">1311</span>
-<span id="1312">1312</span>
-<span id="1313">1313</span>
-<span id="1314">1314</span>
-<span id="1315">1315</span>
-<span id="1316">1316</span>
-<span id="1317">1317</span>
-<span id="1318">1318</span>
-<span id="1319">1319</span>
-<span id="1320">1320</span>
-<span id="1321">1321</span>
-<span id="1322">1322</span>
-<span id="1323">1323</span>
-<span id="1324">1324</span>
-<span id="1325">1325</span>
-<span id="1326">1326</span>
-<span id="1327">1327</span>
-<span id="1328">1328</span>
-<span id="1329">1329</span>
-<span id="1330">1330</span>
-<span id="1331">1331</span>
-<span id="1332">1332</span>
-<span id="1333">1333</span>
-<span id="1334">1334</span>
-<span id="1335">1335</span>
-<span id="1336">1336</span>
-<span id="1337">1337</span>
-<span id="1338">1338</span>
-<span id="1339">1339</span>
-<span id="1340">1340</span>
-<span id="1341">1341</span>
-<span id="1342">1342</span>
-<span id="1343">1343</span>
-<span id="1344">1344</span>
-<span id="1345">1345</span>
-<span id="1346">1346</span>
-<span id="1347">1347</span>
-<span id="1348">1348</span>
-<span id="1349">1349</span>
-<span id="1350">1350</span>
-<span id="1351">1351</span>
-<span id="1352">1352</span>
-<span id="1353">1353</span>
-<span id="1354">1354</span>
-<span id="1355">1355</span>
-<span id="1356">1356</span>
-<span id="1357">1357</span>
-<span id="1358">1358</span>
-<span id="1359">1359</span>
-<span id="1360">1360</span>
-<span id="1361">1361</span>
-<span id="1362">1362</span>
-<span id="1363">1363</span>
-<span id="1364">1364</span>
-<span id="1365">1365</span>
-<span id="1366">1366</span>
-<span id="1367">1367</span>
-<span id="1368">1368</span>
-<span id="1369">1369</span>
-<span id="1370">1370</span>
-<span id="1371">1371</span>
-<span id="1372">1372</span>
-<span id="1373">1373</span>
-<span id="1374">1374</span>
-<span id="1375">1375</span>
-<span id="1376">1376</span>
-<span id="1377">1377</span>
-<span id="1378">1378</span>
-<span id="1379">1379</span>
-<span id="1380">1380</span>
-<span id="1381">1381</span>
-<span id="1382">1382</span>
-<span id="1383">1383</span>
-<span id="1384">1384</span>
-<span id="1385">1385</span>
-<span id="1386">1386</span>
-<span id="1387">1387</span>
-<span id="1388">1388</span>
-<span id="1389">1389</span>
-<span id="1390">1390</span>
-<span id="1391">1391</span>
-<span id="1392">1392</span>
-<span id="1393">1393</span>
-<span id="1394">1394</span>
-<span id="1395">1395</span>
-</pre><pre class="rust"><code><span class="comment">// Copyright 2020-2021 Parity Technologies (UK) Ltd.</span>
+</pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
 <span class="comment">// Polkadot is free software: you can redistribute it and/or modify</span>
@@ -1435,9 +1349,7 @@
 	<span class="ident">ValidationResult</span>, <span class="ident">BACKING_EXECUTION_TIMEOUT</span>,
 };
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem_util</span>::{
-	<span class="self">self</span> <span class="kw">as</span> <span class="ident">util</span>,
-	<span class="ident">metrics</span>::{<span class="self">self</span>, <span class="ident">prometheus</span>},
-	<span class="ident">request_from_runtime</span>, <span class="ident">request_session_index_for_child</span>, <span class="ident">request_validator_groups</span>,
+	<span class="self">self</span> <span class="kw">as</span> <span class="ident">util</span>, <span class="ident">request_from_runtime</span>, <span class="ident">request_session_index_for_child</span>, <span class="ident">request_validator_groups</span>,
 	<span class="ident">request_validators</span>, <span class="ident">FromJobCommand</span>, <span class="ident">JobSender</span>, <span class="ident">Validator</span>,
 };
 <span class="kw">use</span> <span class="ident">polkadot_primitives::v2</span>::{
@@ -1465,6 +1377,9 @@
 	<span class="ident">Context</span> <span class="kw">as</span> <span class="ident">TableContextTrait</span>, <span class="ident">Table</span>,
 };
 <span class="kw">use</span> <span class="ident">thiserror::Error</span>;
+
+<span class="kw">mod</span> <span class="ident">metrics</span>;
+<span class="kw">use</span> <span class="ident"><span class="self">self</span>::metrics::Metrics</span>;
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">tests</span>;
@@ -2700,93 +2615,6 @@
 			<span class="ident">job</span>.<span class="ident">run_loop</span>(<span class="ident">sender</span>, <span class="ident">rx_to</span>, <span class="ident">span</span>).<span class="kw">await</span>
 		}
 		.<span class="ident">boxed</span>()
-	}
-}
-
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
-<span class="kw">struct</span> <span class="ident">MetricsInner</span> {
-	<span class="ident">signed_statements_total</span>: <span class="ident">prometheus::Counter</span><span class="op">&lt;</span><span class="ident">prometheus::U64</span><span class="op">&gt;</span>,
-	<span class="ident">candidates_seconded_total</span>: <span class="ident">prometheus::Counter</span><span class="op">&lt;</span><span class="ident">prometheus::U64</span><span class="op">&gt;</span>,
-	<span class="ident">process_second</span>: <span class="ident">prometheus::Histogram</span>,
-	<span class="ident">process_statement</span>: <span class="ident">prometheus::Histogram</span>,
-	<span class="ident">get_backed_candidates</span>: <span class="ident">prometheus::Histogram</span>,
-}
-
-<span class="doccomment">/// Candidate backing metrics.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Default</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Metrics</span>(<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">MetricsInner</span><span class="op">&gt;</span>);
-
-<span class="kw">impl</span> <span class="ident">Metrics</span> {
-	<span class="kw">fn</span> <span class="ident">on_statement_signed</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) {
-		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">metrics</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span> {
-			<span class="ident">metrics</span>.<span class="ident">signed_statements_total</span>.<span class="ident">inc</span>();
-		}
-	}
-
-	<span class="kw">fn</span> <span class="ident">on_candidate_seconded</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) {
-		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">metrics</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span> {
-			<span class="ident">metrics</span>.<span class="ident">candidates_seconded_total</span>.<span class="ident">inc</span>();
-		}
-	}
-
-	<span class="doccomment">/// Provide a timer for handling `CandidateBackingMessage:Second` which observes on drop.</span>
-	<span class="kw">fn</span> <span class="ident">time_process_second</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">metrics::prometheus::prometheus::HistogramTimer</span><span class="op">&gt;</span> {
-		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">as_ref</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">metrics</span><span class="op">|</span> <span class="ident">metrics</span>.<span class="ident">process_second</span>.<span class="ident">start_timer</span>())
-	}
-
-	<span class="doccomment">/// Provide a timer for handling `CandidateBackingMessage::Statement` which observes on drop.</span>
-	<span class="kw">fn</span> <span class="ident">time_process_statement</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">metrics::prometheus::prometheus::HistogramTimer</span><span class="op">&gt;</span> {
-		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">as_ref</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">metrics</span><span class="op">|</span> <span class="ident">metrics</span>.<span class="ident">process_statement</span>.<span class="ident">start_timer</span>())
-	}
-
-	<span class="doccomment">/// Provide a timer for handling `CandidateBackingMessage::GetBackedCandidates` which observes on drop.</span>
-	<span class="kw">fn</span> <span class="ident">time_get_backed_candidates</span>(
-		<span class="kw-2">&amp;</span><span class="self">self</span>,
-	) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">metrics::prometheus::prometheus::HistogramTimer</span><span class="op">&gt;</span> {
-		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">as_ref</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">metrics</span><span class="op">|</span> <span class="ident">metrics</span>.<span class="ident">get_backed_candidates</span>.<span class="ident">start_timer</span>())
-	}
-}
-
-<span class="kw">impl</span> <span class="ident">metrics::Metrics</span> <span class="kw">for</span> <span class="ident">Metrics</span> {
-	<span class="kw">fn</span> <span class="ident">try_register</span>(<span class="ident">registry</span>: <span class="kw-2">&amp;</span><span class="ident">prometheus::Registry</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">prometheus::PrometheusError</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="ident">metrics</span> <span class="op">=</span> <span class="ident">MetricsInner</span> {
-			<span class="ident">signed_statements_total</span>: <span class="ident">prometheus::register</span>(
-				<span class="ident">prometheus::Counter::new</span>(
-					<span class="string">&quot;polkadot_parachain_candidate_backing_signed_statements_total&quot;</span>,
-					<span class="string">&quot;Number of statements signed.&quot;</span>,
-				)<span class="question-mark">?</span>,
-				<span class="ident">registry</span>,
-			)<span class="question-mark">?</span>,
-			<span class="ident">candidates_seconded_total</span>: <span class="ident">prometheus::register</span>(
-				<span class="ident">prometheus::Counter::new</span>(
-					<span class="string">&quot;polkadot_parachain_candidate_backing_candidates_seconded_total&quot;</span>,
-					<span class="string">&quot;Number of candidates seconded.&quot;</span>,
-				)<span class="question-mark">?</span>,
-				<span class="ident">registry</span>,
-			)<span class="question-mark">?</span>,
-			<span class="ident">process_second</span>: <span class="ident">prometheus::register</span>(
-				<span class="ident">prometheus::Histogram::with_opts</span>(<span class="ident">prometheus::HistogramOpts::new</span>(
-					<span class="string">&quot;polkadot_parachain_candidate_backing_process_second&quot;</span>,
-					<span class="string">&quot;Time spent within `candidate_backing::process_second`&quot;</span>,
-				))<span class="question-mark">?</span>,
-				<span class="ident">registry</span>,
-			)<span class="question-mark">?</span>,
-			<span class="ident">process_statement</span>: <span class="ident">prometheus::register</span>(
-				<span class="ident">prometheus::Histogram::with_opts</span>(<span class="ident">prometheus::HistogramOpts::new</span>(
-					<span class="string">&quot;polkadot_parachain_candidate_backing_process_statement&quot;</span>,
-					<span class="string">&quot;Time spent within `candidate_backing::process_statement`&quot;</span>,
-				))<span class="question-mark">?</span>,
-				<span class="ident">registry</span>,
-			)<span class="question-mark">?</span>,
-			<span class="ident">get_backed_candidates</span>: <span class="ident">prometheus::register</span>(
-				<span class="ident">prometheus::Histogram::with_opts</span>(<span class="ident">prometheus::HistogramOpts::new</span>(
-					<span class="string">&quot;polkadot_parachain_candidate_backing_get_backed_candidates&quot;</span>,
-					<span class="string">&quot;Time spent within `candidate_backing::get_backed_candidates`&quot;</span>,
-				))<span class="question-mark">?</span>,
-				<span class="ident">registry</span>,
-			)<span class="question-mark">?</span>,
-		};
-		<span class="prelude-val">Ok</span>(<span class="ident">Metrics</span>(<span class="prelude-val">Some</span>(<span class="ident">metrics</span>)))
 	}
 }
 

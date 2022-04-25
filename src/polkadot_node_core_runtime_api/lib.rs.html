@@ -533,64 +533,6 @@
 <span id="528">528</span>
 <span id="529">529</span>
 <span id="530">530</span>
-<span id="531">531</span>
-<span id="532">532</span>
-<span id="533">533</span>
-<span id="534">534</span>
-<span id="535">535</span>
-<span id="536">536</span>
-<span id="537">537</span>
-<span id="538">538</span>
-<span id="539">539</span>
-<span id="540">540</span>
-<span id="541">541</span>
-<span id="542">542</span>
-<span id="543">543</span>
-<span id="544">544</span>
-<span id="545">545</span>
-<span id="546">546</span>
-<span id="547">547</span>
-<span id="548">548</span>
-<span id="549">549</span>
-<span id="550">550</span>
-<span id="551">551</span>
-<span id="552">552</span>
-<span id="553">553</span>
-<span id="554">554</span>
-<span id="555">555</span>
-<span id="556">556</span>
-<span id="557">557</span>
-<span id="558">558</span>
-<span id="559">559</span>
-<span id="560">560</span>
-<span id="561">561</span>
-<span id="562">562</span>
-<span id="563">563</span>
-<span id="564">564</span>
-<span id="565">565</span>
-<span id="566">566</span>
-<span id="567">567</span>
-<span id="568">568</span>
-<span id="569">569</span>
-<span id="570">570</span>
-<span id="571">571</span>
-<span id="572">572</span>
-<span id="573">573</span>
-<span id="574">574</span>
-<span id="575">575</span>
-<span id="576">576</span>
-<span id="577">577</span>
-<span id="578">578</span>
-<span id="579">579</span>
-<span id="580">580</span>
-<span id="581">581</span>
-<span id="582">582</span>
-<span id="583">583</span>
-<span id="584">584</span>
-<span id="585">585</span>
-<span id="586">586</span>
-<span id="587">587</span>
-<span id="588">588</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -615,7 +557,6 @@
 <span class="attribute">#![<span class="ident">deny</span>(<span class="ident">unused_crate_dependencies</span>)]</span>
 <span class="attribute">#![<span class="ident">warn</span>(<span class="ident">missing_docs</span>)]</span>
 
-<span class="kw">use</span> <span class="ident">polkadot_node_subsystem_util::metrics</span>::{<span class="self">self</span>, <span class="ident">prometheus</span>};
 <span class="kw">use</span> <span class="ident">polkadot_primitives</span>::{
 	<span class="ident">runtime_api::ParachainHost</span>,
 	<span class="ident">v2</span>::{<span class="ident">Block</span>, <span class="ident">BlockId</span>, <span class="ident">Hash</span>},
@@ -637,6 +578,9 @@
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">collections::VecDeque</span>, <span class="ident">pin::Pin</span>, <span class="ident">sync::Arc</span>};
 
 <span class="kw">mod</span> <span class="ident">cache</span>;
+
+<span class="kw">mod</span> <span class="ident">metrics</span>;
+<span class="kw">use</span> <span class="ident"><span class="self">self</span>::metrics::Metrics</span>;
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">tests</span>;
@@ -1117,66 +1061,6 @@
 		},
 		<span class="ident">Request::ValidationCodeHash</span>(<span class="ident">para</span>, <span class="ident">assumption</span>, <span class="ident">sender</span>) =&gt;
 			<span class="macro">query!</span>(<span class="ident">ValidationCodeHash</span>, <span class="ident">validation_code_hash</span>(<span class="ident">para</span>, <span class="ident">assumption</span>), <span class="ident">ver</span> <span class="op">=</span> <span class="number">2</span>, <span class="ident">sender</span>),
-	}
-}
-
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
-<span class="kw">struct</span> <span class="ident">MetricsInner</span> {
-	<span class="ident">chain_api_requests</span>: <span class="ident">prometheus::CounterVec</span><span class="op">&lt;</span><span class="ident">prometheus::U64</span><span class="op">&gt;</span>,
-	<span class="ident">make_runtime_api_request</span>: <span class="ident">prometheus::Histogram</span>,
-}
-
-<span class="doccomment">/// Runtime API metrics.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Default</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Metrics</span>(<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">MetricsInner</span><span class="op">&gt;</span>);
-
-<span class="kw">impl</span> <span class="ident">Metrics</span> {
-	<span class="kw">fn</span> <span class="ident">on_request</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">succeeded</span>: <span class="ident">bool</span>) {
-		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">metrics</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span> {
-			<span class="kw">if</span> <span class="ident">succeeded</span> {
-				<span class="ident">metrics</span>.<span class="ident">chain_api_requests</span>.<span class="ident">with_label_values</span>(<span class="kw-2">&amp;</span>[<span class="string">&quot;succeeded&quot;</span>]).<span class="ident">inc</span>();
-			} <span class="kw">else</span> {
-				<span class="ident">metrics</span>.<span class="ident">chain_api_requests</span>.<span class="ident">with_label_values</span>(<span class="kw-2">&amp;</span>[<span class="string">&quot;failed&quot;</span>]).<span class="ident">inc</span>();
-			}
-		}
-	}
-
-	<span class="kw">fn</span> <span class="ident">on_cached_request</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) {
-		<span class="self">self</span>.<span class="number">0</span>
-			.<span class="ident">as_ref</span>()
-			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">metrics</span><span class="op">|</span> <span class="ident">metrics</span>.<span class="ident">chain_api_requests</span>.<span class="ident">with_label_values</span>(<span class="kw-2">&amp;</span>[<span class="string">&quot;cached&quot;</span>]).<span class="ident">inc</span>());
-	}
-
-	<span class="doccomment">/// Provide a timer for `make_runtime_api_request` which observes on drop.</span>
-	<span class="kw">fn</span> <span class="ident">time_make_runtime_api_request</span>(
-		<span class="kw-2">&amp;</span><span class="self">self</span>,
-	) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">metrics::prometheus::prometheus::HistogramTimer</span><span class="op">&gt;</span> {
-		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">as_ref</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">metrics</span><span class="op">|</span> <span class="ident">metrics</span>.<span class="ident">make_runtime_api_request</span>.<span class="ident">start_timer</span>())
-	}
-}
-
-<span class="kw">impl</span> <span class="ident">metrics::Metrics</span> <span class="kw">for</span> <span class="ident">Metrics</span> {
-	<span class="kw">fn</span> <span class="ident">try_register</span>(<span class="ident">registry</span>: <span class="kw-2">&amp;</span><span class="ident">prometheus::Registry</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">prometheus::PrometheusError</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="ident">metrics</span> <span class="op">=</span> <span class="ident">MetricsInner</span> {
-			<span class="ident">chain_api_requests</span>: <span class="ident">prometheus::register</span>(
-				<span class="ident">prometheus::CounterVec::new</span>(
-					<span class="ident">prometheus::Opts::new</span>(
-						<span class="string">&quot;polkadot_parachain_runtime_api_requests_total&quot;</span>,
-						<span class="string">&quot;Number of Runtime API requests served.&quot;</span>,
-					),
-					<span class="kw-2">&amp;</span>[<span class="string">&quot;success&quot;</span>],
-				)<span class="question-mark">?</span>,
-				<span class="ident">registry</span>,
-			)<span class="question-mark">?</span>,
-			<span class="ident">make_runtime_api_request</span>: <span class="ident">prometheus::register</span>(
-				<span class="ident">prometheus::Histogram::with_opts</span>(<span class="ident">prometheus::HistogramOpts::new</span>(
-					<span class="string">&quot;polkadot_parachain_runtime_api_make_runtime_api_request&quot;</span>,
-					<span class="string">&quot;Time spent within `runtime_api::make_runtime_api_request`&quot;</span>,
-				))<span class="question-mark">?</span>,
-				<span class="ident">registry</span>,
-			)<span class="question-mark">?</span>,
-		};
-		<span class="prelude-val">Ok</span>(<span class="ident">Metrics</span>(<span class="prelude-val">Some</span>(<span class="ident">metrics</span>)))
 	}
 }
 </code></pre></div>

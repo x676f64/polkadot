@@ -195,6 +195,8 @@
 <span id="190">190</span>
 <span id="191">191</span>
 <span id="192">192</span>
+<span id="193">193</span>
+<span id="194">194</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -217,7 +219,9 @@
 <span class="kw">use</span> <span class="ident">grandpa::AuthorityId</span> <span class="kw">as</span> <span class="ident">GrandpaId</span>;
 <span class="kw">use</span> <span class="ident">pallet_staking::Forcing</span>;
 <span class="kw">use</span> <span class="ident">polkadot_primitives::v2</span>::{<span class="ident">AccountId</span>, <span class="ident">AssignmentId</span>, <span class="ident">ValidatorId</span>, <span class="ident">MAX_CODE_SIZE</span>, <span class="ident">MAX_POV_SIZE</span>};
-<span class="kw">use</span> <span class="ident">polkadot_service::chain_spec</span>::{<span class="ident">get_account_id_from_seed</span>, <span class="ident">get_from_seed</span>, <span class="ident">Extensions</span>};
+<span class="kw">use</span> <span class="ident">polkadot_service::chain_spec</span>::{
+	<span class="ident">get_account_id_from_seed</span>, <span class="ident">get_from_seed</span>, <span class="ident">polkadot_chain_spec_properties</span>, <span class="ident">Extensions</span>,
+};
 <span class="kw">use</span> <span class="ident">polkadot_test_runtime::BABE_GENESIS_EPOCH_CONFIG</span>;
 <span class="kw">use</span> <span class="ident">sc_chain_spec</span>::{<span class="ident">ChainSpec</span>, <span class="ident">ChainType</span>};
 <span class="kw">use</span> <span class="ident">sp_authority_discovery::AuthorityId</span> <span class="kw">as</span> <span class="ident">AuthorityDiscoveryId</span>;
@@ -242,7 +246,7 @@
 		<span class="prelude-val">None</span>,
 		<span class="prelude-val">Some</span>(<span class="ident">DEFAULT_PROTOCOL_ID</span>),
 		<span class="prelude-val">None</span>,
-		<span class="prelude-val">None</span>,
+		<span class="prelude-val">Some</span>(<span class="ident">polkadot_chain_spec_properties</span>()),
 		<span class="ident">Default::default</span>(),
 	)
 }
