@@ -622,6 +622,16 @@
 <span id="617">617</span>
 <span id="618">618</span>
 <span id="619">619</span>
+<span id="620">620</span>
+<span id="621">621</span>
+<span id="622">622</span>
+<span id="623">623</span>
+<span id="624">624</span>
+<span id="625">625</span>
+<span id="626">626</span>
+<span id="627">627</span>
+<span id="628">628</span>
+<span id="629">629</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -926,6 +936,15 @@
 	};
 
 	<span class="ident">runner</span>.<span class="ident">run_node_until_exit</span>(<span class="kw">move</span> <span class="op">|</span><span class="ident">config</span><span class="op">|</span> <span class="kw">async</span> <span class="kw">move</span> {
+		<span class="kw">let</span> <span class="ident">hwbench</span> <span class="op">=</span> <span class="kw">if</span> <span class="op">!</span><span class="ident">cli</span>.<span class="ident">run</span>.<span class="ident">no_hardware_benchmarks</span> {
+			<span class="ident">config</span>.<span class="ident">database</span>.<span class="ident">path</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">database_path</span><span class="op">|</span> {
+				<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">std::fs::create_dir_all</span>(<span class="kw-2">&amp;</span><span class="ident">database_path</span>);
+				<span class="ident">sc_sysinfo::gather_hwbench</span>(<span class="prelude-val">Some</span>(<span class="ident">database_path</span>))
+			})
+		} <span class="kw">else</span> {
+			<span class="prelude-val">None</span>
+		};
+
 		<span class="kw">let</span> <span class="ident">role</span> <span class="op">=</span> <span class="ident">config</span>.<span class="ident">role</span>.<span class="ident">clone</span>();
 
 		<span class="kw">match</span> <span class="ident">role</span> {
@@ -939,6 +958,7 @@
 				<span class="prelude-val">None</span>,
 				<span class="bool-val">false</span>,
 				<span class="ident">overseer_gen</span>,
+				<span class="ident">hwbench</span>,
 			)
 			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">full</span><span class="op">|</span> <span class="ident">full</span>.<span class="ident">task_manager</span>)
 			.<span class="ident">map_err</span>(<span class="ident">Into::into</span>),
