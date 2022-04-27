@@ -2113,6 +2113,7 @@
 <span id="2108">2108</span>
 <span id="2109">2109</span>
 <span id="2110">2110</span>
+<span id="2111">2111</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -2221,6 +2222,7 @@
 
 <span class="comment">// Polkadot version identifier;</span>
 <span class="doccomment">/// Runtime version (Polkadot).</span>
+<span class="attribute">#[<span class="ident">sp_version::runtime_version</span>]</span>
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">VERSION</span>: <span class="ident">RuntimeVersion</span> <span class="op">=</span> <span class="ident">RuntimeVersion</span> {
 	<span class="ident">spec_name</span>: <span class="macro">create_runtime_str!</span>(<span class="string">&quot;polkadot&quot;</span>),
 	<span class="ident">impl_name</span>: <span class="macro">create_runtime_str!</span>(<span class="string">&quot;parity-polkadot&quot;</span>),
