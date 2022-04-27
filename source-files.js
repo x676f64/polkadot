@@ -568,7 +568,6 @@ sourcesIndex["sc_utils"] = {"name":"","dirs":[{"name":"notification","files":["r
 sourcesIndex["scale_info"] = {"name":"","dirs":[{"name":"ty","files":["composite.rs","fields.rs","mod.rs","path.rs","variant.rs"]}],"files":["build.rs","form.rs","impls.rs","interner.rs","lib.rs","meta_type.rs","prelude.rs","registry.rs","utils.rs"]};
 sourcesIndex["scale_info_derive"] = {"name":"","files":["attr.rs","lib.rs","trait_bounds.rs","utils.rs"]};
 sourcesIndex["schnorrkel"] = {"name":"","files":["batch.rs","cert.rs","context.rs","derive.rs","errors.rs","keys.rs","lib.rs","musig.rs","points.rs","scalars.rs","serdey.rs","sign.rs","vrf.rs"]};
-sourcesIndex["scoped_tls"] = {"name":"","files":["lib.rs"]};
 sourcesIndex["scopeguard"] = {"name":"","files":["lib.rs"]};
 sourcesIndex["sct"] = {"name":"","files":["lib.rs"]};
 sourcesIndex["sec1"] = {"name":"","files":["error.rs","lib.rs","parameters.rs","point.rs","private_key.rs","traits.rs"]};
