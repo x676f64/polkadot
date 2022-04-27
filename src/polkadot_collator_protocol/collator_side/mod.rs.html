@@ -1918,9 +1918,9 @@
 					);
 					<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">sender</span>.<span class="ident">send</span>(<span class="ident">CollationSecondedSignal</span> { <span class="ident">statement</span>, <span class="ident">relay_parent</span> });
 				} <span class="kw">else</span> {
-					<span class="macro">gum::warn!</span>(
+					<span class="macro">gum::debug!</span>(
 						<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
-						<span class="question-mark">?</span><span class="ident">statement</span>,
+						<span class="ident">candidate_hash</span> <span class="op">=</span> <span class="question-mark">?</span><span class="kw-2">&amp;</span><span class="ident">statement</span>.<span class="ident">payload</span>().<span class="ident">candidate_hash</span>(),
 						<span class="question-mark">?</span><span class="ident">origin</span>,
 						<span class="string">&quot;received an unexpected `CollationSeconded`: unknown statement&quot;</span>,
 					);
