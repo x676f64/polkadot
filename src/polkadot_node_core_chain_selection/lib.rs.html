@@ -660,6 +660,16 @@
 <span id="655">655</span>
 <span id="656">656</span>
 <span id="657">657</span>
+<span id="658">658</span>
+<span id="659">659</span>
+<span id="660">660</span>
+<span id="661">661</span>
+<span id="662">662</span>
+<span id="663">663</span>
+<span id="664">664</span>
+<span id="665">665</span>
+<span id="666">666</span>
+<span id="667">667</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -977,6 +987,17 @@
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">config</span>: <span class="ident">Config</span>, <span class="ident">db</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Database</span><span class="op">&gt;</span>) -&gt; <span class="self">Self</span> {
 		<span class="ident">ChainSelectionSubsystem</span> { <span class="ident">config</span>, <span class="ident">db</span> }
 	}
+
+	<span class="doccomment">/// Revert to the block corresponding to the specified `hash`.</span>
+	<span class="doccomment">/// The revert is not allowed for blocks older than the last finalized one.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">revert</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">hash</span>: <span class="ident">Hash</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+		<span class="kw">let</span> <span class="ident">backend_config</span> <span class="op">=</span> <span class="ident">db_backend::v1::Config</span> { <span class="ident">col_data</span>: <span class="self">self</span>.<span class="ident">config</span>.<span class="ident">col_data</span> };
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">backend</span> <span class="op">=</span> <span class="ident">db_backend::v1::DbBackend::new</span>(<span class="self">self</span>.<span class="ident">db</span>.<span class="ident">clone</span>(), <span class="ident">backend_config</span>);
+
+		<span class="kw">let</span> <span class="ident">ops</span> <span class="op">=</span> <span class="ident">tree::revert_to</span>(<span class="kw-2">&amp;</span><span class="ident">backend</span>, <span class="ident">hash</span>)<span class="question-mark">?</span>.<span class="ident">into_write_ops</span>();
+
+		<span class="ident">backend</span>.<span class="ident">write</span>(<span class="ident">ops</span>)
+	}
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span> <span class="ident">overseer::Subsystem</span><span class="op">&lt;</span><span class="ident">Context</span>, <span class="ident">SubsystemError</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ChainSelectionSubsystem</span>
@@ -985,9 +1006,9 @@
 	<span class="ident">Context</span>: <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">ChainSelectionMessage</span><span class="op">&gt;</span>,
 {
 	<span class="kw">fn</span> <span class="ident">start</span>(<span class="self">self</span>, <span class="ident">ctx</span>: <span class="ident">Context</span>) -&gt; <span class="ident">SpawnedSubsystem</span> {
-		<span class="kw">let</span> <span class="ident">backend</span> <span class="op">=</span> <span class="ident"><span class="kw">crate</span>::db_backend::v1::DbBackend::new</span>(
+		<span class="kw">let</span> <span class="ident">backend</span> <span class="op">=</span> <span class="ident">db_backend::v1::DbBackend::new</span>(
 			<span class="self">self</span>.<span class="ident">db</span>,
-			<span class="ident"><span class="kw">crate</span>::db_backend::v1::Config</span> { <span class="ident">col_data</span>: <span class="self">self</span>.<span class="ident">config</span>.<span class="ident">col_data</span> },
+			<span class="ident">db_backend::v1::Config</span> { <span class="ident">col_data</span>: <span class="self">self</span>.<span class="ident">config</span>.<span class="ident">col_data</span> },
 		);
 
 		<span class="ident">SpawnedSubsystem</span> {
@@ -1074,7 +1095,7 @@
 							<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">tx</span>.<span class="ident">send</span>(<span class="ident">leaves</span>);
 						}
 						<span class="ident">ChainSelectionMessage::BestLeafContaining</span>(<span class="ident">required</span>, <span class="ident">tx</span>) =&gt; {
-							<span class="kw">let</span> <span class="ident">best_containing</span> <span class="op">=</span> <span class="ident"><span class="kw">crate</span>::backend::find_best_leaf_containing</span>(
+							<span class="kw">let</span> <span class="ident">best_containing</span> <span class="op">=</span> <span class="ident">backend::find_best_leaf_containing</span>(
 								<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">backend</span>,
 								<span class="ident">required</span>,
 							)<span class="question-mark">?</span>;
@@ -1211,7 +1232,7 @@
 		};
 
 		<span class="kw">let</span> <span class="ident">reversion_logs</span> <span class="op">=</span> <span class="ident">extract_reversion_logs</span>(<span class="kw-2">&amp;</span><span class="ident">header</span>);
-		<span class="ident"><span class="kw">crate</span>::tree::import_block</span>(
+		<span class="ident">tree::import_block</span>(
 			<span class="kw-2">&amp;mut</span> <span class="ident">overlay</span>,
 			<span class="ident">hash</span>,
 			<span class="ident">header</span>.<span class="ident">number</span>,
@@ -1274,8 +1295,7 @@
 	<span class="ident">finalized_hash</span>: <span class="ident">Hash</span>,
 	<span class="ident">finalized_number</span>: <span class="ident">BlockNumber</span>,
 ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
-	<span class="kw">let</span> <span class="ident">ops</span> <span class="op">=</span>
-		<span class="ident"><span class="kw">crate</span>::tree::finalize_block</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">backend</span>, <span class="ident">finalized_hash</span>, <span class="ident">finalized_number</span>)<span class="question-mark">?</span>.<span class="ident">into_write_ops</span>();
+	<span class="kw">let</span> <span class="ident">ops</span> <span class="op">=</span> <span class="ident">tree::finalize_block</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">backend</span>, <span class="ident">finalized_hash</span>, <span class="ident">finalized_number</span>)<span class="question-mark">?</span>.<span class="ident">into_write_ops</span>();
 
 	<span class="ident">backend</span>.<span class="ident">write</span>(<span class="ident">ops</span>)
 }
@@ -1285,7 +1305,7 @@
 	<span class="kw">let</span> <span class="ident">ops</span> <span class="op">=</span> {
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">overlay</span> <span class="op">=</span> <span class="ident">OverlayedBackend::new</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">backend</span>);
 
-		<span class="ident"><span class="kw">crate</span>::tree::approve_block</span>(<span class="kw-2">&amp;mut</span> <span class="ident">overlay</span>, <span class="ident">approved_block</span>)<span class="question-mark">?</span>;
+		<span class="ident">tree::approve_block</span>(<span class="kw-2">&amp;mut</span> <span class="ident">overlay</span>, <span class="ident">approved_block</span>)<span class="question-mark">?</span>;
 
 		<span class="ident">overlay</span>.<span class="ident">into_write_ops</span>()
 	};
@@ -1295,7 +1315,7 @@
 
 <span class="kw">fn</span> <span class="ident">detect_stagnant</span>(<span class="ident">backend</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">Backend</span>, <span class="ident">now</span>: <span class="ident">Timestamp</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
 	<span class="kw">let</span> <span class="ident">ops</span> <span class="op">=</span> {
-		<span class="kw">let</span> <span class="ident">overlay</span> <span class="op">=</span> <span class="ident"><span class="kw">crate</span>::tree::detect_stagnant</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">backend</span>, <span class="ident">now</span>)<span class="question-mark">?</span>;
+		<span class="kw">let</span> <span class="ident">overlay</span> <span class="op">=</span> <span class="ident">tree::detect_stagnant</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">backend</span>, <span class="ident">now</span>)<span class="question-mark">?</span>;
 
 		<span class="ident">overlay</span>.<span class="ident">into_write_ops</span>()
 	};

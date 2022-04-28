@@ -1068,7 +1068,7 @@
 				<span class="kw">match</span> <span class="ident">rx</span>.<span class="kw">await</span>.<span class="ident">map_err</span>(<span class="ident">Error::DetermineUndisputedChainCanceled</span>) {
 					<span class="comment">// If request succeded we will receive (block number, block hash).</span>
 					<span class="prelude-val">Ok</span>((<span class="ident">subchain_number</span>, <span class="ident">subchain_head</span>)) =&gt; {
-						<span class="comment">// The the total lag accounting for disputes.</span>
+						<span class="comment">// The total lag accounting for disputes.</span>
 						<span class="kw">let</span> <span class="ident">lag_disputes</span> <span class="op">=</span> <span class="ident">initial_leaf_number</span>.<span class="ident">saturating_sub</span>(<span class="ident">subchain_number</span>);
 						<span class="self">self</span>.<span class="ident">metrics</span>.<span class="ident">note_disputes_finality_lag</span>(<span class="ident">lag_disputes</span>);
 						(<span class="ident">lag_disputes</span>, <span class="ident">subchain_head</span>)

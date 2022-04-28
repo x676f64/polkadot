@@ -643,6 +643,18 @@
 <span id="638">638</span>
 <span id="639">639</span>
 <span id="640">640</span>
+<span id="641">641</span>
+<span id="642">642</span>
+<span id="643">643</span>
+<span id="644">644</span>
+<span id="645">645</span>
+<span id="646">646</span>
+<span id="647">647</span>
+<span id="648">648</span>
+<span id="649">649</span>
+<span id="650">650</span>
+<span id="651">651</span>
+<span id="652">652</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -1080,7 +1092,19 @@
 
 			<span class="prelude-val">Ok</span>(<span class="ident">runner</span>.<span class="ident">async_run</span>(<span class="op">|</span><span class="kw-2">mut</span> <span class="ident">config</span><span class="op">|</span> {
 				<span class="kw">let</span> (<span class="ident">client</span>, <span class="ident">backend</span>, <span class="kw">_</span>, <span class="ident">task_manager</span>) <span class="op">=</span> <span class="ident">service::new_chain_ops</span>(<span class="kw-2">&amp;mut</span> <span class="ident">config</span>, <span class="prelude-val">None</span>)<span class="question-mark">?</span>;
-				<span class="prelude-val">Ok</span>((<span class="ident">cmd</span>.<span class="ident">run</span>(<span class="ident">client</span>, <span class="ident">backend</span>, <span class="prelude-val">None</span>).<span class="ident">map_err</span>(<span class="ident">Error::SubstrateCli</span>), <span class="ident">task_manager</span>))
+				<span class="kw">let</span> <span class="ident">aux_revert</span> <span class="op">=</span> <span class="ident">Box::new</span>(<span class="op">|</span><span class="ident">client</span>, <span class="ident">backend</span>, <span class="ident">blocks</span><span class="op">|</span> {
+					<span class="ident">service::revert_backend</span>(<span class="ident">client</span>, <span class="ident">backend</span>, <span class="ident">blocks</span>, <span class="ident">config</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> {
+						<span class="kw">match</span> <span class="ident">err</span> {
+							<span class="ident">service::Error::Blockchain</span>(<span class="ident">err</span>) =&gt; <span class="ident">err</span>.<span class="ident">into</span>(),
+							<span class="comment">// Generic application-specific error.</span>
+							<span class="ident">err</span> =&gt; <span class="ident">sc_cli::Error::Application</span>(<span class="ident">err</span>.<span class="ident">into</span>()),
+						}
+					})
+				});
+				<span class="prelude-val">Ok</span>((
+					<span class="ident">cmd</span>.<span class="ident">run</span>(<span class="ident">client</span>, <span class="ident">backend</span>, <span class="prelude-val">Some</span>(<span class="ident">aux_revert</span>)).<span class="ident">map_err</span>(<span class="ident">Error::SubstrateCli</span>),
+					<span class="ident">task_manager</span>,
+				))
 			})<span class="question-mark">?</span>)
 		},
 		<span class="prelude-val">Some</span>(<span class="ident">Subcommand::PvfPrepareWorker</span>(<span class="ident">cmd</span>)) =&gt; {

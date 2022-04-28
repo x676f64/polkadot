@@ -794,6 +794,8 @@
 <span id="789">789</span>
 <span id="790">790</span>
 <span id="791">791</span>
+<span id="792">792</span>
+<span id="793">793</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -822,7 +824,7 @@
 <span class="kw">use</span> <span class="ident">sc_client_api</span>::{<span class="ident">AuxStore</span>, <span class="ident">Backend</span> <span class="kw">as</span> <span class="ident">BackendT</span>, <span class="ident">BlockchainEvents</span>, <span class="ident">KeyIterator</span>, <span class="ident">UsageProvider</span>};
 <span class="kw">use</span> <span class="ident">sc_executor::NativeElseWasmExecutor</span>;
 <span class="kw">use</span> <span class="ident">sp_api</span>::{<span class="ident">CallApiAt</span>, <span class="ident">Encode</span>, <span class="ident">NumberFor</span>, <span class="ident">ProvideRuntimeApi</span>};
-<span class="kw">use</span> <span class="ident">sp_blockchain::HeaderBackend</span>;
+<span class="kw">use</span> <span class="ident">sp_blockchain</span>::{<span class="ident">HeaderBackend</span>, <span class="ident">HeaderMetadata</span>};
 <span class="kw">use</span> <span class="ident">sp_consensus::BlockStatus</span>;
 <span class="kw">use</span> <span class="ident">sp_core::Pair</span>;
 <span class="kw">use</span> <span class="ident">sp_keyring::Sr25519Keyring</span>;
@@ -969,6 +971,7 @@
 	<span class="op">+</span> <span class="ident">CallApiAt</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">StateBackend</span> <span class="op">=</span> <span class="ident">Backend::State</span><span class="op">&gt;</span>
 	<span class="op">+</span> <span class="ident">AuxStore</span>
 	<span class="op">+</span> <span class="ident">UsageProvider</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>
+	<span class="op">+</span> <span class="ident">HeaderMetadata</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">Error</span> <span class="op">=</span> <span class="ident">sp_blockchain::Error</span><span class="op">&gt;</span>
 <span class="kw">where</span>
 	<span class="ident">Block</span>: <span class="ident">BlockT</span>,
 	<span class="ident">Backend</span>: <span class="ident">BackendT</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>,
@@ -990,7 +993,8 @@
 		<span class="op">+</span> <span class="ident">Sized</span>
 		<span class="op">+</span> <span class="ident">Send</span>
 		<span class="op">+</span> <span class="ident">Sync</span>
-		<span class="op">+</span> <span class="ident">CallApiAt</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">StateBackend</span> <span class="op">=</span> <span class="ident">Backend::State</span><span class="op">&gt;</span>,
+		<span class="op">+</span> <span class="ident">CallApiAt</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">StateBackend</span> <span class="op">=</span> <span class="ident">Backend::State</span><span class="op">&gt;</span>
+		<span class="op">+</span> <span class="ident">HeaderMetadata</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">Error</span> <span class="op">=</span> <span class="ident">sp_blockchain::Error</span><span class="op">&gt;</span>,
 	<span class="ident">Client::Api</span>: <span class="ident">RuntimeApiCollection</span><span class="op">&lt;</span><span class="ident">StateBackend</span> <span class="op">=</span> <span class="ident">Backend::State</span><span class="op">&gt;</span>,
 {
 }
