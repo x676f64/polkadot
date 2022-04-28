@@ -2015,6 +2015,13 @@
 <span id="2010">2010</span>
 <span id="2011">2011</span>
 <span id="2012">2012</span>
+<span id="2013">2013</span>
+<span id="2014">2014</span>
+<span id="2015">2015</span>
+<span id="2016">2016</span>
+<span id="2017">2017</span>
+<span id="2018">2018</span>
+<span id="2019">2019</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -2591,6 +2598,7 @@
 			<span class="ident">next_free_para_id</span>: <span class="ident">polkadot_primitives::v2::LOWEST_PUBLIC_ID</span>,
 		},
 		<span class="ident">xcm_pallet</span>: <span class="ident">Default::default</span>(),
+		<span class="ident">nomination_pools</span>: <span class="ident">Default::default</span>(),
 	}
 }
 
@@ -3560,6 +3568,12 @@
 			<span class="ident">next_free_para_id</span>: <span class="ident">polkadot_primitives::v2::LOWEST_PUBLIC_ID</span>,
 		},
 		<span class="ident">xcm_pallet</span>: <span class="ident">Default::default</span>(),
+		<span class="ident">nomination_pools</span>: <span class="ident">westend_runtime::NominationPoolsConfig</span> {
+			<span class="ident">max_pools</span>: <span class="prelude-val">Some</span>(<span class="number">128</span>),
+			<span class="ident">min_join_bond</span>: <span class="ident">WND</span>,
+			<span class="ident">min_create_bond</span>: <span class="number">100</span> <span class="op">*</span> <span class="ident">WND</span>,
+			..<span class="ident">Default::default</span>()
+		},
 	}
 }
 

@@ -1640,6 +1640,45 @@
 <span id="1635">1635</span>
 <span id="1636">1636</span>
 <span id="1637">1637</span>
+<span id="1638">1638</span>
+<span id="1639">1639</span>
+<span id="1640">1640</span>
+<span id="1641">1641</span>
+<span id="1642">1642</span>
+<span id="1643">1643</span>
+<span id="1644">1644</span>
+<span id="1645">1645</span>
+<span id="1646">1646</span>
+<span id="1647">1647</span>
+<span id="1648">1648</span>
+<span id="1649">1649</span>
+<span id="1650">1650</span>
+<span id="1651">1651</span>
+<span id="1652">1652</span>
+<span id="1653">1653</span>
+<span id="1654">1654</span>
+<span id="1655">1655</span>
+<span id="1656">1656</span>
+<span id="1657">1657</span>
+<span id="1658">1658</span>
+<span id="1659">1659</span>
+<span id="1660">1660</span>
+<span id="1661">1661</span>
+<span id="1662">1662</span>
+<span id="1663">1663</span>
+<span id="1664">1664</span>
+<span id="1665">1665</span>
+<span id="1666">1666</span>
+<span id="1667">1667</span>
+<span id="1668">1668</span>
+<span id="1669">1669</span>
+<span id="1670">1670</span>
+<span id="1671">1671</span>
+<span id="1672">1672</span>
+<span id="1673">1673</span>
+<span id="1674">1674</span>
+<span id="1675">1675</span>
+<span id="1676">1676</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -1667,7 +1706,7 @@
 <span class="kw">use</span> <span class="ident">frame_election_provider_support</span>::{<span class="ident">onchain</span>, <span class="ident">SequentialPhragmen</span>};
 <span class="kw">use</span> <span class="ident">frame_support</span>::{
 	<span class="ident">construct_runtime</span>, <span class="ident">parameter_types</span>,
-	<span class="ident">traits</span>::{<span class="ident">Contains</span>, <span class="ident">InstanceFilter</span>, <span class="ident">KeyOwnerProofSystem</span>},
+	<span class="ident">traits</span>::{<span class="ident">ConstU32</span>, <span class="ident">Contains</span>, <span class="ident">InstanceFilter</span>, <span class="ident">KeyOwnerProofSystem</span>},
 	<span class="ident">weights::ConstantMultiplier</span>,
 	<span class="ident">PalletId</span>,
 };
@@ -2413,7 +2452,8 @@
 				<span class="ident">Call::Crowdloan</span>(..) <span class="op">|</span>
 				<span class="ident">Call::Slots</span>(..) <span class="op">|</span>
 				<span class="ident">Call::Auctions</span>(..) <span class="op">|</span> <span class="comment">// Specifically omitting the entire XCM Pallet</span>
-				<span class="ident">Call::BagsList</span>(..)
+				<span class="ident">Call::BagsList</span>(..) <span class="op">|</span>
+				<span class="ident">Call::NominationPools</span>(..)
 			),
 			<span class="ident">ProxyType::Staking</span> =&gt; {
 				<span class="macro">matches!</span>(<span class="ident">c</span>, <span class="ident">Call::Staking</span>(..) <span class="op">|</span> <span class="ident">Call::Session</span>(..) <span class="op">|</span> <span class="ident">Call::Utility</span>(..))
@@ -2622,6 +2662,37 @@
 	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> <span class="ident">weights::runtime_common_auctions::WeightInfo</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>;
 }
 
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">BalanceToU256</span>;
+<span class="kw">impl</span> <span class="ident">sp_runtime::traits::Convert</span><span class="op">&lt;</span><span class="ident">Balance</span>, <span class="ident">sp_core::U256</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">BalanceToU256</span> {
+	<span class="kw">fn</span> <span class="ident">convert</span>(<span class="ident">n</span>: <span class="ident">Balance</span>) -&gt; <span class="ident">sp_core::U256</span> {
+		<span class="ident">n</span>.<span class="ident">into</span>()
+	}
+}
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">U256ToBalance</span>;
+<span class="kw">impl</span> <span class="ident">sp_runtime::traits::Convert</span><span class="op">&lt;</span><span class="ident">sp_core::U256</span>, <span class="ident">Balance</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">U256ToBalance</span> {
+	<span class="kw">fn</span> <span class="ident">convert</span>(<span class="ident">n</span>: <span class="ident">sp_core::U256</span>) -&gt; <span class="ident">Balance</span> {
+		<span class="ident">n</span>.<span class="ident">try_into</span>().<span class="ident">unwrap_or</span>(<span class="ident">Balance::MAX</span>)
+	}
+}
+
+<span class="macro">parameter_types!</span> {
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">PoolsPalletId</span>: <span class="ident">PalletId</span> <span class="op">=</span> <span class="ident">PalletId</span>(<span class="kw-2">*</span><span class="string">b&quot;py/nopls&quot;</span>);
+}
+
+<span class="kw">impl</span> <span class="ident">pallet_nomination_pools::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
+	<span class="kw">type</span> <span class="ident">Event</span> <span class="op">=</span> <span class="ident">Event</span>;
+	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> <span class="ident">weights::pallet_nomination_pools::WeightInfo</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>;
+	<span class="kw">type</span> <span class="ident">Currency</span> <span class="op">=</span> <span class="ident">Balances</span>;
+	<span class="kw">type</span> <span class="ident">BalanceToU256</span> <span class="op">=</span> <span class="ident">BalanceToU256</span>;
+	<span class="kw">type</span> <span class="ident">U256ToBalance</span> <span class="op">=</span> <span class="ident">U256ToBalance</span>;
+	<span class="kw">type</span> <span class="ident">StakingInterface</span> <span class="op">=</span> <span class="ident">Staking</span>;
+	<span class="kw">type</span> <span class="ident">PostUnbondingPoolsWindow</span> <span class="op">=</span> <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">4</span><span class="op">&gt;</span>;
+	<span class="kw">type</span> <span class="ident">MaxMetadataLen</span> <span class="op">=</span> <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">256</span><span class="op">&gt;</span>;
+	<span class="comment">// we use the same number of allowed unlocking chunks as with staking.</span>
+	<span class="kw">type</span> <span class="ident">MaxUnbonding</span> <span class="op">=</span> <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">pallet_staking::Config</span><span class="op">&gt;</span><span class="ident">::MaxUnlockingChunks</span>;
+	<span class="kw">type</span> <span class="ident">PalletId</span> <span class="op">=</span> <span class="ident">PoolsPalletId</span>;
+}
+
 <span class="macro">construct_runtime!</span> {
 	<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Runtime</span> <span class="kw">where</span>
 		<span class="ident">Block</span> <span class="op">=</span> <span class="ident">Block</span>,
@@ -2683,6 +2754,9 @@
 
 		<span class="comment">// Provides a semi-sorted list of nominators for staking.</span>
 		<span class="ident">BagsList</span>: <span class="ident">pallet_bags_list</span>::{<span class="ident">Pallet</span>, <span class="ident">Call</span>, <span class="ident">Storage</span>, <span class="ident">Event</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>} <span class="op">=</span> <span class="number">25</span>,
+
+		<span class="comment">// Nomination pools for staking.</span>
+		<span class="ident">NominationPools</span>: <span class="ident">pallet_nomination_pools</span>::{<span class="ident">Pallet</span>, <span class="ident">Call</span>, <span class="ident">Storage</span>, <span class="ident">Event</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>} <span class="op">=</span> <span class="number">29</span>,
 
 		<span class="comment">// Parachains pallets. Start indices at 40 to leave room.</span>
 		<span class="ident">ParachainsOrigin</span>: <span class="ident">parachains_origin</span>::{<span class="ident">Pallet</span>, <span class="ident">Origin</span>} <span class="op">=</span> <span class="number">41</span>,
@@ -2777,6 +2851,7 @@
 		[<span class="ident">pallet_im_online</span>, <span class="ident">ImOnline</span>]
 		[<span class="ident">pallet_indices</span>, <span class="ident">Indices</span>]
 		[<span class="ident">pallet_multisig</span>, <span class="ident">Multisig</span>]
+		[<span class="ident">pallet_nomination_pools</span>, <span class="ident">NominationPoolsBench</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>]
 		[<span class="ident">pallet_offences</span>, <span class="ident">OffencesBench</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>]
 		[<span class="ident">pallet_preimage</span>, <span class="ident">Preimage</span>]
 		[<span class="ident">pallet_proxy</span>, <span class="ident">Proxy</span>]
@@ -3144,6 +3219,7 @@
 			<span class="kw">use</span> <span class="ident">pallet_offences_benchmarking::Pallet</span> <span class="kw">as</span> <span class="ident">OffencesBench</span>;
 			<span class="kw">use</span> <span class="ident">pallet_election_provider_support_benchmarking::Pallet</span> <span class="kw">as</span> <span class="ident">ElectionProviderBench</span>;
 			<span class="kw">use</span> <span class="ident">frame_system_benchmarking::Pallet</span> <span class="kw">as</span> <span class="ident">SystemBench</span>;
+			<span class="kw">use</span> <span class="ident">pallet_nomination_pools_benchmarking::Pallet</span> <span class="kw">as</span> <span class="ident">NominationPoolsBench</span>;
 
 			<span class="kw">type</span> <span class="ident">XcmBalances</span> <span class="op">=</span> <span class="ident">pallet_xcm_benchmarks::fungible::Pallet</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>;
 			<span class="kw">type</span> <span class="ident">XcmGeneric</span> <span class="op">=</span> <span class="ident">pallet_xcm_benchmarks::generic::Pallet</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>;
@@ -3168,11 +3244,13 @@
 			<span class="kw">use</span> <span class="ident">pallet_offences_benchmarking::Pallet</span> <span class="kw">as</span> <span class="ident">OffencesBench</span>;
 			<span class="kw">use</span> <span class="ident">pallet_election_provider_support_benchmarking::Pallet</span> <span class="kw">as</span> <span class="ident">ElectionProviderBench</span>;
 			<span class="kw">use</span> <span class="ident">frame_system_benchmarking::Pallet</span> <span class="kw">as</span> <span class="ident">SystemBench</span>;
+			<span class="kw">use</span> <span class="ident">pallet_nomination_pools_benchmarking::Pallet</span> <span class="kw">as</span> <span class="ident">NominationPoolsBench</span>;
 
 			<span class="kw">impl</span> <span class="ident">pallet_session_benchmarking::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {}
 			<span class="kw">impl</span> <span class="ident">pallet_offences_benchmarking::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {}
 			<span class="kw">impl</span> <span class="ident">pallet_election_provider_support_benchmarking::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {}
 			<span class="kw">impl</span> <span class="ident">frame_system_benchmarking::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {}
+			<span class="kw">impl</span> <span class="ident">pallet_nomination_pools_benchmarking::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {}
 
 			<span class="kw">use</span> <span class="ident">xcm::latest</span>::{
 				<span class="ident">AssetId</span>::<span class="kw-2">*</span>, <span class="ident">Fungibility</span>::<span class="kw-2">*</span>, <span class="ident">Junctions</span>::<span class="kw-2">*</span>, <span class="ident">MultiAsset</span>, <span class="ident">MultiAssets</span>, <span class="ident">MultiLocation</span>,
