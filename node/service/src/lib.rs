@@ -1175,7 +1175,7 @@ where
 			runtime: client.clone(),
 			key_store: keystore_opt.clone(),
 			network: network.clone(),
-			min_block_delta: if chain_spec.is_wococo() { 4 } else { 8 },
+			min_block_delta: 4,
 			prometheus_registry: prometheus_registry.clone(),
 			protocol_name: beefy_protocol_name,
 			links: beefy_links,
