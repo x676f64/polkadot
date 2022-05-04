@@ -873,6 +873,22 @@
 <span id="868">868</span>
 <span id="869">869</span>
 <span id="870">870</span>
+<span id="871">871</span>
+<span id="872">872</span>
+<span id="873">873</span>
+<span id="874">874</span>
+<span id="875">875</span>
+<span id="876">876</span>
+<span id="877">877</span>
+<span id="878">878</span>
+<span id="879">879</span>
+<span id="880">880</span>
+<span id="881">881</span>
+<span id="882">882</span>
+<span id="883">883</span>
+<span id="884">884</span>
+<span id="885">885</span>
+<span id="886">886</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -1304,15 +1320,29 @@
 
 <span class="doccomment">/// Assignment invalid.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">InvalidAssignment</span>;
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">InvalidAssignment</span>(<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">InvalidAssignmentReason</span>);
 
 <span class="kw">impl</span> <span class="ident">std::fmt::Display</span> <span class="kw">for</span> <span class="ident">InvalidAssignment</span> {
 	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">std::fmt::Formatter</span>) -&gt; <span class="ident">std::fmt::Result</span> {
-		<span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Invalid Assignment&quot;</span>)
+		<span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Invalid Assignment: {:?}&quot;</span>, <span class="self">self</span>.<span class="number">0</span>)
 	}
 }
 
 <span class="kw">impl</span> <span class="ident">std::error::Error</span> <span class="kw">for</span> <span class="ident">InvalidAssignment</span> {}
+
+<span class="doccomment">/// Failure conditions when checking an assignment cert.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">enum</span> <span class="ident">InvalidAssignmentReason</span> {
+	<span class="ident">ValidatorIndexOutOfBounds</span>,
+	<span class="ident">SampleOutOfBounds</span>,
+	<span class="ident">CoreIndexOutOfBounds</span>,
+	<span class="ident">InvalidAssignmentKey</span>,
+	<span class="ident">IsInBackingGroup</span>,
+	<span class="ident">VRFModuloCoreIndexMismatch</span>,
+	<span class="ident">VRFModuloOutputMismatch</span>,
+	<span class="ident">VRFDelayCoreIndexMismatch</span>,
+	<span class="ident">VRFDelayOutputMismatch</span>,
+}
 
 <span class="doccomment">/// Checks the crypto of an assignment cert. Failure conditions:</span>
 <span class="doccomment">///   * Validator index out of bounds</span>
@@ -1333,16 +1363,18 @@
 	<span class="ident">assignment</span>: <span class="kw-2">&amp;</span><span class="ident">AssignmentCert</span>,
 	<span class="ident">backing_group</span>: <span class="ident">GroupIndex</span>,
 ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">DelayTranche</span>, <span class="ident">InvalidAssignment</span><span class="op">&gt;</span> {
+	<span class="kw">use</span> <span class="ident">InvalidAssignmentReason</span> <span class="kw">as</span> <span class="ident">Reason</span>;
+
 	<span class="kw">let</span> <span class="ident">validator_public</span> <span class="op">=</span> <span class="ident">config</span>
 		.<span class="ident">assignment_keys</span>
 		.<span class="ident">get</span>(<span class="ident">validator_index</span>.<span class="number">0</span> <span class="kw">as</span> <span class="ident">usize</span>)
-		.<span class="ident">ok_or</span>(<span class="ident">InvalidAssignment</span>)<span class="question-mark">?</span>;
+		.<span class="ident">ok_or</span>(<span class="ident">InvalidAssignment</span>(<span class="ident">Reason::ValidatorIndexOutOfBounds</span>))<span class="question-mark">?</span>;
 
 	<span class="kw">let</span> <span class="ident">public</span> <span class="op">=</span> <span class="ident">schnorrkel::PublicKey::from_bytes</span>(<span class="ident">validator_public</span>.<span class="ident">as_slice</span>())
-		.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">InvalidAssignment</span>)<span class="question-mark">?</span>;
+		.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">InvalidAssignment</span>(<span class="ident">Reason::InvalidAssignmentKey</span>))<span class="question-mark">?</span>;
 
 	<span class="kw">if</span> <span class="ident">claimed_core_index</span>.<span class="number">0</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">config</span>.<span class="ident">n_cores</span> {
-		<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">InvalidAssignment</span>)
+		<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">InvalidAssignment</span>(<span class="ident">Reason::CoreIndexOutOfBounds</span>))
 	}
 
 	<span class="comment">// Check that the validator was not part of the backing group</span>
@@ -1351,14 +1383,14 @@
 		<span class="ident">is_in_backing_group</span>(<span class="kw-2">&amp;</span><span class="ident">config</span>.<span class="ident">validator_groups</span>, <span class="ident">validator_index</span>, <span class="ident">backing_group</span>);
 
 	<span class="kw">if</span> <span class="ident">is_in_backing</span> {
-		<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">InvalidAssignment</span>)
+		<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">InvalidAssignment</span>(<span class="ident">Reason::IsInBackingGroup</span>))
 	}
 
 	<span class="kw">let</span> <span class="kw-2">&amp;</span>(<span class="kw-2">ref</span> <span class="ident">vrf_output</span>, <span class="kw-2">ref</span> <span class="ident">vrf_proof</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">assignment</span>.<span class="ident">vrf</span>;
 	<span class="kw">match</span> <span class="ident">assignment</span>.<span class="ident">kind</span> {
 		<span class="ident">AssignmentCertKind::RelayVRFModulo</span> { <span class="ident">sample</span> } =&gt; {
 			<span class="kw">if</span> <span class="ident">sample</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">config</span>.<span class="ident">relay_vrf_modulo_samples</span> {
-				<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">InvalidAssignment</span>)
+				<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">InvalidAssignment</span>(<span class="ident">Reason::SampleOutOfBounds</span>))
 			}
 
 			<span class="kw">let</span> (<span class="ident">vrf_in_out</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">public</span>
@@ -1368,18 +1400,18 @@
 					<span class="kw-2">&amp;</span><span class="ident">vrf_proof</span>.<span class="number">0</span>,
 					<span class="ident">assigned_core_transcript</span>(<span class="ident">claimed_core_index</span>),
 				)
-				.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">InvalidAssignment</span>)<span class="question-mark">?</span>;
+				.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">InvalidAssignment</span>(<span class="ident">Reason::VRFModuloOutputMismatch</span>))<span class="question-mark">?</span>;
 
 			<span class="comment">// ensure that the `vrf_in_out` actually gives us the claimed core.</span>
 			<span class="kw">if</span> <span class="ident">relay_vrf_modulo_core</span>(<span class="kw-2">&amp;</span><span class="ident">vrf_in_out</span>, <span class="ident">config</span>.<span class="ident">n_cores</span>) <span class="op">==</span> <span class="ident">claimed_core_index</span> {
 				<span class="prelude-val">Ok</span>(<span class="number">0</span>)
 			} <span class="kw">else</span> {
-				<span class="prelude-val">Err</span>(<span class="ident">InvalidAssignment</span>)
+				<span class="prelude-val">Err</span>(<span class="ident">InvalidAssignment</span>(<span class="ident">Reason::VRFModuloCoreIndexMismatch</span>))
 			}
 		},
 		<span class="ident">AssignmentCertKind::RelayVRFDelay</span> { <span class="ident">core_index</span> } =&gt; {
 			<span class="kw">if</span> <span class="ident">core_index</span> <span class="op">!</span><span class="op">=</span> <span class="ident">claimed_core_index</span> {
-				<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">InvalidAssignment</span>)
+				<span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">InvalidAssignment</span>(<span class="ident">Reason::VRFDelayCoreIndexMismatch</span>))
 			}
 
 			<span class="kw">let</span> (<span class="ident">vrf_in_out</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">public</span>
@@ -1388,7 +1420,7 @@
 					<span class="kw-2">&amp;</span><span class="ident">vrf_output</span>.<span class="number">0</span>,
 					<span class="kw-2">&amp;</span><span class="ident">vrf_proof</span>.<span class="number">0</span>,
 				)
-				.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">InvalidAssignment</span>)<span class="question-mark">?</span>;
+				.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">InvalidAssignment</span>(<span class="ident">Reason::VRFDelayOutputMismatch</span>))<span class="question-mark">?</span>;
 
 			<span class="prelude-val">Ok</span>(<span class="ident">relay_vrf_delay_tranche</span>(
 				<span class="kw-2">&amp;</span><span class="ident">vrf_in_out</span>,

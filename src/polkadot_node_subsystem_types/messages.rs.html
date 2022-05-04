@@ -1746,8 +1746,8 @@
 	<span class="ident">InvalidCandidateIndex</span>(<span class="ident">CandidateIndex</span>),
 	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Invalid candidate {0}: {1:?}&quot;</span>)]</span>
 	<span class="ident">InvalidCandidate</span>(<span class="ident">CandidateIndex</span>, <span class="ident">CandidateHash</span>),
-	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Invalid cert: {0:?}&quot;</span>)]</span>
-	<span class="ident">InvalidCert</span>(<span class="ident">ValidatorIndex</span>),
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Invalid cert: {0:?}, reason: {1}&quot;</span>)]</span>
+	<span class="ident">InvalidCert</span>(<span class="ident">ValidatorIndex</span>, <span class="ident">String</span>),
 	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Internal state mismatch: {0:?}, {1:?}&quot;</span>)]</span>
 	<span class="ident">Internal</span>(<span class="ident">Hash</span>, <span class="ident">CandidateHash</span>),
 }
