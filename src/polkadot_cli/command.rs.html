@@ -654,7 +654,6 @@
 <span id="649">649</span>
 <span id="650">650</span>
 <span id="651">651</span>
-<span id="652">652</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -784,7 +783,6 @@
 			<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;rococo-native&quot;</span>))]</span>
 			<span class="ident">name</span> <span class="kw">if</span> <span class="ident">name</span>.<span class="ident">starts_with</span>(<span class="string">&quot;wococo-&quot;</span>) =&gt;
 				<span class="prelude-val">Err</span>(<span class="macro">format!</span>(<span class="string">&quot;`{}` only supported with `rococo-native` feature enabled.&quot;</span>, <span class="ident">name</span>))<span class="question-mark">?</span>,
-			<span class="string">&quot;versi&quot;</span> =&gt; <span class="ident">Box::new</span>(<span class="ident">service::chain_spec::versi_config</span>()<span class="question-mark">?</span>),
 			<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;rococo-native&quot;</span>)]</span>
 			<span class="string">&quot;versi-dev&quot;</span> =&gt; <span class="ident">Box::new</span>(<span class="ident">service::chain_spec::versi_development_config</span>()<span class="question-mark">?</span>),
 			<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;rococo-native&quot;</span>)]</span>
