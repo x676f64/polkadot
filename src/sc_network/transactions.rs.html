@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/git/checkouts/substrate-7e08433d4c370a21/95067cc/client/network/src/transactions.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>transactions.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/git/checkouts/substrate-7e08433d4c370a21/c2fc4b3/client/network/src/transactions.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>transactions.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
     <noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../sc_network/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
         </a><h2 class="location"></h2>
     </nav>
@@ -485,13 +485,6 @@
 <span id="480">480</span>
 <span id="481">481</span>
 <span id="482">482</span>
-<span id="483">483</span>
-<span id="484">484</span>
-<span id="485">485</span>
-<span id="486">486</span>
-<span id="487">487</span>
-<span id="488">488</span>
-<span id="489">489</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -521,7 +514,7 @@
 <span class="doccomment">//! `Future` that processes transactions.</span>
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
-	<span class="ident">config</span>::{<span class="self">self</span>, <span class="ident">ProtocolId</span>, <span class="ident">TransactionImport</span>, <span class="ident">TransactionImportFuture</span>, <span class="ident">TransactionPool</span>},
+	<span class="ident">config</span>::{<span class="self">self</span>, <span class="ident">TransactionImport</span>, <span class="ident">TransactionImportFuture</span>, <span class="ident">TransactionPool</span>},
 	<span class="ident">error</span>,
 	<span class="ident">protocol::message</span>,
 	<span class="ident">service::NetworkService</span>,
@@ -534,6 +527,7 @@
 <span class="kw">use</span> <span class="ident">libp2p</span>::{<span class="ident">multiaddr</span>, <span class="ident">PeerId</span>};
 <span class="kw">use</span> <span class="ident">log</span>::{<span class="ident">debug</span>, <span class="ident">trace</span>, <span class="ident">warn</span>};
 <span class="kw">use</span> <span class="ident">prometheus_endpoint</span>::{<span class="ident">register</span>, <span class="ident">Counter</span>, <span class="ident">PrometheusError</span>, <span class="ident">Registry</span>, <span class="ident">U64</span>};
+<span class="kw">use</span> <span class="ident">sc_network_common::config::ProtocolId</span>;
 <span class="kw">use</span> <span class="ident">sp_runtime::traits::Block</span> <span class="kw">as</span> <span class="ident">BlockT</span>;
 <span class="kw">use</span> <span class="ident">std</span>::{
 	<span class="ident">borrow::Cow</span>,
@@ -627,15 +621,7 @@
 <span class="kw">impl</span> <span class="ident">TransactionsHandlerPrototype</span> {
 	<span class="doccomment">/// Create a new instance.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">protocol_id</span>: <span class="ident">ProtocolId</span>) -&gt; <span class="self">Self</span> {
-		<span class="self">Self</span> {
-			<span class="ident">protocol_name</span>: <span class="ident">Cow::from</span>({
-				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">proto</span> <span class="op">=</span> <span class="ident">String::new</span>();
-				<span class="ident">proto</span>.<span class="ident">push_str</span>(<span class="string">&quot;/&quot;</span>);
-				<span class="ident">proto</span>.<span class="ident">push_str</span>(<span class="ident">protocol_id</span>.<span class="ident">as_ref</span>());
-				<span class="ident">proto</span>.<span class="ident">push_str</span>(<span class="string">&quot;/transactions/1&quot;</span>);
-				<span class="ident">proto</span>
-			}),
-		}
+		<span class="self">Self</span> { <span class="ident">protocol_name</span>: <span class="macro">format!</span>(<span class="string">&quot;/{}/transactions/1&quot;</span>, <span class="ident">protocol_id</span>.<span class="ident">as_ref</span>()).<span class="ident">into</span>() }
 	}
 
 	<span class="doccomment">/// Returns the configuration of the set to put in the network configuration.</span>

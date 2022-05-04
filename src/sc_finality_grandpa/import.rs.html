@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/git/checkouts/substrate-7e08433d4c370a21/95067cc/client/finality-grandpa/src/import.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>import.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/git/checkouts/substrate-7e08433d4c370a21/c2fc4b3/client/finality-grandpa/src/import.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>import.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
     <noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../sc_finality_grandpa/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
         </a><h2 class="location"></h2>
     </nav>
@@ -839,7 +839,6 @@
 <span id="834">834</span>
 <span id="835">835</span>
 <span id="836">836</span>
-<span id="837">837</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2018-2022 Parity Technologies (UK) Ltd.</span>
@@ -1281,8 +1280,7 @@
 			<span class="comment">// This code may be removed once warp sync to an old runtime is no longer needed.</span>
 			<span class="kw">for</span> <span class="ident">prefix</span> <span class="kw">in</span> [<span class="string">&quot;GrandpaFinality&quot;</span>, <span class="string">&quot;Grandpa&quot;</span>] {
 				<span class="kw">let</span> <span class="ident">k</span> <span class="op">=</span> [<span class="ident">twox_128</span>(<span class="ident">prefix</span>.<span class="ident">as_bytes</span>()), <span class="ident">twox_128</span>(<span class="string">b&quot;CurrentSetId&quot;</span>)].<span class="ident">concat</span>();
-				<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">id</span>)) <span class="op">=</span>
-					<span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">storage</span>(<span class="kw-2">&amp;</span><span class="ident">id</span>, <span class="kw-2">&amp;</span><span class="ident">sc_client_api::StorageKey</span>(<span class="ident">k</span>.<span class="ident">to_vec</span>()))
+				<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">id</span>)) <span class="op">=</span> <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">storage</span>(<span class="ident">id</span>, <span class="kw-2">&amp;</span><span class="ident">sc_client_api::StorageKey</span>(<span class="ident">k</span>.<span class="ident">to_vec</span>()))
 				{
 					<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">id</span>) <span class="op">=</span> <span class="ident">SetId::decode</span>(<span class="kw-2">&amp;mut</span> <span class="ident">id</span>.<span class="number">0</span>.<span class="ident">as_ref</span>()) {
 						<span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">id</span>)
@@ -1293,7 +1291,7 @@
 		} <span class="kw">else</span> {
 			<span class="self">self</span>.<span class="ident">inner</span>
 				.<span class="ident">runtime_api</span>()
-				.<span class="ident">current_set_id</span>(<span class="kw-2">&amp;</span><span class="ident">id</span>)
+				.<span class="ident">current_set_id</span>(<span class="ident">id</span>)
 				.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">ConsensusError::ClientImport</span>(<span class="ident">e</span>.<span class="ident">to_string</span>()))
 		}
 	}
@@ -1574,7 +1572,7 @@
 
 			<span class="ident">authority_set</span>.<span class="ident">pending_standard_changes</span> <span class="op">=</span>
 				<span class="ident">authority_set</span>.<span class="ident">pending_standard_changes</span>.<span class="ident">clone</span>().<span class="ident">map</span>(<span class="kw-2">&amp;mut</span> <span class="op">|</span><span class="ident">hash</span>, <span class="kw">_</span>, <span class="ident">original</span><span class="op">|</span> {
-					<span class="ident">authority_set_hard_forks</span>.<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="ident">hash</span>).<span class="ident">cloned</span>().<span class="ident">unwrap_or</span>(<span class="ident">original</span>)
+					<span class="ident">authority_set_hard_forks</span>.<span class="ident">get</span>(<span class="ident">hash</span>).<span class="ident">cloned</span>().<span class="ident">unwrap_or</span>(<span class="ident">original</span>)
 				});
 		}
 
