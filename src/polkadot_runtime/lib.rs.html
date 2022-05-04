@@ -2114,6 +2114,22 @@
 <span id="2109">2109</span>
 <span id="2110">2110</span>
 <span id="2111">2111</span>
+<span id="2112">2112</span>
+<span id="2113">2113</span>
+<span id="2114">2114</span>
+<span id="2115">2115</span>
+<span id="2116">2116</span>
+<span id="2117">2117</span>
+<span id="2118">2118</span>
+<span id="2119">2119</span>
+<span id="2120">2120</span>
+<span id="2121">2121</span>
+<span id="2122">2122</span>
+<span id="2123">2123</span>
+<span id="2124">2124</span>
+<span id="2125">2125</span>
+<span id="2126">2126</span>
+<span id="2127">2127</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -3836,15 +3852,13 @@
 		<span class="kw">fn</span> <span class="ident">generate_proof</span>(<span class="ident">_leaf_index</span>: <span class="ident">u64</span>)
 			-&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">mmr::EncodableOpaqueLeaf</span>, <span class="ident">mmr::Proof</span><span class="op">&lt;</span><span class="ident">Hash</span><span class="op">&gt;</span>), <span class="ident">mmr::Error</span><span class="op">&gt;</span>
 		{
-			<span class="comment">// dummy implementation due to lack of MMR pallet.</span>
-			<span class="prelude-val">Err</span>(<span class="ident">mmr::Error::GenerateProof</span>)
+			<span class="prelude-val">Err</span>(<span class="ident">mmr::Error::PalletNotIncluded</span>)
 		}
 
 		<span class="kw">fn</span> <span class="ident">verify_proof</span>(<span class="ident">_leaf</span>: <span class="ident">mmr::EncodableOpaqueLeaf</span>, <span class="ident">_proof</span>: <span class="ident">mmr::Proof</span><span class="op">&lt;</span><span class="ident">Hash</span><span class="op">&gt;</span>)
 			-&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">mmr::Error</span><span class="op">&gt;</span>
 		{
-			<span class="comment">// dummy implementation due to lack of MMR pallet.</span>
-			<span class="prelude-val">Err</span>(<span class="ident">mmr::Error::Verify</span>)
+			<span class="prelude-val">Err</span>(<span class="ident">mmr::Error::PalletNotIncluded</span>)
 		}
 
 		<span class="kw">fn</span> <span class="ident">verify_proof_stateless</span>(
@@ -3852,13 +3866,31 @@
 			<span class="ident">_leaf</span>: <span class="ident">mmr::EncodableOpaqueLeaf</span>,
 			<span class="ident">_proof</span>: <span class="ident">mmr::Proof</span><span class="op">&lt;</span><span class="ident">Hash</span><span class="op">&gt;</span>
 		) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">mmr::Error</span><span class="op">&gt;</span> {
-			<span class="comment">// dummy implementation due to lack of MMR pallet.</span>
-			<span class="prelude-val">Err</span>(<span class="ident">mmr::Error::Verify</span>)
+			<span class="prelude-val">Err</span>(<span class="ident">mmr::Error::PalletNotIncluded</span>)
 		}
 
 		<span class="kw">fn</span> <span class="ident">mmr_root</span>() -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Hash</span>, <span class="ident">mmr::Error</span><span class="op">&gt;</span> {
-			<span class="comment">// dummy implementation due to lack of MMR pallet.</span>
-			<span class="prelude-val">Err</span>(<span class="ident">mmr::Error::Verify</span>)
+			<span class="prelude-val">Err</span>(<span class="ident">mmr::Error::PalletNotIncluded</span>)
+		}
+
+		<span class="kw">fn</span> <span class="ident">generate_batch_proof</span>(<span class="ident">_leaf_indices</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span>)
+			-&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">mmr::EncodableOpaqueLeaf</span><span class="op">&gt;</span>, <span class="ident">mmr::BatchProof</span><span class="op">&lt;</span><span class="ident">Hash</span><span class="op">&gt;</span>), <span class="ident">mmr::Error</span><span class="op">&gt;</span>
+		{
+			<span class="prelude-val">Err</span>(<span class="ident">mmr::Error::PalletNotIncluded</span>)
+		}
+
+		<span class="kw">fn</span> <span class="ident">verify_batch_proof</span>(<span class="ident">_leaves</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">mmr::EncodableOpaqueLeaf</span><span class="op">&gt;</span>, <span class="ident">_proof</span>: <span class="ident">mmr::BatchProof</span><span class="op">&lt;</span><span class="ident">Hash</span><span class="op">&gt;</span>)
+			-&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">mmr::Error</span><span class="op">&gt;</span>
+		{
+			<span class="prelude-val">Err</span>(<span class="ident">mmr::Error::PalletNotIncluded</span>)
+		}
+
+		<span class="kw">fn</span> <span class="ident">verify_batch_proof_stateless</span>(
+			<span class="ident">_root</span>: <span class="ident">Hash</span>,
+			<span class="ident">_leaves</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">mmr::EncodableOpaqueLeaf</span><span class="op">&gt;</span>,
+			<span class="ident">_proof</span>: <span class="ident">mmr::BatchProof</span><span class="op">&lt;</span><span class="ident">Hash</span><span class="op">&gt;</span>
+		) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">mmr::Error</span><span class="op">&gt;</span> {
+			<span class="prelude-val">Err</span>(<span class="ident">mmr::Error::PalletNotIncluded</span>)
 		}
 	}
 
