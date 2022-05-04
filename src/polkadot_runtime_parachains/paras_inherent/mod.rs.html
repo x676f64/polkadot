@@ -1322,6 +1322,10 @@
 <span id="1317">1317</span>
 <span id="1318">1318</span>
 <span id="1319">1319</span>
+<span id="1320">1320</span>
+<span id="1321">1321</span>
+<span id="1322">1322</span>
+<span id="1323">1323</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -1362,7 +1366,7 @@
 	<span class="ident">traits::Randomness</span>,
 };
 <span class="kw">use</span> <span class="ident">frame_system::pallet_prelude</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident">pallet_babe</span>::{<span class="self">self</span>, <span class="ident">CurrentBlockRandomness</span>};
+<span class="kw">use</span> <span class="ident">pallet_babe</span>::{<span class="self">self</span>, <span class="ident">ParentBlockRandomness</span>};
 <span class="kw">use</span> <span class="ident">primitives::v2</span>::{
 	<span class="ident">BackedCandidate</span>, <span class="ident">CandidateHash</span>, <span class="ident">CandidateReceipt</span>, <span class="ident">CheckedDisputeStatementSet</span>,
 	<span class="ident">CheckedMultiDisputeStatementSet</span>, <span class="ident">CoreIndex</span>, <span class="ident">DisputeStatementSet</span>,
@@ -2519,14 +2523,18 @@
 <span class="doccomment">/// a const value, while emitting a warning.</span>
 <span class="kw">fn</span> <span class="ident">compute_entropy</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span>(<span class="ident">parent_hash</span>: <span class="ident">T::Hash</span>) -&gt; [<span class="ident">u8</span>; <span class="number">32</span>] {
 	<span class="kw">const</span> <span class="ident">CANDIDATE_SEED_SUBJECT</span>: [<span class="ident">u8</span>; <span class="number">32</span>] <span class="op">=</span> <span class="kw-2">*</span><span class="string">b&quot;candidate-seed-selection-subject&quot;</span>;
-	<span class="kw">let</span> <span class="ident">vrf_random</span> <span class="op">=</span> <span class="ident">CurrentBlockRandomness</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::random</span>(<span class="kw-2">&amp;</span><span class="ident">CANDIDATE_SEED_SUBJECT</span>[..]).<span class="number">0</span>;
+	<span class="comment">// NOTE: this is slightly gameable since this randomness was already public</span>
+	<span class="comment">// by the previous block, while for the block author this randomness was</span>
+	<span class="comment">// known 2 epochs ago. it is marginally better than using the parent block</span>
+	<span class="comment">// hash since it&#39;s harder to influence the VRF output than the block hash.</span>
+	<span class="kw">let</span> <span class="ident">vrf_random</span> <span class="op">=</span> <span class="ident">ParentBlockRandomness</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::random</span>(<span class="kw-2">&amp;</span><span class="ident">CANDIDATE_SEED_SUBJECT</span>[..]).<span class="number">0</span>;
 	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">entropy</span>: [<span class="ident">u8</span>; <span class="number">32</span>] <span class="op">=</span> <span class="ident">CANDIDATE_SEED_SUBJECT</span>.<span class="ident">clone</span>();
 	<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">vrf_random</span>) <span class="op">=</span> <span class="ident">vrf_random</span> {
 		<span class="ident">entropy</span>.<span class="ident">as_mut</span>().<span class="ident">copy_from_slice</span>(<span class="ident">vrf_random</span>.<span class="ident">as_ref</span>());
 	} <span class="kw">else</span> {
 		<span class="comment">// in case there is no VRF randomness present, we utilize the relay parent</span>
 		<span class="comment">// as seed, it&#39;s better than a static value.</span>
-		<span class="macro">log::warn!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="string">&quot;CurrentBlockRandomness did not provide entropy&quot;</span>);
+		<span class="macro">log::warn!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="string">&quot;ParentBlockRandomness did not provide entropy&quot;</span>);
 		<span class="ident">entropy</span>.<span class="ident">as_mut</span>().<span class="ident">copy_from_slice</span>(<span class="ident">parent_hash</span>.<span class="ident">as_ref</span>());
 	}
 	<span class="ident">entropy</span>
