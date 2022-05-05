@@ -116,6 +116,7 @@
 <span id="111">111</span>
 <span id="112">112</span>
 <span id="113">113</span>
+<span id="114">114</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -183,11 +184,12 @@
 							<span class="ident">config</span>,
 							<span class="ident">polkadot_service::IsCollator::Yes</span>(<span class="ident">collator</span>.<span class="ident">collator_key</span>()),
 							<span class="prelude-val">None</span>,
-							<span class="bool-val">true</span>,
+							<span class="bool-val">false</span>,
 							<span class="prelude-val">None</span>,
 							<span class="prelude-val">None</span>,
 							<span class="bool-val">false</span>,
 							<span class="ident">polkadot_service::RealOverseerGen</span>,
+							<span class="prelude-val">None</span>,
 							<span class="prelude-val">None</span>,
 						)
 						.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">e</span>.<span class="ident">to_string</span>())<span class="question-mark">?</span>;

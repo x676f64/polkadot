@@ -1473,6 +1473,16 @@
 <span id="1468">1468</span>
 <span id="1469">1469</span>
 <span id="1470">1470</span>
+<span id="1471">1471</span>
+<span id="1472">1472</span>
+<span id="1473">1473</span>
+<span id="1474">1474</span>
+<span id="1475">1475</span>
+<span id="1476">1476</span>
+<span id="1477">1477</span>
+<span id="1478">1478</span>
+<span id="1479">1479</span>
+<span id="1480">1480</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -2194,6 +2204,7 @@
 	<span class="ident">program_path</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">std::path::PathBuf</span><span class="op">&gt;</span>,
 	<span class="ident">overseer_enable_anyways</span>: <span class="ident">bool</span>,
 	<span class="ident">overseer_gen</span>: <span class="ident">OverseerGenerator</span>,
+	<span class="ident">overseer_message_channel_capacity_override</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
 	<span class="ident">hwbench</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">sc_sysinfo::HwBench</span><span class="op">&gt;</span>,
 ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">NewFull</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">FullClient</span><span class="op">&lt;</span><span class="ident">RuntimeApi</span>, <span class="ident">ExecutorDispatch</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">Error</span><span class="op">&gt;</span>
 <span class="kw">where</span>
@@ -2513,6 +2524,7 @@
 					<span class="ident">chain_selection_config</span>,
 					<span class="ident">dispute_coordinator_config</span>,
 					<span class="ident">pvf_checker_enabled</span>,
+					<span class="ident">overseer_message_channel_capacity_override</span>,
 				},
 			)
 			.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> {
@@ -2801,6 +2813,7 @@
 	<span class="ident">telemetry_worker_handle</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">TelemetryWorkerHandle</span><span class="op">&gt;</span>,
 	<span class="ident">overseer_enable_anyways</span>: <span class="ident">bool</span>,
 	<span class="ident">overseer_gen</span>: <span class="kw">impl</span> <span class="ident">OverseerGen</span>,
+	<span class="ident">overseer_message_channel_override</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
 	<span class="ident">hwbench</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">sc_sysinfo::HwBench</span><span class="op">&gt;</span>,
 ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">NewFull</span><span class="op">&lt;</span><span class="ident">Client</span><span class="op">&gt;</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
 	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;rococo-native&quot;</span>)]</span>
@@ -2818,6 +2831,7 @@
 			<span class="prelude-val">None</span>,
 			<span class="ident">overseer_enable_anyways</span>,
 			<span class="ident">overseer_gen</span>,
+			<span class="ident">overseer_message_channel_override</span>,
 			<span class="ident">hwbench</span>,
 		)
 		.<span class="ident">map</span>(<span class="op">|</span><span class="ident">full</span><span class="op">|</span> <span class="ident">full</span>.<span class="ident">with_client</span>(<span class="ident">Client::Rococo</span>))
@@ -2835,6 +2849,7 @@
 			<span class="prelude-val">None</span>,
 			<span class="ident">overseer_enable_anyways</span>,
 			<span class="ident">overseer_gen</span>,
+			<span class="ident">overseer_message_channel_override</span>,
 			<span class="ident">hwbench</span>,
 		)
 		.<span class="ident">map</span>(<span class="op">|</span><span class="ident">full</span><span class="op">|</span> <span class="ident">full</span>.<span class="ident">with_client</span>(<span class="ident">Client::Kusama</span>))
@@ -2852,6 +2867,7 @@
 			<span class="prelude-val">None</span>,
 			<span class="ident">overseer_enable_anyways</span>,
 			<span class="ident">overseer_gen</span>,
+			<span class="ident">overseer_message_channel_override</span>,
 			<span class="ident">hwbench</span>,
 		)
 		.<span class="ident">map</span>(<span class="op">|</span><span class="ident">full</span><span class="op">|</span> <span class="ident">full</span>.<span class="ident">with_client</span>(<span class="ident">Client::Westend</span>))
@@ -2869,6 +2885,10 @@
 			<span class="prelude-val">None</span>,
 			<span class="ident">overseer_enable_anyways</span>,
 			<span class="ident">overseer_gen</span>,
+			<span class="ident">overseer_message_channel_override</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">capacity</span><span class="op">|</span> {
+				<span class="macro">gum::warn!</span>(<span class="string">&quot;Channel capacity should _never_ be tampered with on polkadot!&quot;</span>);
+				<span class="ident">capacity</span>
+			}),
 			<span class="ident">hwbench</span>,
 		)
 		.<span class="ident">map</span>(<span class="op">|</span><span class="ident">full</span><span class="op">|</span> <span class="ident">full</span>.<span class="ident">with_client</span>(<span class="ident">Client::Polkadot</span>))
