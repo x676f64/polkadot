@@ -533,6 +533,12 @@
 <span id="528">528</span>
 <span id="529">529</span>
 <span id="530">530</span>
+<span id="531">531</span>
+<span id="532">532</span>
+<span id="533">533</span>
+<span id="534">534</span>
+<span id="535">535</span>
+<span id="536">536</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -704,6 +710,8 @@
 				.<span class="ident">cache_validation_code_hash</span>((<span class="ident">relay_parent</span>, <span class="ident">para_id</span>, <span class="ident">assumption</span>), <span class="ident">hash</span>),
 			<span class="ident">Version</span>(<span class="ident">relay_parent</span>, <span class="ident">version</span>) =&gt;
 				<span class="self">self</span>.<span class="ident">requests_cache</span>.<span class="ident">cache_version</span>(<span class="ident">relay_parent</span>, <span class="ident">version</span>),
+			<span class="ident">StagingDisputes</span>(<span class="ident">relay_parent</span>, <span class="ident">disputes</span>) =&gt;
+				<span class="self">self</span>.<span class="ident">requests_cache</span>.<span class="ident">cache_disputes</span>(<span class="ident">relay_parent</span>, <span class="ident">disputes</span>),
 		}
 	}
 
@@ -805,6 +813,8 @@
 			<span class="ident">Request::ValidationCodeHash</span>(<span class="ident">para</span>, <span class="ident">assumption</span>, <span class="ident">sender</span>) =&gt;
 				<span class="macro">query!</span>(<span class="ident">validation_code_hash</span>(<span class="ident">para</span>, <span class="ident">assumption</span>), <span class="ident">sender</span>)
 					.<span class="ident">map</span>(<span class="op">|</span><span class="ident">sender</span><span class="op">|</span> <span class="ident">Request::ValidationCodeHash</span>(<span class="ident">para</span>, <span class="ident">assumption</span>, <span class="ident">sender</span>)),
+			<span class="ident">Request::StagingDisputes</span>(<span class="ident">sender</span>) =&gt;
+				<span class="macro">query!</span>(<span class="ident">disputes</span>(), <span class="ident">sender</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">sender</span><span class="op">|</span> <span class="ident">Request::StagingDisputes</span>(<span class="ident">sender</span>)),
 		}
 	}
 
@@ -1061,6 +1071,8 @@
 		},
 		<span class="ident">Request::ValidationCodeHash</span>(<span class="ident">para</span>, <span class="ident">assumption</span>, <span class="ident">sender</span>) =&gt;
 			<span class="macro">query!</span>(<span class="ident">ValidationCodeHash</span>, <span class="ident">validation_code_hash</span>(<span class="ident">para</span>, <span class="ident">assumption</span>), <span class="ident">ver</span> <span class="op">=</span> <span class="number">2</span>, <span class="ident">sender</span>),
+		<span class="ident">Request::StagingDisputes</span>(<span class="ident">sender</span>) =&gt;
+			<span class="macro">query!</span>(<span class="ident">StagingDisputes</span>, <span class="ident">staging_get_disputes</span>(), <span class="ident">ver</span> <span class="op">=</span> <span class="number">2</span>, <span class="ident">sender</span>),
 	}
 }
 </code></pre></div>

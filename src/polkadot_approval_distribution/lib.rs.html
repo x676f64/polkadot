@@ -1706,33 +1706,6 @@
 <span id="1701">1701</span>
 <span id="1702">1702</span>
 <span id="1703">1703</span>
-<span id="1704">1704</span>
-<span id="1705">1705</span>
-<span id="1706">1706</span>
-<span id="1707">1707</span>
-<span id="1708">1708</span>
-<span id="1709">1709</span>
-<span id="1710">1710</span>
-<span id="1711">1711</span>
-<span id="1712">1712</span>
-<span id="1713">1713</span>
-<span id="1714">1714</span>
-<span id="1715">1715</span>
-<span id="1716">1716</span>
-<span id="1717">1717</span>
-<span id="1718">1718</span>
-<span id="1719">1719</span>
-<span id="1720">1720</span>
-<span id="1721">1721</span>
-<span id="1722">1722</span>
-<span id="1723">1723</span>
-<span id="1724">1724</span>
-<span id="1725">1725</span>
-<span id="1726">1726</span>
-<span id="1727">1727</span>
-<span id="1728">1728</span>
-<span id="1729">1729</span>
-<span id="1730">1730</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -1766,8 +1739,8 @@
 };
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem</span>::{
 	<span class="ident">messages</span>::{
-		<span class="ident">network_bridge_event</span>, <span class="ident">ApprovalCheckResult</span>, <span class="ident">ApprovalDistributionMessage</span>,
-		<span class="ident">ApprovalVotingMessage</span>, <span class="ident">AssignmentCheckResult</span>, <span class="ident">NetworkBridgeEvent</span>, <span class="ident">NetworkBridgeMessage</span>,
+		<span class="ident">ApprovalCheckResult</span>, <span class="ident">ApprovalDistributionMessage</span>, <span class="ident">ApprovalVotingMessage</span>,
+		<span class="ident">AssignmentCheckResult</span>, <span class="ident">NetworkBridgeEvent</span>, <span class="ident">NetworkBridgeMessage</span>,
 	},
 	<span class="ident">overseer</span>, <span class="ident">ActiveLeavesUpdate</span>, <span class="ident">FromOverseer</span>, <span class="ident">OverseerSignal</span>, <span class="ident">SpawnedSubsystem</span>, <span class="ident">SubsystemContext</span>,
 	<span class="ident">SubsystemError</span>,
@@ -1877,29 +1850,6 @@
 			<span class="ident">l2_threshold</span>: <span class="prelude-val">Some</span>(<span class="number">25</span>),
 			<span class="ident">resend_unfinalized_period</span>: <span class="prelude-val">Some</span>(<span class="number">5</span>),
 		}
-	}
-}
-
-<span class="kw">struct</span> <span class="ident">ApprovalGridTopology</span>(<span class="ident">SessionGridTopology</span>);
-
-<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">network_bridge_event::NewGossipTopology</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ApprovalGridTopology</span> {
-	<span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">topology</span>: <span class="ident">network_bridge_event::NewGossipTopology</span>) -&gt; <span class="self">Self</span> {
-		<span class="kw">let</span> <span class="ident">peers_x</span> <span class="op">=</span>
-			<span class="ident">topology</span>.<span class="ident">our_neighbors_x</span>.<span class="ident">values</span>().<span class="ident">flat_map</span>(<span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">p</span>.<span class="ident">peer_ids</span>).<span class="ident">cloned</span>().<span class="ident">collect</span>();
-		<span class="kw">let</span> <span class="ident">peers_y</span> <span class="op">=</span>
-			<span class="ident">topology</span>.<span class="ident">our_neighbors_y</span>.<span class="ident">values</span>().<span class="ident">flat_map</span>(<span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">p</span>.<span class="ident">peer_ids</span>).<span class="ident">cloned</span>().<span class="ident">collect</span>();
-
-		<span class="kw">let</span> <span class="ident">validator_indices_x</span> <span class="op">=</span>
-			<span class="ident">topology</span>.<span class="ident">our_neighbors_x</span>.<span class="ident">values</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="ident">p</span>.<span class="ident">validator_index</span>.<span class="ident">clone</span>()).<span class="ident">collect</span>();
-		<span class="kw">let</span> <span class="ident">validator_indices_y</span> <span class="op">=</span>
-			<span class="ident">topology</span>.<span class="ident">our_neighbors_y</span>.<span class="ident">values</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="ident">p</span>.<span class="ident">validator_index</span>.<span class="ident">clone</span>()).<span class="ident">collect</span>();
-
-		<span class="ident">ApprovalGridTopology</span>(<span class="ident">SessionGridTopology</span> {
-			<span class="ident">peers_x</span>,
-			<span class="ident">peers_y</span>,
-			<span class="ident">validator_indices_x</span>,
-			<span class="ident">validator_indices_y</span>,
-		})
 	}
 }
 
@@ -2103,12 +2053,8 @@
 			},
 			<span class="ident">NetworkBridgeEvent::NewGossipTopology</span>(<span class="ident">topology</span>) =&gt; {
 				<span class="kw">let</span> <span class="ident">session</span> <span class="op">=</span> <span class="ident">topology</span>.<span class="ident">session</span>;
-				<span class="self">self</span>.<span class="ident">handle_new_session_topology</span>(
-					<span class="ident">ctx</span>,
-					<span class="ident">session</span>,
-					<span class="ident">ApprovalGridTopology::from</span>(<span class="ident">topology</span>),
-				)
-				.<span class="kw">await</span>;
+				<span class="self">self</span>.<span class="ident">handle_new_session_topology</span>(<span class="ident">ctx</span>, <span class="ident">session</span>, <span class="ident">SessionGridTopology::from</span>(<span class="ident">topology</span>))
+					.<span class="kw">await</span>;
 			},
 			<span class="ident">NetworkBridgeEvent::PeerViewChange</span>(<span class="ident">peer_id</span>, <span class="ident">view</span>) =&gt; {
 				<span class="self">self</span>.<span class="ident">handle_peer_view_change</span>(<span class="ident">ctx</span>, <span class="ident">metrics</span>, <span class="ident">peer_id</span>, <span class="ident">view</span>, <span class="ident">rng</span>).<span class="kw">await</span>;
@@ -2263,9 +2209,9 @@
 		<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">ApprovalDistributionMessage</span><span class="op">&gt;</span>
 		          <span class="op">+</span> <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">ApprovalDistributionMessage</span><span class="op">&gt;</span>),
 		<span class="ident">session</span>: <span class="ident">SessionIndex</span>,
-		<span class="ident">topology</span>: <span class="ident">ApprovalGridTopology</span>,
+		<span class="ident">topology</span>: <span class="ident">SessionGridTopology</span>,
 	) {
-		<span class="self">self</span>.<span class="ident">topologies</span>.<span class="ident">insert_topology</span>(<span class="ident">session</span>, <span class="ident">topology</span>.<span class="number">0</span>);
+		<span class="self">self</span>.<span class="ident">topologies</span>.<span class="ident">insert_topology</span>(<span class="ident">session</span>, <span class="ident">topology</span>);
 		<span class="kw">let</span> <span class="ident">topology</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">topologies</span>.<span class="ident">get_topology</span>(<span class="ident">session</span>).<span class="ident">expect</span>(<span class="string">&quot;just inserted above; qed&quot;</span>);
 
 		<span class="ident">adjust_required_routing_and_propagate</span>(

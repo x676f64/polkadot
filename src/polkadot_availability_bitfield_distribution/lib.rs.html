@@ -729,6 +729,106 @@
 <span id="724">724</span>
 <span id="725">725</span>
 <span id="726">726</span>
+<span id="727">727</span>
+<span id="728">728</span>
+<span id="729">729</span>
+<span id="730">730</span>
+<span id="731">731</span>
+<span id="732">732</span>
+<span id="733">733</span>
+<span id="734">734</span>
+<span id="735">735</span>
+<span id="736">736</span>
+<span id="737">737</span>
+<span id="738">738</span>
+<span id="739">739</span>
+<span id="740">740</span>
+<span id="741">741</span>
+<span id="742">742</span>
+<span id="743">743</span>
+<span id="744">744</span>
+<span id="745">745</span>
+<span id="746">746</span>
+<span id="747">747</span>
+<span id="748">748</span>
+<span id="749">749</span>
+<span id="750">750</span>
+<span id="751">751</span>
+<span id="752">752</span>
+<span id="753">753</span>
+<span id="754">754</span>
+<span id="755">755</span>
+<span id="756">756</span>
+<span id="757">757</span>
+<span id="758">758</span>
+<span id="759">759</span>
+<span id="760">760</span>
+<span id="761">761</span>
+<span id="762">762</span>
+<span id="763">763</span>
+<span id="764">764</span>
+<span id="765">765</span>
+<span id="766">766</span>
+<span id="767">767</span>
+<span id="768">768</span>
+<span id="769">769</span>
+<span id="770">770</span>
+<span id="771">771</span>
+<span id="772">772</span>
+<span id="773">773</span>
+<span id="774">774</span>
+<span id="775">775</span>
+<span id="776">776</span>
+<span id="777">777</span>
+<span id="778">778</span>
+<span id="779">779</span>
+<span id="780">780</span>
+<span id="781">781</span>
+<span id="782">782</span>
+<span id="783">783</span>
+<span id="784">784</span>
+<span id="785">785</span>
+<span id="786">786</span>
+<span id="787">787</span>
+<span id="788">788</span>
+<span id="789">789</span>
+<span id="790">790</span>
+<span id="791">791</span>
+<span id="792">792</span>
+<span id="793">793</span>
+<span id="794">794</span>
+<span id="795">795</span>
+<span id="796">796</span>
+<span id="797">797</span>
+<span id="798">798</span>
+<span id="799">799</span>
+<span id="800">800</span>
+<span id="801">801</span>
+<span id="802">802</span>
+<span id="803">803</span>
+<span id="804">804</span>
+<span id="805">805</span>
+<span id="806">806</span>
+<span id="807">807</span>
+<span id="808">808</span>
+<span id="809">809</span>
+<span id="810">810</span>
+<span id="811">811</span>
+<span id="812">812</span>
+<span id="813">813</span>
+<span id="814">814</span>
+<span id="815">815</span>
+<span id="816">816</span>
+<span id="817">817</span>
+<span id="818">818</span>
+<span id="819">819</span>
+<span id="820">820</span>
+<span id="821">821</span>
+<span id="822">822</span>
+<span id="823">823</span>
+<span id="824">824</span>
+<span id="825">825</span>
+<span id="826">826</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020-2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -756,15 +856,19 @@
 <span class="kw">use</span> <span class="ident">futures</span>::{<span class="ident">channel::oneshot</span>, <span class="ident">FutureExt</span>};
 
 <span class="kw">use</span> <span class="ident">polkadot_node_network_protocol</span>::{
-	<span class="self">self</span> <span class="kw">as</span> <span class="ident">net_protocol</span>, <span class="ident">v1</span> <span class="kw">as</span> <span class="ident">protocol_v1</span>, <span class="ident">OurView</span>, <span class="ident">PeerId</span>, <span class="ident">UnifiedReputationChange</span> <span class="kw">as</span> <span class="ident">Rep</span>,
-	<span class="ident">Versioned</span>, <span class="ident">View</span>,
+	<span class="self">self</span> <span class="kw">as</span> <span class="ident">net_protocol</span>,
+	<span class="ident">grid_topology</span>::{<span class="ident">RandomRouting</span>, <span class="ident">RequiredRouting</span>, <span class="ident">SessionGridTopology</span>},
+	<span class="ident">v1</span> <span class="kw">as</span> <span class="ident">protocol_v1</span>, <span class="ident">OurView</span>, <span class="ident">PeerId</span>, <span class="ident">UnifiedReputationChange</span> <span class="kw">as</span> <span class="ident">Rep</span>, <span class="ident">Versioned</span>, <span class="ident">View</span>,
 };
-<span class="kw">use</span> <span class="ident">polkadot_node_subsystem_util</span>::{<span class="self">self</span> <span class="kw">as</span> <span class="ident">util</span>, <span class="ident">MIN_GOSSIP_PEERS</span>};
-<span class="kw">use</span> <span class="ident">polkadot_primitives::v2</span>::{<span class="ident">Hash</span>, <span class="ident">SignedAvailabilityBitfield</span>, <span class="ident">SigningContext</span>, <span class="ident">ValidatorId</span>};
+<span class="kw">use</span> <span class="ident">polkadot_node_subsystem_util</span>::{<span class="self">self</span> <span class="kw">as</span> <span class="ident">util</span>};
+<span class="kw">use</span> <span class="ident">polkadot_primitives::v2</span>::{
+	<span class="ident">Hash</span>, <span class="ident">SessionIndex</span>, <span class="ident">SignedAvailabilityBitfield</span>, <span class="ident">SigningContext</span>, <span class="ident">ValidatorId</span>,
+};
 <span class="kw">use</span> <span class="ident">polkadot_subsystem</span>::{
 	<span class="ident">jaeger</span>, <span class="ident">messages</span>::<span class="kw-2">*</span>, <span class="ident">overseer</span>, <span class="ident">ActiveLeavesUpdate</span>, <span class="ident">FromOverseer</span>, <span class="ident">OverseerSignal</span>, <span class="ident">PerLeafSpan</span>,
 	<span class="ident">SpawnedSubsystem</span>, <span class="ident">SubsystemContext</span>, <span class="ident">SubsystemError</span>, <span class="ident">SubsystemResult</span>,
 };
+<span class="kw">use</span> <span class="ident">rand</span>::{<span class="ident">CryptoRng</span>, <span class="ident">Rng</span>, <span class="ident">SeedableRng</span>};
 <span class="kw">use</span> <span class="ident">std::collections</span>::{<span class="ident">HashMap</span>, <span class="ident">HashSet</span>};
 
 <span class="kw">use</span> <span class="ident"><span class="self">self</span>::metrics::Metrics</span>;
@@ -807,6 +911,44 @@
 	}
 }
 
+<span class="doccomment">/// A simple storage for a topology and the corresponding session index</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Default</span>, <span class="ident">Debug</span>)]</span>
+<span class="kw">struct</span> <span class="ident">GridTopologySessionBound</span>(<span class="ident">SessionGridTopology</span>, <span class="ident">SessionIndex</span>);
+
+<span class="doccomment">/// A storage for the current and maybe previous topology</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Default</span>, <span class="ident">Debug</span>)]</span>
+<span class="kw">struct</span> <span class="ident">BitfieldGridTopologyStorage</span> {
+	<span class="ident">current_topology</span>: <span class="ident">GridTopologySessionBound</span>,
+	<span class="ident">prev_topology</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">GridTopologySessionBound</span><span class="op">&gt;</span>,
+}
+
+<span class="kw">impl</span> <span class="ident">BitfieldGridTopologyStorage</span> {
+	<span class="doccomment">/// Return a grid topology based on the session index:</span>
+	<span class="doccomment">/// If we need a previous session and it is registered in the storage, then return that session.</span>
+	<span class="doccomment">/// Otherwise, return a current session to have some grid topology in any case</span>
+	<span class="kw">fn</span> <span class="ident">get_topology</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">idx</span>: <span class="ident">SessionIndex</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">SessionGridTopology</span> {
+		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">prev_topology</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">prev_topology</span> {
+			<span class="kw">if</span> <span class="ident">idx</span> <span class="op">==</span> <span class="ident">prev_topology</span>.<span class="number">1</span> {
+				<span class="kw">return</span> <span class="kw-2">&amp;</span><span class="ident">prev_topology</span>.<span class="number">0</span>
+			}
+		}
+		<span class="comment">// Return the current topology by default</span>
+		<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">current_topology</span>.<span class="number">0</span>
+	}
+
+	<span class="doccomment">/// Update the current topology preserving the previous one</span>
+	<span class="kw">fn</span> <span class="ident">update_topology</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">idx</span>: <span class="ident">SessionIndex</span>, <span class="ident">topology</span>: <span class="ident">SessionGridTopology</span>) {
+		<span class="kw">let</span> <span class="ident">old_current</span> <span class="op">=</span>
+			<span class="ident">std::mem::replace</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">current_topology</span>, <span class="ident">GridTopologySessionBound</span>(<span class="ident">topology</span>, <span class="ident">idx</span>));
+		<span class="self">self</span>.<span class="ident">prev_topology</span>.<span class="ident">replace</span>(<span class="ident">old_current</span>);
+	}
+
+	<span class="doccomment">/// Returns a current grid topology</span>
+	<span class="kw">fn</span> <span class="ident">get_current_topology</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">SessionGridTopology</span> {
+		<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">current_topology</span>.<span class="number">0</span>
+	}
+}
+
 <span class="doccomment">/// Data used to track information of peers and relay parents the</span>
 <span class="doccomment">/// overseer ordered us to work on.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Default</span>, <span class="ident">Debug</span>)]</span>
@@ -815,9 +957,8 @@
 	<span class="doccomment">/// to determine what is relevant to them.</span>
 	<span class="ident">peer_views</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">PeerId</span>, <span class="ident">View</span><span class="op">&gt;</span>,
 
-	<span class="doccomment">/// Track all our neighbors in the current gossip topology.</span>
-	<span class="doccomment">/// We&#39;re not necessarily connected to all of them.</span>
-	<span class="ident">gossip_peers</span>: <span class="ident">HashSet</span><span class="op">&lt;</span><span class="ident">PeerId</span><span class="op">&gt;</span>,
+	<span class="doccomment">/// The current and previous gossip topologies</span>
+	<span class="ident">topologies</span>: <span class="ident">BitfieldGridTopologyStorage</span>,
 
 	<span class="doccomment">/// Our current view.</span>
 	<span class="ident">view</span>: <span class="ident">OurView</span>,
@@ -901,13 +1042,27 @@
 	}
 
 	<span class="doccomment">/// Start processing work as passed on from the Overseer.</span>
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">ctx</span>: <span class="ident">Context</span>)
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">ctx</span>: <span class="ident">Context</span>)
 	<span class="kw">where</span>
 		<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">BitfieldDistributionMessage</span><span class="op">&gt;</span>,
 		<span class="ident">Context</span>: <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">BitfieldDistributionMessage</span><span class="op">&gt;</span>,
 	{
-		<span class="comment">// work: process incoming messages from the overseer and process accordingly.</span>
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">state</span> <span class="op">=</span> <span class="ident">ProtocolState::default</span>();
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> <span class="op">=</span> <span class="ident">rand::rngs::StdRng::from_entropy</span>();
+		<span class="self">self</span>.<span class="ident">run_inner</span>(<span class="ident">ctx</span>, <span class="kw-2">&amp;mut</span> <span class="ident">state</span>, <span class="kw-2">&amp;mut</span> <span class="ident">rng</span>).<span class="kw">await</span>
+	}
+
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run_inner</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
+		<span class="self">self</span>,
+		<span class="kw-2">mut</span> <span class="ident">ctx</span>: <span class="ident">Context</span>,
+		<span class="ident">state</span>: <span class="kw-2">&amp;mut</span> <span class="ident">ProtocolState</span>,
+		<span class="ident">rng</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">CryptoRng</span> <span class="op">+</span> <span class="ident">Rng</span>),
+	) <span class="kw">where</span>
+		<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">BitfieldDistributionMessage</span><span class="op">&gt;</span>,
+		<span class="ident">Context</span>: <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">BitfieldDistributionMessage</span><span class="op">&gt;</span>,
+	{
+		<span class="comment">// work: process incoming messages from the overseer and process accordingly.</span>
+
 		<span class="kw">loop</span> {
 			<span class="kw">let</span> <span class="ident">message</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">ctx</span>.<span class="ident">recv</span>().<span class="kw">await</span> {
 				<span class="prelude-val">Ok</span>(<span class="ident">message</span>) =&gt; <span class="ident">message</span>,
@@ -931,10 +1086,11 @@
 					<span class="macro">gum::trace!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="question-mark">?</span><span class="ident">relay_parent</span>, <span class="string">&quot;Processing DistributeBitfield&quot;</span>);
 					<span class="ident">handle_bitfield_distribution</span>(
 						<span class="kw-2">&amp;mut</span> <span class="ident">ctx</span>,
-						<span class="kw-2">&amp;mut</span> <span class="ident">state</span>,
+						<span class="ident">state</span>,
 						<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">metrics</span>,
 						<span class="ident">relay_parent</span>,
 						<span class="ident">signed_availability</span>,
+						<span class="ident">rng</span>,
 					)
 					.<span class="kw">await</span>;
 				},
@@ -943,7 +1099,7 @@
 				} =&gt; {
 					<span class="macro">gum::trace!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="string">&quot;Processing NetworkMessage&quot;</span>);
 					<span class="comment">// a network message was received</span>
-					<span class="ident">handle_network_msg</span>(<span class="kw-2">&amp;mut</span> <span class="ident">ctx</span>, <span class="kw-2">&amp;mut</span> <span class="ident">state</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">metrics</span>, <span class="ident">event</span>).<span class="kw">await</span>;
+					<span class="ident">handle_network_msg</span>(<span class="kw-2">&amp;mut</span> <span class="ident">ctx</span>, <span class="ident">state</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">metrics</span>, <span class="ident">event</span>, <span class="ident">rng</span>).<span class="kw">await</span>;
 				},
 				<span class="ident">FromOverseer::Signal</span>(<span class="ident">OverseerSignal::ActiveLeaves</span>(<span class="ident">ActiveLeavesUpdate</span> {
 					<span class="ident">activated</span>,
@@ -999,7 +1155,6 @@
 
 	<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeMessage::ReportPeer</span>(<span class="ident">peer</span>, <span class="ident">rep</span>)).<span class="kw">await</span>
 }
-
 <span class="doccomment">/// Distribute a given valid and signature checked bitfield message.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// For this variant the source is this node.</span>
@@ -1009,6 +1164,7 @@
 	<span class="ident">metrics</span>: <span class="kw-2">&amp;</span><span class="ident">Metrics</span>,
 	<span class="ident">relay_parent</span>: <span class="ident">Hash</span>,
 	<span class="ident">signed_availability</span>: <span class="ident">SignedAvailabilityBitfield</span>,
+	<span class="ident">rng</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">CryptoRng</span> <span class="op">+</span> <span class="ident">Rng</span>),
 ) <span class="kw">where</span>
 	<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">BitfieldDistributionMessage</span><span class="op">&gt;</span>,
 {
@@ -1027,25 +1183,36 @@
 
 		<span class="kw">return</span>
 	};
+
+	<span class="kw">let</span> <span class="ident">session_idx</span> <span class="op">=</span> <span class="ident">job_data</span>.<span class="ident">signing_context</span>.<span class="ident">session_index</span>;
 	<span class="kw">let</span> <span class="ident">validator_set</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">job_data</span>.<span class="ident">validator_set</span>;
 	<span class="kw">if</span> <span class="ident">validator_set</span>.<span class="ident">is_empty</span>() {
 		<span class="macro">gum::debug!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="question-mark">?</span><span class="ident">relay_parent</span>, <span class="string">&quot;validator set is empty&quot;</span>);
 		<span class="kw">return</span>
 	}
 
-	<span class="kw">let</span> <span class="ident">validator_index</span> <span class="op">=</span> <span class="ident">signed_availability</span>.<span class="ident">validator_index</span>().<span class="number">0</span> <span class="kw">as</span> <span class="ident">usize</span>;
-	<span class="kw">let</span> <span class="ident">validator</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">validator</span>) <span class="op">=</span> <span class="ident">validator_set</span>.<span class="ident">get</span>(<span class="ident">validator_index</span>) {
+	<span class="kw">let</span> <span class="ident">validator_index</span> <span class="op">=</span> <span class="ident">signed_availability</span>.<span class="ident">validator_index</span>();
+	<span class="kw">let</span> <span class="ident">validator</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">validator</span>) <span class="op">=</span> <span class="ident">validator_set</span>.<span class="ident">get</span>(<span class="kw-2">*</span><span class="kw-2">&amp;</span><span class="ident">validator_index</span>.<span class="number">0</span> <span class="kw">as</span> <span class="ident">usize</span>) {
 		<span class="ident">validator</span>.<span class="ident">clone</span>()
 	} <span class="kw">else</span> {
-		<span class="macro">gum::debug!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="ident">validator_index</span>, <span class="string">&quot;Could not find a validator for index&quot;</span>);
+		<span class="macro">gum::debug!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="ident">validator_index</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">validator_index</span>.<span class="number">0</span>, <span class="string">&quot;Could not find a validator for index&quot;</span>);
 		<span class="kw">return</span>
 	};
 
 	<span class="kw">let</span> <span class="ident">msg</span> <span class="op">=</span> <span class="ident">BitfieldGossipMessage</span> { <span class="ident">relay_parent</span>, <span class="ident">signed_availability</span> };
-
-	<span class="kw">let</span> <span class="ident">gossip_peers</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">state</span>.<span class="ident">gossip_peers</span>;
-	<span class="kw">let</span> <span class="ident">peer_views</span> <span class="op">=</span> <span class="kw-2">&amp;mut</span> <span class="ident">state</span>.<span class="ident">peer_views</span>;
-	<span class="ident">relay_message</span>(<span class="ident">ctx</span>, <span class="ident">job_data</span>, <span class="ident">gossip_peers</span>, <span class="ident">peer_views</span>, <span class="ident">validator</span>, <span class="ident">msg</span>).<span class="kw">await</span>;
+	<span class="kw">let</span> <span class="ident">topology</span> <span class="op">=</span> <span class="ident">state</span>.<span class="ident">topologies</span>.<span class="ident">get_topology</span>(<span class="ident">session_idx</span>);
+	<span class="kw">let</span> <span class="ident">required_routing</span> <span class="op">=</span> <span class="ident">topology</span>.<span class="ident">required_routing_for</span>(<span class="ident">validator_index</span>, <span class="bool-val">true</span>);
+	<span class="ident">relay_message</span>(
+		<span class="ident">ctx</span>,
+		<span class="ident">job_data</span>,
+		<span class="ident">topology</span>,
+		<span class="kw-2">&amp;mut</span> <span class="ident">state</span>.<span class="ident">peer_views</span>,
+		<span class="ident">validator</span>,
+		<span class="ident">msg</span>,
+		<span class="ident">required_routing</span>,
+		<span class="ident">rng</span>,
+	)
+	.<span class="kw">await</span>;
 
 	<span class="ident">metrics</span>.<span class="ident">on_own_bitfield_sent</span>();
 }
@@ -1056,10 +1223,12 @@
 <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">relay_message</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
 	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 	<span class="ident">job_data</span>: <span class="kw-2">&amp;mut</span> <span class="ident">PerRelayParentData</span>,
-	<span class="ident">gossip_peers</span>: <span class="kw-2">&amp;</span><span class="ident">HashSet</span><span class="op">&lt;</span><span class="ident">PeerId</span><span class="op">&gt;</span>,
+	<span class="ident">topology</span>: <span class="kw-2">&amp;</span><span class="ident">SessionGridTopology</span>,
 	<span class="ident">peer_views</span>: <span class="kw-2">&amp;mut</span> <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">PeerId</span>, <span class="ident">View</span><span class="op">&gt;</span>,
 	<span class="ident">validator</span>: <span class="ident">ValidatorId</span>,
 	<span class="ident">message</span>: <span class="ident">BitfieldGossipMessage</span>,
+	<span class="ident">required_routing</span>: <span class="ident">RequiredRouting</span>,
+	<span class="ident">rng</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">CryptoRng</span> <span class="op">+</span> <span class="ident">Rng</span>),
 ) <span class="kw">where</span>
 	<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">BitfieldDistributionMessage</span><span class="op">&gt;</span>,
 {
@@ -1075,10 +1244,12 @@
 	.<span class="kw">await</span>;
 
 	<span class="ident">drop</span>(<span class="ident">_span</span>);
+	<span class="kw">let</span> <span class="ident">total_peers</span> <span class="op">=</span> <span class="ident">peer_views</span>.<span class="ident">len</span>();
+	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">random_routing</span>: <span class="ident">RandomRouting</span> <span class="op">=</span> <span class="ident">Default::default</span>();
 
 	<span class="kw">let</span> <span class="ident">_span</span> <span class="op">=</span> <span class="ident">span</span>.<span class="ident">child</span>(<span class="string">&quot;interested-peers&quot;</span>);
 	<span class="comment">// pass on the bitfield distribution to all interested peers</span>
-	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">interested_peers</span> <span class="op">=</span> <span class="ident">peer_views</span>
+	<span class="kw">let</span> <span class="ident">interested_peers</span> <span class="op">=</span> <span class="ident">peer_views</span>
 		.<span class="ident">iter</span>()
 		.<span class="ident">filter_map</span>(<span class="op">|</span>(<span class="ident">peer</span>, <span class="ident">view</span>)<span class="op">|</span> {
 			<span class="comment">// check interest in the peer in this message&#39;s relay parent</span>
@@ -1086,7 +1257,21 @@
 				<span class="kw">let</span> <span class="ident">message_needed</span> <span class="op">=</span>
 					<span class="ident">job_data</span>.<span class="ident">message_from_validator_needed_by_peer</span>(<span class="kw-2">&amp;</span><span class="ident">peer</span>, <span class="kw-2">&amp;</span><span class="ident">validator</span>);
 				<span class="kw">if</span> <span class="ident">message_needed</span> {
-					<span class="prelude-val">Some</span>(<span class="ident">peer</span>.<span class="ident">clone</span>())
+					<span class="kw">let</span> <span class="ident">in_topology</span> <span class="op">=</span> <span class="ident">topology</span>.<span class="ident">route_to_peer</span>(<span class="ident">required_routing</span>, <span class="kw-2">&amp;</span><span class="ident">peer</span>);
+					<span class="kw">let</span> <span class="ident">need_routing</span> <span class="op">=</span> <span class="ident">in_topology</span> <span class="op">|</span><span class="op">|</span> {
+						<span class="kw">let</span> <span class="ident">route_random</span> <span class="op">=</span> <span class="ident">random_routing</span>.<span class="ident">sample</span>(<span class="ident">total_peers</span>, <span class="ident">rng</span>);
+						<span class="kw">if</span> <span class="ident">route_random</span> {
+							<span class="ident">random_routing</span>.<span class="ident">inc_sent</span>();
+						}
+
+						<span class="ident">route_random</span>
+					};
+
+					<span class="kw">if</span> <span class="ident">need_routing</span> {
+						<span class="prelude-val">Some</span>(<span class="ident">peer</span>.<span class="ident">clone</span>())
+					} <span class="kw">else</span> {
+						<span class="prelude-val">None</span>
+					}
 				} <span class="kw">else</span> {
 					<span class="prelude-val">None</span>
 				}
@@ -1095,11 +1280,7 @@
 			}
 		})
 		.<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">PeerId</span><span class="op">&gt;</span><span class="op">&gt;</span>();
-	<span class="ident">util::choose_random_subset</span>(
-		<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">gossip_peers</span>.<span class="ident">contains</span>(<span class="ident">e</span>),
-		<span class="kw-2">&amp;mut</span> <span class="ident">interested_peers</span>,
-		<span class="ident">MIN_GOSSIP_PEERS</span>,
-	);
+
 	<span class="ident">interested_peers</span>.<span class="ident">iter</span>().<span class="ident">for_each</span>(<span class="op">|</span><span class="ident">peer</span><span class="op">|</span> {
 		<span class="comment">// track the message as sent for this peer</span>
 		<span class="ident">job_data</span>
@@ -1134,6 +1315,7 @@
 	<span class="ident">metrics</span>: <span class="kw-2">&amp;</span><span class="ident">Metrics</span>,
 	<span class="ident">origin</span>: <span class="ident">PeerId</span>,
 	<span class="ident">message</span>: <span class="ident">protocol_v1::BitfieldDistributionMessage</span>,
+	<span class="ident">rng</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">CryptoRng</span> <span class="op">+</span> <span class="ident">Rng</span>),
 ) <span class="kw">where</span>
 	<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">BitfieldDistributionMessage</span><span class="op">&gt;</span>,
 {
@@ -1223,11 +1405,23 @@
 
 	<span class="kw">let</span> <span class="ident">message</span> <span class="op">=</span> <span class="ident">BitfieldGossipMessage</span> { <span class="ident">relay_parent</span>, <span class="ident">signed_availability</span> };
 
+	<span class="kw">let</span> <span class="ident">topology</span> <span class="op">=</span> <span class="ident">state</span>.<span class="ident">topologies</span>.<span class="ident">get_topology</span>(<span class="ident">job_data</span>.<span class="ident">signing_context</span>.<span class="ident">session_index</span>);
+	<span class="kw">let</span> <span class="ident">required_routing</span> <span class="op">=</span> <span class="ident">topology</span>.<span class="ident">required_routing_for</span>(<span class="ident">validator_index</span>, <span class="bool-val">false</span>);
+
 	<span class="ident">metrics</span>.<span class="ident">on_bitfield_received</span>();
 	<span class="ident">one_per_validator</span>.<span class="ident">insert</span>(<span class="ident">validator</span>.<span class="ident">clone</span>(), <span class="ident">message</span>.<span class="ident">clone</span>());
 
-	<span class="ident">relay_message</span>(<span class="ident">ctx</span>, <span class="ident">job_data</span>, <span class="kw-2">&amp;</span><span class="ident">state</span>.<span class="ident">gossip_peers</span>, <span class="kw-2">&amp;mut</span> <span class="ident">state</span>.<span class="ident">peer_views</span>, <span class="ident">validator</span>, <span class="ident">message</span>)
-		.<span class="kw">await</span>;
+	<span class="ident">relay_message</span>(
+		<span class="ident">ctx</span>,
+		<span class="ident">job_data</span>,
+		<span class="ident">topology</span>,
+		<span class="kw-2">&amp;mut</span> <span class="ident">state</span>.<span class="ident">peer_views</span>,
+		<span class="ident">validator</span>,
+		<span class="ident">message</span>,
+		<span class="ident">required_routing</span>,
+		<span class="ident">rng</span>,
+	)
+	.<span class="kw">await</span>;
 
 	<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>, <span class="ident">relay_parent</span>, <span class="ident">origin</span>, <span class="ident">BENEFIT_VALID_MESSAGE_FIRST</span>).<span class="kw">await</span>
 }
@@ -1239,6 +1433,7 @@
 	<span class="ident">state</span>: <span class="kw-2">&amp;mut</span> <span class="ident">ProtocolState</span>,
 	<span class="ident">metrics</span>: <span class="kw-2">&amp;</span><span class="ident">Metrics</span>,
 	<span class="ident">bridge_message</span>: <span class="ident">NetworkBridgeEvent</span><span class="op">&lt;</span><span class="ident">net_protocol::BitfieldDistributionMessage</span><span class="op">&gt;</span>,
+	<span class="ident">rng</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">CryptoRng</span> <span class="op">+</span> <span class="ident">Rng</span>),
 ) <span class="kw">where</span>
 	<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">BitfieldDistributionMessage</span><span class="op">&gt;</span>,
 {
@@ -1255,35 +1450,37 @@
 			<span class="comment">// get rid of superfluous data</span>
 			<span class="ident">state</span>.<span class="ident">peer_views</span>.<span class="ident">remove</span>(<span class="kw-2">&amp;</span><span class="ident">peer</span>);
 		},
-		<span class="ident">NetworkBridgeEvent::NewGossipTopology</span>(<span class="ident">topology</span>) =&gt; {
-			<span class="comment">// Combine all peers in the x &amp; y direction as we don&#39;t make any distinction.</span>
-			<span class="kw">let</span> <span class="ident">peers</span>: <span class="ident">HashSet</span><span class="op">&lt;</span><span class="ident">PeerId</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">topology</span>
-				.<span class="ident">our_neighbors_x</span>
-				.<span class="ident">values</span>()
-				.<span class="ident">chain</span>(<span class="ident">topology</span>.<span class="ident">our_neighbors_y</span>.<span class="ident">values</span>())
-				.<span class="ident">flat_map</span>(<span class="op">|</span><span class="ident">peer_info</span><span class="op">|</span> <span class="ident">peer_info</span>.<span class="ident">peer_ids</span>.<span class="ident">iter</span>().<span class="ident">cloned</span>())
-				.<span class="ident">collect</span>();
-			<span class="kw">let</span> <span class="ident">newly_added</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">PeerId</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">peers</span>.<span class="ident">difference</span>(<span class="kw-2">&amp;</span><span class="ident">state</span>.<span class="ident">gossip_peers</span>).<span class="ident">cloned</span>().<span class="ident">collect</span>();
-			<span class="ident">state</span>.<span class="ident">gossip_peers</span> <span class="op">=</span> <span class="ident">peers</span>;
+		<span class="ident">NetworkBridgeEvent::NewGossipTopology</span>(<span class="ident">gossip_topology</span>) =&gt; {
+			<span class="kw">let</span> <span class="ident">session_index</span> <span class="op">=</span> <span class="ident">gossip_topology</span>.<span class="ident">session</span>;
+			<span class="kw">let</span> <span class="ident">new_topology</span> <span class="op">=</span> <span class="ident">SessionGridTopology::from</span>(<span class="ident">gossip_topology</span>);
+			<span class="kw">let</span> <span class="ident">newly_added</span> <span class="op">=</span> <span class="ident">new_topology</span>.<span class="ident">peers_diff</span>(<span class="kw-2">&amp;</span><span class="ident">new_topology</span>);
+			<span class="ident">state</span>.<span class="ident">topologies</span>.<span class="ident">update_topology</span>(<span class="ident">session_index</span>, <span class="ident">new_topology</span>);
+			<span class="macro">gum::debug!</span>(
+				<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
+				<span class="question-mark">?</span><span class="ident">session_index</span>,
+				<span class="string">&quot;New gossip topology received {} unseen peers&quot;</span>,
+				<span class="ident">newly_added</span>.<span class="ident">len</span>()
+			);
+
 			<span class="kw">for</span> <span class="ident">new_peer</span> <span class="kw">in</span> <span class="ident">newly_added</span> {
 				<span class="comment">// in case we already knew that peer in the past</span>
 				<span class="comment">// it might have had an existing view, we use to initialize</span>
 				<span class="comment">// and minimize the delta on `PeerViewChange` to be sent</span>
 				<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">old_view</span>) <span class="op">=</span> <span class="ident">state</span>.<span class="ident">peer_views</span>.<span class="ident">remove</span>(<span class="kw-2">&amp;</span><span class="ident">new_peer</span>) {
-					<span class="ident">handle_peer_view_change</span>(<span class="ident">ctx</span>, <span class="ident">state</span>, <span class="ident">new_peer</span>, <span class="ident">old_view</span>).<span class="kw">await</span>;
+					<span class="ident">handle_peer_view_change</span>(<span class="ident">ctx</span>, <span class="ident">state</span>, <span class="ident">new_peer</span>, <span class="ident">old_view</span>, <span class="ident">rng</span>).<span class="kw">await</span>;
 				}
 			}
 		},
 		<span class="ident">NetworkBridgeEvent::PeerViewChange</span>(<span class="ident">peerid</span>, <span class="ident">new_view</span>) =&gt; {
 			<span class="macro">gum::trace!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="question-mark">?</span><span class="ident">peerid</span>, <span class="question-mark">?</span><span class="ident">new_view</span>, <span class="string">&quot;Peer view change&quot;</span>);
-			<span class="ident">handle_peer_view_change</span>(<span class="ident">ctx</span>, <span class="ident">state</span>, <span class="ident">peerid</span>, <span class="ident">new_view</span>).<span class="kw">await</span>;
+			<span class="ident">handle_peer_view_change</span>(<span class="ident">ctx</span>, <span class="ident">state</span>, <span class="ident">peerid</span>, <span class="ident">new_view</span>, <span class="ident">rng</span>).<span class="kw">await</span>;
 		},
 		<span class="ident">NetworkBridgeEvent::OurViewChange</span>(<span class="ident">new_view</span>) =&gt; {
 			<span class="macro">gum::trace!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="question-mark">?</span><span class="ident">new_view</span>, <span class="string">&quot;Our view change&quot;</span>);
 			<span class="ident">handle_our_view_change</span>(<span class="ident">state</span>, <span class="ident">new_view</span>);
 		},
 		<span class="ident">NetworkBridgeEvent::PeerMessage</span>(<span class="ident">remote</span>, <span class="ident">Versioned::V1</span>(<span class="ident">message</span>)) =&gt;
-			<span class="ident">process_incoming_peer_message</span>(<span class="ident">ctx</span>, <span class="ident">state</span>, <span class="ident">metrics</span>, <span class="ident">remote</span>, <span class="ident">message</span>).<span class="kw">await</span>,
+			<span class="ident">process_incoming_peer_message</span>(<span class="ident">ctx</span>, <span class="ident">state</span>, <span class="ident">metrics</span>, <span class="ident">remote</span>, <span class="ident">message</span>, <span class="ident">rng</span>).<span class="kw">await</span>,
 	}
 }
 
@@ -1316,6 +1513,7 @@
 	<span class="ident">state</span>: <span class="kw-2">&amp;mut</span> <span class="ident">ProtocolState</span>,
 	<span class="ident">origin</span>: <span class="ident">PeerId</span>,
 	<span class="ident">view</span>: <span class="ident">View</span>,
+	<span class="ident">rng</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">CryptoRng</span> <span class="op">+</span> <span class="ident">Rng</span>),
 ) <span class="kw">where</span>
 	<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">BitfieldDistributionMessage</span><span class="op">&gt;</span>,
 {
@@ -1327,11 +1525,13 @@
 		.<span class="ident">cloned</span>()
 		.<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
 
-	<span class="kw">let</span> <span class="ident">is_gossip_peer</span> <span class="op">=</span> <span class="ident">state</span>.<span class="ident">gossip_peers</span>.<span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="ident">origin</span>);
+	<span class="kw">let</span> <span class="ident">topology</span> <span class="op">=</span> <span class="ident">state</span>.<span class="ident">topologies</span>.<span class="ident">get_current_topology</span>();
+	<span class="kw">let</span> <span class="ident">is_gossip_peer</span> <span class="op">=</span> <span class="ident">topology</span>.<span class="ident">route_to_peer</span>(<span class="ident">RequiredRouting::GridXY</span>, <span class="kw-2">&amp;</span><span class="ident">origin</span>);
 	<span class="kw">let</span> <span class="ident">lucky</span> <span class="op">=</span> <span class="ident">is_gossip_peer</span> <span class="op">|</span><span class="op">|</span>
-		<span class="ident">util::gen_ratio</span>(
-			<span class="ident">util::MIN_GOSSIP_PEERS</span>.<span class="ident">saturating_sub</span>(<span class="ident">state</span>.<span class="ident">gossip_peers</span>.<span class="ident">len</span>()),
+		<span class="ident">util::gen_ratio_rng</span>(
+			<span class="ident">util::MIN_GOSSIP_PEERS</span>.<span class="ident">saturating_sub</span>(<span class="ident">topology</span>.<span class="ident">len</span>()),
 			<span class="ident">util::MIN_GOSSIP_PEERS</span>,
+			<span class="ident">rng</span>,
 		);
 
 	<span class="kw">if</span> <span class="op">!</span><span class="ident">lucky</span> {

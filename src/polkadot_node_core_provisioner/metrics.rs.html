@@ -137,6 +137,12 @@
 <span id="132">132</span>
 <span id="133">133</span>
 <span id="134">134</span>
+<span id="135">135</span>
+<span id="136">136</span>
+<span id="137">137</span>
+<span id="138">138</span>
+<span id="139">139</span>
+<span id="140">140</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -173,6 +179,12 @@
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Metrics</span>(<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">MetricsInner</span><span class="op">&gt;</span>);
 
 <span class="kw">impl</span> <span class="ident">Metrics</span> {
+	<span class="doccomment">/// Creates new dummy `Metrics` instance. Used for testing only.</span>
+	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_dummy</span>() -&gt; <span class="ident">Metrics</span> {
+		<span class="ident">Metrics</span>(<span class="prelude-val">None</span>)
+	}
+
 	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">on_inherent_data_request</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">response</span>: <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), ()<span class="op">&gt;</span>) {
 		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">metrics</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span> {
 			<span class="kw">match</span> <span class="ident">response</span> {
