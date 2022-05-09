@@ -808,6 +808,8 @@
 <span id="803">803</span>
 <span id="804">804</span>
 <span id="805">805</span>
+<span id="806">806</span>
+<span id="807">807</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -1409,7 +1411,8 @@
 		<span class="ident">RequestType::Recent</span> =&gt; <span class="ident">DisputeCoordinatorMessage::RecentDisputes</span>(<span class="ident">tx</span>),
 		<span class="ident">RequestType::Active</span> =&gt; <span class="ident">DisputeCoordinatorMessage::ActiveDisputes</span>(<span class="ident">tx</span>),
 	};
-	<span class="ident">sender</span>.<span class="ident">send_message</span>(<span class="ident">msg</span>.<span class="ident">into</span>()).<span class="kw">await</span>;
+	<span class="comment">// Bounded by block production - `ProvisionerMessage::RequestInherentData`.</span>
+	<span class="ident">sender</span>.<span class="ident">send_unbounded_message</span>(<span class="ident">msg</span>.<span class="ident">into</span>());
 
 	<span class="kw">let</span> <span class="ident">recent_disputes</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">rx</span>.<span class="kw">await</span> {
 		<span class="prelude-val">Ok</span>(<span class="ident">r</span>) =&gt; <span class="ident">r</span>,
@@ -1427,9 +1430,10 @@
 	<span class="ident">disputes_to_query</span>: <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">SessionIndex</span>, <span class="ident">CandidateHash</span>)<span class="op">&gt;</span>,
 ) -&gt; <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">SessionIndex</span>, <span class="ident">CandidateHash</span>, <span class="ident">CandidateVotes</span>)<span class="op">&gt;</span> {
 	<span class="kw">let</span> (<span class="ident">tx</span>, <span class="ident">rx</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
-	<span class="ident">sender</span>
-		.<span class="ident">send_message</span>(<span class="ident">DisputeCoordinatorMessage::QueryCandidateVotes</span>(<span class="ident">disputes_to_query</span>, <span class="ident">tx</span>).<span class="ident">into</span>())
-		.<span class="kw">await</span>;
+	<span class="comment">// Bounded by block production - `ProvisionerMessage::RequestInherentData`.</span>
+	<span class="ident">sender</span>.<span class="ident">send_unbounded_message</span>(
+		<span class="ident">DisputeCoordinatorMessage::QueryCandidateVotes</span>(<span class="ident">disputes_to_query</span>, <span class="ident">tx</span>).<span class="ident">into</span>(),
+	);
 
 	<span class="kw">match</span> <span class="ident">rx</span>.<span class="kw">await</span> {
 		<span class="prelude-val">Ok</span>(<span class="ident">v</span>) =&gt; <span class="ident">v</span>,

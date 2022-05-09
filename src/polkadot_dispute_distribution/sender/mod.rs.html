@@ -709,10 +709,10 @@
 	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 ) -&gt; <span class="ident">JfyiErrorResult</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">SessionIndex</span>, <span class="ident">CandidateHash</span>)<span class="op">&gt;</span><span class="op">&gt;</span> {
 	<span class="kw">let</span> (<span class="ident">tx</span>, <span class="ident">rx</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
-	<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">AllMessages::DisputeCoordinator</span>(<span class="ident">DisputeCoordinatorMessage::ActiveDisputes</span>(
-		<span class="ident">tx</span>,
-	)))
-	.<span class="kw">await</span>;
+	<span class="comment">// Caller scope is in `update_leaves` and this is bounded by fork count.</span>
+	<span class="ident">ctx</span>.<span class="ident">send_unbounded_message</span>(<span class="ident">AllMessages::DisputeCoordinator</span>(
+		<span class="ident">DisputeCoordinatorMessage::ActiveDisputes</span>(<span class="ident">tx</span>),
+	));
 	<span class="ident">rx</span>.<span class="kw">await</span>.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">JfyiError::AskActiveDisputesCanceled</span>)
 }
 
@@ -723,10 +723,10 @@
 	<span class="ident">candidate_hash</span>: <span class="ident">CandidateHash</span>,
 ) -&gt; <span class="ident">JfyiErrorResult</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">CandidateVotes</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 	<span class="kw">let</span> (<span class="ident">tx</span>, <span class="ident">rx</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
-	<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">AllMessages::DisputeCoordinator</span>(
+	<span class="comment">// Caller scope is in `update_leaves` and this is bounded by fork count.</span>
+	<span class="ident">ctx</span>.<span class="ident">send_unbounded_message</span>(<span class="ident">AllMessages::DisputeCoordinator</span>(
 		<span class="ident">DisputeCoordinatorMessage::QueryCandidateVotes</span>(<span class="macro">vec!</span>[(<span class="ident">session_index</span>, <span class="ident">candidate_hash</span>)], <span class="ident">tx</span>),
-	))
-	.<span class="kw">await</span>;
+	));
 	<span class="ident">rx</span>.<span class="kw">await</span>
 		.<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">v</span>.<span class="ident">get</span>(<span class="number">0</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">inner</span><span class="op">|</span> <span class="ident">inner</span>.<span class="ident">to_owned</span>().<span class="number">2</span>))
 		.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">JfyiError::AskCandidateVotesCanceled</span>)
