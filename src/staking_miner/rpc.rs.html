@@ -249,7 +249,7 @@
 		<span class="ident">unsubscribe</span> <span class="op">=</span> <span class="string">&quot;author_unwatchExtrinsic&quot;</span>,
 		<span class="ident">item</span> <span class="op">=</span> <span class="ident">TransactionStatus</span><span class="op">&lt;</span><span class="ident">Hash</span>, <span class="ident">Hash</span><span class="op">&gt;</span>
 	)]</span>
-	<span class="kw">fn</span> <span class="ident">watch_extrinsic</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">bytes</span>: <span class="kw-2">&amp;</span><span class="ident">Bytes</span>) -&gt; <span class="ident">RpcResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>;
+	<span class="kw">fn</span> <span class="ident">watch_extrinsic</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">bytes</span>: <span class="kw-2">&amp;</span><span class="ident">Bytes</span>);
 
 	<span class="doccomment">/// New head subscription.</span>
 	<span class="attribute">#[<span class="ident">subscription</span>(
@@ -257,7 +257,7 @@
 		<span class="ident">unsubscribe</span> <span class="op">=</span> <span class="string">&quot;chain_unsubscribeNewHeads&quot;</span>,
 		<span class="ident">item</span> <span class="op">=</span> <span class="ident">Header</span>
 	)]</span>
-	<span class="kw">fn</span> <span class="ident">subscribe_new_heads</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">RpcResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>;
+	<span class="kw">fn</span> <span class="ident">subscribe_new_heads</span>(<span class="kw-2">&amp;</span><span class="self">self</span>);
 
 	<span class="doccomment">/// Finalized head subscription.</span>
 	<span class="attribute">#[<span class="ident">subscription</span>(
@@ -265,7 +265,7 @@
 		<span class="ident">unsubscribe</span> <span class="op">=</span> <span class="string">&quot;chain_unsubscribeFinalizedHeads&quot;</span>,
 		<span class="ident">item</span> <span class="op">=</span> <span class="ident">Header</span>
 	)]</span>
-	<span class="kw">fn</span> <span class="ident">subscribe_finalized_heads</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">RpcResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>;
+	<span class="kw">fn</span> <span class="ident">subscribe_finalized_heads</span>(<span class="kw-2">&amp;</span><span class="self">self</span>);
 }
 
 <span class="doccomment">/// Wraps a shared web-socket JSON-RPC client that can be cloned.</span>
