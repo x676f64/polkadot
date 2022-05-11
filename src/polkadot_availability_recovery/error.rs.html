@@ -75,7 +75,7 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Error</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Error</span> {
 	<span class="attribute">#[<span class="ident">error</span>(<span class="ident">transparent</span>)]</span>
-	<span class="ident">Subsystem</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">polkadot_subsystem::SubsystemError</span>),
+	<span class="ident">Subsystem</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">polkadot_node_subsystem::SubsystemError</span>),
 
 	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;failed to query full data from store&quot;</span>)]</span>
 	<span class="ident">CanceledQueryFullData</span>(<span class="attribute">#[<span class="ident">source</span>]</span> <span class="ident">oneshot::Canceled</span>),
@@ -87,7 +87,7 @@
 	<span class="ident">CanceledResponseSender</span>,
 
 	<span class="attribute">#[<span class="ident">error</span>(<span class="ident">transparent</span>)]</span>
-	<span class="ident">Runtime</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">polkadot_subsystem::errors::RuntimeApiError</span>),
+	<span class="ident">Runtime</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">polkadot_node_subsystem::errors::RuntimeApiError</span>),
 
 	<span class="attribute">#[<span class="ident">error</span>(<span class="ident">transparent</span>)]</span>
 	<span class="ident">Erasure</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">polkadot_erasure_coding::Error</span>),

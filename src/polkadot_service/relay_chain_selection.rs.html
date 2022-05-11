@@ -606,14 +606,14 @@
 <span class="kw">use</span> <span class="ident">consensus_common</span>::{<span class="ident">Error</span> <span class="kw">as</span> <span class="ident">ConsensusError</span>, <span class="ident">SelectChain</span>};
 <span class="kw">use</span> <span class="ident">futures::channel::oneshot</span>;
 <span class="kw">use</span> <span class="ident">polkadot_node_primitives::MAX_FINALITY_LAG</span> <span class="kw">as</span> <span class="ident">PRIMITIVES_MAX_FINALITY_LAG</span>;
+<span class="kw">use</span> <span class="ident">polkadot_node_subsystem::messages</span>::{
+	<span class="ident">ApprovalVotingMessage</span>, <span class="ident">ChainSelectionMessage</span>, <span class="ident">DisputeCoordinatorMessage</span>,
+	<span class="ident">HighestApprovedAncestorBlock</span>,
+};
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem_util::metrics</span>::{<span class="self">self</span>, <span class="ident">prometheus</span>};
 <span class="kw">use</span> <span class="ident">polkadot_overseer</span>::{<span class="ident">AllMessages</span>, <span class="ident">Handle</span>};
 <span class="kw">use</span> <span class="ident">polkadot_primitives::v2</span>::{
 	<span class="ident">Block</span> <span class="kw">as</span> <span class="ident">PolkadotBlock</span>, <span class="ident">BlockNumber</span>, <span class="ident">Hash</span>, <span class="ident">Header</span> <span class="kw">as</span> <span class="ident">PolkadotHeader</span>,
-};
-<span class="kw">use</span> <span class="ident">polkadot_subsystem::messages</span>::{
-	<span class="ident">ApprovalVotingMessage</span>, <span class="ident">ChainSelectionMessage</span>, <span class="ident">DisputeCoordinatorMessage</span>,
-	<span class="ident">HighestApprovedAncestorBlock</span>,
 };
 <span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
 

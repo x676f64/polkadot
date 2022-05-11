@@ -1612,9 +1612,7 @@
 	<span class="ident">v1</span> <span class="kw">as</span> <span class="ident">protocol_v1</span>, <span class="ident">OurView</span>, <span class="ident">PeerId</span>, <span class="ident">UnifiedReputationChange</span> <span class="kw">as</span> <span class="ident">Rep</span>, <span class="ident">Versioned</span>, <span class="ident">View</span>,
 };
 <span class="kw">use</span> <span class="ident">polkadot_node_primitives</span>::{<span class="ident">PoV</span>, <span class="ident">SignedFullStatement</span>};
-<span class="kw">use</span> <span class="ident">polkadot_node_subsystem_util::metrics</span>::{<span class="self">self</span>, <span class="ident">prometheus</span>};
-<span class="kw">use</span> <span class="ident">polkadot_primitives::v2</span>::{<span class="ident">CandidateReceipt</span>, <span class="ident">CollatorId</span>, <span class="ident">Hash</span>, <span class="ident">Id</span> <span class="kw">as</span> <span class="ident">ParaId</span>};
-<span class="kw">use</span> <span class="ident">polkadot_subsystem</span>::{
+<span class="kw">use</span> <span class="ident">polkadot_node_subsystem</span>::{
 	<span class="ident">jaeger</span>,
 	<span class="ident">messages</span>::{
 		<span class="ident">CandidateBackingMessage</span>, <span class="ident">CollatorProtocolMessage</span>, <span class="ident">IfDisconnected</span>, <span class="ident">NetworkBridgeEvent</span>,
@@ -1622,6 +1620,8 @@
 	},
 	<span class="ident">overseer</span>, <span class="ident">FromOverseer</span>, <span class="ident">OverseerSignal</span>, <span class="ident">PerLeafSpan</span>, <span class="ident">SubsystemContext</span>, <span class="ident">SubsystemSender</span>,
 };
+<span class="kw">use</span> <span class="ident">polkadot_node_subsystem_util::metrics</span>::{<span class="self">self</span>, <span class="ident">prometheus</span>};
+<span class="kw">use</span> <span class="ident">polkadot_primitives::v2</span>::{<span class="ident">CandidateReceipt</span>, <span class="ident">CollatorId</span>, <span class="ident">Hash</span>, <span class="ident">Id</span> <span class="kw">as</span> <span class="ident">ParaId</span>};
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::error::Result</span>;
 

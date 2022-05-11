@@ -1127,18 +1127,18 @@
 	<span class="ident">IfDisconnected</span>, <span class="ident">UnifiedReputationChange</span> <span class="kw">as</span> <span class="ident">Rep</span>,
 };
 <span class="kw">use</span> <span class="ident">polkadot_node_primitives</span>::{<span class="ident">AvailableData</span>, <span class="ident">ErasureChunk</span>};
-<span class="kw">use</span> <span class="ident">polkadot_node_subsystem_util::request_session_info</span>;
-<span class="kw">use</span> <span class="ident">polkadot_primitives::v2</span>::{
-	<span class="ident">AuthorityDiscoveryId</span>, <span class="ident">BlakeTwo256</span>, <span class="ident">BlockNumber</span>, <span class="ident">CandidateHash</span>, <span class="ident">CandidateReceipt</span>, <span class="ident">GroupIndex</span>,
-	<span class="ident">Hash</span>, <span class="ident">HashT</span>, <span class="ident">SessionIndex</span>, <span class="ident">SessionInfo</span>, <span class="ident">ValidatorId</span>, <span class="ident">ValidatorIndex</span>,
-};
-<span class="kw">use</span> <span class="ident">polkadot_subsystem</span>::{
+<span class="kw">use</span> <span class="ident">polkadot_node_subsystem</span>::{
 	<span class="ident">errors::RecoveryError</span>,
 	<span class="ident">jaeger</span>,
 	<span class="ident">messages</span>::{<span class="ident">AvailabilityRecoveryMessage</span>, <span class="ident">AvailabilityStoreMessage</span>, <span class="ident">NetworkBridgeMessage</span>},
 	<span class="ident">overseer</span>::{<span class="self">self</span>, <span class="ident">Subsystem</span>},
 	<span class="ident">ActiveLeavesUpdate</span>, <span class="ident">FromOverseer</span>, <span class="ident">OverseerSignal</span>, <span class="ident">SpawnedSubsystem</span>, <span class="ident">SubsystemContext</span>,
 	<span class="ident">SubsystemError</span>, <span class="ident">SubsystemResult</span>, <span class="ident">SubsystemSender</span>,
+};
+<span class="kw">use</span> <span class="ident">polkadot_node_subsystem_util::request_session_info</span>;
+<span class="kw">use</span> <span class="ident">polkadot_primitives::v2</span>::{
+	<span class="ident">AuthorityDiscoveryId</span>, <span class="ident">BlakeTwo256</span>, <span class="ident">BlockNumber</span>, <span class="ident">CandidateHash</span>, <span class="ident">CandidateReceipt</span>, <span class="ident">GroupIndex</span>,
+	<span class="ident">Hash</span>, <span class="ident">HashT</span>, <span class="ident">SessionIndex</span>, <span class="ident">SessionInfo</span>, <span class="ident">ValidatorId</span>, <span class="ident">ValidatorIndex</span>,
 };
 
 <span class="kw">mod</span> <span class="ident">error</span>;

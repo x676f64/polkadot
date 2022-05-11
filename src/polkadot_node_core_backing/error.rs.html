@@ -116,9 +116,9 @@
 <span class="kw">use</span> <span class="ident">fatality::Nested</span>;
 <span class="kw">use</span> <span class="ident">futures::channel</span>::{<span class="ident">mpsc</span>, <span class="ident">oneshot</span>};
 
+<span class="kw">use</span> <span class="ident">polkadot_node_subsystem</span>::{<span class="ident">messages::ValidationFailed</span>, <span class="ident">SubsystemError</span>};
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem_util::Error</span> <span class="kw">as</span> <span class="ident">UtilError</span>;
 <span class="kw">use</span> <span class="ident">polkadot_primitives::v2::BackedCandidate</span>;
-<span class="kw">use</span> <span class="ident">polkadot_subsystem</span>::{<span class="ident">messages::ValidationFailed</span>, <span class="ident">SubsystemError</span>};
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::LOG_TARGET</span>;
 
