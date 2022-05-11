@@ -2026,9 +2026,6 @@
 <span id="2021">2021</span>
 <span id="2022">2022</span>
 <span id="2023">2023</span>
-<span id="2024">2024</span>
-<span id="2025">2025</span>
-<span id="2026">2026</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -2798,6 +2795,7 @@
 		<span class="ident">gilt</span>: <span class="ident">Default::default</span>(),
 		<span class="ident">paras</span>: <span class="ident">Default::default</span>(),
 		<span class="ident">xcm_pallet</span>: <span class="ident">Default::default</span>(),
+		<span class="ident">nomination_pools</span>: <span class="ident">Default::default</span>(),
 	}
 }
 
@@ -3502,6 +3500,7 @@
 		<span class="ident">gilt</span>: <span class="ident">Default::default</span>(),
 		<span class="ident">paras</span>: <span class="ident">Default::default</span>(),
 		<span class="ident">xcm_pallet</span>: <span class="ident">Default::default</span>(),
+		<span class="ident">nomination_pools</span>: <span class="ident">Default::default</span>(),
 	}
 }
 
@@ -3582,12 +3581,7 @@
 			<span class="ident">next_free_para_id</span>: <span class="ident">polkadot_primitives::v2::LOWEST_PUBLIC_ID</span>,
 		},
 		<span class="ident">xcm_pallet</span>: <span class="ident">Default::default</span>(),
-		<span class="ident">nomination_pools</span>: <span class="ident">westend_runtime::NominationPoolsConfig</span> {
-			<span class="ident">max_pools</span>: <span class="prelude-val">Some</span>(<span class="number">128</span>),
-			<span class="ident">min_join_bond</span>: <span class="ident">WND</span>,
-			<span class="ident">min_create_bond</span>: <span class="number">100</span> <span class="op">*</span> <span class="ident">WND</span>,
-			..<span class="ident">Default::default</span>()
-		},
+		<span class="ident">nomination_pools</span>: <span class="ident">Default::default</span>(),
 	}
 }
 

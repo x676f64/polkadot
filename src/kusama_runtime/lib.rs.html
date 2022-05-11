@@ -2107,6 +2107,74 @@
 <span id="2102">2102</span>
 <span id="2103">2103</span>
 <span id="2104">2104</span>
+<span id="2105">2105</span>
+<span id="2106">2106</span>
+<span id="2107">2107</span>
+<span id="2108">2108</span>
+<span id="2109">2109</span>
+<span id="2110">2110</span>
+<span id="2111">2111</span>
+<span id="2112">2112</span>
+<span id="2113">2113</span>
+<span id="2114">2114</span>
+<span id="2115">2115</span>
+<span id="2116">2116</span>
+<span id="2117">2117</span>
+<span id="2118">2118</span>
+<span id="2119">2119</span>
+<span id="2120">2120</span>
+<span id="2121">2121</span>
+<span id="2122">2122</span>
+<span id="2123">2123</span>
+<span id="2124">2124</span>
+<span id="2125">2125</span>
+<span id="2126">2126</span>
+<span id="2127">2127</span>
+<span id="2128">2128</span>
+<span id="2129">2129</span>
+<span id="2130">2130</span>
+<span id="2131">2131</span>
+<span id="2132">2132</span>
+<span id="2133">2133</span>
+<span id="2134">2134</span>
+<span id="2135">2135</span>
+<span id="2136">2136</span>
+<span id="2137">2137</span>
+<span id="2138">2138</span>
+<span id="2139">2139</span>
+<span id="2140">2140</span>
+<span id="2141">2141</span>
+<span id="2142">2142</span>
+<span id="2143">2143</span>
+<span id="2144">2144</span>
+<span id="2145">2145</span>
+<span id="2146">2146</span>
+<span id="2147">2147</span>
+<span id="2148">2148</span>
+<span id="2149">2149</span>
+<span id="2150">2150</span>
+<span id="2151">2151</span>
+<span id="2152">2152</span>
+<span id="2153">2153</span>
+<span id="2154">2154</span>
+<span id="2155">2155</span>
+<span id="2156">2156</span>
+<span id="2157">2157</span>
+<span id="2158">2158</span>
+<span id="2159">2159</span>
+<span id="2160">2160</span>
+<span id="2161">2161</span>
+<span id="2162">2162</span>
+<span id="2163">2163</span>
+<span id="2164">2164</span>
+<span id="2165">2165</span>
+<span id="2166">2166</span>
+<span id="2167">2167</span>
+<span id="2168">2168</span>
+<span id="2169">2169</span>
+<span id="2170">2170</span>
+<span id="2171">2171</span>
+<span id="2172">2172</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -2161,7 +2229,8 @@
 <span class="kw">use</span> <span class="ident">frame_support</span>::{
 	<span class="ident">construct_runtime</span>, <span class="ident">parameter_types</span>,
 	<span class="ident">traits</span>::{
-		<span class="ident">Contains</span>, <span class="ident">EnsureOneOf</span>, <span class="ident">InstanceFilter</span>, <span class="ident">KeyOwnerProofSystem</span>, <span class="ident">LockIdentifier</span>, <span class="ident">PrivilegeCmp</span>,
+		<span class="ident">ConstU32</span>, <span class="ident">Contains</span>, <span class="ident">EnsureOneOf</span>, <span class="ident">InstanceFilter</span>, <span class="ident">KeyOwnerProofSystem</span>, <span class="ident">LockIdentifier</span>,
+		<span class="ident">OnRuntimeUpgrade</span>, <span class="ident">PrivilegeCmp</span>,
 	},
 	<span class="ident">weights::ConstantMultiplier</span>,
 	<span class="ident">PalletId</span>, <span class="ident">RuntimeDebug</span>,
@@ -3506,6 +3575,64 @@
 	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> <span class="ident">weights::pallet_gilt::WeightInfo</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>;
 }
 
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">BalanceToU256</span>;
+<span class="kw">impl</span> <span class="ident">sp_runtime::traits::Convert</span><span class="op">&lt;</span><span class="ident">Balance</span>, <span class="ident">sp_core::U256</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">BalanceToU256</span> {
+	<span class="kw">fn</span> <span class="ident">convert</span>(<span class="ident">n</span>: <span class="ident">Balance</span>) -&gt; <span class="ident">sp_core::U256</span> {
+		<span class="ident">n</span>.<span class="ident">into</span>()
+	}
+}
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">U256ToBalance</span>;
+<span class="kw">impl</span> <span class="ident">sp_runtime::traits::Convert</span><span class="op">&lt;</span><span class="ident">sp_core::U256</span>, <span class="ident">Balance</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">U256ToBalance</span> {
+	<span class="kw">fn</span> <span class="ident">convert</span>(<span class="ident">n</span>: <span class="ident">sp_core::U256</span>) -&gt; <span class="ident">Balance</span> {
+		<span class="kw">use</span> <span class="ident">frame_support::traits::Defensive</span>;
+		<span class="ident">n</span>.<span class="ident">try_into</span>().<span class="ident">defensive_unwrap_or</span>(<span class="ident">Balance::MAX</span>)
+	}
+}
+
+<span class="macro">parameter_types!</span> {
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">PoolsPalletId</span>: <span class="ident">PalletId</span> <span class="op">=</span> <span class="ident">PalletId</span>(<span class="kw-2">*</span><span class="string">b&quot;py/nopls&quot;</span>);
+}
+
+<span class="kw">impl</span> <span class="ident">pallet_nomination_pools::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
+	<span class="kw">type</span> <span class="ident">Event</span> <span class="op">=</span> <span class="ident">Event</span>;
+	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> <span class="ident">weights::pallet_nomination_pools::WeightInfo</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>;
+	<span class="kw">type</span> <span class="ident">Currency</span> <span class="op">=</span> <span class="ident">Balances</span>;
+	<span class="kw">type</span> <span class="ident">BalanceToU256</span> <span class="op">=</span> <span class="ident">BalanceToU256</span>;
+	<span class="kw">type</span> <span class="ident">U256ToBalance</span> <span class="op">=</span> <span class="ident">U256ToBalance</span>;
+	<span class="kw">type</span> <span class="ident">StakingInterface</span> <span class="op">=</span> <span class="ident">Staking</span>;
+	<span class="kw">type</span> <span class="ident">PostUnbondingPoolsWindow</span> <span class="op">=</span> <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">4</span><span class="op">&gt;</span>;
+	<span class="kw">type</span> <span class="ident">MaxMetadataLen</span> <span class="op">=</span> <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">256</span><span class="op">&gt;</span>;
+	<span class="comment">// we use the same number of allowed unlocking chunks as with staking.</span>
+	<span class="kw">type</span> <span class="ident">MaxUnbonding</span> <span class="op">=</span> <span class="op">&lt;</span><span class="self">Self</span> <span class="kw">as</span> <span class="ident">pallet_staking::Config</span><span class="op">&gt;</span><span class="ident">::MaxUnlockingChunks</span>;
+	<span class="kw">type</span> <span class="ident">PalletId</span> <span class="op">=</span> <span class="ident">PoolsPalletId</span>;
+}
+
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">InitiatePoolConfigs</span>;
+<span class="kw">impl</span> <span class="ident">OnRuntimeUpgrade</span> <span class="kw">for</span> <span class="ident">InitiatePoolConfigs</span> {
+	<span class="kw">fn</span> <span class="ident">on_runtime_upgrade</span>() -&gt; <span class="ident">frame_support::weights::Weight</span> {
+		<span class="comment">// we use one as an indicator if this has already been set.</span>
+		<span class="kw">if</span> <span class="ident">pallet_nomination_pools::MaxPools</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span><span class="ident">::get</span>().<span class="ident">is_none</span>() {
+			<span class="comment">// 1/600 KSM to join a pool.</span>
+			<span class="ident">pallet_nomination_pools::MinJoinBond</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span><span class="ident">::put</span>(<span class="number">50</span> <span class="op">*</span> <span class="ident">CENTS</span>);
+			<span class="comment">// 1 KSM to create a pool.</span>
+			<span class="ident">pallet_nomination_pools::MinCreateBond</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span><span class="ident">::put</span>(<span class="ident">UNITS</span>);
+
+			<span class="comment">// 128 initial pools: only for initial safety: can be set to infinity when needed.</span>
+			<span class="ident">pallet_nomination_pools::MaxPools</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span><span class="ident">::put</span>(<span class="number">128</span>);
+			<span class="comment">// 64k total pool members: only for initial safety: can be set to infinity when needed.</span>
+			<span class="ident">pallet_nomination_pools::MaxPoolMembers</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span><span class="ident">::put</span>(<span class="number">64</span> <span class="op">*</span> <span class="number">1024</span>);
+			<span class="comment">// 1024 members per pool: only for initial safety: can be set to infinity when needed.</span>
+			<span class="ident">pallet_nomination_pools::MaxPoolMembersPerPool</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span><span class="ident">::put</span>(<span class="number">1024</span>);
+
+			<span class="macro">log::info!</span>(<span class="ident">target</span>: <span class="string">&quot;runtime::kusama&quot;</span>, <span class="string">&quot;pools config initiated 🎉&quot;</span>);
+			<span class="op">&lt;</span><span class="ident">Runtime</span> <span class="kw">as</span> <span class="ident">frame_system::Config</span><span class="op">&gt;</span><span class="ident">::DbWeight::get</span>().<span class="ident">reads_writes</span>(<span class="number">1</span>, <span class="number">5</span>)
+		} <span class="kw">else</span> {
+			<span class="macro">log::info!</span>(<span class="ident">target</span>: <span class="string">&quot;runtime::kusama&quot;</span>, <span class="string">&quot;pools config already initiated 😏&quot;</span>);
+			<span class="op">&lt;</span><span class="ident">Runtime</span> <span class="kw">as</span> <span class="ident">frame_system::Config</span><span class="op">&gt;</span><span class="ident">::DbWeight::get</span>().<span class="ident">reads</span>(<span class="number">1</span>)
+		}
+	}
+}
+
 <span class="macro">construct_runtime!</span> {
 	<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Runtime</span> <span class="kw">where</span>
 		<span class="ident">Block</span> <span class="op">=</span> <span class="ident">Block</span>,
@@ -3590,6 +3717,9 @@
 		<span class="comment">// Provides a semi-sorted list of nominators for staking.</span>
 		<span class="ident">BagsList</span>: <span class="ident">pallet_bags_list</span>::{<span class="ident">Pallet</span>, <span class="ident">Call</span>, <span class="ident">Storage</span>, <span class="ident">Event</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>} <span class="op">=</span> <span class="number">39</span>,
 
+		<span class="comment">// nomination pools: extension to staking.</span>
+		<span class="ident">NominationPools</span>: <span class="ident">pallet_nomination_pools</span>::{<span class="ident">Pallet</span>, <span class="ident">Call</span>, <span class="ident">Storage</span>, <span class="ident">Event</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>} <span class="op">=</span> <span class="number">41</span>,
+
 		<span class="comment">// Parachains pallets. Start indices at 50 to leave room.</span>
 		<span class="ident">ParachainsOrigin</span>: <span class="ident">parachains_origin</span>::{<span class="ident">Pallet</span>, <span class="ident">Origin</span>} <span class="op">=</span> <span class="number">50</span>,
 		<span class="ident">Configuration</span>: <span class="ident">parachains_configuration</span>::{<span class="ident">Pallet</span>, <span class="ident">Call</span>, <span class="ident">Storage</span>, <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>} <span class="op">=</span> <span class="number">51</span>,
@@ -3646,7 +3776,7 @@
 	<span class="ident">frame_system::ChainContext</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>,
 	<span class="ident">Runtime</span>,
 	<span class="ident">AllPalletsWithSystem</span>,
-	(),
+	<span class="ident">InitiatePoolConfigs</span>,
 <span class="op">&gt;</span>;
 <span class="doccomment">/// The payload being signed in the transactions.</span>
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">SignedPayload</span> <span class="op">=</span> <span class="ident">generic::SignedPayload</span><span class="op">&lt;</span><span class="ident">Call</span>, <span class="ident">SignedExtra</span><span class="op">&gt;</span>;
@@ -3691,6 +3821,7 @@
 		[<span class="ident">pallet_indices</span>, <span class="ident">Indices</span>]
 		[<span class="ident">pallet_membership</span>, <span class="ident">TechnicalMembership</span>]
 		[<span class="ident">pallet_multisig</span>, <span class="ident">Multisig</span>]
+		[<span class="ident">pallet_nomination_pools</span>, <span class="ident">NominationPoolsBench</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>]
 		[<span class="ident">pallet_offences</span>, <span class="ident">OffencesBench</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>]
 		[<span class="ident">pallet_preimage</span>, <span class="ident">Preimage</span>]
 		[<span class="ident">pallet_proxy</span>, <span class="ident">Proxy</span>]
@@ -4075,6 +4206,7 @@
 			<span class="kw">use</span> <span class="ident">pallet_offences_benchmarking::Pallet</span> <span class="kw">as</span> <span class="ident">OffencesBench</span>;
 			<span class="kw">use</span> <span class="ident">pallet_election_provider_support_benchmarking::Pallet</span> <span class="kw">as</span> <span class="ident">ElectionProviderBench</span>;
 			<span class="kw">use</span> <span class="ident">frame_system_benchmarking::Pallet</span> <span class="kw">as</span> <span class="ident">SystemBench</span>;
+			<span class="kw">use</span> <span class="ident">pallet_nomination_pools_benchmarking::Pallet</span> <span class="kw">as</span> <span class="ident">NominationPoolsBench</span>;
 			<span class="kw">use</span> <span class="ident">frame_benchmarking::baseline::Pallet</span> <span class="kw">as</span> <span class="ident">Baseline</span>;
 
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">list</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="op">&lt;</span><span class="ident">BenchmarkList</span><span class="op">&gt;</span><span class="ident">::new</span>();
@@ -4097,6 +4229,7 @@
 			<span class="kw">use</span> <span class="ident">pallet_offences_benchmarking::Pallet</span> <span class="kw">as</span> <span class="ident">OffencesBench</span>;
 			<span class="kw">use</span> <span class="ident">pallet_election_provider_support_benchmarking::Pallet</span> <span class="kw">as</span> <span class="ident">ElectionProviderBench</span>;
 			<span class="kw">use</span> <span class="ident">frame_system_benchmarking::Pallet</span> <span class="kw">as</span> <span class="ident">SystemBench</span>;
+			<span class="kw">use</span> <span class="ident">pallet_nomination_pools_benchmarking::Pallet</span> <span class="kw">as</span> <span class="ident">NominationPoolsBench</span>;
 			<span class="kw">use</span> <span class="ident">frame_benchmarking::baseline::Pallet</span> <span class="kw">as</span> <span class="ident">Baseline</span>;
 			<span class="kw">use</span> <span class="ident">xcm::latest::prelude</span>::<span class="kw-2">*</span>;
 			<span class="kw">use</span> <span class="ident">xcm_config</span>::{<span class="ident">CheckAccount</span>, <span class="ident">KsmLocation</span>, <span class="ident">SovereignAccountOf</span>, <span class="ident">Statemine</span>, <span class="ident">XcmConfig</span>};
@@ -4106,6 +4239,7 @@
 			<span class="kw">impl</span> <span class="ident">pallet_election_provider_support_benchmarking::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {}
 			<span class="kw">impl</span> <span class="ident">frame_system_benchmarking::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {}
 			<span class="kw">impl</span> <span class="ident">frame_benchmarking::baseline::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {}
+			<span class="kw">impl</span> <span class="ident">pallet_nomination_pools_benchmarking::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {}
 
 			<span class="kw">impl</span> <span class="ident">pallet_xcm_benchmarks::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
 				<span class="kw">type</span> <span class="ident">XcmConfig</span> <span class="op">=</span> <span class="ident">XcmConfig</span>;
@@ -4186,6 +4320,8 @@
 				<span class="macro">hex_literal::hex!</span>(<span class="string">&quot;26aa394eea5630e07c48ae0c9558cef7b99d880ec681799c0cf30e8886371da95ecffd7b6c0f78751baa9d281e0bfa3a6d6f646c70792f74727372790000000000000000000000000000000000000000&quot;</span>).<span class="ident">to_vec</span>().<span class="ident">into</span>(),
 				<span class="comment">// Configuration ActiveConfig</span>
 				<span class="macro">hex_literal::hex!</span>(<span class="string">&quot;06de3d8a54d27e44a9d5ce189618f22db4b49d95320d9021994c850f25b8e385&quot;</span>).<span class="ident">to_vec</span>().<span class="ident">into</span>(),
+				<span class="comment">// The transactional storage limit.</span>
+				<span class="macro">hex_literal::hex!</span>(<span class="string">&quot;3a7472616e73616374696f6e5f6c6576656c3a&quot;</span>).<span class="ident">to_vec</span>().<span class="ident">into</span>(),
 			];
 
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">batches</span> <span class="op">=</span> <span class="ident">Vec</span>::<span class="op">&lt;</span><span class="ident">BenchmarkBatch</span><span class="op">&gt;</span><span class="ident">::new</span>();
