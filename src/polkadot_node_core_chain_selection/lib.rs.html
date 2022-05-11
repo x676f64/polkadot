@@ -989,10 +989,10 @@
 	}
 
 	<span class="doccomment">/// Revert to the block corresponding to the specified `hash`.</span>
-	<span class="doccomment">/// The revert is not allowed for blocks older than the last finalized one.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">revert</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">hash</span>: <span class="ident">Hash</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="ident">backend_config</span> <span class="op">=</span> <span class="ident">db_backend::v1::Config</span> { <span class="ident">col_data</span>: <span class="self">self</span>.<span class="ident">config</span>.<span class="ident">col_data</span> };
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">backend</span> <span class="op">=</span> <span class="ident">db_backend::v1::DbBackend::new</span>(<span class="self">self</span>.<span class="ident">db</span>.<span class="ident">clone</span>(), <span class="ident">backend_config</span>);
+	<span class="doccomment">/// The operation is not allowed for blocks older than the last finalized one.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">revert_to</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">hash</span>: <span class="ident">Hash</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+		<span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">db_backend::v1::Config</span> { <span class="ident">col_data</span>: <span class="self">self</span>.<span class="ident">config</span>.<span class="ident">col_data</span> };
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">backend</span> <span class="op">=</span> <span class="ident">db_backend::v1::DbBackend::new</span>(<span class="self">self</span>.<span class="ident">db</span>.<span class="ident">clone</span>(), <span class="ident">config</span>);
 
 		<span class="kw">let</span> <span class="ident">ops</span> <span class="op">=</span> <span class="ident">tree::revert_to</span>(<span class="kw-2">&amp;</span><span class="ident">backend</span>, <span class="ident">hash</span>)<span class="question-mark">?</span>.<span class="ident">into_write_ops</span>();
 

@@ -206,6 +206,24 @@
 <span id="201">201</span>
 <span id="202">202</span>
 <span id="203">203</span>
+<span id="204">204</span>
+<span id="205">205</span>
+<span id="206">206</span>
+<span id="207">207</span>
+<span id="208">208</span>
+<span id="209">209</span>
+<span id="210">210</span>
+<span id="211">211</span>
+<span id="212">212</span>
+<span id="213">213</span>
+<span id="214">214</span>
+<span id="215">215</span>
+<span id="216">216</span>
+<span id="217">217</span>
+<span id="218">218</span>
+<span id="219">219</span>
+<span id="220">220</span>
+<span id="221">221</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -245,6 +263,7 @@
 	<span class="ident">WriteBlocksAtHeight</span>(<span class="ident">BlockNumber</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Hash</span><span class="op">&gt;</span>),
 	<span class="ident">WriteBlockEntry</span>(<span class="ident">BlockEntry</span>),
 	<span class="ident">WriteCandidateEntry</span>(<span class="ident">CandidateEntry</span>),
+	<span class="ident">DeleteStoredBlockRange</span>,
 	<span class="ident">DeleteBlocksAtHeight</span>(<span class="ident">BlockNumber</span>),
 	<span class="ident">DeleteBlockEntry</span>(<span class="ident">Hash</span>),
 	<span class="ident">DeleteCandidateEntry</span>(<span class="ident">CandidateHash</span>),
@@ -271,6 +290,17 @@
 		<span class="ident">I</span>: <span class="ident">IntoIterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">BackendWriteOp</span><span class="op">&gt;</span>;
 }
 
+<span class="comment">// Status of block range in the `OverlayedBackend`.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">PartialEq</span>)]</span>
+<span class="kw">enum</span> <span class="ident">BlockRangeStatus</span> {
+	<span class="comment">// Value has not been modified.</span>
+	<span class="ident">NotModified</span>,
+	<span class="comment">// Value has been deleted</span>
+	<span class="ident">Deleted</span>,
+	<span class="comment">// Value has been updated.</span>
+	<span class="ident">Inserted</span>(<span class="ident">StoredBlockRange</span>),
+}
+
 <span class="doccomment">/// An in-memory overlay over the backend.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// This maintains read-only access to the underlying backend, but can be</span>
@@ -278,9 +308,8 @@
 <span class="doccomment">/// the underlying backend, give the same view as the state of the overlay.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">OverlayedBackend</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">B</span>: <span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
 	<span class="ident">inner</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">B</span>,
-
-	<span class="comment">// `None` means unchanged</span>
-	<span class="ident">stored_block_range</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">StoredBlockRange</span><span class="op">&gt;</span>,
+	<span class="comment">// `Some(None)` means deleted. Missing (`None`) means query inner.</span>
+	<span class="ident">stored_block_range</span>: <span class="ident">BlockRangeStatus</span>,
 	<span class="comment">// `None` means &#39;deleted&#39;, missing means query inner.</span>
 	<span class="ident">blocks_at_height</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">BlockNumber</span>, <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Hash</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	<span class="comment">// `None` means &#39;deleted&#39;, missing means query inner.</span>
@@ -293,7 +322,7 @@
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">backend</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">B</span>) -&gt; <span class="self">Self</span> {
 		<span class="ident">OverlayedBackend</span> {
 			<span class="ident">inner</span>: <span class="ident">backend</span>,
-			<span class="ident">stored_block_range</span>: <span class="prelude-val">None</span>,
+			<span class="ident">stored_block_range</span>: <span class="ident">BlockRangeStatus::NotModified</span>,
 			<span class="ident">blocks_at_height</span>: <span class="ident">HashMap::new</span>(),
 			<span class="ident">block_entries</span>: <span class="ident">HashMap::new</span>(),
 			<span class="ident">candidate_entries</span>: <span class="ident">HashMap::new</span>(),
@@ -304,7 +333,7 @@
 		<span class="self">self</span>.<span class="ident">block_entries</span>.<span class="ident">is_empty</span>() <span class="op">&amp;&amp;</span>
 			<span class="self">self</span>.<span class="ident">candidate_entries</span>.<span class="ident">is_empty</span>() <span class="op">&amp;&amp;</span>
 			<span class="self">self</span>.<span class="ident">blocks_at_height</span>.<span class="ident">is_empty</span>() <span class="op">&amp;&amp;</span>
-			<span class="self">self</span>.<span class="ident">stored_block_range</span>.<span class="ident">is_none</span>()
+			<span class="self">self</span>.<span class="ident">stored_block_range</span> <span class="op">==</span> <span class="ident">BlockRangeStatus::NotModified</span>
 	}
 
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">load_all_blocks</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">SubsystemResult</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Hash</span><span class="op">&gt;</span><span class="op">&gt;</span> {
@@ -319,11 +348,11 @@
 	}
 
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">load_stored_blocks</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">SubsystemResult</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">StoredBlockRange</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">val</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">stored_block_range</span>.<span class="ident">clone</span>() {
-			<span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">val</span>))
+		<span class="kw">match</span> <span class="self">self</span>.<span class="ident">stored_block_range</span> {
+			<span class="ident">BlockRangeStatus::Inserted</span>(<span class="kw-2">ref</span> <span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">value</span>.<span class="ident">clone</span>())),
+			<span class="ident">BlockRangeStatus::Deleted</span> =&gt; <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>),
+			<span class="ident">BlockRangeStatus::NotModified</span> =&gt; <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">load_stored_blocks</span>(),
 		}
-
-		<span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">load_stored_blocks</span>()
 	}
 
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">load_blocks_at_height</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">height</span>: <span class="kw-2">&amp;</span><span class="ident">BlockNumber</span>) -&gt; <span class="ident">SubsystemResult</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Hash</span><span class="op">&gt;</span><span class="op">&gt;</span> {
@@ -353,10 +382,12 @@
 		<span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">load_candidate_entry</span>(<span class="ident">candidate_hash</span>)
 	}
 
-	<span class="comment">// The assumption is that stored block range is only None on initialization.</span>
-	<span class="comment">// Therefore, there is no need to delete_stored_block_range.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">write_stored_block_range</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">range</span>: <span class="ident">StoredBlockRange</span>) {
-		<span class="self">self</span>.<span class="ident">stored_block_range</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">range</span>);
+		<span class="self">self</span>.<span class="ident">stored_block_range</span> <span class="op">=</span> <span class="ident">BlockRangeStatus::Inserted</span>(<span class="ident">range</span>);
+	}
+
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">delete_stored_block_range</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) {
+		<span class="self">self</span>.<span class="ident">stored_block_range</span> <span class="op">=</span> <span class="ident">BlockRangeStatus::Deleted</span>;
 	}
 
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">write_blocks_at_height</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">height</span>: <span class="ident">BlockNumber</span>, <span class="ident">blocks</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Hash</span><span class="op">&gt;</span>) {
@@ -401,8 +432,13 @@
 			<span class="prelude-val">None</span> =&gt; <span class="ident">BackendWriteOp::DeleteCandidateEntry</span>(<span class="ident">h</span>),
 		});
 
-		<span class="self">self</span>.<span class="ident">stored_block_range</span>
-			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">BackendWriteOp::WriteStoredBlockRange</span>(<span class="ident">v</span>))
+		<span class="kw">let</span> <span class="ident">stored_block_range_ops</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">stored_block_range</span> {
+			<span class="ident">BlockRangeStatus::Inserted</span>(<span class="ident">val</span>) =&gt; <span class="prelude-val">Some</span>(<span class="ident">BackendWriteOp::WriteStoredBlockRange</span>(<span class="ident">val</span>)),
+			<span class="ident">BlockRangeStatus::Deleted</span> =&gt; <span class="prelude-val">Some</span>(<span class="ident">BackendWriteOp::DeleteStoredBlockRange</span>),
+			<span class="ident">BlockRangeStatus::NotModified</span> =&gt; <span class="prelude-val">None</span>,
+		};
+
+		<span class="ident">stored_block_range_ops</span>
 			.<span class="ident">into_iter</span>()
 			.<span class="ident">chain</span>(<span class="ident">blocks_at_height_ops</span>)
 			.<span class="ident">chain</span>(<span class="ident">block_entry_ops</span>)
