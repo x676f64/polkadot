@@ -1776,7 +1776,7 @@
 
 			<span class="macro">assert_ok!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::register</span>(
 				<span class="number">1</span>,
-				<span class="ident">ParaId::from</span>(<span class="number">1</span>),
+				<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>),
 				<span class="ident">dummy_head_data</span>(),
 				<span class="ident">dummy_validation_code</span>()
 			));
@@ -1807,7 +1807,7 @@
 
 			<span class="macro">assert_ok!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::register</span>(
 				<span class="number">1</span>,
-				<span class="ident">ParaId::from</span>(<span class="number">1</span>),
+				<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>),
 				<span class="ident">dummy_head_data</span>(),
 				<span class="ident">dummy_validation_code</span>()
 			));
@@ -1850,7 +1850,7 @@
 
 			<span class="macro">assert_ok!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::register</span>(
 				<span class="number">1</span>,
-				<span class="ident">ParaId::from</span>(<span class="number">1</span>),
+				<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>),
 				<span class="ident">dummy_head_data</span>(),
 				<span class="ident">dummy_validation_code</span>()
 			));
@@ -1900,7 +1900,7 @@
 
 			<span class="macro">assert_ok!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::register</span>(
 				<span class="number">1</span>,
-				<span class="ident">ParaId::from</span>(<span class="number">1</span>),
+				<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>),
 				<span class="ident">dummy_head_data</span>(),
 				<span class="ident">dummy_validation_code</span>()
 			));
@@ -1935,7 +1935,7 @@
 
 			<span class="macro">assert_ok!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::register</span>(
 				<span class="number">1</span>,
-				<span class="ident">ParaId::from</span>(<span class="number">1</span>),
+				<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>),
 				<span class="ident">dummy_head_data</span>(),
 				<span class="ident">dummy_validation_code</span>()
 			));
@@ -1978,7 +1978,7 @@
 
 			<span class="macro">assert_ok!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::register</span>(
 				<span class="number">1</span>,
-				<span class="ident">ParaId::from</span>(<span class="number">1</span>),
+				<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>),
 				<span class="ident">dummy_head_data</span>(),
 				<span class="ident">dummy_validation_code</span>()
 			));
@@ -2003,7 +2003,7 @@
 			}
 
 			<span class="comment">// Leases is empty.</span>
-			<span class="macro">assert!</span>(<span class="ident">Leases</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">ParaId::from</span>(<span class="number">1</span>)).<span class="ident">is_empty</span>());
+			<span class="macro">assert!</span>(<span class="ident">Leases</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>)).<span class="ident">is_empty</span>());
 		});
 	}
 
@@ -2014,13 +2014,13 @@
 
 			<span class="macro">assert_ok!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::register</span>(
 				<span class="number">1</span>,
-				<span class="ident">ParaId::from</span>(<span class="number">1</span>),
+				<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>),
 				<span class="ident">dummy_head_data</span>(),
 				<span class="ident">dummy_validation_code</span>()
 			));
 			<span class="macro">assert_ok!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::register</span>(
 				<span class="number">1</span>,
-				<span class="ident">ParaId::from</span>(<span class="number">2</span>),
+				<span class="ident">ParaId::from</span>(<span class="number">2_u32</span>),
 				<span class="ident">dummy_head_data</span>(),
 				<span class="ident">dummy_validation_code</span>()
 			));
@@ -2045,19 +2045,19 @@
 			<span class="ident">run_to_block</span>(<span class="number">1</span>);
 			<span class="macro">assert_ok!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::register</span>(
 				<span class="number">1</span>,
-				<span class="ident">ParaId::from</span>(<span class="number">1</span>),
+				<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>),
 				<span class="ident">dummy_head_data</span>(),
 				<span class="ident">dummy_validation_code</span>()
 			));
 			<span class="macro">assert_ok!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::register</span>(
 				<span class="number">1</span>,
-				<span class="ident">ParaId::from</span>(<span class="number">2</span>),
+				<span class="ident">ParaId::from</span>(<span class="number">2_u32</span>),
 				<span class="ident">dummy_head_data</span>(),
 				<span class="ident">dummy_validation_code</span>()
 			));
 			<span class="macro">assert_ok!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::register</span>(
 				<span class="number">1</span>,
-				<span class="ident">ParaId::from</span>(<span class="number">3</span>),
+				<span class="ident">ParaId::from</span>(<span class="number">3_u32</span>),
 				<span class="ident">dummy_head_data</span>(),
 				<span class="ident">dummy_validation_code</span>()
 			));
@@ -2065,9 +2065,9 @@
 			<span class="comment">// We will directly manipulate leases to emulate some kind of failure in the system.</span>
 			<span class="comment">// Para 1 will have no leases</span>
 			<span class="comment">// Para 2 will have a lease period in the current index</span>
-			<span class="ident">Leases</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">ParaId::from</span>(<span class="number">2</span>), <span class="macro">vec!</span>[<span class="prelude-val">Some</span>((<span class="number">0</span>, <span class="number">0</span>))]);
+			<span class="ident">Leases</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">ParaId::from</span>(<span class="number">2_u32</span>), <span class="macro">vec!</span>[<span class="prelude-val">Some</span>((<span class="number">0</span>, <span class="number">0</span>))]);
 			<span class="comment">// Para 3 will have a lease period in a future index</span>
-			<span class="ident">Leases</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">ParaId::from</span>(<span class="number">3</span>), <span class="macro">vec!</span>[<span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">Some</span>((<span class="number">0</span>, <span class="number">0</span>))]);
+			<span class="ident">Leases</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">ParaId::from</span>(<span class="number">3_u32</span>), <span class="macro">vec!</span>[<span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">Some</span>((<span class="number">0</span>, <span class="number">0</span>))]);
 
 			<span class="comment">// Para 1 should fail cause they don&#39;t have any leases</span>
 			<span class="macro">assert_noop!</span>(

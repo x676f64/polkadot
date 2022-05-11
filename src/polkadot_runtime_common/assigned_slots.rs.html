@@ -1285,6 +1285,22 @@
 <span id="1280">1280</span>
 <span id="1281">1281</span>
 <span id="1282">1282</span>
+<span id="1283">1283</span>
+<span id="1284">1284</span>
+<span id="1285">1285</span>
+<span id="1286">1286</span>
+<span id="1287">1287</span>
+<span id="1288">1288</span>
+<span id="1289">1289</span>
+<span id="1290">1290</span>
+<span id="1291">1291</span>
+<span id="1292">1292</span>
+<span id="1293">1293</span>
+<span id="1294">1294</span>
+<span id="1295">1295</span>
+<span id="1296">1296</span>
+<span id="1297">1297</span>
+<span id="1298">1298</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -2025,7 +2041,7 @@
 			<span class="ident">run_to_block</span>(<span class="number">1</span>);
 
 			<span class="macro">assert_noop!</span>(
-				<span class="ident">AssignedSlots::assign_perm_parachain_slot</span>(<span class="ident">Origin::root</span>(), <span class="ident">ParaId::from</span>(<span class="number">1</span>),),
+				<span class="ident">AssignedSlots::assign_perm_parachain_slot</span>(<span class="ident">Origin::root</span>(), <span class="ident">ParaId::from</span>(<span class="number">1_u32</span>),),
 				<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::ParaDoesntExist</span>
 			);
 		});
@@ -2037,7 +2053,7 @@
 			<span class="ident">run_to_block</span>(<span class="number">1</span>);
 
 			<span class="macro">assert_noop!</span>(
-				<span class="ident">AssignedSlots::assign_perm_parachain_slot</span>(<span class="ident">Origin::signed</span>(<span class="number">1</span>), <span class="ident">ParaId::from</span>(<span class="number">1</span>),),
+				<span class="ident">AssignedSlots::assign_perm_parachain_slot</span>(<span class="ident">Origin::signed</span>(<span class="number">1</span>), <span class="ident">ParaId::from</span>(<span class="number">1_u32</span>),),
 				<span class="ident">BadOrigin</span>
 			);
 		});
@@ -2050,14 +2066,14 @@
 
 			<span class="macro">assert_ok!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::register</span>(
 				<span class="number">1</span>,
-				<span class="ident">ParaId::from</span>(<span class="number">1</span>),
+				<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>),
 				<span class="ident">dummy_head_data</span>(),
 				<span class="ident">dummy_validation_code</span>(),
 			));
-			<span class="macro">assert_ok!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::make_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">1</span>)));
+			<span class="macro">assert_ok!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::make_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>)));
 
 			<span class="macro">assert_noop!</span>(
-				<span class="ident">AssignedSlots::assign_perm_parachain_slot</span>(<span class="ident">Origin::root</span>(), <span class="ident">ParaId::from</span>(<span class="number">1</span>),),
+				<span class="ident">AssignedSlots::assign_perm_parachain_slot</span>(<span class="ident">Origin::root</span>(), <span class="ident">ParaId::from</span>(<span class="number">1_u32</span>),),
 				<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::NotParathread</span>
 			);
 		});
@@ -2070,16 +2086,16 @@
 
 			<span class="macro">assert_ok!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::register</span>(
 				<span class="number">1</span>,
-				<span class="ident">ParaId::from</span>(<span class="number">1</span>),
+				<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>),
 				<span class="ident">dummy_head_data</span>(),
 				<span class="ident">dummy_validation_code</span>(),
 			));
 
 			<span class="comment">// Register lease in current lease period</span>
-			<span class="macro">assert_ok!</span>(<span class="ident">Slots::lease_out</span>(<span class="ident">ParaId::from</span>(<span class="number">1</span>), <span class="kw-2">&amp;</span><span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>));
+			<span class="macro">assert_ok!</span>(<span class="ident">Slots::lease_out</span>(<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>), <span class="kw-2">&amp;</span><span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>));
 			<span class="comment">// Try to assign a perm slot in current period fails</span>
 			<span class="macro">assert_noop!</span>(
-				<span class="ident">AssignedSlots::assign_perm_parachain_slot</span>(<span class="ident">Origin::root</span>(), <span class="ident">ParaId::from</span>(<span class="number">1</span>),),
+				<span class="ident">AssignedSlots::assign_perm_parachain_slot</span>(<span class="ident">Origin::root</span>(), <span class="ident">ParaId::from</span>(<span class="number">1_u32</span>),),
 				<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::OngoingLeaseExists</span>
 			);
 
@@ -2087,10 +2103,10 @@
 			<span class="macro">assert_ok!</span>(<span class="ident">Slots::clear_all_leases</span>(<span class="ident">Origin::root</span>(), <span class="number">1</span>.<span class="ident">into</span>()));
 
 			<span class="comment">// Register lease for next lease period</span>
-			<span class="macro">assert_ok!</span>(<span class="ident">Slots::lease_out</span>(<span class="ident">ParaId::from</span>(<span class="number">1</span>), <span class="kw-2">&amp;</span><span class="number">1</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">1</span>));
+			<span class="macro">assert_ok!</span>(<span class="ident">Slots::lease_out</span>(<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>), <span class="kw-2">&amp;</span><span class="number">1</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">1</span>));
 			<span class="comment">// Should be detected and also fail</span>
 			<span class="macro">assert_noop!</span>(
-				<span class="ident">AssignedSlots::assign_perm_parachain_slot</span>(<span class="ident">Origin::root</span>(), <span class="ident">ParaId::from</span>(<span class="number">1</span>),),
+				<span class="ident">AssignedSlots::assign_perm_parachain_slot</span>(<span class="ident">Origin::root</span>(), <span class="ident">ParaId::from</span>(<span class="number">1_u32</span>),),
 				<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::OngoingLeaseExists</span>
 			);
 		});
@@ -2103,31 +2119,37 @@
 
 			<span class="macro">assert_ok!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::register</span>(
 				<span class="number">1</span>,
-				<span class="ident">ParaId::from</span>(<span class="number">1</span>),
+				<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>),
 				<span class="ident">dummy_head_data</span>(),
 				<span class="ident">dummy_validation_code</span>(),
 			));
 
 			<span class="macro">assert_ok!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::register</span>(
 				<span class="number">2</span>,
-				<span class="ident">ParaId::from</span>(<span class="number">2</span>),
+				<span class="ident">ParaId::from</span>(<span class="number">2_u32</span>),
 				<span class="ident">dummy_head_data</span>(),
 				<span class="ident">dummy_validation_code</span>(),
 			));
 
 			<span class="macro">assert_ok!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::register</span>(
 				<span class="number">3</span>,
-				<span class="ident">ParaId::from</span>(<span class="number">3</span>),
+				<span class="ident">ParaId::from</span>(<span class="number">3_u32</span>),
 				<span class="ident">dummy_head_data</span>(),
 				<span class="ident">dummy_validation_code</span>(),
 			));
 
-			<span class="macro">assert_ok!</span>(<span class="ident">AssignedSlots::assign_perm_parachain_slot</span>(<span class="ident">Origin::root</span>(), <span class="ident">ParaId::from</span>(<span class="number">1</span>),));
-			<span class="macro">assert_ok!</span>(<span class="ident">AssignedSlots::assign_perm_parachain_slot</span>(<span class="ident">Origin::root</span>(), <span class="ident">ParaId::from</span>(<span class="number">2</span>),));
+			<span class="macro">assert_ok!</span>(<span class="ident">AssignedSlots::assign_perm_parachain_slot</span>(
+				<span class="ident">Origin::root</span>(),
+				<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>),
+			));
+			<span class="macro">assert_ok!</span>(<span class="ident">AssignedSlots::assign_perm_parachain_slot</span>(
+				<span class="ident">Origin::root</span>(),
+				<span class="ident">ParaId::from</span>(<span class="number">2_u32</span>),
+			));
 			<span class="macro">assert_eq!</span>(<span class="ident">AssignedSlots::permanent_slot_count</span>(), <span class="number">2</span>);
 
 			<span class="macro">assert_noop!</span>(
-				<span class="ident">AssignedSlots::assign_perm_parachain_slot</span>(<span class="ident">Origin::root</span>(), <span class="ident">ParaId::from</span>(<span class="number">3</span>),),
+				<span class="ident">AssignedSlots::assign_perm_parachain_slot</span>(<span class="ident">Origin::root</span>(), <span class="ident">ParaId::from</span>(<span class="number">3_u32</span>),),
 				<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::MaxPermanentSlotsExceeded</span>
 			);
 		});
@@ -2140,35 +2162,38 @@
 			<span class="ident">run_to_block</span>(<span class="ident">block</span>);
 			<span class="macro">assert_ok!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::register</span>(
 				<span class="number">1</span>,
-				<span class="ident">ParaId::from</span>(<span class="number">1</span>),
+				<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>),
 				<span class="ident">dummy_head_data</span>(),
 				<span class="ident">dummy_validation_code</span>(),
 			));
 
 			<span class="macro">assert_eq!</span>(<span class="ident">AssignedSlots::permanent_slot_count</span>(), <span class="number">0</span>);
-			<span class="macro">assert_eq!</span>(<span class="ident">AssignedSlots::permanent_slots</span>(<span class="ident">ParaId::from</span>(<span class="number">1</span>)), <span class="prelude-val">None</span>);
+			<span class="macro">assert_eq!</span>(<span class="ident">AssignedSlots::permanent_slots</span>(<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>)), <span class="prelude-val">None</span>);
 
-			<span class="macro">assert_ok!</span>(<span class="ident">AssignedSlots::assign_perm_parachain_slot</span>(<span class="ident">Origin::root</span>(), <span class="ident">ParaId::from</span>(<span class="number">1</span>),));
+			<span class="macro">assert_ok!</span>(<span class="ident">AssignedSlots::assign_perm_parachain_slot</span>(
+				<span class="ident">Origin::root</span>(),
+				<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>),
+			));
 
 			<span class="comment">// Para is a parachain for PermanentSlotLeasePeriodLength * LeasePeriod blocks</span>
 			<span class="kw">while</span> <span class="ident">block</span> <span class="op">&lt;</span> <span class="number">9</span> {
 				<span class="macro">println!</span>(<span class="string">&quot;block #{}&quot;</span>, <span class="ident">block</span>);
 
-				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">1</span>)), <span class="bool-val">true</span>);
+				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>)), <span class="bool-val">true</span>);
 
 				<span class="macro">assert_eq!</span>(<span class="ident">AssignedSlots::permanent_slot_count</span>(), <span class="number">1</span>);
-				<span class="macro">assert_eq!</span>(<span class="ident">AssignedSlots::has_permanent_slot</span>(<span class="ident">ParaId::from</span>(<span class="number">1</span>)), <span class="bool-val">true</span>);
-				<span class="macro">assert_eq!</span>(<span class="ident">AssignedSlots::permanent_slots</span>(<span class="ident">ParaId::from</span>(<span class="number">1</span>)), <span class="prelude-val">Some</span>((<span class="number">0</span>, <span class="number">3</span>)));
+				<span class="macro">assert_eq!</span>(<span class="ident">AssignedSlots::has_permanent_slot</span>(<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>)), <span class="bool-val">true</span>);
+				<span class="macro">assert_eq!</span>(<span class="ident">AssignedSlots::permanent_slots</span>(<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>)), <span class="prelude-val">Some</span>((<span class="number">0</span>, <span class="number">3</span>)));
 
-				<span class="macro">assert_eq!</span>(<span class="ident">Slots::already_leased</span>(<span class="ident">ParaId::from</span>(<span class="number">1</span>), <span class="number">0</span>, <span class="number">2</span>), <span class="bool-val">true</span>);
+				<span class="macro">assert_eq!</span>(<span class="ident">Slots::already_leased</span>(<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>), <span class="number">0</span>, <span class="number">2</span>), <span class="bool-val">true</span>);
 
 				<span class="ident">block</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
 				<span class="ident">run_to_block</span>(<span class="ident">block</span>);
 			}
 
 			<span class="comment">// Para lease ended, downgraded back to parathread</span>
-			<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parathread</span>(<span class="ident">ParaId::from</span>(<span class="number">1</span>)), <span class="bool-val">true</span>);
-			<span class="macro">assert_eq!</span>(<span class="ident">Slots::already_leased</span>(<span class="ident">ParaId::from</span>(<span class="number">1</span>), <span class="number">0</span>, <span class="number">5</span>), <span class="bool-val">false</span>);
+			<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parathread</span>(<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>)), <span class="bool-val">true</span>);
+			<span class="macro">assert_eq!</span>(<span class="ident">Slots::already_leased</span>(<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>), <span class="number">0</span>, <span class="number">5</span>), <span class="bool-val">false</span>);
 		});
 	}
 
@@ -2180,7 +2205,7 @@
 			<span class="macro">assert_noop!</span>(
 				<span class="ident">AssignedSlots::assign_temp_parachain_slot</span>(
 					<span class="ident">Origin::root</span>(),
-					<span class="ident">ParaId::from</span>(<span class="number">1</span>),
+					<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>),
 					<span class="ident">SlotLeasePeriodStart::Current</span>
 				),
 				<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::ParaDoesntExist</span>
@@ -2196,7 +2221,7 @@
 			<span class="macro">assert_noop!</span>(
 				<span class="ident">AssignedSlots::assign_temp_parachain_slot</span>(
 					<span class="ident">Origin::signed</span>(<span class="number">1</span>),
-					<span class="ident">ParaId::from</span>(<span class="number">1</span>),
+					<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>),
 					<span class="ident">SlotLeasePeriodStart::Current</span>
 				),
 				<span class="ident">BadOrigin</span>
@@ -2211,16 +2236,16 @@
 
 			<span class="macro">assert_ok!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::register</span>(
 				<span class="number">1</span>,
-				<span class="ident">ParaId::from</span>(<span class="number">1</span>),
+				<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>),
 				<span class="ident">dummy_head_data</span>(),
 				<span class="ident">dummy_validation_code</span>(),
 			));
-			<span class="macro">assert_ok!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::make_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">1</span>)));
+			<span class="macro">assert_ok!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::make_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>)));
 
 			<span class="macro">assert_noop!</span>(
 				<span class="ident">AssignedSlots::assign_temp_parachain_slot</span>(
 					<span class="ident">Origin::root</span>(),
-					<span class="ident">ParaId::from</span>(<span class="number">1</span>),
+					<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>),
 					<span class="ident">SlotLeasePeriodStart::Current</span>
 				),
 				<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::NotParathread</span>
@@ -2235,18 +2260,18 @@
 
 			<span class="macro">assert_ok!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::register</span>(
 				<span class="number">1</span>,
-				<span class="ident">ParaId::from</span>(<span class="number">1</span>),
+				<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>),
 				<span class="ident">dummy_head_data</span>(),
 				<span class="ident">dummy_validation_code</span>(),
 			));
 
 			<span class="comment">// Register lease in current lease period</span>
-			<span class="macro">assert_ok!</span>(<span class="ident">Slots::lease_out</span>(<span class="ident">ParaId::from</span>(<span class="number">1</span>), <span class="kw-2">&amp;</span><span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>));
+			<span class="macro">assert_ok!</span>(<span class="ident">Slots::lease_out</span>(<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>), <span class="kw-2">&amp;</span><span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>));
 			<span class="comment">// Try to assign a perm slot in current period fails</span>
 			<span class="macro">assert_noop!</span>(
 				<span class="ident">AssignedSlots::assign_temp_parachain_slot</span>(
 					<span class="ident">Origin::root</span>(),
-					<span class="ident">ParaId::from</span>(<span class="number">1</span>),
+					<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>),
 					<span class="ident">SlotLeasePeriodStart::Current</span>
 				),
 				<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::OngoingLeaseExists</span>
@@ -2256,12 +2281,12 @@
 			<span class="macro">assert_ok!</span>(<span class="ident">Slots::clear_all_leases</span>(<span class="ident">Origin::root</span>(), <span class="number">1</span>.<span class="ident">into</span>()));
 
 			<span class="comment">// Register lease for next lease period</span>
-			<span class="macro">assert_ok!</span>(<span class="ident">Slots::lease_out</span>(<span class="ident">ParaId::from</span>(<span class="number">1</span>), <span class="kw-2">&amp;</span><span class="number">1</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">1</span>));
+			<span class="macro">assert_ok!</span>(<span class="ident">Slots::lease_out</span>(<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>), <span class="kw-2">&amp;</span><span class="number">1</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">1</span>));
 			<span class="comment">// Should be detected and also fail</span>
 			<span class="macro">assert_noop!</span>(
 				<span class="ident">AssignedSlots::assign_temp_parachain_slot</span>(
 					<span class="ident">Origin::root</span>(),
-					<span class="ident">ParaId::from</span>(<span class="number">1</span>),
+					<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>),
 					<span class="ident">SlotLeasePeriodStart::Current</span>
 				),
 				<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::OngoingLeaseExists</span>
@@ -2295,14 +2320,14 @@
 			<span class="comment">// Attempt to assign one more temp slot</span>
 			<span class="macro">assert_ok!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::register</span>(
 				<span class="number">7</span>,
-				<span class="ident">ParaId::from</span>(<span class="number">7</span>),
+				<span class="ident">ParaId::from</span>(<span class="number">7_u32</span>),
 				<span class="ident">dummy_head_data</span>(),
 				<span class="ident">dummy_validation_code</span>(),
 			));
 			<span class="macro">assert_noop!</span>(
 				<span class="ident">AssignedSlots::assign_temp_parachain_slot</span>(
 					<span class="ident">Origin::root</span>(),
-					<span class="ident">ParaId::from</span>(<span class="number">7</span>),
+					<span class="ident">ParaId::from</span>(<span class="number">7_u32</span>),
 					<span class="ident">SlotLeasePeriodStart::Current</span>
 				),
 				<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::MaxTemporarySlotsExceeded</span>
@@ -2317,16 +2342,16 @@
 			<span class="ident">run_to_block</span>(<span class="ident">block</span>);
 			<span class="macro">assert_ok!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::register</span>(
 				<span class="number">1</span>,
-				<span class="ident">ParaId::from</span>(<span class="number">1</span>),
+				<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>),
 				<span class="ident">dummy_head_data</span>(),
 				<span class="ident">dummy_validation_code</span>(),
 			));
 
-			<span class="macro">assert_eq!</span>(<span class="ident">AssignedSlots::temporary_slots</span>(<span class="ident">ParaId::from</span>(<span class="number">1</span>)), <span class="prelude-val">None</span>);
+			<span class="macro">assert_eq!</span>(<span class="ident">AssignedSlots::temporary_slots</span>(<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>)), <span class="prelude-val">None</span>);
 
 			<span class="macro">assert_ok!</span>(<span class="ident">AssignedSlots::assign_temp_parachain_slot</span>(
 				<span class="ident">Origin::root</span>(),
-				<span class="ident">ParaId::from</span>(<span class="number">1</span>),
+				<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>),
 				<span class="ident">SlotLeasePeriodStart::Current</span>
 			));
 			<span class="macro">assert_eq!</span>(<span class="ident">AssignedSlots::temporary_slot_count</span>(), <span class="number">1</span>);
@@ -2337,14 +2362,14 @@
 			<span class="kw">while</span> <span class="ident">block</span> <span class="op">&lt;</span> <span class="number">6</span> {
 				<span class="macro">println!</span>(<span class="string">&quot;block #{}&quot;</span>, <span class="ident">block</span>);
 				<span class="macro">println!</span>(<span class="string">&quot;lease period #{}&quot;</span>, <span class="ident">AssignedSlots::current_lease_period_index</span>());
-				<span class="macro">println!</span>(<span class="string">&quot;lease {:?}&quot;</span>, <span class="ident">Slots::lease</span>(<span class="ident">ParaId::from</span>(<span class="number">1</span>)));
+				<span class="macro">println!</span>(<span class="string">&quot;lease {:?}&quot;</span>, <span class="ident">Slots::lease</span>(<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>)));
 
-				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">1</span>)), <span class="bool-val">true</span>);
+				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>)), <span class="bool-val">true</span>);
 
-				<span class="macro">assert_eq!</span>(<span class="ident">AssignedSlots::has_temporary_slot</span>(<span class="ident">ParaId::from</span>(<span class="number">1</span>)), <span class="bool-val">true</span>);
+				<span class="macro">assert_eq!</span>(<span class="ident">AssignedSlots::has_temporary_slot</span>(<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>)), <span class="bool-val">true</span>);
 				<span class="macro">assert_eq!</span>(<span class="ident">AssignedSlots::active_temporary_slot_count</span>(), <span class="number">1</span>);
 				<span class="macro">assert_eq!</span>(
-					<span class="ident">AssignedSlots::temporary_slots</span>(<span class="ident">ParaId::from</span>(<span class="number">1</span>)),
+					<span class="ident">AssignedSlots::temporary_slots</span>(<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>)),
 					<span class="prelude-val">Some</span>(<span class="ident">ParachainTemporarySlot</span> {
 						<span class="ident">manager</span>: <span class="number">1</span>,
 						<span class="ident">period_begin</span>: <span class="number">0</span>,
@@ -2354,7 +2379,7 @@
 					})
 				);
 
-				<span class="macro">assert_eq!</span>(<span class="ident">Slots::already_leased</span>(<span class="ident">ParaId::from</span>(<span class="number">1</span>), <span class="number">0</span>, <span class="number">1</span>), <span class="bool-val">true</span>);
+				<span class="macro">assert_eq!</span>(<span class="ident">Slots::already_leased</span>(<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>), <span class="number">0</span>, <span class="number">1</span>), <span class="bool-val">true</span>);
 
 				<span class="ident">block</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
 				<span class="ident">run_to_block</span>(<span class="ident">block</span>);
@@ -2363,11 +2388,11 @@
 			<span class="comment">// Block 6</span>
 			<span class="macro">println!</span>(<span class="string">&quot;block #{}&quot;</span>, <span class="ident">block</span>);
 			<span class="macro">println!</span>(<span class="string">&quot;lease period #{}&quot;</span>, <span class="ident">AssignedSlots::current_lease_period_index</span>());
-			<span class="macro">println!</span>(<span class="string">&quot;lease {:?}&quot;</span>, <span class="ident">Slots::lease</span>(<span class="ident">ParaId::from</span>(<span class="number">1</span>)));
+			<span class="macro">println!</span>(<span class="string">&quot;lease {:?}&quot;</span>, <span class="ident">Slots::lease</span>(<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>)));
 
 			<span class="comment">// Para lease ended, downgraded back to parathread</span>
-			<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parathread</span>(<span class="ident">ParaId::from</span>(<span class="number">1</span>)), <span class="bool-val">true</span>);
-			<span class="macro">assert_eq!</span>(<span class="ident">Slots::already_leased</span>(<span class="ident">ParaId::from</span>(<span class="number">1</span>), <span class="number">0</span>, <span class="number">3</span>), <span class="bool-val">false</span>);
+			<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parathread</span>(<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>)), <span class="bool-val">true</span>);
+			<span class="macro">assert_eq!</span>(<span class="ident">Slots::already_leased</span>(<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>), <span class="number">0</span>, <span class="number">3</span>), <span class="bool-val">false</span>);
 			<span class="macro">assert_eq!</span>(<span class="ident">AssignedSlots::active_temporary_slot_count</span>(), <span class="number">0</span>);
 
 			<span class="comment">// Block 12</span>
@@ -2375,10 +2400,10 @@
 			<span class="ident">run_to_block</span>(<span class="number">12</span>);
 			<span class="macro">println!</span>(<span class="string">&quot;block #{}&quot;</span>, <span class="ident">block</span>);
 			<span class="macro">println!</span>(<span class="string">&quot;lease period #{}&quot;</span>, <span class="ident">AssignedSlots::current_lease_period_index</span>());
-			<span class="macro">println!</span>(<span class="string">&quot;lease {:?}&quot;</span>, <span class="ident">Slots::lease</span>(<span class="ident">ParaId::from</span>(<span class="number">1</span>)));
+			<span class="macro">println!</span>(<span class="string">&quot;lease {:?}&quot;</span>, <span class="ident">Slots::lease</span>(<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>)));
 
-			<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">1</span>)), <span class="bool-val">true</span>);
-			<span class="macro">assert_eq!</span>(<span class="ident">Slots::already_leased</span>(<span class="ident">ParaId::from</span>(<span class="number">1</span>), <span class="number">4</span>, <span class="number">5</span>), <span class="bool-val">true</span>);
+			<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>)), <span class="bool-val">true</span>);
+			<span class="macro">assert_eq!</span>(<span class="ident">Slots::already_leased</span>(<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>), <span class="number">4</span>, <span class="number">5</span>), <span class="bool-val">true</span>);
 			<span class="macro">assert_eq!</span>(<span class="ident">AssignedSlots::active_temporary_slot_count</span>(), <span class="number">1</span>);
 		});
 	}
@@ -2416,11 +2441,11 @@
 					<span class="ident">run_to_block</span>(<span class="ident">n</span>);
 				}
 				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">0</span>)), <span class="bool-val">true</span>);
-				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">1</span>)), <span class="bool-val">false</span>);
-				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">2</span>)), <span class="bool-val">true</span>);
-				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">3</span>)), <span class="bool-val">false</span>);
-				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">4</span>)), <span class="bool-val">false</span>);
-				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">5</span>)), <span class="bool-val">false</span>);
+				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>)), <span class="bool-val">false</span>);
+				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">2_u32</span>)), <span class="bool-val">true</span>);
+				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">3_u32</span>)), <span class="bool-val">false</span>);
+				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">4_u32</span>)), <span class="bool-val">false</span>);
+				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">5_u32</span>)), <span class="bool-val">false</span>);
 				<span class="macro">assert_eq!</span>(<span class="ident">AssignedSlots::active_temporary_slot_count</span>(), <span class="number">2</span>);
 			}
 
@@ -2428,11 +2453,11 @@
 			<span class="kw">for</span> <span class="ident">n</span> <span class="kw">in</span> <span class="number">6</span>..<span class="op">=</span><span class="number">11</span> {
 				<span class="ident">run_to_block</span>(<span class="ident">n</span>);
 				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">0</span>)), <span class="bool-val">false</span>);
-				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">1</span>)), <span class="bool-val">true</span>);
-				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">2</span>)), <span class="bool-val">false</span>);
-				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">3</span>)), <span class="bool-val">true</span>);
-				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">4</span>)), <span class="bool-val">false</span>);
-				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">5</span>)), <span class="bool-val">false</span>);
+				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>)), <span class="bool-val">true</span>);
+				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">2_u32</span>)), <span class="bool-val">false</span>);
+				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">3_u32</span>)), <span class="bool-val">true</span>);
+				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">4_u32</span>)), <span class="bool-val">false</span>);
+				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">5_u32</span>)), <span class="bool-val">false</span>);
 				<span class="macro">assert_eq!</span>(<span class="ident">AssignedSlots::active_temporary_slot_count</span>(), <span class="number">2</span>);
 			}
 
@@ -2440,11 +2465,11 @@
 			<span class="kw">for</span> <span class="ident">n</span> <span class="kw">in</span> <span class="number">12</span>..<span class="op">=</span><span class="number">17</span> {
 				<span class="ident">run_to_block</span>(<span class="ident">n</span>);
 				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">0</span>)), <span class="bool-val">false</span>);
-				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">1</span>)), <span class="bool-val">false</span>);
-				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">2</span>)), <span class="bool-val">false</span>);
-				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">3</span>)), <span class="bool-val">false</span>);
-				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">4</span>)), <span class="bool-val">true</span>);
-				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">5</span>)), <span class="bool-val">true</span>);
+				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>)), <span class="bool-val">false</span>);
+				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">2_u32</span>)), <span class="bool-val">false</span>);
+				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">3_u32</span>)), <span class="bool-val">false</span>);
+				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">4_u32</span>)), <span class="bool-val">true</span>);
+				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">5_u32</span>)), <span class="bool-val">true</span>);
 				<span class="macro">assert_eq!</span>(<span class="ident">AssignedSlots::active_temporary_slot_count</span>(), <span class="number">2</span>);
 			}
 
@@ -2452,11 +2477,11 @@
 			<span class="kw">for</span> <span class="ident">n</span> <span class="kw">in</span> <span class="number">18</span>..<span class="op">=</span><span class="number">23</span> {
 				<span class="ident">run_to_block</span>(<span class="ident">n</span>);
 				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">0</span>)), <span class="bool-val">true</span>);
-				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">1</span>)), <span class="bool-val">false</span>);
-				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">2</span>)), <span class="bool-val">true</span>);
-				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">3</span>)), <span class="bool-val">false</span>);
-				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">4</span>)), <span class="bool-val">false</span>);
-				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">5</span>)), <span class="bool-val">false</span>);
+				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>)), <span class="bool-val">false</span>);
+				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">2_u32</span>)), <span class="bool-val">true</span>);
+				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">3_u32</span>)), <span class="bool-val">false</span>);
+				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">4_u32</span>)), <span class="bool-val">false</span>);
+				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">5_u32</span>)), <span class="bool-val">false</span>);
 				<span class="macro">assert_eq!</span>(<span class="ident">AssignedSlots::active_temporary_slot_count</span>(), <span class="number">2</span>);
 			}
 
@@ -2464,11 +2489,11 @@
 			<span class="kw">for</span> <span class="ident">n</span> <span class="kw">in</span> <span class="number">24</span>..<span class="op">=</span><span class="number">29</span> {
 				<span class="ident">run_to_block</span>(<span class="ident">n</span>);
 				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">0</span>)), <span class="bool-val">false</span>);
-				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">1</span>)), <span class="bool-val">true</span>);
-				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">2</span>)), <span class="bool-val">false</span>);
-				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">3</span>)), <span class="bool-val">true</span>);
-				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">4</span>)), <span class="bool-val">false</span>);
-				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">5</span>)), <span class="bool-val">false</span>);
+				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>)), <span class="bool-val">true</span>);
+				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">2_u32</span>)), <span class="bool-val">false</span>);
+				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">3_u32</span>)), <span class="bool-val">true</span>);
+				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">4_u32</span>)), <span class="bool-val">false</span>);
+				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">5_u32</span>)), <span class="bool-val">false</span>);
 				<span class="macro">assert_eq!</span>(<span class="ident">AssignedSlots::active_temporary_slot_count</span>(), <span class="number">2</span>);
 			}
 
@@ -2476,11 +2501,11 @@
 			<span class="kw">for</span> <span class="ident">n</span> <span class="kw">in</span> <span class="number">30</span>..<span class="op">=</span><span class="number">35</span> {
 				<span class="ident">run_to_block</span>(<span class="ident">n</span>);
 				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">0</span>)), <span class="bool-val">false</span>);
-				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">1</span>)), <span class="bool-val">false</span>);
-				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">2</span>)), <span class="bool-val">false</span>);
-				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">3</span>)), <span class="bool-val">false</span>);
-				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">4</span>)), <span class="bool-val">true</span>);
-				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">5</span>)), <span class="bool-val">true</span>);
+				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>)), <span class="bool-val">false</span>);
+				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">2_u32</span>)), <span class="bool-val">false</span>);
+				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">3_u32</span>)), <span class="bool-val">false</span>);
+				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">4_u32</span>)), <span class="bool-val">true</span>);
+				<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">5_u32</span>)), <span class="bool-val">true</span>);
 				<span class="macro">assert_eq!</span>(<span class="ident">AssignedSlots::active_temporary_slot_count</span>(), <span class="number">2</span>);
 			}
 		});
@@ -2492,7 +2517,7 @@
 			<span class="ident">run_to_block</span>(<span class="number">1</span>);
 
 			<span class="macro">assert_noop!</span>(
-				<span class="ident">AssignedSlots::unassign_parachain_slot</span>(<span class="ident">Origin::root</span>(), <span class="ident">ParaId::from</span>(<span class="number">1</span>),),
+				<span class="ident">AssignedSlots::unassign_parachain_slot</span>(<span class="ident">Origin::root</span>(), <span class="ident">ParaId::from</span>(<span class="number">1_u32</span>),),
 				<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::SlotNotAssigned</span>
 			);
 		});
@@ -2504,7 +2529,7 @@
 			<span class="ident">run_to_block</span>(<span class="number">1</span>);
 
 			<span class="macro">assert_noop!</span>(
-				<span class="ident">AssignedSlots::assign_perm_parachain_slot</span>(<span class="ident">Origin::signed</span>(<span class="number">1</span>), <span class="ident">ParaId::from</span>(<span class="number">1</span>),),
+				<span class="ident">AssignedSlots::assign_perm_parachain_slot</span>(<span class="ident">Origin::signed</span>(<span class="number">1</span>), <span class="ident">ParaId::from</span>(<span class="number">1_u32</span>),),
 				<span class="ident">BadOrigin</span>
 			);
 		});
@@ -2517,22 +2542,27 @@
 
 			<span class="macro">assert_ok!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::register</span>(
 				<span class="number">1</span>,
-				<span class="ident">ParaId::from</span>(<span class="number">1</span>),
+				<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>),
 				<span class="ident">dummy_head_data</span>(),
 				<span class="ident">dummy_validation_code</span>(),
 			));
 
-			<span class="macro">assert_ok!</span>(<span class="ident">AssignedSlots::assign_perm_parachain_slot</span>(<span class="ident">Origin::root</span>(), <span class="ident">ParaId::from</span>(<span class="number">1</span>),));
+			<span class="macro">assert_ok!</span>(<span class="ident">AssignedSlots::assign_perm_parachain_slot</span>(
+				<span class="ident">Origin::root</span>(),
+				<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>),
+			));
 
-			<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">1</span>)), <span class="bool-val">true</span>);
+			<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>)), <span class="bool-val">true</span>);
 
-			<span class="macro">assert_ok!</span>(<span class="ident">AssignedSlots::unassign_parachain_slot</span>(<span class="ident">Origin::root</span>(), <span class="ident">ParaId::from</span>(<span class="number">1</span>),));
+			<span class="macro">assert_ok!</span>(
+				<span class="ident">AssignedSlots::unassign_parachain_slot</span>(<span class="ident">Origin::root</span>(), <span class="ident">ParaId::from</span>(<span class="number">1_u32</span>),)
+			);
 
 			<span class="macro">assert_eq!</span>(<span class="ident">AssignedSlots::permanent_slot_count</span>(), <span class="number">0</span>);
-			<span class="macro">assert_eq!</span>(<span class="ident">AssignedSlots::has_permanent_slot</span>(<span class="ident">ParaId::from</span>(<span class="number">1</span>)), <span class="bool-val">false</span>);
-			<span class="macro">assert_eq!</span>(<span class="ident">AssignedSlots::permanent_slots</span>(<span class="ident">ParaId::from</span>(<span class="number">1</span>)), <span class="prelude-val">None</span>);
+			<span class="macro">assert_eq!</span>(<span class="ident">AssignedSlots::has_permanent_slot</span>(<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>)), <span class="bool-val">false</span>);
+			<span class="macro">assert_eq!</span>(<span class="ident">AssignedSlots::permanent_slots</span>(<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>)), <span class="prelude-val">None</span>);
 
-			<span class="macro">assert_eq!</span>(<span class="ident">Slots::already_leased</span>(<span class="ident">ParaId::from</span>(<span class="number">1</span>), <span class="number">0</span>, <span class="number">2</span>), <span class="bool-val">false</span>);
+			<span class="macro">assert_eq!</span>(<span class="ident">Slots::already_leased</span>(<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>), <span class="number">0</span>, <span class="number">2</span>), <span class="bool-val">false</span>);
 		});
 	}
 
@@ -2543,27 +2573,29 @@
 
 			<span class="macro">assert_ok!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::register</span>(
 				<span class="number">1</span>,
-				<span class="ident">ParaId::from</span>(<span class="number">1</span>),
+				<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>),
 				<span class="ident">dummy_head_data</span>(),
 				<span class="ident">dummy_validation_code</span>(),
 			));
 
 			<span class="macro">assert_ok!</span>(<span class="ident">AssignedSlots::assign_temp_parachain_slot</span>(
 				<span class="ident">Origin::root</span>(),
-				<span class="ident">ParaId::from</span>(<span class="number">1</span>),
+				<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>),
 				<span class="ident">SlotLeasePeriodStart::Current</span>
 			));
 
-			<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">1</span>)), <span class="bool-val">true</span>);
+			<span class="macro">assert_eq!</span>(<span class="ident">TestRegistrar</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::is_parachain</span>(<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>)), <span class="bool-val">true</span>);
 
-			<span class="macro">assert_ok!</span>(<span class="ident">AssignedSlots::unassign_parachain_slot</span>(<span class="ident">Origin::root</span>(), <span class="ident">ParaId::from</span>(<span class="number">1</span>),));
+			<span class="macro">assert_ok!</span>(
+				<span class="ident">AssignedSlots::unassign_parachain_slot</span>(<span class="ident">Origin::root</span>(), <span class="ident">ParaId::from</span>(<span class="number">1_u32</span>),)
+			);
 
 			<span class="macro">assert_eq!</span>(<span class="ident">AssignedSlots::temporary_slot_count</span>(), <span class="number">0</span>);
 			<span class="macro">assert_eq!</span>(<span class="ident">AssignedSlots::active_temporary_slot_count</span>(), <span class="number">0</span>);
-			<span class="macro">assert_eq!</span>(<span class="ident">AssignedSlots::has_temporary_slot</span>(<span class="ident">ParaId::from</span>(<span class="number">1</span>)), <span class="bool-val">false</span>);
-			<span class="macro">assert_eq!</span>(<span class="ident">AssignedSlots::temporary_slots</span>(<span class="ident">ParaId::from</span>(<span class="number">1</span>)), <span class="prelude-val">None</span>);
+			<span class="macro">assert_eq!</span>(<span class="ident">AssignedSlots::has_temporary_slot</span>(<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>)), <span class="bool-val">false</span>);
+			<span class="macro">assert_eq!</span>(<span class="ident">AssignedSlots::temporary_slots</span>(<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>)), <span class="prelude-val">None</span>);
 
-			<span class="macro">assert_eq!</span>(<span class="ident">Slots::already_leased</span>(<span class="ident">ParaId::from</span>(<span class="number">1</span>), <span class="number">0</span>, <span class="number">1</span>), <span class="bool-val">false</span>);
+			<span class="macro">assert_eq!</span>(<span class="ident">Slots::already_leased</span>(<span class="ident">ParaId::from</span>(<span class="number">1_u32</span>), <span class="number">0</span>, <span class="number">1</span>), <span class="bool-val">false</span>);
 		});
 	}
 }
