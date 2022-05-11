@@ -12,9 +12,9 @@ bellow), before main start. This allow statics initialization with non const exp
 <p>These dynamics are supported on all plateforms and requires std support. Lazy dynamics are
 enabled by the default feature “lazy”.</p>
 <p>Lazy statics are declared with the <code>[dynamic(lazy)]</code> or simply <code>[dynamic]</code> attribute. On unixes and windows plateforms these
-statics are optimized versions of <a href="https://doc.rust-lang.org/1.60.0/std/lazy/struct.SyncLazy.html" title="std::lazy::SyncLazy">std::lazy::SyncLazy</a>. After program initialization phase,
+statics are optimized versions of <a href="https://doc.rust-lang.org/nightly/std/lazy/struct.SyncLazy.html" title="std::lazy::SyncLazy">std::lazy::SyncLazy</a>. After program initialization phase,
 those statics are guaranteed to be initialized and access to them will be as fast as any access
-to a regular static. On other plateforms, those statics are equivalent to <a href="https://doc.rust-lang.org/1.60.0/std/lazy/struct.SyncLazy.html" title="std::lazy::SyncLazy">std::lazy::SyncLazy</a>.</p>
+to a regular static. On other plateforms, those statics are equivalent to <a href="https://doc.rust-lang.org/nightly/std/lazy/struct.SyncLazy.html" title="std::lazy::SyncLazy">std::lazy::SyncLazy</a>.</p>
 
 <div class='information'><div class='tooltip ignore'>ⓘ</div></div><div class="example-wrap"><pre class="rust rust-example-rendered ignore"><code><span class="kw">struct</span> <span class="ident">A</span>(<span class="ident">i32</span>);
 
@@ -200,5 +200,5 @@ static is wrapped in a <code>static_init::Lazy</code>.</p>
 <span class="comment">// W has type static_init::Static&lt;i32&gt;</span>
 <span class="attribute">#[<span class="ident">dynamic</span>]</span>
 <span class="kw">static</span> <span class="ident">W</span> :<span class="ident">i32</span> <span class="op">=</span> <span class="number">0</span>;</code></pre></div>
-</div></details></section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../" data-current-crate="static_init_macro" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.60.0 (7737e0b5c 2022-04-04)" ></div>
+</div></details></section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../" data-current-crate="static_init_macro" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.62.0-nightly (e745b4ddb 2022-04-07)" ></div>
 </body></html>
