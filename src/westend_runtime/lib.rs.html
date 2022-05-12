@@ -1726,6 +1726,8 @@
 <span id="1721">1721</span>
 <span id="1722">1722</span>
 <span id="1723">1723</span>
+<span id="1724">1724</span>
+<span id="1725">1725</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -2580,7 +2582,9 @@
 
 <span class="kw">impl</span> <span class="ident">parachains_shared::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {}
 
-<span class="kw">impl</span> <span class="ident">parachains_session_info::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {}
+<span class="kw">impl</span> <span class="ident">parachains_session_info::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
+	<span class="kw">type</span> <span class="ident">ValidatorSet</span> <span class="op">=</span> <span class="ident">Historical</span>;
+}
 
 <span class="kw">impl</span> <span class="ident">parachains_inclusion::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
 	<span class="kw">type</span> <span class="ident">Event</span> <span class="op">=</span> <span class="ident">Event</span>;
