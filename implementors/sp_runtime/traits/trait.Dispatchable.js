@@ -1,6 +1,8 @@
 (function() {var implementors = {};
+implementors["frame_support"] = [];
 implementors["kusama_runtime"] = [{"text":"impl <a class=\"trait\" href=\"sp_runtime/traits/trait.Dispatchable.html\" title=\"trait sp_runtime::traits::Dispatchable\">Dispatchable</a> for <a class=\"enum\" href=\"kusama_runtime/enum.Call.html\" title=\"enum kusama_runtime::Call\">Call</a>","synthetic":false,"types":["kusama_runtime::Call"]}];
 implementors["polkadot_runtime"] = [{"text":"impl <a class=\"trait\" href=\"sp_runtime/traits/trait.Dispatchable.html\" title=\"trait sp_runtime::traits::Dispatchable\">Dispatchable</a> for <a class=\"enum\" href=\"polkadot_runtime/enum.Call.html\" title=\"enum polkadot_runtime::Call\">Call</a>","synthetic":false,"types":["polkadot_runtime::Call"]}];
+implementors["polkadot_service"] = [];
 implementors["polkadot_test_runtime"] = [{"text":"impl <a class=\"trait\" href=\"sp_runtime/traits/trait.Dispatchable.html\" title=\"trait sp_runtime::traits::Dispatchable\">Dispatchable</a> for <a class=\"enum\" href=\"polkadot_test_runtime/enum.Call.html\" title=\"enum polkadot_test_runtime::Call\">Call</a>","synthetic":false,"types":["polkadot_test_runtime::Call"]}];
 implementors["rococo_runtime"] = [{"text":"impl <a class=\"trait\" href=\"sp_runtime/traits/trait.Dispatchable.html\" title=\"trait sp_runtime::traits::Dispatchable\">Dispatchable</a> for <a class=\"enum\" href=\"rococo_runtime/enum.Call.html\" title=\"enum rococo_runtime::Call\">Call</a>","synthetic":false,"types":["rococo_runtime::Call"]}];
 implementors["sp_runtime"] = [];
