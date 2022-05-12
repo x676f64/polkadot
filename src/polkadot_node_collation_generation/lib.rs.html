@@ -450,14 +450,6 @@
 <span id="445">445</span>
 <span id="446">446</span>
 <span id="447">447</span>
-<span id="448">448</span>
-<span id="449">449</span>
-<span id="450">450</span>
-<span id="451">451</span>
-<span id="452">452</span>
-<span id="453">453</span>
-<span id="454">454</span>
-<span id="455">455</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -482,9 +474,9 @@
 <span class="kw">use</span> <span class="ident">parity_scale_codec::Encode</span>;
 <span class="kw">use</span> <span class="ident">polkadot_node_primitives</span>::{<span class="ident">AvailableData</span>, <span class="ident">CollationGenerationConfig</span>, <span class="ident">PoV</span>};
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem</span>::{
-	<span class="ident">messages</span>::{<span class="ident">AllMessages</span>, <span class="ident">CollationGenerationMessage</span>, <span class="ident">CollatorProtocolMessage</span>},
+	<span class="ident">messages</span>::{<span class="ident">CollationGenerationMessage</span>, <span class="ident">CollatorProtocolMessage</span>},
 	<span class="ident">overseer</span>, <span class="ident">ActiveLeavesUpdate</span>, <span class="ident">FromOverseer</span>, <span class="ident">OverseerSignal</span>, <span class="ident">SpawnedSubsystem</span>, <span class="ident">SubsystemContext</span>,
-	<span class="ident">SubsystemError</span>, <span class="ident">SubsystemResult</span>, <span class="ident">SubsystemSender</span>,
+	<span class="ident">SubsystemError</span>, <span class="ident">SubsystemResult</span>,
 };
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem_util</span>::{
 	<span class="ident">request_availability_cores</span>, <span class="ident">request_persisted_validation_data</span>, <span class="ident">request_validation_code</span>,
@@ -514,6 +506,7 @@
 	<span class="ident">metrics</span>: <span class="ident">Metrics</span>,
 }
 
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">CollationGeneration</span>, <span class="ident">prefix</span> <span class="op">=</span> <span class="ident"><span class="self">self</span>::overseer</span>)]</span>
 <span class="kw">impl</span> <span class="ident">CollationGenerationSubsystem</span> {
 	<span class="doccomment">/// Create a new instance of the `CollationGenerationSubsystem`.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">metrics</span>: <span class="ident">Metrics</span>) -&gt; <span class="self">Self</span> {
@@ -531,11 +524,7 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// If `err_tx` is not `None`, errors are forwarded onto that channel as they occur.</span>
 	<span class="doccomment">/// Otherwise, most are logged and then discarded.</span>
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">ctx</span>: <span class="ident">Context</span>)
-	<span class="kw">where</span>
-		<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">CollationGenerationMessage</span><span class="op">&gt;</span>,
-		<span class="ident">Context</span>: <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">CollationGenerationMessage</span><span class="op">&gt;</span>,
-	{
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">ctx</span>: <span class="ident">Context</span>) {
 		<span class="comment">// when we activate new leaves, we spawn a bunch of sub-tasks, each of which is</span>
 		<span class="comment">// expected to generate precisely one message. We don&#39;t want to block the main loop</span>
 		<span class="comment">// at any point waiting for them all, so instead, we create a channel on which they can</span>
@@ -568,12 +557,8 @@
 		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
 		<span class="ident">incoming</span>: <span class="ident">SubsystemResult</span><span class="op">&lt;</span><span class="ident">FromOverseer</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">Context</span> <span class="kw">as</span> <span class="ident">SubsystemContext</span><span class="op">&gt;</span><span class="ident">::Message</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 		<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
-		<span class="ident">sender</span>: <span class="kw-2">&amp;</span><span class="ident">mpsc::Sender</span><span class="op">&lt;</span><span class="ident">AllMessages</span><span class="op">&gt;</span>,
-	) -&gt; <span class="ident">bool</span>
-	<span class="kw">where</span>
-		<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">CollationGenerationMessage</span><span class="op">&gt;</span>,
-		<span class="ident">Context</span>: <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">CollationGenerationMessage</span><span class="op">&gt;</span>,
-	{
+		<span class="ident">sender</span>: <span class="kw-2">&amp;</span><span class="ident">mpsc::Sender</span><span class="op">&lt;</span><span class="ident">overseer::CollationGenerationOutgoingMessages</span><span class="op">&gt;</span>,
+	) -&gt; <span class="ident">bool</span> {
 		<span class="kw">match</span> <span class="ident">incoming</span> {
 			<span class="prelude-val">Ok</span>(<span class="ident">FromOverseer::Signal</span>(<span class="ident">OverseerSignal::ActiveLeaves</span>(<span class="ident">ActiveLeavesUpdate</span> {
 				<span class="ident">activated</span>,
@@ -622,11 +607,8 @@
 	}
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span> <span class="ident">overseer::Subsystem</span><span class="op">&lt;</span><span class="ident">Context</span>, <span class="ident">SubsystemError</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">CollationGenerationSubsystem</span>
-<span class="kw">where</span>
-	<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">CollationGenerationMessage</span><span class="op">&gt;</span>,
-	<span class="ident">Context</span>: <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">CollationGenerationMessage</span><span class="op">&gt;</span>,
-{
+<span class="attribute">#[<span class="ident">overseer::subsystem</span>(<span class="ident">CollationGeneration</span>, <span class="ident">error</span><span class="op">=</span><span class="ident">SubsystemError</span>, <span class="ident">prefix</span><span class="op">=</span><span class="ident"><span class="self">self</span>::overseer</span>)]</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span> <span class="ident">CollationGenerationSubsystem</span> {
 	<span class="kw">fn</span> <span class="ident">start</span>(<span class="self">self</span>, <span class="ident">ctx</span>: <span class="ident">Context</span>) -&gt; <span class="ident">SpawnedSubsystem</span> {
 		<span class="kw">let</span> <span class="ident">future</span> <span class="op">=</span> <span class="kw">async</span> <span class="kw">move</span> {
 			<span class="self">self</span>.<span class="ident">run</span>(<span class="ident">ctx</span>).<span class="kw">await</span>;
@@ -638,12 +620,13 @@
 	}
 }
 
-<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle_new_activations</span><span class="op">&lt;</span><span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&gt;</span>(
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">CollationGeneration</span>, <span class="ident">prefix</span> <span class="op">=</span> <span class="ident"><span class="self">self</span>::overseer</span>)]</span>
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle_new_activations</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
 	<span class="ident">config</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">CollationGenerationConfig</span><span class="op">&gt;</span>,
 	<span class="ident">activated</span>: <span class="kw">impl</span> <span class="ident">IntoIterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">Hash</span><span class="op">&gt;</span>,
 	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 	<span class="ident">metrics</span>: <span class="ident">Metrics</span>,
-	<span class="ident">sender</span>: <span class="kw-2">&amp;</span><span class="ident">mpsc::Sender</span><span class="op">&lt;</span><span class="ident">AllMessages</span><span class="op">&gt;</span>,
+	<span class="ident">sender</span>: <span class="kw-2">&amp;</span><span class="ident">mpsc::Sender</span><span class="op">&lt;</span><span class="ident">overseer::CollationGenerationOutgoingMessages</span><span class="op">&gt;</span>,
 ) -&gt; <span class="ident"><span class="kw">crate</span>::error::Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 	<span class="comment">// follow the procedure from the guide:</span>
 	<span class="comment">// https://w3f.github.io/parachain-implementers-guide/node/collators/collation-generation.html</span>
@@ -853,9 +836,10 @@
 					<span class="ident">metrics</span>.<span class="ident">on_collation_generated</span>();
 
 					<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span> <span class="ident">task_sender</span>
-						.<span class="ident">send</span>(<span class="ident">AllMessages::CollatorProtocol</span>(
-							<span class="ident">CollatorProtocolMessage::DistributeCollation</span>(<span class="ident">ccr</span>, <span class="ident">pov</span>, <span class="ident">result_sender</span>),
-						))
+						.<span class="ident">send</span>(
+							<span class="ident">CollatorProtocolMessage::DistributeCollation</span>(<span class="ident">ccr</span>, <span class="ident">pov</span>, <span class="ident">result_sender</span>)
+								.<span class="ident">into</span>(),
+						)
 						.<span class="kw">await</span>
 					{
 						<span class="macro">gum::warn!</span>(
@@ -877,7 +861,7 @@
 	<span class="ident">relay_parent</span>: <span class="ident">Hash</span>,
 	<span class="ident">para_id</span>: <span class="ident">ParaId</span>,
 	<span class="ident">assumption</span>: <span class="ident">OccupiedCoreAssumption</span>,
-	<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">SubsystemSender</span>,
+	<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">overseer::CollationGenerationSenderTrait</span>,
 ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ValidationCodeHash</span><span class="op">&gt;</span>, <span class="ident"><span class="kw">crate</span>::error::Error</span><span class="op">&gt;</span> {
 	<span class="kw">use</span> <span class="ident">polkadot_node_subsystem::RuntimeApiError</span>;
 

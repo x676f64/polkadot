@@ -814,21 +814,6 @@
 <span id="809">809</span>
 <span id="810">810</span>
 <span id="811">811</span>
-<span id="812">812</span>
-<span id="813">813</span>
-<span id="814">814</span>
-<span id="815">815</span>
-<span id="816">816</span>
-<span id="817">817</span>
-<span id="818">818</span>
-<span id="819">819</span>
-<span id="820">820</span>
-<span id="821">821</span>
-<span id="822">822</span>
-<span id="823">823</span>
-<span id="824">824</span>
-<span id="825">825</span>
-<span id="826">826</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020-2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -862,7 +847,7 @@
 };
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem</span>::{
 	<span class="ident">jaeger</span>, <span class="ident">messages</span>::<span class="kw-2">*</span>, <span class="ident">overseer</span>, <span class="ident">ActiveLeavesUpdate</span>, <span class="ident">FromOverseer</span>, <span class="ident">OverseerSignal</span>, <span class="ident">PerLeafSpan</span>,
-	<span class="ident">SpawnedSubsystem</span>, <span class="ident">SubsystemContext</span>, <span class="ident">SubsystemError</span>, <span class="ident">SubsystemResult</span>,
+	<span class="ident">SpawnedSubsystem</span>, <span class="ident">SubsystemError</span>, <span class="ident">SubsystemResult</span>,
 };
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem_util</span>::{<span class="self">self</span> <span class="kw">as</span> <span class="ident">util</span>};
 <span class="kw">use</span> <span class="ident">polkadot_primitives::v2</span>::{
@@ -1035,6 +1020,7 @@
 	<span class="ident">metrics</span>: <span class="ident">Metrics</span>,
 }
 
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">BitfieldDistribution</span>, <span class="ident">prefix</span> <span class="op">=</span> <span class="ident"><span class="self">self</span>::overseer</span>)]</span>
 <span class="kw">impl</span> <span class="ident">BitfieldDistribution</span> {
 	<span class="doccomment">/// Create a new instance of the `BitfieldDistribution` subsystem.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">metrics</span>: <span class="ident">Metrics</span>) -&gt; <span class="self">Self</span> {
@@ -1042,11 +1028,7 @@
 	}
 
 	<span class="doccomment">/// Start processing work as passed on from the Overseer.</span>
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">ctx</span>: <span class="ident">Context</span>)
-	<span class="kw">where</span>
-		<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">BitfieldDistributionMessage</span><span class="op">&gt;</span>,
-		<span class="ident">Context</span>: <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">BitfieldDistributionMessage</span><span class="op">&gt;</span>,
-	{
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">ctx</span>: <span class="ident">Context</span>) {
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">state</span> <span class="op">=</span> <span class="ident">ProtocolState::default</span>();
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> <span class="op">=</span> <span class="ident">rand::rngs::StdRng::from_entropy</span>();
 		<span class="self">self</span>.<span class="ident">run_inner</span>(<span class="ident">ctx</span>, <span class="kw-2">&amp;mut</span> <span class="ident">state</span>, <span class="kw-2">&amp;mut</span> <span class="ident">rng</span>).<span class="kw">await</span>
@@ -1057,10 +1039,7 @@
 		<span class="kw-2">mut</span> <span class="ident">ctx</span>: <span class="ident">Context</span>,
 		<span class="ident">state</span>: <span class="kw-2">&amp;mut</span> <span class="ident">ProtocolState</span>,
 		<span class="ident">rng</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">CryptoRng</span> <span class="op">+</span> <span class="ident">Rng</span>),
-	) <span class="kw">where</span>
-		<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">BitfieldDistributionMessage</span><span class="op">&gt;</span>,
-		<span class="ident">Context</span>: <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">BitfieldDistributionMessage</span><span class="op">&gt;</span>,
-	{
+	) {
 		<span class="comment">// work: process incoming messages from the overseer and process accordingly.</span>
 
 		<span class="kw">loop</span> {
@@ -1147,17 +1126,20 @@
 }
 
 <span class="doccomment">/// Modify the reputation of a peer based on its behavior.</span>
-<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">modify_reputation</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>, <span class="ident">relay_parent</span>: <span class="ident">Hash</span>, <span class="ident">peer</span>: <span class="ident">PeerId</span>, <span class="ident">rep</span>: <span class="ident">Rep</span>)
-<span class="kw">where</span>
-	<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">BitfieldDistributionMessage</span><span class="op">&gt;</span>,
-{
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">modify_reputation</span>(
+	<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">overseer::BitfieldDistributionSenderTrait</span>,
+	<span class="ident">relay_parent</span>: <span class="ident">Hash</span>,
+	<span class="ident">peer</span>: <span class="ident">PeerId</span>,
+	<span class="ident">rep</span>: <span class="ident">Rep</span>,
+) {
 	<span class="macro">gum::trace!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="question-mark">?</span><span class="ident">relay_parent</span>, <span class="question-mark">?</span><span class="ident">rep</span>, <span class="op">%</span><span class="ident">peer</span>, <span class="string">&quot;reputation change&quot;</span>);
 
-	<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeMessage::ReportPeer</span>(<span class="ident">peer</span>, <span class="ident">rep</span>)).<span class="kw">await</span>
+	<span class="ident">sender</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeMessage::ReportPeer</span>(<span class="ident">peer</span>, <span class="ident">rep</span>)).<span class="kw">await</span>
 }
 <span class="doccomment">/// Distribute a given valid and signature checked bitfield message.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// For this variant the source is this node.</span>
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">BitfieldDistribution</span>, <span class="ident">prefix</span><span class="op">=</span><span class="ident"><span class="self">self</span>::overseer</span>)]</span>
 <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle_bitfield_distribution</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
 	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 	<span class="ident">state</span>: <span class="kw-2">&amp;mut</span> <span class="ident">ProtocolState</span>,
@@ -1165,9 +1147,7 @@
 	<span class="ident">relay_parent</span>: <span class="ident">Hash</span>,
 	<span class="ident">signed_availability</span>: <span class="ident">SignedAvailabilityBitfield</span>,
 	<span class="ident">rng</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">CryptoRng</span> <span class="op">+</span> <span class="ident">Rng</span>),
-) <span class="kw">where</span>
-	<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">BitfieldDistributionMessage</span><span class="op">&gt;</span>,
-{
+) {
 	<span class="kw">let</span> <span class="ident">_timer</span> <span class="op">=</span> <span class="ident">metrics</span>.<span class="ident">time_handle_bitfield_distribution</span>();
 
 	<span class="comment">// Ignore anything the overseer did not tell this subsystem to work on</span>
@@ -1220,6 +1200,7 @@
 <span class="doccomment">/// Distribute a given valid and signature checked bitfield message.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// Can be originated by another subsystem or received via network from another peer.</span>
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">BitfieldDistribution</span>, <span class="ident">prefix</span><span class="op">=</span><span class="ident"><span class="self">self</span>::overseer</span>)]</span>
 <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">relay_message</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
 	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 	<span class="ident">job_data</span>: <span class="kw-2">&amp;mut</span> <span class="ident">PerRelayParentData</span>,
@@ -1229,9 +1210,7 @@
 	<span class="ident">message</span>: <span class="ident">BitfieldGossipMessage</span>,
 	<span class="ident">required_routing</span>: <span class="ident">RequiredRouting</span>,
 	<span class="ident">rng</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">CryptoRng</span> <span class="op">+</span> <span class="ident">Rng</span>),
-) <span class="kw">where</span>
-	<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">BitfieldDistributionMessage</span><span class="op">&gt;</span>,
-{
+) {
 	<span class="kw">let</span> <span class="ident">relay_parent</span> <span class="op">=</span> <span class="ident">message</span>.<span class="ident">relay_parent</span>;
 	<span class="kw">let</span> <span class="ident">span</span> <span class="op">=</span> <span class="ident">job_data</span>.<span class="ident">span</span>.<span class="ident">child</span>(<span class="string">&quot;relay-msg&quot;</span>);
 
@@ -1309,6 +1288,7 @@
 }
 
 <span class="doccomment">/// Handle an incoming message from a peer.</span>
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">BitfieldDistribution</span>, <span class="ident">prefix</span><span class="op">=</span><span class="ident"><span class="self">self</span>::overseer</span>)]</span>
 <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">process_incoming_peer_message</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
 	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 	<span class="ident">state</span>: <span class="kw-2">&amp;mut</span> <span class="ident">ProtocolState</span>,
@@ -1316,9 +1296,7 @@
 	<span class="ident">origin</span>: <span class="ident">PeerId</span>,
 	<span class="ident">message</span>: <span class="ident">protocol_v1::BitfieldDistributionMessage</span>,
 	<span class="ident">rng</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">CryptoRng</span> <span class="op">+</span> <span class="ident">Rng</span>),
-) <span class="kw">where</span>
-	<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">BitfieldDistributionMessage</span><span class="op">&gt;</span>,
-{
+) {
 	<span class="kw">let</span> <span class="ident">protocol_v1::BitfieldDistributionMessage::Bitfield</span>(<span class="ident">relay_parent</span>, <span class="ident">bitfield</span>) <span class="op">=</span> <span class="ident">message</span>;
 	<span class="macro">gum::trace!</span>(
 		<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
@@ -1328,7 +1306,7 @@
 	);
 	<span class="comment">// we don&#39;t care about this, not part of our view.</span>
 	<span class="kw">if</span> <span class="op">!</span><span class="ident">state</span>.<span class="ident">view</span>.<span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="ident">relay_parent</span>) {
-		<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>, <span class="ident">relay_parent</span>, <span class="ident">origin</span>, <span class="ident">COST_NOT_IN_VIEW</span>).<span class="kw">await</span>;
+		<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="ident">relay_parent</span>, <span class="ident">origin</span>, <span class="ident">COST_NOT_IN_VIEW</span>).<span class="kw">await</span>;
 		<span class="kw">return</span>
 	}
 
@@ -1337,7 +1315,7 @@
 	<span class="kw">let</span> <span class="ident">job_data</span>: <span class="kw-2">&amp;mut</span> <span class="kw">_</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">job_data</span>) <span class="op">=</span> <span class="ident">job_data</span> {
 		<span class="ident">job_data</span>
 	} <span class="kw">else</span> {
-		<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>, <span class="ident">relay_parent</span>, <span class="ident">origin</span>, <span class="ident">COST_NOT_IN_VIEW</span>).<span class="kw">await</span>;
+		<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="ident">relay_parent</span>, <span class="ident">origin</span>, <span class="ident">COST_NOT_IN_VIEW</span>).<span class="kw">await</span>;
 		<span class="kw">return</span>
 	};
 
@@ -1354,7 +1332,7 @@
 	<span class="kw">let</span> <span class="ident">validator_set</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">job_data</span>.<span class="ident">validator_set</span>;
 	<span class="kw">if</span> <span class="ident">validator_set</span>.<span class="ident">is_empty</span>() {
 		<span class="macro">gum::trace!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="question-mark">?</span><span class="ident">relay_parent</span>, <span class="question-mark">?</span><span class="ident">origin</span>, <span class="string">&quot;Validator set is empty&quot;</span>,);
-		<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>, <span class="ident">relay_parent</span>, <span class="ident">origin</span>, <span class="ident">COST_MISSING_PEER_SESSION_KEY</span>).<span class="kw">await</span>;
+		<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="ident">relay_parent</span>, <span class="ident">origin</span>, <span class="ident">COST_MISSING_PEER_SESSION_KEY</span>).<span class="kw">await</span>;
 		<span class="kw">return</span>
 	}
 
@@ -1364,7 +1342,7 @@
 	<span class="kw">let</span> <span class="ident">validator</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">validator</span>) <span class="op">=</span> <span class="ident">validator_set</span>.<span class="ident">get</span>(<span class="ident">validator_index</span>.<span class="number">0</span> <span class="kw">as</span> <span class="ident">usize</span>) {
 		<span class="ident">validator</span>.<span class="ident">clone</span>()
 	} <span class="kw">else</span> {
-		<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>, <span class="ident">relay_parent</span>, <span class="ident">origin</span>, <span class="ident">COST_VALIDATOR_INDEX_INVALID</span>).<span class="kw">await</span>;
+		<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="ident">relay_parent</span>, <span class="ident">origin</span>, <span class="ident">COST_VALIDATOR_INDEX_INVALID</span>).<span class="kw">await</span>;
 		<span class="kw">return</span>
 	};
 
@@ -1377,7 +1355,7 @@
 		<span class="ident">received_set</span>.<span class="ident">insert</span>(<span class="ident">validator</span>.<span class="ident">clone</span>());
 	} <span class="kw">else</span> {
 		<span class="macro">gum::trace!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="question-mark">?</span><span class="ident">validator_index</span>, <span class="question-mark">?</span><span class="ident">origin</span>, <span class="string">&quot;Duplicate message&quot;</span>);
-		<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>, <span class="ident">relay_parent</span>, <span class="ident">origin</span>, <span class="ident">COST_PEER_DUPLICATE_MESSAGE</span>).<span class="kw">await</span>;
+		<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="ident">relay_parent</span>, <span class="ident">origin</span>, <span class="ident">COST_PEER_DUPLICATE_MESSAGE</span>).<span class="kw">await</span>;
 		<span class="kw">return</span>
 	};
 
@@ -1391,13 +1369,13 @@
 			<span class="string">&quot;already received a message for validator&quot;</span>,
 		);
 		<span class="kw">if</span> <span class="ident">old_message</span>.<span class="ident">signed_availability</span>.<span class="ident">as_unchecked</span>() <span class="op">==</span> <span class="kw-2">&amp;</span><span class="ident">bitfield</span> {
-			<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>, <span class="ident">relay_parent</span>, <span class="ident">origin</span>, <span class="ident">BENEFIT_VALID_MESSAGE</span>).<span class="kw">await</span>;
+			<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="ident">relay_parent</span>, <span class="ident">origin</span>, <span class="ident">BENEFIT_VALID_MESSAGE</span>).<span class="kw">await</span>;
 		}
 		<span class="kw">return</span>
 	}
 	<span class="kw">let</span> <span class="ident">signed_availability</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">bitfield</span>.<span class="ident">try_into_checked</span>(<span class="kw-2">&amp;</span><span class="ident">signing_context</span>, <span class="kw-2">&amp;</span><span class="ident">validator</span>) {
 		<span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; {
-			<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>, <span class="ident">relay_parent</span>, <span class="ident">origin</span>, <span class="ident">COST_SIGNATURE_INVALID</span>).<span class="kw">await</span>;
+			<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="ident">relay_parent</span>, <span class="ident">origin</span>, <span class="ident">COST_SIGNATURE_INVALID</span>).<span class="kw">await</span>;
 			<span class="kw">return</span>
 		},
 		<span class="prelude-val">Ok</span>(<span class="ident">bitfield</span>) =&gt; <span class="ident">bitfield</span>,
@@ -1423,20 +1401,19 @@
 	)
 	.<span class="kw">await</span>;
 
-	<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>, <span class="ident">relay_parent</span>, <span class="ident">origin</span>, <span class="ident">BENEFIT_VALID_MESSAGE_FIRST</span>).<span class="kw">await</span>
+	<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="ident">relay_parent</span>, <span class="ident">origin</span>, <span class="ident">BENEFIT_VALID_MESSAGE_FIRST</span>).<span class="kw">await</span>
 }
 
 <span class="doccomment">/// Deal with network bridge updates and track what needs to be tracked</span>
 <span class="doccomment">/// which depends on the message type received.</span>
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">BitfieldDistribution</span>, <span class="ident">prefix</span><span class="op">=</span><span class="ident"><span class="self">self</span>::overseer</span>)]</span>
 <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle_network_msg</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
 	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 	<span class="ident">state</span>: <span class="kw-2">&amp;mut</span> <span class="ident">ProtocolState</span>,
 	<span class="ident">metrics</span>: <span class="kw-2">&amp;</span><span class="ident">Metrics</span>,
 	<span class="ident">bridge_message</span>: <span class="ident">NetworkBridgeEvent</span><span class="op">&lt;</span><span class="ident">net_protocol::BitfieldDistributionMessage</span><span class="op">&gt;</span>,
 	<span class="ident">rng</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">CryptoRng</span> <span class="op">+</span> <span class="ident">Rng</span>),
-) <span class="kw">where</span>
-	<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">BitfieldDistributionMessage</span><span class="op">&gt;</span>,
-{
+) {
 	<span class="kw">let</span> <span class="ident">_timer</span> <span class="op">=</span> <span class="ident">metrics</span>.<span class="ident">time_handle_network_msg</span>();
 
 	<span class="kw">match</span> <span class="ident">bridge_message</span> {
@@ -1508,15 +1485,14 @@
 
 <span class="comment">// Send the difference between two views which were not sent</span>
 <span class="comment">// to that particular peer.</span>
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">BitfieldDistribution</span>, <span class="ident">prefix</span><span class="op">=</span><span class="ident"><span class="self">self</span>::overseer</span>)]</span>
 <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle_peer_view_change</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
 	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 	<span class="ident">state</span>: <span class="kw-2">&amp;mut</span> <span class="ident">ProtocolState</span>,
 	<span class="ident">origin</span>: <span class="ident">PeerId</span>,
 	<span class="ident">view</span>: <span class="ident">View</span>,
 	<span class="ident">rng</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">CryptoRng</span> <span class="op">+</span> <span class="ident">Rng</span>),
-) <span class="kw">where</span>
-	<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">BitfieldDistributionMessage</span><span class="op">&gt;</span>,
-{
+) {
 	<span class="kw">let</span> <span class="ident">added</span> <span class="op">=</span> <span class="ident">state</span>
 		.<span class="ident">peer_views</span>
 		.<span class="ident">entry</span>(<span class="ident">origin</span>.<span class="ident">clone</span>())
@@ -1567,15 +1543,14 @@
 }
 
 <span class="doccomment">/// Send a gossip message and track it in the per relay parent data.</span>
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">BitfieldDistribution</span>, <span class="ident">prefix</span><span class="op">=</span><span class="ident"><span class="self">self</span>::overseer</span>)]</span>
 <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">send_tracked_gossip_message</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
 	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 	<span class="ident">state</span>: <span class="kw-2">&amp;mut</span> <span class="ident">ProtocolState</span>,
 	<span class="ident">dest</span>: <span class="ident">PeerId</span>,
 	<span class="ident">validator</span>: <span class="ident">ValidatorId</span>,
 	<span class="ident">message</span>: <span class="ident">BitfieldGossipMessage</span>,
-) <span class="kw">where</span>
-	<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">BitfieldDistributionMessage</span><span class="op">&gt;</span>,
-{
+) {
 	<span class="kw">let</span> <span class="ident">job_data</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">job_data</span>) <span class="op">=</span> <span class="ident">state</span>.<span class="ident">per_relay_parent</span>.<span class="ident">get_mut</span>(<span class="kw-2">&amp;</span><span class="ident">message</span>.<span class="ident">relay_parent</span>) {
 		<span class="ident">job_data</span>
 	} <span class="kw">else</span> {
@@ -1604,11 +1579,8 @@
 	.<span class="kw">await</span>;
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span> <span class="ident">overseer::Subsystem</span><span class="op">&lt;</span><span class="ident">Context</span>, <span class="ident">SubsystemError</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">BitfieldDistribution</span>
-<span class="kw">where</span>
-	<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">BitfieldDistributionMessage</span><span class="op">&gt;</span>,
-	<span class="ident">Context</span>: <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">BitfieldDistributionMessage</span><span class="op">&gt;</span>,
-{
+<span class="attribute">#[<span class="ident">overseer::subsystem</span>(<span class="ident">BitfieldDistribution</span>, <span class="ident">error</span><span class="op">=</span><span class="ident">SubsystemError</span>, <span class="ident">prefix</span><span class="op">=</span><span class="ident"><span class="self">self</span>::overseer</span>)]</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span> <span class="ident">BitfieldDistribution</span> {
 	<span class="kw">fn</span> <span class="ident">start</span>(<span class="self">self</span>, <span class="ident">ctx</span>: <span class="ident">Context</span>) -&gt; <span class="ident">SpawnedSubsystem</span> {
 		<span class="kw">let</span> <span class="ident">future</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">run</span>(<span class="ident">ctx</span>).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="prelude-val">Ok</span>(())).<span class="ident">boxed</span>();
 
@@ -1617,13 +1589,11 @@
 }
 
 <span class="doccomment">/// Query our validator set and signing context for a particular relay parent.</span>
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">BitfieldDistribution</span>, <span class="ident">prefix</span><span class="op">=</span><span class="ident"><span class="self">self</span>::overseer</span>)]</span>
 <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">query_basics</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
 	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 	<span class="ident">relay_parent</span>: <span class="ident">Hash</span>,
-) -&gt; <span class="ident">SubsystemResult</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ValidatorId</span><span class="op">&gt;</span>, <span class="ident">SigningContext</span>)<span class="op">&gt;</span><span class="op">&gt;</span>
-<span class="kw">where</span>
-	<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">BitfieldDistributionMessage</span><span class="op">&gt;</span>,
-{
+) -&gt; <span class="ident">SubsystemResult</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ValidatorId</span><span class="op">&gt;</span>, <span class="ident">SigningContext</span>)<span class="op">&gt;</span><span class="op">&gt;</span> {
 	<span class="kw">let</span> (<span class="ident">validators_tx</span>, <span class="ident">validators_rx</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
 	<span class="kw">let</span> (<span class="ident">session_tx</span>, <span class="ident">session_rx</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
 

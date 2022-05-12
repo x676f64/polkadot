@@ -1,1 +1,1 @@
-initSidebarItems({"attr":[["overlord",""]]});
+initSidebarItems({"attr":[["contextbounds",""],["overlord",""],["subsystem",""]]});

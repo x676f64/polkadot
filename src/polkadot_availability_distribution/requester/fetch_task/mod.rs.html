@@ -494,8 +494,8 @@
 <span class="kw">use</span> <span class="ident">polkadot_node_primitives::ErasureChunk</span>;
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem</span>::{
 	<span class="ident">jaeger</span>,
-	<span class="ident">messages</span>::{<span class="ident">AllMessages</span>, <span class="ident">AvailabilityStoreMessage</span>, <span class="ident">IfDisconnected</span>, <span class="ident">NetworkBridgeMessage</span>},
-	<span class="ident">SubsystemContext</span>,
+	<span class="ident">messages</span>::{<span class="ident">AvailabilityStoreMessage</span>, <span class="ident">IfDisconnected</span>, <span class="ident">NetworkBridgeMessage</span>},
+	<span class="ident">overseer</span>,
 };
 <span class="kw">use</span> <span class="ident">polkadot_primitives::v2</span>::{
 	<span class="ident">AuthorityDiscoveryId</span>, <span class="ident">BlakeTwo256</span>, <span class="ident">CandidateHash</span>, <span class="ident">GroupIndex</span>, <span class="ident">Hash</span>, <span class="ident">HashT</span>, <span class="ident">OccupiedCore</span>,
@@ -548,7 +548,7 @@
 <span class="doccomment">/// Messages sent from `FetchTask`s to be handled/forwarded.</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">FromFetchTask</span> {
 	<span class="doccomment">/// Message to other subsystem.</span>
-	<span class="ident">Message</span>(<span class="ident">AllMessages</span>),
+	<span class="ident">Message</span>(<span class="ident">overseer::AvailabilityDistributionOutgoingMessages</span>),
 
 	<span class="doccomment">/// Concluded with result.</span>
 	<span class="doccomment">///</span>
@@ -635,14 +635,12 @@
 	}
 }
 
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">AvailabilityDistribution</span>, <span class="ident">prefix</span> <span class="op">=</span> <span class="ident"><span class="self">self</span>::overseer</span>)]</span>
 <span class="kw">impl</span> <span class="ident">FetchTask</span> {
 	<span class="doccomment">/// Start fetching a chunk.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// A task handling the fetching of the configured chunk will be spawned.</span>
-	<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">start</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(<span class="ident">config</span>: <span class="ident">FetchTaskConfig</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>
-	<span class="kw">where</span>
-		<span class="ident">Context</span>: <span class="ident">SubsystemContext</span>,
-	{
+	<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">start</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(<span class="ident">config</span>: <span class="ident">FetchTaskConfig</span>, <span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">FetchTaskConfig</span> { <span class="ident">prepared_running</span>, <span class="ident">live_in</span> } <span class="op">=</span> <span class="ident">config</span>;
 
 		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">running</span>) <span class="op">=</span> <span class="ident">prepared_running</span> {
@@ -797,9 +795,10 @@
 		<span class="kw">let</span> <span class="ident">requests</span> <span class="op">=</span> <span class="ident">Requests::ChunkFetchingV1</span>(<span class="ident">full_request</span>);
 
 		<span class="self">self</span>.<span class="ident">sender</span>
-			.<span class="ident">send</span>(<span class="ident">FromFetchTask::Message</span>(<span class="ident">AllMessages::NetworkBridge</span>(
-				<span class="ident">NetworkBridgeMessage::SendRequests</span>(<span class="macro">vec!</span>[<span class="ident">requests</span>], <span class="ident">IfDisconnected::ImmediateError</span>),
-			)))
+			.<span class="ident">send</span>(<span class="ident">FromFetchTask::Message</span>(
+				<span class="ident">NetworkBridgeMessage::SendRequests</span>(<span class="macro">vec!</span>[<span class="ident">requests</span>], <span class="ident">IfDisconnected::ImmediateError</span>)
+					.<span class="ident">into</span>(),
+			))
 			.<span class="kw">await</span>
 			.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">TaskError::ShuttingDown</span>)<span class="question-mark">?</span>;
 
@@ -877,13 +876,14 @@
 		<span class="kw">let</span> (<span class="ident">tx</span>, <span class="ident">rx</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
 		<span class="kw">let</span> <span class="ident">r</span> <span class="op">=</span> <span class="self">self</span>
 			.<span class="ident">sender</span>
-			.<span class="ident">send</span>(<span class="ident">FromFetchTask::Message</span>(<span class="ident">AllMessages::AvailabilityStore</span>(
+			.<span class="ident">send</span>(<span class="ident">FromFetchTask::Message</span>(
 				<span class="ident">AvailabilityStoreMessage::StoreChunk</span> {
 					<span class="ident">candidate_hash</span>: <span class="self">self</span>.<span class="ident">request</span>.<span class="ident">candidate_hash</span>,
 					<span class="ident">chunk</span>,
 					<span class="ident">tx</span>,
-				},
-			)))
+				}
+				.<span class="ident">into</span>(),
+			))
 			.<span class="kw">await</span>;
 		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span> <span class="ident">r</span> {
 			<span class="macro">gum::error!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="ident">err</span><span class="op">=</span> <span class="question-mark">?</span><span class="ident">err</span>, <span class="string">&quot;Storing erasure chunk failed, system shutting down?&quot;</span>);

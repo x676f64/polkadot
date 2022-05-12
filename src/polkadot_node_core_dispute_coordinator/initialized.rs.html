@@ -1215,11 +1215,6 @@
 <span id="1210">1210</span>
 <span id="1211">1211</span>
 <span id="1212">1212</span>
-<span id="1213">1213</span>
-<span id="1214">1214</span>
-<span id="1215">1215</span>
-<span id="1216">1216</span>
-<span id="1217">1217</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -1256,7 +1251,7 @@
 		<span class="ident">BlockDescription</span>, <span class="ident">DisputeCoordinatorMessage</span>, <span class="ident">DisputeDistributionMessage</span>,
 		<span class="ident">ImportStatementsResult</span>,
 	},
-	<span class="ident">overseer</span>, <span class="ident">ActivatedLeaf</span>, <span class="ident">ActiveLeavesUpdate</span>, <span class="ident">FromOverseer</span>, <span class="ident">OverseerSignal</span>, <span class="ident">SubsystemContext</span>,
+	<span class="ident">overseer</span>, <span class="ident">ActivatedLeaf</span>, <span class="ident">ActiveLeavesUpdate</span>, <span class="ident">FromOverseer</span>, <span class="ident">OverseerSignal</span>,
 };
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem_util::rolling_session_window</span>::{
 	<span class="ident">RollingSessionWindow</span>, <span class="ident">SessionWindowUpdate</span>, <span class="ident">SessionsUnavailable</span>,
@@ -1305,6 +1300,7 @@
 	<span class="ident">error</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">SessionsUnavailable</span><span class="op">&gt;</span>,
 }
 
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">DisputeCoordinator</span>, <span class="ident">prefix</span> <span class="op">=</span> <span class="ident"><span class="self">self</span>::overseer</span>)]</span>
 <span class="kw">impl</span> <span class="ident">Initialized</span> {
 	<span class="doccomment">/// Make initialized subsystem, ready to `run`.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(
@@ -1345,8 +1341,6 @@
 		<span class="ident">clock</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Clock</span><span class="op">&gt;</span>,
 	) -&gt; <span class="ident">FatalResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 	<span class="kw">where</span>
-		<span class="ident">Context</span>: <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">DisputeCoordinatorMessage</span><span class="op">&gt;</span>,
-		<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">DisputeCoordinatorMessage</span><span class="op">&gt;</span>,
 		<span class="ident">B</span>: <span class="ident">Backend</span>,
 	{
 		<span class="kw">loop</span> {
@@ -1383,8 +1377,6 @@
 		<span class="ident">clock</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Clock</span>,
 	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 	<span class="kw">where</span>
-		<span class="ident">Context</span>: <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">DisputeCoordinatorMessage</span><span class="op">&gt;</span>,
-		<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">DisputeCoordinatorMessage</span><span class="op">&gt;</span>,
 		<span class="ident">B</span>: <span class="ident">Backend</span>,
 	{
 		<span class="kw">for</span> (<span class="ident">priority</span>, <span class="ident">request</span>) <span class="kw">in</span> <span class="ident">participations</span>.<span class="ident">drain</span>(..) {
@@ -1475,10 +1467,9 @@
 		}
 	}
 
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">process_active_leaves_update</span>(
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">process_active_leaves_update</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
 		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
-		<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">DisputeCoordinatorMessage</span><span class="op">&gt;</span>
-		          <span class="op">+</span> <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">DisputeCoordinatorMessage</span><span class="op">&gt;</span>),
+		<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 		<span class="ident">overlay_db</span>: <span class="kw-2">&amp;mut</span> <span class="ident">OverlayedBackend</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="kw">impl</span> <span class="ident">Backend</span><span class="op">&gt;</span>,
 		<span class="ident">update</span>: <span class="ident">ActiveLeavesUpdate</span>,
 		<span class="ident">now</span>: <span class="ident">u64</span>,
@@ -1490,7 +1481,7 @@
 		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">new_leaf</span>) <span class="op">=</span> <span class="ident">update</span>.<span class="ident">activated</span> {
 			<span class="kw">match</span> <span class="self">self</span>
 				.<span class="ident">rolling_session_window</span>
-				.<span class="ident">cache_session_info_for_head</span>(<span class="ident">ctx</span>, <span class="ident">new_leaf</span>.<span class="ident">hash</span>)
+				.<span class="ident">cache_session_info_for_head</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="ident">new_leaf</span>.<span class="ident">hash</span>)
 				.<span class="kw">await</span>
 			{
 				<span class="prelude-val">Err</span>(<span class="ident">e</span>) =&gt; {
@@ -1540,10 +1531,9 @@
 
 	<span class="doccomment">/// Scrapes on-chain votes (backing votes and concluded disputes) for a active leaf of the</span>
 	<span class="doccomment">/// relay chain.</span>
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">process_on_chain_votes</span>(
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">process_on_chain_votes</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
 		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
-		<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">DisputeCoordinatorMessage</span><span class="op">&gt;</span>
-		          <span class="op">+</span> <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">DisputeCoordinatorMessage</span><span class="op">&gt;</span>),
+		<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 		<span class="ident">overlay_db</span>: <span class="kw-2">&amp;mut</span> <span class="ident">OverlayedBackend</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="kw">impl</span> <span class="ident">Backend</span><span class="op">&gt;</span>,
 		<span class="ident">votes</span>: <span class="ident">ScrapedOnChainVotes</span>,
 		<span class="ident">now</span>: <span class="ident">u64</span>,
@@ -1719,9 +1709,9 @@
 		<span class="prelude-val">Ok</span>(())
 	}
 
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle_incoming</span>(
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle_incoming</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
 		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
-		<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">SubsystemContext</span>,
+		<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 		<span class="ident">overlay_db</span>: <span class="kw-2">&amp;mut</span> <span class="ident">OverlayedBackend</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="kw">impl</span> <span class="ident">Backend</span><span class="op">&gt;</span>,
 		<span class="ident">message</span>: <span class="ident">DisputeCoordinatorMessage</span>,
 		<span class="ident">now</span>: <span class="ident">Timestamp</span>,
@@ -1856,9 +1846,9 @@
 		<span class="prelude-val">Ok</span>(())
 	}
 
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle_import_statements</span>(
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle_import_statements</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
 		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
-		<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">SubsystemContext</span>,
+		<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 		<span class="ident">overlay_db</span>: <span class="kw-2">&amp;mut</span> <span class="ident">OverlayedBackend</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="kw">impl</span> <span class="ident">Backend</span><span class="op">&gt;</span>,
 		<span class="ident">candidate_hash</span>: <span class="ident">CandidateHash</span>,
 		<span class="ident">candidate_receipt</span>: <span class="ident">MaybeCandidateReceipt</span>,
@@ -2145,9 +2135,9 @@
 		<span class="prelude-val">Ok</span>(<span class="ident">ImportStatementsResult::ValidImport</span>)
 	}
 
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">issue_local_statement</span>(
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">issue_local_statement</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
 		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
-		<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">SubsystemContext</span>,
+		<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 		<span class="ident">overlay_db</span>: <span class="kw-2">&amp;mut</span> <span class="ident">OverlayedBackend</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="kw">impl</span> <span class="ident">Backend</span><span class="op">&gt;</span>,
 		<span class="ident">candidate_hash</span>: <span class="ident">CandidateHash</span>,
 		<span class="ident">candidate_receipt</span>: <span class="ident">CandidateReceipt</span>,
@@ -2276,10 +2266,10 @@
 	<span class="ident">Participation</span>(<span class="ident">participation::WorkerMessage</span>),
 }
 
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">DisputeCoordinator</span>, <span class="ident">prefix</span> <span class="op">=</span> <span class="ident"><span class="self">self</span>::overseer</span>)]</span>
 <span class="kw">impl</span> <span class="ident">MuxedMessage</span> {
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">receive</span>(
-		<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">DisputeCoordinatorMessage</span><span class="op">&gt;</span>
-		          <span class="op">+</span> <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">DisputeCoordinatorMessage</span><span class="op">&gt;</span>),
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">receive</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
+		<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 		<span class="ident">from_sender</span>: <span class="kw-2">&amp;mut</span> <span class="ident">participation::WorkerMessageReceiver</span>,
 	) -&gt; <span class="ident">FatalResult</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
 		<span class="comment">// We are only fusing here to make `select` happy, in reality we will quit if the stream</span>

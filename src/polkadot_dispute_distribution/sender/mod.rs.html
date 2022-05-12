@@ -367,6 +367,7 @@
 <span id="362">362</span>
 <span id="363">363</span>
 <span id="364">364</span>
+<span id="365">365</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -389,10 +390,7 @@
 
 <span class="kw">use</span> <span class="ident">polkadot_node_network_protocol::request_response::v1::DisputeRequest</span>;
 <span class="kw">use</span> <span class="ident">polkadot_node_primitives</span>::{<span class="ident">CandidateVotes</span>, <span class="ident">DisputeMessage</span>, <span class="ident">SignedDisputeStatement</span>};
-<span class="kw">use</span> <span class="ident">polkadot_node_subsystem</span>::{
-	<span class="ident">messages</span>::{<span class="ident">AllMessages</span>, <span class="ident">DisputeCoordinatorMessage</span>},
-	<span class="ident">ActiveLeavesUpdate</span>, <span class="ident">SubsystemContext</span>,
-};
+<span class="kw">use</span> <span class="ident">polkadot_node_subsystem</span>::{<span class="ident">messages::DisputeCoordinatorMessage</span>, <span class="ident">overseer</span>, <span class="ident">ActiveLeavesUpdate</span>};
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem_util::runtime::RuntimeInfo</span>;
 <span class="kw">use</span> <span class="ident">polkadot_primitives::v2</span>::{<span class="ident">CandidateHash</span>, <span class="ident">DisputeStatement</span>, <span class="ident">Hash</span>, <span class="ident">SessionIndex</span>};
 
@@ -435,6 +433,7 @@
 	<span class="ident">metrics</span>: <span class="ident">Metrics</span>,
 }
 
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">DisputeDistribution</span>, <span class="ident">prefix</span> <span class="op">=</span> <span class="ident"><span class="self">self</span>::overseer</span>)]</span>
 <span class="kw">impl</span> <span class="ident">DisputeSender</span> {
 	<span class="doccomment">/// Create a new `DisputeSender` which can be used to start dispute sendings.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">tx</span>: <span class="ident">mpsc::Sender</span><span class="op">&lt;</span><span class="ident">TaskFinish</span><span class="op">&gt;</span>, <span class="ident">metrics</span>: <span class="ident">Metrics</span>) -&gt; <span class="self">Self</span> {
@@ -448,7 +447,7 @@
 	}
 
 	<span class="doccomment">/// Create a `SendTask` for a particular new dispute.</span>
-	<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">start_sender</span><span class="op">&lt;</span><span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&gt;</span>(
+	<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">start_sender</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
 		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
 		<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 		<span class="ident">runtime</span>: <span class="kw-2">&amp;mut</span> <span class="ident">RuntimeInfo</span>,
@@ -483,7 +482,7 @@
 	<span class="doccomment">/// - Get new authorities to send messages to.</span>
 	<span class="doccomment">/// - Get rid of obsolete tasks and disputes.</span>
 	<span class="doccomment">/// - Get dispute sending started in case we missed one for some reason (e.g. on node startup)</span>
-	<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">update_leaves</span><span class="op">&lt;</span><span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&gt;</span>(
+	<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">update_leaves</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
 		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
 		<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 		<span class="ident">runtime</span>: <span class="kw-2">&amp;mut</span> <span class="ident">RuntimeInfo</span>,
@@ -548,7 +547,7 @@
 	<span class="doccomment">/// Call `start_sender` on all passed in disputes.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Recover necessary votes for building up `DisputeMessage` and start sending for all of them.</span>
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">start_send_for_dispute</span><span class="op">&lt;</span><span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&gt;</span>(
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">start_send_for_dispute</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
 		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
 		<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 		<span class="ident">runtime</span>: <span class="kw-2">&amp;mut</span> <span class="ident">RuntimeInfo</span>,
@@ -672,7 +671,7 @@
 	<span class="doccomment">/// Make active sessions correspond to currently active heads.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Returns: true if sessions changed.</span>
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">refresh_sessions</span><span class="op">&lt;</span><span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&gt;</span>(
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">refresh_sessions</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
 		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
 		<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 		<span class="ident">runtime</span>: <span class="kw-2">&amp;mut</span> <span class="ident">RuntimeInfo</span>,
@@ -690,7 +689,8 @@
 <span class="doccomment">/// Retrieve the currently active sessions.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// List is all indices of all active sessions together with the head that was used for the query.</span>
-<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">get_active_session_indices</span><span class="op">&lt;</span><span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&gt;</span>(
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">DisputeDistribution</span>, <span class="ident">prefix</span> <span class="op">=</span> <span class="ident"><span class="self">self</span>::overseer</span>)]</span>
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">get_active_session_indices</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
 	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 	<span class="ident">runtime</span>: <span class="kw-2">&amp;mut</span> <span class="ident">RuntimeInfo</span>,
 	<span class="ident">active_heads</span>: <span class="kw-2">&amp;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Hash</span><span class="op">&gt;</span>,
@@ -705,27 +705,29 @@
 }
 
 <span class="doccomment">/// Retrieve Set of active disputes from the dispute coordinator.</span>
-<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">get_active_disputes</span><span class="op">&lt;</span><span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&gt;</span>(
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">DisputeDistribution</span>, <span class="ident">prefix</span> <span class="op">=</span> <span class="ident"><span class="self">self</span>::overseer</span>)]</span>
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">get_active_disputes</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
 	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 ) -&gt; <span class="ident">JfyiErrorResult</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">SessionIndex</span>, <span class="ident">CandidateHash</span>)<span class="op">&gt;</span><span class="op">&gt;</span> {
 	<span class="kw">let</span> (<span class="ident">tx</span>, <span class="ident">rx</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
+
 	<span class="comment">// Caller scope is in `update_leaves` and this is bounded by fork count.</span>
-	<span class="ident">ctx</span>.<span class="ident">send_unbounded_message</span>(<span class="ident">AllMessages::DisputeCoordinator</span>(
-		<span class="ident">DisputeCoordinatorMessage::ActiveDisputes</span>(<span class="ident">tx</span>),
-	));
+	<span class="ident">ctx</span>.<span class="ident">send_unbounded_message</span>(<span class="ident">DisputeCoordinatorMessage::ActiveDisputes</span>(<span class="ident">tx</span>));
 	<span class="ident">rx</span>.<span class="kw">await</span>.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">JfyiError::AskActiveDisputesCanceled</span>)
 }
 
 <span class="doccomment">/// Get all locally available dispute votes for a given dispute.</span>
-<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">get_candidate_votes</span><span class="op">&lt;</span><span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&gt;</span>(
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">DisputeDistribution</span>, <span class="ident">prefix</span> <span class="op">=</span> <span class="ident"><span class="self">self</span>::overseer</span>)]</span>
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">get_candidate_votes</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
 	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 	<span class="ident">session_index</span>: <span class="ident">SessionIndex</span>,
 	<span class="ident">candidate_hash</span>: <span class="ident">CandidateHash</span>,
 ) -&gt; <span class="ident">JfyiErrorResult</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">CandidateVotes</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 	<span class="kw">let</span> (<span class="ident">tx</span>, <span class="ident">rx</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
 	<span class="comment">// Caller scope is in `update_leaves` and this is bounded by fork count.</span>
-	<span class="ident">ctx</span>.<span class="ident">send_unbounded_message</span>(<span class="ident">AllMessages::DisputeCoordinator</span>(
-		<span class="ident">DisputeCoordinatorMessage::QueryCandidateVotes</span>(<span class="macro">vec!</span>[(<span class="ident">session_index</span>, <span class="ident">candidate_hash</span>)], <span class="ident">tx</span>),
+	<span class="ident">ctx</span>.<span class="ident">send_unbounded_message</span>(<span class="ident">DisputeCoordinatorMessage::QueryCandidateVotes</span>(
+		<span class="macro">vec!</span>[(<span class="ident">session_index</span>, <span class="ident">candidate_hash</span>)],
+		<span class="ident">tx</span>,
 	));
 	<span class="ident">rx</span>.<span class="kw">await</span>
 		.<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">v</span>.<span class="ident">get</span>(<span class="number">0</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">inner</span><span class="op">|</span> <span class="ident">inner</span>.<span class="ident">to_owned</span>().<span class="number">2</span>))

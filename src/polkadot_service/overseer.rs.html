@@ -353,6 +353,14 @@
 <span id="348">348</span>
 <span id="349">349</span>
 <span id="350">350</span>
+<span id="351">351</span>
+<span id="352">352</span>
+<span id="353">353</span>
+<span id="354">354</span>
+<span id="355">355</span>
+<span id="356">356</span>
+<span id="357">357</span>
+<span id="358">358</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -379,14 +387,16 @@
 <span class="kw">use</span> <span class="ident">polkadot_node_core_dispute_coordinator::Config</span> <span class="kw">as</span> <span class="ident">DisputeCoordinatorConfig</span>;
 <span class="kw">use</span> <span class="ident">polkadot_node_core_provisioner::ProvisionerConfig</span>;
 <span class="kw">use</span> <span class="ident">polkadot_node_network_protocol::request_response</span>::{<span class="ident">v1</span> <span class="kw">as</span> <span class="ident">request_v1</span>, <span class="ident">IncomingRequestReceiver</span>};
+<span class="kw">use</span> <span class="ident">polkadot_node_subsystem_types::messages</span>::{<span class="ident">BitfieldSigningMessage</span>, <span class="ident">ProvisionerMessage</span>};
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">any</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;malus&quot;</span>, <span class="ident">test</span>))]</span>
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">polkadot_overseer</span>::{
 	<span class="ident">dummy</span>::{<span class="ident">dummy_overseer_builder</span>, <span class="ident">DummySubsystem</span>},
 	<span class="ident">HeadSupportsParachains</span>,
 };
 <span class="kw">use</span> <span class="ident">polkadot_overseer</span>::{
-	<span class="ident">metrics::Metrics</span> <span class="kw">as</span> <span class="ident">OverseerMetrics</span>, <span class="ident">BlockInfo</span>, <span class="ident">InitializedOverseerBuilder</span>, <span class="ident">MetricsTrait</span>,
-	<span class="ident">Overseer</span>, <span class="ident">OverseerConnector</span>, <span class="ident">OverseerHandle</span>,
+	<span class="ident">gen::SubsystemContext</span>, <span class="ident">metrics::Metrics</span> <span class="kw">as</span> <span class="ident">OverseerMetrics</span>, <span class="ident">BlockInfo</span>,
+	<span class="ident">InitializedOverseerBuilder</span>, <span class="ident">MetricsTrait</span>, <span class="ident">Overseer</span>, <span class="ident">OverseerConnector</span>, <span class="ident">OverseerHandle</span>,
+	<span class="ident">OverseerSubsystemContext</span>,
 };
 
 <span class="kw">use</span> <span class="ident">polkadot_primitives::runtime_api::ParachainHost</span>;
@@ -507,9 +517,15 @@
 		<span class="ident">StatementDistributionSubsystem</span><span class="op">&lt;</span><span class="ident">rand::rngs::StdRng</span><span class="op">&gt;</span>,
 		<span class="ident">AvailabilityDistributionSubsystem</span>,
 		<span class="ident">AvailabilityRecoverySubsystem</span>,
-		<span class="ident">BitfieldSigningSubsystem</span><span class="op">&lt;</span><span class="ident">Spawner</span><span class="op">&gt;</span>,
+		<span class="ident">BitfieldSigningSubsystem</span><span class="op">&lt;</span>
+			<span class="ident">Spawner</span>,
+			<span class="op">&lt;</span><span class="ident">OverseerSubsystemContext</span><span class="op">&lt;</span><span class="ident">BitfieldSigningMessage</span><span class="op">&gt;</span> <span class="kw">as</span> <span class="ident">SubsystemContext</span><span class="op">&gt;</span><span class="ident">::Sender</span>,
+		<span class="op">&gt;</span>,
 		<span class="ident">BitfieldDistributionSubsystem</span>,
-		<span class="ident">ProvisionerSubsystem</span><span class="op">&lt;</span><span class="ident">Spawner</span><span class="op">&gt;</span>,
+		<span class="ident">ProvisionerSubsystem</span><span class="op">&lt;</span>
+			<span class="ident">Spawner</span>,
+			<span class="op">&lt;</span><span class="ident">OverseerSubsystemContext</span><span class="op">&lt;</span><span class="ident">ProvisionerMessage</span><span class="op">&gt;</span> <span class="kw">as</span> <span class="ident">SubsystemContext</span><span class="op">&gt;</span><span class="ident">::Sender</span>,
+		<span class="op">&gt;</span>,
 		<span class="ident">RuntimeApiSubsystem</span><span class="op">&lt;</span><span class="ident">RuntimeClient</span><span class="op">&gt;</span>,
 		<span class="ident">AvailabilityStoreSubsystem</span>,
 		<span class="ident">NetworkBridgeSubsystem</span><span class="op">&lt;</span>

@@ -1698,14 +1698,6 @@
 <span id="1693">1693</span>
 <span id="1694">1694</span>
 <span id="1695">1695</span>
-<span id="1696">1696</span>
-<span id="1697">1697</span>
-<span id="1698">1698</span>
-<span id="1699">1699</span>
-<span id="1700">1700</span>
-<span id="1701">1701</span>
-<span id="1702">1702</span>
-<span id="1703">1703</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -1742,8 +1734,7 @@
 		<span class="ident">ApprovalCheckResult</span>, <span class="ident">ApprovalDistributionMessage</span>, <span class="ident">ApprovalVotingMessage</span>,
 		<span class="ident">AssignmentCheckResult</span>, <span class="ident">NetworkBridgeEvent</span>, <span class="ident">NetworkBridgeMessage</span>,
 	},
-	<span class="ident">overseer</span>, <span class="ident">ActiveLeavesUpdate</span>, <span class="ident">FromOverseer</span>, <span class="ident">OverseerSignal</span>, <span class="ident">SpawnedSubsystem</span>, <span class="ident">SubsystemContext</span>,
-	<span class="ident">SubsystemError</span>,
+	<span class="ident">overseer</span>, <span class="ident">ActiveLeavesUpdate</span>, <span class="ident">FromOverseer</span>, <span class="ident">OverseerSignal</span>, <span class="ident">SpawnedSubsystem</span>, <span class="ident">SubsystemError</span>,
 };
 <span class="kw">use</span> <span class="ident">polkadot_primitives::v2</span>::{
 	<span class="ident">BlockNumber</span>, <span class="ident">CandidateIndex</span>, <span class="ident">Hash</span>, <span class="ident">SessionIndex</span>, <span class="ident">ValidatorIndex</span>, <span class="ident">ValidatorSignature</span>,
@@ -2029,11 +2020,11 @@
 	<span class="ident">Approval</span>(<span class="ident">IndirectSignedApprovalVote</span>),
 }
 
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">ApprovalDistribution</span>, <span class="ident">prefix</span> <span class="op">=</span> <span class="ident"><span class="self">self</span>::overseer</span>)]</span>
 <span class="kw">impl</span> <span class="ident">State</span> {
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle_network_msg</span>(
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle_network_msg</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
 		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
-		<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">ApprovalDistributionMessage</span><span class="op">&gt;</span>
-		          <span class="op">+</span> <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">ApprovalDistributionMessage</span><span class="op">&gt;</span>),
+		<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 		<span class="ident">metrics</span>: <span class="kw-2">&amp;</span><span class="ident">Metrics</span>,
 		<span class="ident">event</span>: <span class="ident">NetworkBridgeEvent</span><span class="op">&lt;</span><span class="ident">net_protocol::ApprovalDistributionMessage</span><span class="op">&gt;</span>,
 		<span class="ident">rng</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">CryptoRng</span> <span class="op">+</span> <span class="ident">Rng</span>),
@@ -2085,10 +2076,9 @@
 		}
 	}
 
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle_new_blocks</span>(
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle_new_blocks</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
 		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
-		<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">ApprovalDistributionMessage</span><span class="op">&gt;</span>
-		          <span class="op">+</span> <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">ApprovalDistributionMessage</span><span class="op">&gt;</span>),
+		<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 		<span class="ident">metrics</span>: <span class="kw-2">&amp;</span><span class="ident">Metrics</span>,
 		<span class="ident">metas</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">BlockApprovalMeta</span><span class="op">&gt;</span>,
 		<span class="ident">rng</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">CryptoRng</span> <span class="op">+</span> <span class="ident">Rng</span>),
@@ -2129,11 +2119,12 @@
 		);
 
 		{
+			<span class="kw">let</span> <span class="ident">sender</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">sender</span>();
 			<span class="kw">for</span> (<span class="ident">peer_id</span>, <span class="ident">view</span>) <span class="kw">in</span> <span class="self">self</span>.<span class="ident">peer_views</span>.<span class="ident">iter</span>() {
 				<span class="kw">let</span> <span class="ident">intersection</span> <span class="op">=</span> <span class="ident">view</span>.<span class="ident">iter</span>().<span class="ident">filter</span>(<span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">new_hashes</span>.<span class="ident">contains</span>(<span class="ident">h</span>));
 				<span class="kw">let</span> <span class="ident">view_intersection</span> <span class="op">=</span> <span class="ident">View::new</span>(<span class="ident">intersection</span>.<span class="ident">cloned</span>(), <span class="ident">view</span>.<span class="ident">finalized_number</span>);
 				<span class="ident"><span class="self">Self</span>::unify_with_peer</span>(
-					<span class="ident">ctx</span>,
+					<span class="ident">sender</span>,
 					<span class="ident">metrics</span>,
 					<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">blocks</span>,
 					<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">topologies</span>,
@@ -2204,10 +2195,9 @@
 		<span class="self">self</span>.<span class="ident">enable_aggression</span>(<span class="ident">ctx</span>, <span class="ident">Resend::Yes</span>, <span class="ident">metrics</span>).<span class="kw">await</span>;
 	}
 
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle_new_session_topology</span>(
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle_new_session_topology</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
 		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
-		<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">ApprovalDistributionMessage</span><span class="op">&gt;</span>
-		          <span class="op">+</span> <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">ApprovalDistributionMessage</span><span class="op">&gt;</span>),
+		<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 		<span class="ident">session</span>: <span class="ident">SessionIndex</span>,
 		<span class="ident">topology</span>: <span class="ident">SessionGridTopology</span>,
 	) {
@@ -2228,15 +2218,16 @@
 		.<span class="kw">await</span>;
 	}
 
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">process_incoming_peer_message</span>(
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">process_incoming_peer_message</span><span class="op">&lt;</span><span class="ident">Context</span>, <span class="ident">R</span><span class="op">&gt;</span>(
 		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
-		<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">ApprovalDistributionMessage</span><span class="op">&gt;</span>
-		          <span class="op">+</span> <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">ApprovalDistributionMessage</span><span class="op">&gt;</span>),
+		<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 		<span class="ident">metrics</span>: <span class="kw-2">&amp;</span><span class="ident">Metrics</span>,
 		<span class="ident">peer_id</span>: <span class="ident">PeerId</span>,
 		<span class="ident">msg</span>: <span class="ident">protocol_v1::ApprovalDistributionMessage</span>,
-		<span class="ident">rng</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">CryptoRng</span> <span class="op">+</span> <span class="ident">Rng</span>),
-	) {
+		<span class="ident">rng</span>: <span class="kw-2">&amp;mut</span> <span class="ident">R</span>,
+	) <span class="kw">where</span>
+		<span class="ident">R</span>: <span class="ident">CryptoRng</span> <span class="op">+</span> <span class="ident">Rng</span>,
+	{
 		<span class="kw">match</span> <span class="ident">msg</span> {
 			<span class="ident">protocol_v1::ApprovalDistributionMessage::Assignments</span>(<span class="ident">assignments</span>) =&gt; {
 				<span class="macro">gum::trace!</span>(
@@ -2320,15 +2311,16 @@
 
 	<span class="comment">// handle a peer view change: requires that the peer is already connected</span>
 	<span class="comment">// and has an entry in the `PeerData` struct.</span>
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle_peer_view_change</span>(
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle_peer_view_change</span><span class="op">&lt;</span><span class="ident">Context</span>, <span class="ident">R</span><span class="op">&gt;</span>(
 		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
-		<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">ApprovalDistributionMessage</span><span class="op">&gt;</span>
-		          <span class="op">+</span> <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">ApprovalDistributionMessage</span><span class="op">&gt;</span>),
+		<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 		<span class="ident">metrics</span>: <span class="kw-2">&amp;</span><span class="ident">Metrics</span>,
 		<span class="ident">peer_id</span>: <span class="ident">PeerId</span>,
 		<span class="ident">view</span>: <span class="ident">View</span>,
-		<span class="ident">rng</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">CryptoRng</span> <span class="op">+</span> <span class="ident">Rng</span>),
-	) {
+		<span class="ident">rng</span>: <span class="kw-2">&amp;mut</span> <span class="ident">R</span>,
+	) <span class="kw">where</span>
+		<span class="ident">R</span>: <span class="ident">CryptoRng</span> <span class="op">+</span> <span class="ident">Rng</span>,
+	{
 		<span class="macro">gum::trace!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="question-mark">?</span><span class="ident">view</span>, <span class="string">&quot;Peer view change&quot;</span>);
 		<span class="kw">let</span> <span class="ident">finalized_number</span> <span class="op">=</span> <span class="ident">view</span>.<span class="ident">finalized_number</span>;
 		<span class="kw">let</span> <span class="ident">old_view</span> <span class="op">=</span>
@@ -2354,7 +2346,7 @@
 		}
 
 		<span class="ident"><span class="self">Self</span>::unify_with_peer</span>(
-			<span class="ident">ctx</span>,
+			<span class="ident">ctx</span>.<span class="ident">sender</span>(),
 			<span class="ident">metrics</span>,
 			<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">blocks</span>,
 			<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">topologies</span>,
@@ -2366,10 +2358,9 @@
 		.<span class="kw">await</span>;
 	}
 
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle_block_finalized</span>(
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle_block_finalized</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
 		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
-		<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">ApprovalDistributionMessage</span><span class="op">&gt;</span>
-		          <span class="op">+</span> <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">ApprovalDistributionMessage</span><span class="op">&gt;</span>),
+		<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 		<span class="ident">metrics</span>: <span class="kw-2">&amp;</span><span class="ident">Metrics</span>,
 		<span class="ident">finalized_number</span>: <span class="ident">BlockNumber</span>,
 	) {
@@ -2395,16 +2386,17 @@
 		<span class="self">self</span>.<span class="ident">enable_aggression</span>(<span class="ident">ctx</span>, <span class="ident">Resend::No</span>, <span class="ident">metrics</span>).<span class="kw">await</span>;
 	}
 
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">import_and_circulate_assignment</span>(
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">import_and_circulate_assignment</span><span class="op">&lt;</span><span class="ident">Context</span>, <span class="ident">R</span><span class="op">&gt;</span>(
 		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
-		<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">ApprovalDistributionMessage</span><span class="op">&gt;</span>
-		          <span class="op">+</span> <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">ApprovalDistributionMessage</span><span class="op">&gt;</span>),
+		<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 		<span class="ident">metrics</span>: <span class="kw-2">&amp;</span><span class="ident">Metrics</span>,
 		<span class="ident">source</span>: <span class="ident">MessageSource</span>,
 		<span class="ident">assignment</span>: <span class="ident">IndirectAssignmentCert</span>,
 		<span class="ident">claimed_candidate_index</span>: <span class="ident">CandidateIndex</span>,
-		<span class="ident">rng</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">CryptoRng</span> <span class="op">+</span> <span class="ident">Rng</span>),
-	) {
+		<span class="ident">rng</span>: <span class="kw-2">&amp;mut</span> <span class="ident">R</span>,
+	) <span class="kw">where</span>
+		<span class="ident">R</span>: <span class="ident">CryptoRng</span> <span class="op">+</span> <span class="ident">Rng</span>,
+	{
 		<span class="kw">let</span> <span class="ident">block_hash</span> <span class="op">=</span> <span class="ident">assignment</span>.<span class="ident">block_hash</span>.<span class="ident">clone</span>();
 		<span class="kw">let</span> <span class="ident">validator_index</span> <span class="op">=</span> <span class="ident">assignment</span>.<span class="ident">validator</span>;
 
@@ -2420,7 +2412,7 @@
 						<span class="string">&quot;Unexpected assignment&quot;</span>,
 					);
 					<span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">recent_outdated_blocks</span>.<span class="ident">is_recent_outdated</span>(<span class="kw-2">&amp;</span><span class="ident">block_hash</span>) {
-						<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>, <span class="ident">peer_id</span>, <span class="ident">COST_UNEXPECTED_MESSAGE</span>).<span class="kw">await</span>;
+						<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="ident">peer_id</span>, <span class="ident">COST_UNEXPECTED_MESSAGE</span>).<span class="kw">await</span>;
 					}
 				}
 				<span class="kw">return</span>
@@ -2445,7 +2437,7 @@
 								<span class="question-mark">?</span><span class="ident">message_subject</span>,
 								<span class="string">&quot;Duplicate assignment&quot;</span>,
 							);
-							<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>, <span class="ident">peer_id</span>, <span class="ident">COST_DUPLICATE_MESSAGE</span>).<span class="kw">await</span>;
+							<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="ident">peer_id</span>, <span class="ident">COST_DUPLICATE_MESSAGE</span>).<span class="kw">await</span>;
 						}
 						<span class="kw">return</span>
 					}
@@ -2457,13 +2449,13 @@
 						<span class="question-mark">?</span><span class="ident">message_subject</span>,
 						<span class="string">&quot;Assignment from a peer is out of view&quot;</span>,
 					);
-					<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>, <span class="ident">peer_id</span>.<span class="ident">clone</span>(), <span class="ident">COST_UNEXPECTED_MESSAGE</span>).<span class="kw">await</span>;
+					<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="ident">peer_id</span>.<span class="ident">clone</span>(), <span class="ident">COST_UNEXPECTED_MESSAGE</span>).<span class="kw">await</span>;
 				},
 			}
 
 			<span class="comment">// if the assignment is known to be valid, reward the peer</span>
 			<span class="kw">if</span> <span class="ident">entry</span>.<span class="ident">knowledge</span>.<span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="ident">message_subject</span>, <span class="ident">message_kind</span>) {
-				<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>, <span class="ident">peer_id</span>.<span class="ident">clone</span>(), <span class="ident">BENEFIT_VALID_MESSAGE</span>).<span class="kw">await</span>;
+				<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="ident">peer_id</span>.<span class="ident">clone</span>(), <span class="ident">BENEFIT_VALID_MESSAGE</span>).<span class="kw">await</span>;
 				<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">peer_knowledge</span>) <span class="op">=</span> <span class="ident">entry</span>.<span class="ident">known_by</span>.<span class="ident">get_mut</span>(<span class="kw-2">&amp;</span><span class="ident">peer_id</span>) {
 					<span class="macro">gum::trace!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="question-mark">?</span><span class="ident">peer_id</span>, <span class="question-mark">?</span><span class="ident">message_subject</span>, <span class="string">&quot;Known assignment&quot;</span>);
 					<span class="ident">peer_knowledge</span>.<span class="ident">received</span>.<span class="ident">insert</span>(<span class="ident">message_subject</span>, <span class="ident">message_kind</span>);
@@ -2499,7 +2491,8 @@
 			);
 			<span class="kw">match</span> <span class="ident">result</span> {
 				<span class="ident">AssignmentCheckResult::Accepted</span> =&gt; {
-					<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>, <span class="ident">peer_id</span>.<span class="ident">clone</span>(), <span class="ident">BENEFIT_VALID_MESSAGE_FIRST</span>).<span class="kw">await</span>;
+					<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="ident">peer_id</span>.<span class="ident">clone</span>(), <span class="ident">BENEFIT_VALID_MESSAGE_FIRST</span>)
+						.<span class="kw">await</span>;
 					<span class="ident">entry</span>.<span class="ident">knowledge</span>.<span class="ident">known_messages</span>.<span class="ident">insert</span>(<span class="ident">message_subject</span>.<span class="ident">clone</span>(), <span class="ident">message_kind</span>);
 					<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">peer_knowledge</span>) <span class="op">=</span> <span class="ident">entry</span>.<span class="ident">known_by</span>.<span class="ident">get_mut</span>(<span class="kw-2">&amp;</span><span class="ident">peer_id</span>) {
 						<span class="ident">peer_knowledge</span>.<span class="ident">received</span>.<span class="ident">insert</span>(<span class="ident">message_subject</span>.<span class="ident">clone</span>(), <span class="ident">message_kind</span>);
@@ -2527,7 +2520,8 @@
 						<span class="question-mark">?</span><span class="ident">peer_id</span>,
 						<span class="string">&quot;Got an assignment too far in the future&quot;</span>,
 					);
-					<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>, <span class="ident">peer_id</span>, <span class="ident">COST_ASSIGNMENT_TOO_FAR_IN_THE_FUTURE</span>).<span class="kw">await</span>;
+					<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="ident">peer_id</span>, <span class="ident">COST_ASSIGNMENT_TOO_FAR_IN_THE_FUTURE</span>)
+						.<span class="kw">await</span>;
 					<span class="kw">return</span>
 				},
 				<span class="ident">AssignmentCheckResult::Bad</span>(<span class="ident">error</span>) =&gt; {
@@ -2538,7 +2532,7 @@
 						<span class="op">%</span><span class="ident">error</span>,
 						<span class="string">&quot;Got a bad assignment from peer&quot;</span>,
 					);
-					<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>, <span class="ident">peer_id</span>, <span class="ident">COST_INVALID_MESSAGE</span>).<span class="kw">await</span>;
+					<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="ident">peer_id</span>, <span class="ident">COST_INVALID_MESSAGE</span>).<span class="kw">await</span>;
 					<span class="kw">return</span>
 				},
 			}
@@ -2654,10 +2648,9 @@
 		}
 	}
 
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">import_and_circulate_approval</span>(
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">import_and_circulate_approval</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
 		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
-		<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">ApprovalDistributionMessage</span><span class="op">&gt;</span>
-		          <span class="op">+</span> <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">ApprovalDistributionMessage</span><span class="op">&gt;</span>),
+		<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 		<span class="ident">metrics</span>: <span class="kw-2">&amp;</span><span class="ident">Metrics</span>,
 		<span class="ident">source</span>: <span class="ident">MessageSource</span>,
 		<span class="ident">vote</span>: <span class="ident">IndirectSignedApprovalVote</span>,
@@ -2671,7 +2664,7 @@
 			<span class="kw">_</span> =&gt; {
 				<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">peer_id</span>) <span class="op">=</span> <span class="ident">source</span>.<span class="ident">peer_id</span>() {
 					<span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">recent_outdated_blocks</span>.<span class="ident">is_recent_outdated</span>(<span class="kw-2">&amp;</span><span class="ident">block_hash</span>) {
-						<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>, <span class="ident">peer_id</span>, <span class="ident">COST_UNEXPECTED_MESSAGE</span>).<span class="kw">await</span>;
+						<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="ident">peer_id</span>, <span class="ident">COST_UNEXPECTED_MESSAGE</span>).<span class="kw">await</span>;
 					}
 				}
 				<span class="kw">return</span>
@@ -2690,7 +2683,7 @@
 					<span class="question-mark">?</span><span class="ident">message_subject</span>,
 					<span class="string">&quot;Unknown approval assignment&quot;</span>,
 				);
-				<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>, <span class="ident">peer_id</span>, <span class="ident">COST_UNEXPECTED_MESSAGE</span>).<span class="kw">await</span>;
+				<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="ident">peer_id</span>, <span class="ident">COST_UNEXPECTED_MESSAGE</span>).<span class="kw">await</span>;
 				<span class="kw">return</span>
 			}
 
@@ -2707,7 +2700,7 @@
 								<span class="string">&quot;Duplicate approval&quot;</span>,
 							);
 
-							<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>, <span class="ident">peer_id</span>, <span class="ident">COST_DUPLICATE_MESSAGE</span>).<span class="kw">await</span>;
+							<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="ident">peer_id</span>, <span class="ident">COST_DUPLICATE_MESSAGE</span>).<span class="kw">await</span>;
 						}
 						<span class="kw">return</span>
 					}
@@ -2719,14 +2712,14 @@
 						<span class="question-mark">?</span><span class="ident">message_subject</span>,
 						<span class="string">&quot;Approval from a peer is out of view&quot;</span>,
 					);
-					<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>, <span class="ident">peer_id</span>.<span class="ident">clone</span>(), <span class="ident">COST_UNEXPECTED_MESSAGE</span>).<span class="kw">await</span>;
+					<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="ident">peer_id</span>.<span class="ident">clone</span>(), <span class="ident">COST_UNEXPECTED_MESSAGE</span>).<span class="kw">await</span>;
 				},
 			}
 
 			<span class="comment">// if the approval is known to be valid, reward the peer</span>
 			<span class="kw">if</span> <span class="ident">entry</span>.<span class="ident">knowledge</span>.<span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="ident">message_subject</span>, <span class="ident">message_kind</span>) {
 				<span class="macro">gum::trace!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="question-mark">?</span><span class="ident">peer_id</span>, <span class="question-mark">?</span><span class="ident">message_subject</span>, <span class="string">&quot;Known approval&quot;</span>);
-				<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>, <span class="ident">peer_id</span>.<span class="ident">clone</span>(), <span class="ident">BENEFIT_VALID_MESSAGE</span>).<span class="kw">await</span>;
+				<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="ident">peer_id</span>.<span class="ident">clone</span>(), <span class="ident">BENEFIT_VALID_MESSAGE</span>).<span class="kw">await</span>;
 				<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">peer_knowledge</span>) <span class="op">=</span> <span class="ident">entry</span>.<span class="ident">known_by</span>.<span class="ident">get_mut</span>(<span class="kw-2">&amp;</span><span class="ident">peer_id</span>) {
 					<span class="ident">peer_knowledge</span>.<span class="ident">received</span>.<span class="ident">insert</span>(<span class="ident">message_subject</span>.<span class="ident">clone</span>(), <span class="ident">message_kind</span>);
 				}
@@ -2757,7 +2750,8 @@
 			);
 			<span class="kw">match</span> <span class="ident">result</span> {
 				<span class="ident">ApprovalCheckResult::Accepted</span> =&gt; {
-					<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>, <span class="ident">peer_id</span>.<span class="ident">clone</span>(), <span class="ident">BENEFIT_VALID_MESSAGE_FIRST</span>).<span class="kw">await</span>;
+					<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="ident">peer_id</span>.<span class="ident">clone</span>(), <span class="ident">BENEFIT_VALID_MESSAGE_FIRST</span>)
+						.<span class="kw">await</span>;
 
 					<span class="ident">entry</span>.<span class="ident">knowledge</span>.<span class="ident">insert</span>(<span class="ident">message_subject</span>.<span class="ident">clone</span>(), <span class="ident">message_kind</span>);
 					<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">peer_knowledge</span>) <span class="op">=</span> <span class="ident">entry</span>.<span class="ident">known_by</span>.<span class="ident">get_mut</span>(<span class="kw-2">&amp;</span><span class="ident">peer_id</span>) {
@@ -2765,7 +2759,7 @@
 					}
 				},
 				<span class="ident">ApprovalCheckResult::Bad</span>(<span class="ident">error</span>) =&gt; {
-					<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>, <span class="ident">peer_id</span>, <span class="ident">COST_INVALID_MESSAGE</span>).<span class="kw">await</span>;
+					<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="ident">peer_id</span>, <span class="ident">COST_INVALID_MESSAGE</span>).<span class="kw">await</span>;
 					<span class="macro">gum::info!</span>(
 						<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
 						<span class="question-mark">?</span><span class="ident">peer_id</span>,
@@ -2917,8 +2911,7 @@
 	}
 
 	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">unify_with_peer</span>(
-		<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">ApprovalDistributionMessage</span><span class="op">&gt;</span>
-		          <span class="op">+</span> <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">ApprovalDistributionMessage</span><span class="op">&gt;</span>),
+		<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">overseer::ApprovalDistributionSenderTrait</span>,
 		<span class="ident">metrics</span>: <span class="kw-2">&amp;</span><span class="ident">Metrics</span>,
 		<span class="ident">entries</span>: <span class="kw-2">&amp;mut</span> <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">Hash</span>, <span class="ident">BlockEntry</span><span class="op">&gt;</span>,
 		<span class="ident">topologies</span>: <span class="kw-2">&amp;</span><span class="ident">SessionGridTopologies</span>,
@@ -3034,13 +3027,14 @@
 				<span class="string">&quot;Sending assignments to unified peer&quot;</span>,
 			);
 
-			<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeMessage::SendValidationMessage</span>(
-				<span class="macro">vec!</span>[<span class="ident">peer_id</span>.<span class="ident">clone</span>()],
-				<span class="ident">Versioned::V1</span>(<span class="ident">protocol_v1::ValidationProtocol::ApprovalDistribution</span>(
-					<span class="ident">protocol_v1::ApprovalDistributionMessage::Assignments</span>(<span class="ident">assignments_to_send</span>),
-				)),
-			))
-			.<span class="kw">await</span>;
+			<span class="ident">sender</span>
+				.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeMessage::SendValidationMessage</span>(
+					<span class="macro">vec!</span>[<span class="ident">peer_id</span>.<span class="ident">clone</span>()],
+					<span class="ident">Versioned::V1</span>(<span class="ident">protocol_v1::ValidationProtocol::ApprovalDistribution</span>(
+						<span class="ident">protocol_v1::ApprovalDistributionMessage::Assignments</span>(<span class="ident">assignments_to_send</span>),
+					)),
+				))
+				.<span class="kw">await</span>;
 		}
 
 		<span class="kw">if</span> <span class="op">!</span><span class="ident">approvals_to_send</span>.<span class="ident">is_empty</span>() {
@@ -3051,20 +3045,20 @@
 				<span class="string">&quot;Sending approvals to unified peer&quot;</span>,
 			);
 
-			<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeMessage::SendValidationMessage</span>(
-				<span class="macro">vec!</span>[<span class="ident">peer_id</span>],
-				<span class="ident">Versioned::V1</span>(<span class="ident">protocol_v1::ValidationProtocol::ApprovalDistribution</span>(
-					<span class="ident">protocol_v1::ApprovalDistributionMessage::Approvals</span>(<span class="ident">approvals_to_send</span>),
-				)),
-			))
-			.<span class="kw">await</span>;
+			<span class="ident">sender</span>
+				.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeMessage::SendValidationMessage</span>(
+					<span class="macro">vec!</span>[<span class="ident">peer_id</span>],
+					<span class="ident">Versioned::V1</span>(<span class="ident">protocol_v1::ValidationProtocol::ApprovalDistribution</span>(
+						<span class="ident">protocol_v1::ApprovalDistributionMessage::Approvals</span>(<span class="ident">approvals_to_send</span>),
+					)),
+				))
+				.<span class="kw">await</span>;
 		}
 	}
 
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">enable_aggression</span>(
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">enable_aggression</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
 		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
-		<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">ApprovalDistributionMessage</span><span class="op">&gt;</span>
-		          <span class="op">+</span> <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">ApprovalDistributionMessage</span><span class="op">&gt;</span>),
+		<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 		<span class="ident">resend</span>: <span class="ident">Resend</span>,
 		<span class="ident">metrics</span>: <span class="kw-2">&amp;</span><span class="ident">Metrics</span>,
 	) {
@@ -3165,14 +3159,17 @@
 <span class="comment">//</span>
 <span class="comment">// Note that the required routing of a message can be modified even if the</span>
 <span class="comment">// topology is unknown yet.</span>
-<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">adjust_required_routing_and_propagate</span>(
-	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">ApprovalDistributionMessage</span><span class="op">&gt;</span>
-	          <span class="op">+</span> <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">ApprovalDistributionMessage</span><span class="op">&gt;</span>),
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">ApprovalDistribution</span>, <span class="ident">prefix</span> <span class="op">=</span> <span class="ident"><span class="self">self</span>::overseer</span>)]</span>
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">adjust_required_routing_and_propagate</span><span class="op">&lt;</span><span class="ident">Context</span>, <span class="ident">BlockFilter</span>, <span class="ident">RoutingModifier</span><span class="op">&gt;</span>(
+	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 	<span class="ident">blocks</span>: <span class="kw-2">&amp;mut</span> <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">Hash</span>, <span class="ident">BlockEntry</span><span class="op">&gt;</span>,
 	<span class="ident">topologies</span>: <span class="kw-2">&amp;</span><span class="ident">SessionGridTopologies</span>,
-	<span class="ident">block_filter</span>: <span class="kw">impl</span> <span class="ident">Fn</span>(<span class="kw-2">&amp;mut</span> <span class="ident">BlockEntry</span>) -&gt; <span class="ident">bool</span>,
-	<span class="ident">routing_modifier</span>: <span class="kw">impl</span> <span class="ident">Fn</span>(<span class="kw-2">&amp;mut</span> <span class="ident">RequiredRouting</span>, <span class="ident">bool</span>, <span class="kw-2">&amp;</span><span class="ident">ValidatorIndex</span>),
-) {
+	<span class="ident">block_filter</span>: <span class="ident">BlockFilter</span>,
+	<span class="ident">routing_modifier</span>: <span class="ident">RoutingModifier</span>,
+) <span class="kw">where</span>
+	<span class="ident">BlockFilter</span>: <span class="ident">Fn</span>(<span class="kw-2">&amp;mut</span> <span class="ident">BlockEntry</span>) -&gt; <span class="ident">bool</span>,
+	<span class="ident">RoutingModifier</span>: <span class="ident">Fn</span>(<span class="kw-2">&amp;mut</span> <span class="ident">RequiredRouting</span>, <span class="ident">bool</span>, <span class="kw-2">&amp;</span><span class="ident">ValidatorIndex</span>),
+{
 	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">peer_assignments</span> <span class="op">=</span> <span class="ident">HashMap::new</span>();
 	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">peer_approvals</span> <span class="op">=</span> <span class="ident">HashMap::new</span>();
 
@@ -3274,8 +3271,7 @@
 
 <span class="doccomment">/// Modify the reputation of a peer based on its behavior.</span>
 <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">modify_reputation</span>(
-	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">ApprovalDistributionMessage</span><span class="op">&gt;</span>
-	          <span class="op">+</span> <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">ApprovalDistributionMessage</span><span class="op">&gt;</span>),
+	<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">overseer::ApprovalDistributionSenderTrait</span>,
 	<span class="ident">peer_id</span>: <span class="ident">PeerId</span>,
 	<span class="ident">rep</span>: <span class="ident">Rep</span>,
 ) {
@@ -3286,20 +3282,17 @@
 		<span class="string">&quot;Reputation change for peer&quot;</span>,
 	);
 
-	<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeMessage::ReportPeer</span>(<span class="ident">peer_id</span>, <span class="ident">rep</span>)).<span class="kw">await</span>;
+	<span class="ident">sender</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeMessage::ReportPeer</span>(<span class="ident">peer_id</span>, <span class="ident">rep</span>)).<span class="kw">await</span>;
 }
 
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">ApprovalDistribution</span>, <span class="ident">prefix</span> <span class="op">=</span> <span class="ident"><span class="self">self</span>::overseer</span>)]</span>
 <span class="kw">impl</span> <span class="ident">ApprovalDistribution</span> {
 	<span class="doccomment">/// Create a new instance of the [`ApprovalDistribution`] subsystem.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">metrics</span>: <span class="ident">Metrics</span>) -&gt; <span class="self">Self</span> {
 		<span class="self">Self</span> { <span class="ident">metrics</span> }
 	}
 
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">ctx</span>: <span class="ident">Context</span>)
-	<span class="kw">where</span>
-		<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">ApprovalDistributionMessage</span><span class="op">&gt;</span>,
-		<span class="ident">Context</span>: <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">ApprovalDistributionMessage</span><span class="op">&gt;</span>,
-	{
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">ctx</span>: <span class="ident">Context</span>) {
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">state</span> <span class="op">=</span> <span class="ident">State::default</span>();
 
 		<span class="comment">// According to the docs of `rand`, this is a ChaCha12 RNG in practice</span>
@@ -3314,10 +3307,7 @@
 		<span class="kw-2">mut</span> <span class="ident">ctx</span>: <span class="ident">Context</span>,
 		<span class="ident">state</span>: <span class="kw-2">&amp;mut</span> <span class="ident">State</span>,
 		<span class="ident">rng</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">CryptoRng</span> <span class="op">+</span> <span class="ident">Rng</span>),
-	) <span class="kw">where</span>
-		<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">ApprovalDistributionMessage</span><span class="op">&gt;</span>,
-		<span class="ident">Context</span>: <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">ApprovalDistributionMessage</span><span class="op">&gt;</span>,
-	{
+	) {
 		<span class="kw">loop</span> {
 			<span class="kw">let</span> <span class="ident">message</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">ctx</span>.<span class="ident">recv</span>().<span class="kw">await</span> {
 				<span class="prelude-val">Ok</span>(<span class="ident">message</span>) =&gt; <span class="ident">message</span>,
@@ -3352,10 +3342,7 @@
 		<span class="ident">msg</span>: <span class="ident">ApprovalDistributionMessage</span>,
 		<span class="ident">metrics</span>: <span class="kw-2">&amp;</span><span class="ident">Metrics</span>,
 		<span class="ident">rng</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">CryptoRng</span> <span class="op">+</span> <span class="ident">Rng</span>),
-	) <span class="kw">where</span>
-		<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">ApprovalDistributionMessage</span><span class="op">&gt;</span>,
-		<span class="ident">Context</span>: <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">ApprovalDistributionMessage</span><span class="op">&gt;</span>,
-	{
+	) {
 		<span class="kw">match</span> <span class="ident">msg</span> {
 			<span class="ident">ApprovalDistributionMessage::NetworkBridgeUpdate</span>(<span class="ident">event</span>) =&gt; {
 				<span class="ident">state</span>.<span class="ident">handle_network_msg</span>(<span class="ident">ctx</span>, <span class="ident">metrics</span>, <span class="ident">event</span>, <span class="ident">rng</span>).<span class="kw">await</span>;
@@ -3398,11 +3385,8 @@
 	}
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span> <span class="ident">overseer::Subsystem</span><span class="op">&lt;</span><span class="ident">Context</span>, <span class="ident">SubsystemError</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ApprovalDistribution</span>
-<span class="kw">where</span>
-	<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">ApprovalDistributionMessage</span><span class="op">&gt;</span>,
-	<span class="ident">Context</span>: <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">ApprovalDistributionMessage</span><span class="op">&gt;</span>,
-{
+<span class="attribute">#[<span class="ident">overseer::subsystem</span>(<span class="ident">ApprovalDistribution</span>, <span class="ident">error</span><span class="op">=</span><span class="ident">SubsystemError</span>, <span class="ident">prefix</span><span class="op">=</span><span class="ident"><span class="self">self</span>::overseer</span>)]</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span> <span class="ident">ApprovalDistribution</span> {
 	<span class="kw">fn</span> <span class="ident">start</span>(<span class="self">self</span>, <span class="ident">ctx</span>: <span class="ident">Context</span>) -&gt; <span class="ident">SpawnedSubsystem</span> {
 		<span class="kw">let</span> <span class="ident">future</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">run</span>(<span class="ident">ctx</span>).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="prelude-val">Ok</span>(())).<span class="ident">boxed</span>();
 

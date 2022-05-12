@@ -1347,6 +1347,12 @@
 <span id="1342">1342</span>
 <span id="1343">1343</span>
 <span id="1344">1344</span>
+<span id="1345">1345</span>
+<span id="1346">1346</span>
+<span id="1347">1347</span>
+<span id="1348">1348</span>
+<span id="1349">1349</span>
+<span id="1350">1350</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -1387,7 +1393,7 @@
 		<span class="ident">ApprovalDistributionMessage</span>, <span class="ident">ChainApiMessage</span>, <span class="ident">ChainSelectionMessage</span>, <span class="ident">RuntimeApiMessage</span>,
 		<span class="ident">RuntimeApiRequest</span>,
 	},
-	<span class="ident">overseer</span>, <span class="ident">RuntimeApiError</span>, <span class="ident">SubsystemContext</span>, <span class="ident">SubsystemError</span>, <span class="ident">SubsystemResult</span>,
+	<span class="ident">overseer</span>, <span class="ident">RuntimeApiError</span>, <span class="ident">SubsystemError</span>, <span class="ident">SubsystemResult</span>,
 };
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem_util</span>::{
 	<span class="ident">determine_new_blocks</span>,
@@ -1456,8 +1462,9 @@
 }
 
 <span class="doccomment">/// Computes information about the imported block. Returns an error if the info couldn&#39;t be extracted.</span>
-<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">imported_block_info</span>(
-	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">SubsystemContext</span> <span class="op">+</span> <span class="ident">overseer::SubsystemContext</span>),
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">ApprovalVoting</span>, <span class="ident">prefix</span> <span class="op">=</span> <span class="ident"><span class="self">self</span>::overseer</span>)]</span>
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">imported_block_info</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
+	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 	<span class="ident">env</span>: <span class="ident">ImportedBlockInfoEnv</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>,
 	<span class="ident">block_hash</span>: <span class="ident">Hash</span>,
 	<span class="ident">block_header</span>: <span class="kw-2">&amp;</span><span class="ident">Header</span>,
@@ -1668,10 +1675,11 @@
 <span class="doccomment">///   * and return information about all candidates imported under each block.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// It is the responsibility of the caller to schedule wakeups for each block.</span>
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle_new_head</span>(
-	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">SubsystemContext</span> <span class="op">+</span> <span class="ident">overseer::SubsystemContext</span>),
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">ApprovalVoting</span>, <span class="ident">prefix</span> <span class="op">=</span> <span class="ident"><span class="self">self</span>::overseer</span>)]</span>
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle_new_head</span><span class="op">&lt;</span><span class="ident">Context</span>, <span class="ident">B</span>: <span class="ident">Backend</span><span class="op">&gt;</span>(
+	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 	<span class="ident">state</span>: <span class="kw-2">&amp;mut</span> <span class="ident">State</span>,
-	<span class="ident">db</span>: <span class="kw-2">&amp;mut</span> <span class="ident">OverlayedBackend</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="kw">impl</span> <span class="ident">Backend</span><span class="op">&gt;</span>,
+	<span class="ident">db</span>: <span class="kw-2">&amp;mut</span> <span class="ident">OverlayedBackend</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="ident">B</span><span class="op">&gt;</span>,
 	<span class="ident">head</span>: <span class="ident">Hash</span>,
 	<span class="ident">finalized_number</span>: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">BlockNumber</span><span class="op">&gt;</span>,
 ) -&gt; <span class="ident">SubsystemResult</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">BlockImportedCandidates</span><span class="op">&gt;</span><span class="op">&gt;</span> {
@@ -1958,7 +1966,7 @@
 	<span class="kw">use</span> <span class="ident">assert_matches::assert_matches</span>;
 	<span class="kw">use</span> <span class="ident">merlin::Transcript</span>;
 	<span class="kw">use</span> <span class="ident">polkadot_node_primitives::approval</span>::{<span class="ident">VRFOutput</span>, <span class="ident">VRFProof</span>};
-	<span class="kw">use</span> <span class="ident">polkadot_node_subsystem::messages::AllMessages</span>;
+	<span class="kw">use</span> <span class="ident">polkadot_node_subsystem::messages</span>::{<span class="ident">AllMessages</span>, <span class="ident">ApprovalVotingMessage</span>};
 	<span class="kw">use</span> <span class="ident">polkadot_node_subsystem_test_helpers::make_subsystem_context</span>;
 	<span class="kw">use</span> <span class="ident">polkadot_node_subsystem_util::database::Database</span>;
 	<span class="kw">use</span> <span class="ident">polkadot_primitives::v2</span>::{<span class="ident">Id</span> <span class="kw">as</span> <span class="ident">ParaId</span>, <span class="ident">SessionInfo</span>, <span class="ident">ValidatorIndex</span>};
@@ -2073,7 +2081,8 @@
 	<span class="attribute">#[<span class="ident">test</span>]</span>
 	<span class="kw">fn</span> <span class="ident">imported_block_info_is_good</span>() {
 		<span class="kw">let</span> <span class="ident">pool</span> <span class="op">=</span> <span class="ident">TaskExecutor::new</span>();
-		<span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">ctx</span>, <span class="kw-2">mut</span> <span class="ident">handle</span>) <span class="op">=</span> <span class="ident">make_subsystem_context</span>::<span class="op">&lt;</span>(), <span class="kw">_</span><span class="op">&gt;</span>(<span class="ident">pool</span>.<span class="ident">clone</span>());
+		<span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">ctx</span>, <span class="kw-2">mut</span> <span class="ident">handle</span>) <span class="op">=</span>
+			<span class="ident">make_subsystem_context</span>::<span class="op">&lt;</span><span class="ident">ApprovalVotingMessage</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="ident">pool</span>.<span class="ident">clone</span>());
 
 		<span class="kw">let</span> <span class="ident">session</span> <span class="op">=</span> <span class="number">5</span>;
 		<span class="kw">let</span> <span class="ident">session_info</span> <span class="op">=</span> <span class="ident">dummy_session_info</span>(<span class="ident">session</span>);
@@ -2196,7 +2205,8 @@
 	<span class="attribute">#[<span class="ident">test</span>]</span>
 	<span class="kw">fn</span> <span class="ident">imported_block_info_fails_if_no_babe_vrf</span>() {
 		<span class="kw">let</span> <span class="ident">pool</span> <span class="op">=</span> <span class="ident">TaskExecutor::new</span>();
-		<span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">ctx</span>, <span class="kw-2">mut</span> <span class="ident">handle</span>) <span class="op">=</span> <span class="ident">make_subsystem_context</span>::<span class="op">&lt;</span>(), <span class="kw">_</span><span class="op">&gt;</span>(<span class="ident">pool</span>.<span class="ident">clone</span>());
+		<span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">ctx</span>, <span class="kw-2">mut</span> <span class="ident">handle</span>) <span class="op">=</span>
+			<span class="ident">make_subsystem_context</span>::<span class="op">&lt;</span><span class="ident">ApprovalVotingMessage</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="ident">pool</span>.<span class="ident">clone</span>());
 
 		<span class="kw">let</span> <span class="ident">session</span> <span class="op">=</span> <span class="number">5</span>;
 		<span class="kw">let</span> <span class="ident">session_info</span> <span class="op">=</span> <span class="ident">dummy_session_info</span>(<span class="ident">session</span>);
@@ -2299,7 +2309,8 @@
 	<span class="attribute">#[<span class="ident">test</span>]</span>
 	<span class="kw">fn</span> <span class="ident">imported_block_info_fails_if_ancient_session</span>() {
 		<span class="kw">let</span> <span class="ident">pool</span> <span class="op">=</span> <span class="ident">TaskExecutor::new</span>();
-		<span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">ctx</span>, <span class="kw-2">mut</span> <span class="ident">handle</span>) <span class="op">=</span> <span class="ident">make_subsystem_context</span>::<span class="op">&lt;</span>(), <span class="kw">_</span><span class="op">&gt;</span>(<span class="ident">pool</span>.<span class="ident">clone</span>());
+		<span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">ctx</span>, <span class="kw-2">mut</span> <span class="ident">handle</span>) <span class="op">=</span>
+			<span class="ident">make_subsystem_context</span>::<span class="op">&lt;</span><span class="ident">ApprovalVotingMessage</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="ident">pool</span>.<span class="ident">clone</span>());
 
 		<span class="kw">let</span> <span class="ident">session</span> <span class="op">=</span> <span class="number">5</span>;
 
@@ -2376,7 +2387,7 @@
 	<span class="attribute">#[<span class="ident">test</span>]</span>
 	<span class="kw">fn</span> <span class="ident">imported_block_info_extracts_force_approve</span>() {
 		<span class="kw">let</span> <span class="ident">pool</span> <span class="op">=</span> <span class="ident">TaskExecutor::new</span>();
-		<span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">ctx</span>, <span class="kw-2">mut</span> <span class="ident">handle</span>) <span class="op">=</span> <span class="ident">make_subsystem_context</span>::<span class="op">&lt;</span>(), <span class="kw">_</span><span class="op">&gt;</span>(<span class="ident">pool</span>.<span class="ident">clone</span>());
+		<span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">ctx</span>, <span class="kw-2">mut</span> <span class="ident">handle</span>) <span class="op">=</span> <span class="ident">make_subsystem_context</span>(<span class="ident">pool</span>.<span class="ident">clone</span>());
 
 		<span class="kw">let</span> <span class="ident">session</span> <span class="op">=</span> <span class="number">5</span>;
 		<span class="kw">let</span> <span class="ident">session_info</span> <span class="op">=</span> <span class="ident">dummy_session_info</span>(<span class="ident">session</span>);
@@ -2507,7 +2518,8 @@
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">overlay_db</span> <span class="op">=</span> <span class="ident">OverlayedBackend::new</span>(<span class="kw-2">&amp;</span><span class="ident">db</span>);
 
 		<span class="kw">let</span> <span class="ident">pool</span> <span class="op">=</span> <span class="ident">TaskExecutor::new</span>();
-		<span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">ctx</span>, <span class="kw-2">mut</span> <span class="ident">handle</span>) <span class="op">=</span> <span class="ident">make_subsystem_context</span>::<span class="op">&lt;</span>(), <span class="kw">_</span><span class="op">&gt;</span>(<span class="ident">pool</span>.<span class="ident">clone</span>());
+		<span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">ctx</span>, <span class="kw-2">mut</span> <span class="ident">handle</span>) <span class="op">=</span>
+			<span class="ident">make_subsystem_context</span>::<span class="op">&lt;</span><span class="ident">ApprovalVotingMessage</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="ident">pool</span>.<span class="ident">clone</span>());
 
 		<span class="kw">let</span> <span class="ident">session</span> <span class="op">=</span> <span class="number">5</span>;
 		<span class="kw">let</span> <span class="ident">irrelevant</span> <span class="op">=</span> <span class="number">666</span>;

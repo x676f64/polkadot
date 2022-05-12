@@ -2101,6 +2101,7 @@
 <span id="2096">2096</span>
 <span id="2097">2097</span>
 <span id="2098">2098</span>
+<span id="2099">2099</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -2141,11 +2142,11 @@
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem</span>::{
 	<span class="ident">jaeger</span>,
 	<span class="ident">messages</span>::{
-		<span class="ident">AllMessages</span>, <span class="ident">CandidateBackingMessage</span>, <span class="ident">NetworkBridgeEvent</span>, <span class="ident">NetworkBridgeMessage</span>,
+		<span class="ident">CandidateBackingMessage</span>, <span class="ident">NetworkBridgeEvent</span>, <span class="ident">NetworkBridgeMessage</span>,
 		<span class="ident">StatementDistributionMessage</span>,
 	},
 	<span class="ident">overseer</span>, <span class="ident">ActiveLeavesUpdate</span>, <span class="ident">FromOverseer</span>, <span class="ident">OverseerSignal</span>, <span class="ident">PerLeafSpan</span>, <span class="ident">SpawnedSubsystem</span>,
-	<span class="ident">SubsystemContext</span>, <span class="ident">SubsystemError</span>,
+	<span class="ident">SubsystemError</span>,
 };
 <span class="kw">use</span> <span class="ident">polkadot_primitives::v2</span>::{
 	<span class="ident">AuthorityDiscoveryId</span>, <span class="ident">CandidateHash</span>, <span class="ident">CommittedCandidateReceipt</span>, <span class="ident">CompactStatement</span>, <span class="ident">Hash</span>,
@@ -2230,12 +2231,8 @@
 	<span class="ident">rng</span>: <span class="ident">R</span>,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Context</span>, <span class="ident">R</span>: <span class="ident">rand::Rng</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span><span class="op">&gt;</span> <span class="ident">overseer::Subsystem</span><span class="op">&lt;</span><span class="ident">Context</span>, <span class="ident">SubsystemError</span><span class="op">&gt;</span>
-	<span class="kw">for</span> <span class="ident">StatementDistributionSubsystem</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span>
-<span class="kw">where</span>
-	<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">StatementDistributionMessage</span><span class="op">&gt;</span>,
-	<span class="ident">Context</span>: <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">StatementDistributionMessage</span><span class="op">&gt;</span>,
-{
+<span class="attribute">#[<span class="ident">overseer::subsystem</span>(<span class="ident">StatementDistribution</span>, <span class="ident">error</span><span class="op">=</span><span class="ident">SubsystemError</span>, <span class="ident">prefix</span><span class="op">=</span><span class="ident"><span class="self">self</span>::overseer</span>)]</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Context</span>, <span class="ident">R</span>: <span class="ident">rand::Rng</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span><span class="op">&gt;</span> <span class="ident">StatementDistributionSubsystem</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span> {
 	<span class="kw">fn</span> <span class="ident">start</span>(<span class="self">self</span>, <span class="ident">ctx</span>: <span class="ident">Context</span>) -&gt; <span class="ident">SpawnedSubsystem</span> {
 		<span class="comment">// Swallow error because failure is fatal to the node and we log with more precision</span>
 		<span class="comment">// within `run`.</span>
@@ -2733,10 +2730,10 @@
 	<span class="ident">Responder</span>(<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ResponderMessage</span><span class="op">&gt;</span>),
 }
 
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">StatementDistribution</span>, <span class="ident">prefix</span> <span class="op">=</span> <span class="ident"><span class="self">self</span>::overseer</span>)]</span>
 <span class="kw">impl</span> <span class="ident">MuxedMessage</span> {
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">receive</span>(
-		<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">StatementDistributionMessage</span><span class="op">&gt;</span>
-		          <span class="op">+</span> <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">StatementDistributionMessage</span><span class="op">&gt;</span>),
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">receive</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
+		<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 		<span class="ident">from_requester</span>: <span class="kw-2">&amp;mut</span> <span class="ident">mpsc::Receiver</span><span class="op">&lt;</span><span class="ident">RequesterMessage</span><span class="op">&gt;</span>,
 		<span class="ident">from_responder</span>: <span class="kw-2">&amp;mut</span> <span class="ident">mpsc::Receiver</span><span class="op">&lt;</span><span class="ident">ResponderMessage</span><span class="op">&gt;</span>,
 	) -&gt; <span class="ident">MuxedMessage</span> {
@@ -2993,11 +2990,12 @@
 <span class="doccomment">/// circulates the statement to all peers who have not seen it yet, and</span>
 <span class="doccomment">/// sends all statements dependent on that statement to peers who could previously not receive</span>
 <span class="doccomment">/// them but now can.</span>
-<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">circulate_statement_and_dependents</span>(
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">StatementDistribution</span>, <span class="ident">prefix</span><span class="op">=</span><span class="ident"><span class="self">self</span>::overseer</span>)]</span>
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">circulate_statement_and_dependents</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
 	<span class="ident">gossip_peers</span>: <span class="kw-2">&amp;</span><span class="ident">HashSet</span><span class="op">&lt;</span><span class="ident">PeerId</span><span class="op">&gt;</span>,
 	<span class="ident">peers</span>: <span class="kw-2">&amp;mut</span> <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">PeerId</span>, <span class="ident">PeerData</span><span class="op">&gt;</span>,
 	<span class="ident">active_heads</span>: <span class="kw-2">&amp;mut</span> <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">Hash</span>, <span class="ident">ActiveHeadData</span><span class="op">&gt;</span>,
-	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">SubsystemContext</span> <span class="op">+</span> <span class="ident">overseer::SubsystemContext</span>),
+	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 	<span class="ident">relay_parent</span>: <span class="ident">Hash</span>,
 	<span class="ident">statement</span>: <span class="ident">SignedFullStatement</span>,
 	<span class="ident">priority_peers</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">PeerId</span><span class="op">&gt;</span>,
@@ -3109,10 +3107,11 @@
 
 <span class="doccomment">/// Circulates a statement to all peers who have not seen it yet, and returns</span>
 <span class="doccomment">/// an iterator over peers who need to have dependent statements sent.</span>
-<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">circulate_statement</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">StatementDistribution</span>, <span class="ident">prefix</span><span class="op">=</span><span class="ident"><span class="self">self</span>::overseer</span>)]</span>
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">circulate_statement</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">Context</span><span class="op">&gt;</span>(
 	<span class="ident">gossip_peers</span>: <span class="kw-2">&amp;</span><span class="ident">HashSet</span><span class="op">&lt;</span><span class="ident">PeerId</span><span class="op">&gt;</span>,
 	<span class="ident">peers</span>: <span class="kw-2">&amp;mut</span> <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">PeerId</span>, <span class="ident">PeerData</span><span class="op">&gt;</span>,
-	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">SubsystemContext</span> <span class="op">+</span> <span class="ident">overseer::SubsystemContext</span>),
+	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 	<span class="ident">relay_parent</span>: <span class="ident">Hash</span>,
 	<span class="ident">stored</span>: <span class="ident">StoredStatement</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
 	<span class="kw-2">mut</span> <span class="ident">priority_peers</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">PeerId</span><span class="op">&gt;</span>,
@@ -3184,10 +3183,10 @@
 			<span class="ident">statement</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">stored</span>.<span class="ident">statement</span>,
 			<span class="string">&quot;Sending statement&quot;</span>,
 		);
-		<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">AllMessages::NetworkBridge</span>(<span class="ident">NetworkBridgeMessage::SendValidationMessage</span>(
+		<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeMessage::SendValidationMessage</span>(
 			<span class="ident">peers_to_send</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">p</span>, <span class="kw">_</span>)<span class="op">|</span> <span class="ident">p</span>.<span class="ident">clone</span>()).<span class="ident">collect</span>(),
 			<span class="ident">payload</span>,
-		)))
+		))
 		.<span class="kw">await</span>;
 	}
 
@@ -3198,10 +3197,11 @@
 }
 
 <span class="doccomment">/// Send all statements about a given candidate hash to a peer.</span>
-<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">send_statements_about</span>(
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">StatementDistribution</span>, <span class="ident">prefix</span><span class="op">=</span><span class="ident"><span class="self">self</span>::overseer</span>)]</span>
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">send_statements_about</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
 	<span class="ident">peer</span>: <span class="ident">PeerId</span>,
 	<span class="ident">peer_data</span>: <span class="kw-2">&amp;mut</span> <span class="ident">PeerData</span>,
-	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">SubsystemContext</span> <span class="op">+</span> <span class="ident">overseer::SubsystemContext</span>),
+	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 	<span class="ident">relay_parent</span>: <span class="ident">Hash</span>,
 	<span class="ident">candidate_hash</span>: <span class="ident">CandidateHash</span>,
 	<span class="ident">active_head</span>: <span class="kw-2">&amp;</span><span class="ident">ActiveHeadData</span>,
@@ -3223,21 +3223,19 @@
 			<span class="ident">statement</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">statement</span>.<span class="ident">statement</span>,
 			<span class="string">&quot;Sending statement&quot;</span>,
 		);
-		<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">AllMessages::NetworkBridge</span>(<span class="ident">NetworkBridgeMessage::SendValidationMessage</span>(
-			<span class="macro">vec!</span>[<span class="ident">peer</span>.<span class="ident">clone</span>()],
-			<span class="ident">payload</span>,
-		)))
-		.<span class="kw">await</span>;
+		<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeMessage::SendValidationMessage</span>(<span class="macro">vec!</span>[<span class="ident">peer</span>.<span class="ident">clone</span>()], <span class="ident">payload</span>))
+			.<span class="kw">await</span>;
 
 		<span class="ident">metrics</span>.<span class="ident">on_statement_distributed</span>();
 	}
 }
 
 <span class="doccomment">/// Send all statements at a given relay-parent to a peer.</span>
-<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">send_statements</span>(
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">StatementDistribution</span>, <span class="ident">prefix</span><span class="op">=</span><span class="ident"><span class="self">self</span>::overseer</span>)]</span>
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">send_statements</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
 	<span class="ident">peer</span>: <span class="ident">PeerId</span>,
 	<span class="ident">peer_data</span>: <span class="kw-2">&amp;mut</span> <span class="ident">PeerData</span>,
-	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">SubsystemContext</span> <span class="op">+</span> <span class="ident">overseer::SubsystemContext</span>),
+	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 	<span class="ident">relay_parent</span>: <span class="ident">Hash</span>,
 	<span class="ident">active_head</span>: <span class="kw-2">&amp;</span><span class="ident">ActiveHeadData</span>,
 	<span class="ident">metrics</span>: <span class="kw-2">&amp;</span><span class="ident">Metrics</span>,
@@ -3257,23 +3255,19 @@
 			<span class="ident">statement</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">statement</span>.<span class="ident">statement</span>,
 			<span class="string">&quot;Sending statement&quot;</span>
 		);
-		<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">AllMessages::NetworkBridge</span>(<span class="ident">NetworkBridgeMessage::SendValidationMessage</span>(
-			<span class="macro">vec!</span>[<span class="ident">peer</span>.<span class="ident">clone</span>()],
-			<span class="ident">payload</span>,
-		)))
-		.<span class="kw">await</span>;
+		<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeMessage::SendValidationMessage</span>(<span class="macro">vec!</span>[<span class="ident">peer</span>.<span class="ident">clone</span>()], <span class="ident">payload</span>))
+			.<span class="kw">await</span>;
 
 		<span class="ident">metrics</span>.<span class="ident">on_statement_distributed</span>();
 	}
 }
 
 <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">report_peer</span>(
-	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">SubsystemContext</span> <span class="op">+</span> <span class="ident">overseer::SubsystemContext</span>),
+	<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">overseer::StatementDistributionSenderTrait</span>,
 	<span class="ident">peer</span>: <span class="ident">PeerId</span>,
 	<span class="ident">rep</span>: <span class="ident">Rep</span>,
 ) {
-	<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">AllMessages::NetworkBridge</span>(<span class="ident">NetworkBridgeMessage::ReportPeer</span>(<span class="ident">peer</span>, <span class="ident">rep</span>)))
-		.<span class="kw">await</span>
+	<span class="ident">sender</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeMessage::ReportPeer</span>(<span class="ident">peer</span>, <span class="ident">rep</span>)).<span class="kw">await</span>
 }
 
 <span class="doccomment">/// If message contains a statement, then retrieve it, otherwise fork task to fetch it.</span>
@@ -3283,11 +3277,12 @@
 <span class="doccomment">/// your statement.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// If the message was large, but the result has been fetched already that one is returned.</span>
-<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">retrieve_statement_from_message</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">StatementDistribution</span>, <span class="ident">prefix</span><span class="op">=</span><span class="ident"><span class="self">self</span>::overseer</span>)]</span>
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">retrieve_statement_from_message</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">Context</span><span class="op">&gt;</span>(
 	<span class="ident">peer</span>: <span class="ident">PeerId</span>,
 	<span class="ident">message</span>: <span class="ident">protocol_v1::StatementDistributionMessage</span>,
 	<span class="ident">active_head</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">ActiveHeadData</span>,
-	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">SubsystemContext</span> <span class="op">+</span> <span class="ident">overseer::SubsystemContext</span>),
+	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 	<span class="ident">req_sender</span>: <span class="kw-2">&amp;</span><span class="ident">mpsc::Sender</span><span class="op">&lt;</span><span class="ident">RequesterMessage</span><span class="op">&gt;</span>,
 	<span class="ident">metrics</span>: <span class="kw-2">&amp;</span><span class="ident">Metrics</span>,
 ) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">UncheckedSignedFullStatement</span><span class="op">&gt;</span> {
@@ -3375,11 +3370,12 @@
 <span class="doccomment">/// Launch request for a large statement and get tracking status.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// Returns `None` if spawning task failed.</span>
-<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">launch_request</span>(
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">StatementDistribution</span>, <span class="ident">prefix</span><span class="op">=</span><span class="ident"><span class="self">self</span>::overseer</span>)]</span>
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">launch_request</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
 	<span class="ident">meta</span>: <span class="ident">StatementMetadata</span>,
 	<span class="ident">peer</span>: <span class="ident">PeerId</span>,
 	<span class="ident">req_sender</span>: <span class="ident">mpsc::Sender</span><span class="op">&lt;</span><span class="ident">RequesterMessage</span><span class="op">&gt;</span>,
-	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">SubsystemContext</span> <span class="op">+</span> <span class="ident">overseer::SubsystemContext</span>),
+	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 	<span class="ident">metrics</span>: <span class="kw-2">&amp;</span><span class="ident">Metrics</span>,
 ) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">LargeStatementStatus</span><span class="op">&gt;</span> {
 	<span class="kw">let</span> (<span class="ident">task</span>, <span class="ident">handle</span>) <span class="op">=</span>
@@ -3405,19 +3401,21 @@
 }
 
 <span class="doccomment">/// Handle incoming message and circulate it to peers, if we did not know it already.</span>
-<span class="doccomment">///</span>
-<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle_incoming_message_and_circulate</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">StatementDistribution</span>, <span class="ident">prefix</span><span class="op">=</span><span class="ident"><span class="self">self</span>::overseer</span>)]</span>
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle_incoming_message_and_circulate</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">Context</span>, <span class="ident">R</span><span class="op">&gt;</span>(
 	<span class="ident">peer</span>: <span class="ident">PeerId</span>,
 	<span class="ident">gossip_peers</span>: <span class="kw-2">&amp;</span><span class="ident">HashSet</span><span class="op">&lt;</span><span class="ident">PeerId</span><span class="op">&gt;</span>,
 	<span class="ident">peers</span>: <span class="kw-2">&amp;mut</span> <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">PeerId</span>, <span class="ident">PeerData</span><span class="op">&gt;</span>,
 	<span class="ident">active_heads</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">Hash</span>, <span class="ident">ActiveHeadData</span><span class="op">&gt;</span>,
 	<span class="ident">recent_outdated_heads</span>: <span class="kw-2">&amp;</span><span class="ident">RecentOutdatedHeads</span>,
-	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">SubsystemContext</span> <span class="op">+</span> <span class="ident">overseer::SubsystemContext</span>),
+	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 	<span class="ident">message</span>: <span class="ident">protocol_v1::StatementDistributionMessage</span>,
 	<span class="ident">req_sender</span>: <span class="kw-2">&amp;</span><span class="ident">mpsc::Sender</span><span class="op">&lt;</span><span class="ident">RequesterMessage</span><span class="op">&gt;</span>,
 	<span class="ident">metrics</span>: <span class="kw-2">&amp;</span><span class="ident">Metrics</span>,
-	<span class="ident">rng</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">rand::Rng</span>,
-) {
+	<span class="ident">rng</span>: <span class="kw-2">&amp;mut</span> <span class="ident">R</span>,
+) <span class="kw">where</span>
+	<span class="ident">R</span>: <span class="ident">rand::Rng</span>,
+{
 	<span class="kw">let</span> <span class="ident">handled_incoming</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">peers</span>.<span class="ident">get_mut</span>(<span class="kw-2">&amp;</span><span class="ident">peer</span>) {
 		<span class="prelude-val">Some</span>(<span class="ident">data</span>) =&gt;
 			<span class="ident">handle_incoming_message</span>(
@@ -3463,12 +3461,13 @@
 <span class="comment">//</span>
 <span class="comment">// This function checks the signature and ensures the statement is compatible with our</span>
 <span class="comment">// view. It also notifies candidate backing if the statement was previously unknown.</span>
-<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle_incoming_message</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">StatementDistribution</span>, <span class="ident">prefix</span><span class="op">=</span><span class="ident"><span class="self">self</span>::overseer</span>)]</span>
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle_incoming_message</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">Context</span><span class="op">&gt;</span>(
 	<span class="ident">peer</span>: <span class="ident">PeerId</span>,
 	<span class="ident">peer_data</span>: <span class="kw-2">&amp;mut</span> <span class="ident">PeerData</span>,
 	<span class="ident">active_heads</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">Hash</span>, <span class="ident">ActiveHeadData</span><span class="op">&gt;</span>,
 	<span class="ident">recent_outdated_heads</span>: <span class="kw-2">&amp;</span><span class="ident">RecentOutdatedHeads</span>,
-	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">SubsystemContext</span> <span class="op">+</span> <span class="ident">overseer::SubsystemContext</span>),
+	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 	<span class="ident">message</span>: <span class="ident">protocol_v1::StatementDistributionMessage</span>,
 	<span class="ident">req_sender</span>: <span class="kw-2">&amp;</span><span class="ident">mpsc::Sender</span><span class="op">&lt;</span><span class="ident">RequesterMessage</span><span class="op">&gt;</span>,
 	<span class="ident">metrics</span>: <span class="kw-2">&amp;</span><span class="ident">Metrics</span>,
@@ -3486,7 +3485,7 @@
 			);
 
 			<span class="kw">if</span> <span class="op">!</span><span class="ident">recent_outdated_heads</span>.<span class="ident">is_recent_outdated</span>(<span class="kw-2">&amp;</span><span class="ident">relay_parent</span>) {
-				<span class="ident">report_peer</span>(<span class="ident">ctx</span>, <span class="ident">peer</span>, <span class="ident">COST_UNEXPECTED_STATEMENT</span>).<span class="kw">await</span>;
+				<span class="ident">report_peer</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="ident">peer</span>, <span class="ident">COST_UNEXPECTED_STATEMENT</span>).<span class="kw">await</span>;
 			}
 
 			<span class="kw">return</span> <span class="prelude-val">None</span>
@@ -3496,7 +3495,7 @@
 	<span class="kw">if</span> <span class="kw">let</span> <span class="ident">protocol_v1::StatementDistributionMessage::LargeStatement</span>(<span class="kw">_</span>) <span class="op">=</span> <span class="ident">message</span> {
 		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">rep</span>) <span class="op">=</span> <span class="ident">peer_data</span>.<span class="ident">receive_large_statement</span>(<span class="kw-2">&amp;</span><span class="ident">relay_parent</span>) {
 			<span class="macro">gum::debug!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="question-mark">?</span><span class="ident">peer</span>, <span class="question-mark">?</span><span class="ident">message</span>, <span class="question-mark">?</span><span class="ident">rep</span>, <span class="string">&quot;Unexpected large statement.&quot;</span>,);
-			<span class="ident">report_peer</span>(<span class="ident">ctx</span>, <span class="ident">peer</span>, <span class="ident">rep</span>).<span class="kw">await</span>;
+			<span class="ident">report_peer</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="ident">peer</span>, <span class="ident">rep</span>).<span class="kw">await</span>;
 			<span class="kw">return</span> <span class="prelude-val">None</span>
 		}
 	}
@@ -3537,16 +3536,16 @@
 				<span class="comment">// Report peer merely if this is not a duplicate out-of-view statement that</span>
 				<span class="comment">// was caused by a missing Seconded statement from this peer</span>
 				<span class="kw">if</span> <span class="ident">unexpected_count</span> <span class="op">==</span> <span class="number">0_usize</span> {
-					<span class="ident">report_peer</span>(<span class="ident">ctx</span>, <span class="ident">peer</span>, <span class="ident">rep</span>).<span class="kw">await</span>;
+					<span class="ident">report_peer</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="ident">peer</span>, <span class="ident">rep</span>).<span class="kw">await</span>;
 				}
 			},
 			<span class="comment">// This happens when we have an unexpected remote peer that announced Seconded</span>
 			<span class="ident">COST_UNEXPECTED_STATEMENT_REMOTE</span> =&gt; {
 				<span class="ident">metrics</span>.<span class="ident">on_unexpected_statement_seconded</span>();
-				<span class="ident">report_peer</span>(<span class="ident">ctx</span>, <span class="ident">peer</span>, <span class="ident">rep</span>).<span class="kw">await</span>;
+				<span class="ident">report_peer</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="ident">peer</span>, <span class="ident">rep</span>).<span class="kw">await</span>;
 			},
 			<span class="kw">_</span> =&gt; {
-				<span class="ident">report_peer</span>(<span class="ident">ctx</span>, <span class="ident">peer</span>, <span class="ident">rep</span>).<span class="kw">await</span>;
+				<span class="ident">report_peer</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="ident">peer</span>, <span class="ident">rep</span>).<span class="kw">await</span>;
 			},
 		}
 
@@ -3567,7 +3566,7 @@
 				<span class="ident">peer_data</span>
 					.<span class="ident">receive</span>(<span class="kw-2">&amp;</span><span class="ident">relay_parent</span>, <span class="kw-2">&amp;</span><span class="ident">fingerprint</span>, <span class="ident">max_message_count</span>)
 					.<span class="ident">expect</span>(<span class="string">&quot;checked in `check_can_receive` above; qed&quot;</span>);
-				<span class="ident">report_peer</span>(<span class="ident">ctx</span>, <span class="ident">peer</span>, <span class="ident">BENEFIT_VALID_STATEMENT</span>).<span class="kw">await</span>;
+				<span class="ident">report_peer</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="ident">peer</span>, <span class="ident">BENEFIT_VALID_STATEMENT</span>).<span class="kw">await</span>;
 
 				<span class="kw">return</span> <span class="prelude-val">None</span>
 			},
@@ -3577,7 +3576,7 @@
 		<span class="kw">match</span> <span class="ident">check_statement_signature</span>(<span class="kw-2">&amp;</span><span class="ident">active_head</span>, <span class="ident">relay_parent</span>, <span class="ident">unchecked_compact</span>) {
 			<span class="prelude-val">Err</span>(<span class="ident">statement</span>) =&gt; {
 				<span class="macro">gum::debug!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="question-mark">?</span><span class="ident">peer</span>, <span class="question-mark">?</span><span class="ident">statement</span>, <span class="string">&quot;Invalid statement signature&quot;</span>);
-				<span class="ident">report_peer</span>(<span class="ident">ctx</span>, <span class="ident">peer</span>, <span class="ident">COST_INVALID_SIGNATURE</span>).<span class="kw">await</span>;
+				<span class="ident">report_peer</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="ident">peer</span>, <span class="ident">COST_INVALID_SIGNATURE</span>).<span class="kw">await</span>;
 				<span class="kw">return</span> <span class="prelude-val">None</span>
 			},
 			<span class="prelude-val">Ok</span>(<span class="ident">statement</span>) =&gt; <span class="ident">statement</span>,
@@ -3603,7 +3602,7 @@
 				<span class="ident">is_large_statement</span>,
 				<span class="string">&quot;Full statement had bad payload.&quot;</span>
 			);
-			<span class="ident">report_peer</span>(<span class="ident">ctx</span>, <span class="ident">peer</span>, <span class="ident">COST_WRONG_HASH</span>).<span class="kw">await</span>;
+			<span class="ident">report_peer</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="ident">peer</span>, <span class="ident">COST_WRONG_HASH</span>).<span class="kw">await</span>;
 			<span class="kw">return</span> <span class="prelude-val">None</span>
 		},
 		<span class="prelude-val">Ok</span>(<span class="ident">statement</span>) =&gt; <span class="ident">statement</span>,
@@ -3642,7 +3641,7 @@
 			<span class="macro">unreachable!</span>(<span class="string">&quot;checked in `is_useful_or_unknown` above; qed&quot;</span>);
 		},
 		<span class="ident">NotedStatement::Fresh</span>(<span class="ident">statement</span>) =&gt; {
-			<span class="ident">report_peer</span>(<span class="ident">ctx</span>, <span class="ident">peer</span>, <span class="ident">BENEFIT_VALID_STATEMENT_FIRST</span>).<span class="kw">await</span>;
+			<span class="ident">report_peer</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="ident">peer</span>, <span class="ident">BENEFIT_VALID_STATEMENT_FIRST</span>).<span class="kw">await</span>;
 
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">_span</span> <span class="op">=</span> <span class="ident">handle_incoming_span</span>.<span class="ident">child</span>(<span class="string">&quot;notify-backing&quot;</span>);
 
@@ -3660,16 +3659,19 @@
 }
 
 <span class="doccomment">/// Update a peer&#39;s view. Sends all newly unlocked statements based on the previous</span>
-<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">update_peer_view_and_maybe_send_unlocked</span>(
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">StatementDistribution</span>, <span class="ident">prefix</span><span class="op">=</span><span class="ident"><span class="self">self</span>::overseer</span>)]</span>
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">update_peer_view_and_maybe_send_unlocked</span><span class="op">&lt;</span><span class="ident">Context</span>, <span class="ident">R</span><span class="op">&gt;</span>(
 	<span class="ident">peer</span>: <span class="ident">PeerId</span>,
 	<span class="ident">gossip_peers</span>: <span class="kw-2">&amp;</span><span class="ident">HashSet</span><span class="op">&lt;</span><span class="ident">PeerId</span><span class="op">&gt;</span>,
 	<span class="ident">peer_data</span>: <span class="kw-2">&amp;mut</span> <span class="ident">PeerData</span>,
-	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">SubsystemContext</span> <span class="op">+</span> <span class="ident">overseer::SubsystemContext</span>),
+	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 	<span class="ident">active_heads</span>: <span class="kw-2">&amp;</span><span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">Hash</span>, <span class="ident">ActiveHeadData</span><span class="op">&gt;</span>,
 	<span class="ident">new_view</span>: <span class="ident">View</span>,
 	<span class="ident">metrics</span>: <span class="kw-2">&amp;</span><span class="ident">Metrics</span>,
-	<span class="ident">rng</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">rand::Rng</span>,
-) {
+	<span class="ident">rng</span>: <span class="kw-2">&amp;mut</span> <span class="ident">R</span>,
+) <span class="kw">where</span>
+	<span class="ident">R</span>: <span class="ident">rand::Rng</span>,
+{
 	<span class="kw">let</span> <span class="ident">old_view</span> <span class="op">=</span> <span class="ident">std::mem::replace</span>(<span class="kw-2">&amp;mut</span> <span class="ident">peer_data</span>.<span class="ident">view</span>, <span class="ident">new_view</span>);
 
 	<span class="comment">// Remove entries for all relay-parents in the old view but not the new.</span>
@@ -3699,18 +3701,21 @@
 	}
 }
 
-<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle_network_update</span>(
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">StatementDistribution</span>, <span class="ident">prefix</span><span class="op">=</span><span class="ident"><span class="self">self</span>::overseer</span>)]</span>
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle_network_update</span><span class="op">&lt;</span><span class="ident">Context</span>, <span class="ident">R</span><span class="op">&gt;</span>(
 	<span class="ident">peers</span>: <span class="kw-2">&amp;mut</span> <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">PeerId</span>, <span class="ident">PeerData</span><span class="op">&gt;</span>,
 	<span class="ident">gossip_peers</span>: <span class="kw-2">&amp;mut</span> <span class="ident">HashSet</span><span class="op">&lt;</span><span class="ident">PeerId</span><span class="op">&gt;</span>,
 	<span class="ident">authorities</span>: <span class="kw-2">&amp;mut</span> <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">AuthorityDiscoveryId</span>, <span class="ident">PeerId</span><span class="op">&gt;</span>,
 	<span class="ident">active_heads</span>: <span class="kw-2">&amp;mut</span> <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">Hash</span>, <span class="ident">ActiveHeadData</span><span class="op">&gt;</span>,
 	<span class="ident">recent_outdated_heads</span>: <span class="kw-2">&amp;</span><span class="ident">RecentOutdatedHeads</span>,
-	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">SubsystemContext</span> <span class="op">+</span> <span class="ident">overseer::SubsystemContext</span>),
+	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 	<span class="ident">req_sender</span>: <span class="kw-2">&amp;</span><span class="ident">mpsc::Sender</span><span class="op">&lt;</span><span class="ident">RequesterMessage</span><span class="op">&gt;</span>,
 	<span class="ident">update</span>: <span class="ident">NetworkBridgeEvent</span><span class="op">&lt;</span><span class="ident">net_protocol::StatementDistributionMessage</span><span class="op">&gt;</span>,
 	<span class="ident">metrics</span>: <span class="kw-2">&amp;</span><span class="ident">Metrics</span>,
-	<span class="ident">rng</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">rand::Rng</span>,
-) {
+	<span class="ident">rng</span>: <span class="kw-2">&amp;mut</span> <span class="ident">R</span>,
+) <span class="kw">where</span>
+	<span class="ident">R</span>: <span class="ident">rand::Rng</span>,
+{
 	<span class="kw">match</span> <span class="ident">update</span> {
 		<span class="ident">NetworkBridgeEvent::PeerConnected</span>(<span class="ident">peer</span>, <span class="ident">role</span>, <span class="kw">_</span>, <span class="ident">maybe_authority</span>) =&gt; {
 			<span class="macro">gum::trace!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="question-mark">?</span><span class="ident">peer</span>, <span class="question-mark">?</span><span class="ident">role</span>, <span class="string">&quot;Peer connected&quot;</span>);
@@ -3804,6 +3809,7 @@
 	}
 }
 
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">StatementDistribution</span>, <span class="ident">prefix</span> <span class="op">=</span> <span class="ident"><span class="self">self</span>::overseer</span>)]</span>
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">R</span>: <span class="ident">rand::Rng</span><span class="op">&gt;</span> <span class="ident">StatementDistributionSubsystem</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Create a new Statement Distribution Subsystem</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(
@@ -3815,11 +3821,7 @@
 		<span class="self">Self</span> { <span class="ident">keystore</span>, <span class="ident">req_receiver</span>: <span class="prelude-val">Some</span>(<span class="ident">req_receiver</span>), <span class="ident">metrics</span>, <span class="ident">rng</span> }
 	}
 
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run</span>(
-		<span class="kw-2">mut</span> <span class="self">self</span>,
-		<span class="kw-2">mut</span> <span class="ident">ctx</span>: (<span class="kw">impl</span> <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">StatementDistributionMessage</span><span class="op">&gt;</span>
-		     <span class="op">+</span> <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">StatementDistributionMessage</span><span class="op">&gt;</span>),
-	) -&gt; <span class="ident">std::result::Result</span><span class="op">&lt;</span>(), <span class="ident">FatalError</span><span class="op">&gt;</span> {
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">ctx</span>: <span class="ident">Context</span>) -&gt; <span class="ident">std::result::Result</span><span class="op">&lt;</span>(), <span class="ident">FatalError</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">peers</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">PeerId</span>, <span class="ident">PeerData</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">HashMap::new</span>();
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">gossip_peers</span>: <span class="ident">HashSet</span><span class="op">&lt;</span><span class="ident">PeerId</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">HashSet::new</span>();
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">authorities</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">AuthorityDiscoveryId</span>, <span class="ident">PeerId</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">HashMap::new</span>();
@@ -3935,9 +3937,9 @@
 		<span class="prelude-val">Ok</span>(())
 	}
 
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle_requester_message</span>(
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle_requester_message</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
 		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
-		<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">SubsystemContext</span>,
+		<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 		<span class="ident">gossip_peers</span>: <span class="kw-2">&amp;</span><span class="ident">HashSet</span><span class="op">&lt;</span><span class="ident">PeerId</span><span class="op">&gt;</span>,
 		<span class="ident">peers</span>: <span class="kw-2">&amp;mut</span> <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">PeerId</span>, <span class="ident">PeerData</span><span class="op">&gt;</span>,
 		<span class="ident">active_heads</span>: <span class="kw-2">&amp;mut</span> <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">Hash</span>, <span class="ident">ActiveHeadData</span><span class="op">&gt;</span>,
@@ -3954,9 +3956,9 @@
 				<span class="ident">bad_peers</span>,
 			} =&gt; {
 				<span class="kw">for</span> <span class="ident">bad</span> <span class="kw">in</span> <span class="ident">bad_peers</span> {
-					<span class="ident">report_peer</span>(<span class="ident">ctx</span>, <span class="ident">bad</span>, <span class="ident">COST_FETCH_FAIL</span>).<span class="kw">await</span>;
+					<span class="ident">report_peer</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="ident">bad</span>, <span class="ident">COST_FETCH_FAIL</span>).<span class="kw">await</span>;
 				}
-				<span class="ident">report_peer</span>(<span class="ident">ctx</span>, <span class="ident">from_peer</span>, <span class="ident">BENEFIT_VALID_RESPONSE</span>).<span class="kw">await</span>;
+				<span class="ident">report_peer</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="ident">from_peer</span>, <span class="ident">BENEFIT_VALID_RESPONSE</span>).<span class="kw">await</span>;
 
 				<span class="kw">let</span> <span class="ident">active_head</span> <span class="op">=</span> <span class="ident">active_heads</span>
 					.<span class="ident">get_mut</span>(<span class="kw-2">&amp;</span><span class="ident">relay_parent</span>)
@@ -4001,10 +4003,10 @@
 				}
 			},
 			<span class="ident">RequesterMessage::SendRequest</span>(<span class="ident">req</span>) =&gt; {
-				<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">AllMessages::NetworkBridge</span>(<span class="ident">NetworkBridgeMessage::SendRequests</span>(
+				<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeMessage::SendRequests</span>(
 					<span class="macro">vec!</span>[<span class="ident">req</span>],
 					<span class="ident">IfDisconnected::ImmediateError</span>,
-				)))
+				))
 				.<span class="kw">await</span>;
 			},
 			<span class="ident">RequesterMessage::GetMorePeers</span> { <span class="ident">relay_parent</span>, <span class="ident">candidate_hash</span>, <span class="ident">tx</span> } =&gt; {
@@ -4038,14 +4040,14 @@
 					}
 				}
 			},
-			<span class="ident">RequesterMessage::ReportPeer</span>(<span class="ident">peer</span>, <span class="ident">rep</span>) =&gt; <span class="ident">report_peer</span>(<span class="ident">ctx</span>, <span class="ident">peer</span>, <span class="ident">rep</span>).<span class="kw">await</span>,
+			<span class="ident">RequesterMessage::ReportPeer</span>(<span class="ident">peer</span>, <span class="ident">rep</span>) =&gt; <span class="ident">report_peer</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="ident">peer</span>, <span class="ident">rep</span>).<span class="kw">await</span>,
 		}
 		<span class="prelude-val">Ok</span>(())
 	}
 
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle_subsystem_message</span>(
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle_subsystem_message</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
 		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
-		<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">SubsystemContext</span> <span class="op">+</span> <span class="ident">overseer::SubsystemContext</span>),
+		<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 		<span class="ident">runtime</span>: <span class="kw-2">&amp;mut</span> <span class="ident">RuntimeInfo</span>,
 		<span class="ident">peers</span>: <span class="kw-2">&amp;mut</span> <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">PeerId</span>, <span class="ident">PeerData</span><span class="op">&gt;</span>,
 		<span class="ident">gossip_peers</span>: <span class="kw-2">&amp;mut</span> <span class="ident">HashSet</span><span class="op">&lt;</span><span class="ident">PeerId</span><span class="op">&gt;</span>,

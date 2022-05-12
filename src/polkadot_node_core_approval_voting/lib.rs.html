@@ -2551,16 +2551,6 @@
 <span id="2546">2546</span>
 <span id="2547">2547</span>
 <span id="2548">2548</span>
-<span id="2549">2549</span>
-<span id="2550">2550</span>
-<span id="2551">2551</span>
-<span id="2552">2552</span>
-<span id="2553">2553</span>
-<span id="2554">2554</span>
-<span id="2555">2555</span>
-<span id="2556">2556</span>
-<span id="2557">2557</span>
-<span id="2558">2558</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -2600,9 +2590,8 @@
 		<span class="ident">ChainSelectionMessage</span>, <span class="ident">DisputeCoordinatorMessage</span>, <span class="ident">HighestApprovedAncestorBlock</span>,
 		<span class="ident">RuntimeApiMessage</span>, <span class="ident">RuntimeApiRequest</span>,
 	},
-	<span class="ident">overseer</span>::{<span class="self">self</span>, <span class="ident">SubsystemSender</span> <span class="kw">as</span> <span class="kw">_</span>},
-	<span class="ident">FromOverseer</span>, <span class="ident">OverseerSignal</span>, <span class="ident">SpawnedSubsystem</span>, <span class="ident">SubsystemContext</span>, <span class="ident">SubsystemError</span>,
-	<span class="ident">SubsystemResult</span>, <span class="ident">SubsystemSender</span>,
+	<span class="ident">overseer</span>, <span class="ident">FromOverseer</span>, <span class="ident">OverseerSignal</span>, <span class="ident">SpawnedSubsystem</span>, <span class="ident">SubsystemError</span>, <span class="ident">SubsystemResult</span>,
+	<span class="ident">SubsystemSender</span>,
 };
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem_util</span>::{
 	<span class="ident">database::Database</span>,
@@ -2918,11 +2907,8 @@
 	}
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span> <span class="ident">overseer::Subsystem</span><span class="op">&lt;</span><span class="ident">Context</span>, <span class="ident">SubsystemError</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ApprovalVotingSubsystem</span>
-<span class="kw">where</span>
-	<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">ApprovalVotingMessage</span><span class="op">&gt;</span>,
-	<span class="ident">Context</span>: <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">ApprovalVotingMessage</span><span class="op">&gt;</span>,
-{
+<span class="attribute">#[<span class="ident">overseer::subsystem</span>(<span class="ident">ApprovalVoting</span>, <span class="ident">error</span> <span class="op">=</span> <span class="ident">SubsystemError</span>, <span class="ident">prefix</span> <span class="op">=</span> <span class="ident"><span class="self">self</span>::overseer</span>)]</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Context</span>: <span class="ident">Send</span><span class="op">&gt;</span> <span class="ident">ApprovalVotingSubsystem</span> {
 	<span class="kw">fn</span> <span class="ident">start</span>(<span class="self">self</span>, <span class="ident">ctx</span>: <span class="ident">Context</span>) -&gt; <span class="ident">SpawnedSubsystem</span> {
 		<span class="kw">let</span> <span class="ident">backend</span> <span class="op">=</span> <span class="ident">DbBackend::new</span>(<span class="self">self</span>.<span class="ident">db</span>.<span class="ident">clone</span>(), <span class="self">self</span>.<span class="ident">db_config</span>);
 		<span class="kw">let</span> <span class="ident">future</span> <span class="op">=</span> <span class="ident">run</span>::<span class="op">&lt;</span><span class="ident">DbBackend</span>, <span class="ident">Context</span><span class="op">&gt;</span>(
@@ -3160,27 +3146,34 @@
 	<span class="ident">assignment_criteria</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">AssignmentCriteria</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span><span class="op">&gt;</span>,
 }
 
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">ApprovalVoting</span>, <span class="ident">prefix</span> <span class="op">=</span> <span class="ident"><span class="self">self</span>::overseer</span>)]</span>
 <span class="kw">impl</span> <span class="ident">State</span> {
 	<span class="kw">fn</span> <span class="ident">session_info</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">i</span>: <span class="ident">SessionIndex</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">SessionInfo</span><span class="op">&gt;</span> {
 		<span class="self">self</span>.<span class="ident">session_window</span>.<span class="ident">as_ref</span>().<span class="ident">and_then</span>(<span class="op">|</span><span class="ident">w</span><span class="op">|</span> <span class="ident">w</span>.<span class="ident">session_info</span>(<span class="ident">i</span>))
 	}
 
 	<span class="doccomment">/// Bring `session_window` up to date.</span>
-	<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">cache_session_info_for_head</span>(
+	<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">cache_session_info_for_head</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
 		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
-		<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">SubsystemContext</span> <span class="op">+</span> <span class="ident">overseer::SubsystemContext</span>),
+		<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 		<span class="ident">head</span>: <span class="ident">Hash</span>,
-	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">SessionWindowUpdate</span><span class="op">&gt;</span>, <span class="ident">SessionsUnavailable</span><span class="op">&gt;</span> {
+	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">SessionWindowUpdate</span><span class="op">&gt;</span>, <span class="ident">SessionsUnavailable</span><span class="op">&gt;</span>
+	<span class="kw">where</span>
+		<span class="op">&lt;</span><span class="ident">Context</span> <span class="kw">as</span> <span class="ident">overseer::SubsystemContext</span><span class="op">&gt;</span><span class="ident">::Sender</span>: <span class="ident">Sized</span> <span class="op">+</span> <span class="ident">Send</span>,
+	{
 		<span class="kw">let</span> <span class="ident">session_window</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">session_window</span>.<span class="ident">take</span>();
 		<span class="kw">match</span> <span class="ident">session_window</span> {
 			<span class="prelude-val">None</span> =&gt; {
+				<span class="kw">let</span> <span class="ident">sender</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">sender</span>().<span class="ident">clone</span>();
 				<span class="self">self</span>.<span class="ident">session_window</span> <span class="op">=</span>
-					<span class="prelude-val">Some</span>(<span class="ident">RollingSessionWindow::new</span>(<span class="ident">ctx</span>, <span class="ident">APPROVAL_SESSIONS</span>, <span class="ident">head</span>).<span class="kw">await</span><span class="question-mark">?</span>);
+					<span class="prelude-val">Some</span>(<span class="ident">RollingSessionWindow::new</span>(<span class="ident">sender</span>, <span class="ident">APPROVAL_SESSIONS</span>, <span class="ident">head</span>).<span class="kw">await</span><span class="question-mark">?</span>);
 				<span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
 			},
 			<span class="prelude-val">Some</span>(<span class="kw-2">mut</span> <span class="ident">session_window</span>) =&gt; {
-				<span class="kw">let</span> <span class="ident">r</span> <span class="op">=</span>
-					<span class="ident">session_window</span>.<span class="ident">cache_session_info_for_head</span>(<span class="ident">ctx</span>, <span class="ident">head</span>).<span class="kw">await</span>.<span class="ident">map</span>(<span class="ident">Option::Some</span>);
+				<span class="kw">let</span> <span class="ident">r</span> <span class="op">=</span> <span class="ident">session_window</span>
+					.<span class="ident">cache_session_info_for_head</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="ident">head</span>)
+					.<span class="kw">await</span>
+					.<span class="ident">map</span>(<span class="ident">Option::Some</span>);
 				<span class="self">self</span>.<span class="ident">session_window</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">session_window</span>);
 				<span class="ident">r</span>
 			},
@@ -3264,6 +3257,7 @@
 	<span class="ident">Conclude</span>,
 }
 
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">ApprovalVoting</span>, <span class="ident">prefix</span> <span class="op">=</span> <span class="ident"><span class="self">self</span>::overseer</span>)]</span>
 <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">Context</span><span class="op">&gt;</span>(
 	<span class="kw-2">mut</span> <span class="ident">ctx</span>: <span class="ident">Context</span>,
 	<span class="kw-2">mut</span> <span class="ident">subsystem</span>: <span class="ident">ApprovalVotingSubsystem</span>,
@@ -3272,8 +3266,6 @@
 	<span class="kw-2">mut</span> <span class="ident">backend</span>: <span class="ident">B</span>,
 ) -&gt; <span class="ident">SubsystemResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 <span class="kw">where</span>
-	<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">ApprovalVotingMessage</span><span class="op">&gt;</span>,
-	<span class="ident">Context</span>: <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">ApprovalVotingMessage</span><span class="op">&gt;</span>,
 	<span class="ident">B</span>: <span class="ident">Backend</span>,
 {
 	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">state</span> <span class="op">=</span> <span class="ident">State</span> {
@@ -3411,9 +3403,9 @@
 <span class="comment">// 	https://github.com/paritytech/polkadot/issues/3311</span>
 <span class="comment">//</span>
 <span class="comment">// returns `true` if any of the actions was a `Conclude` command.</span>
-<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle_actions</span>(
-	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">ApprovalVotingMessage</span><span class="op">&gt;</span>
-	          <span class="op">+</span> <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">ApprovalVotingMessage</span><span class="op">&gt;</span>),
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">ApprovalVoting</span>, <span class="ident">prefix</span> <span class="op">=</span> <span class="ident"><span class="self">self</span>::overseer</span>)]</span>
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle_actions</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
+	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 	<span class="ident">state</span>: <span class="kw-2">&amp;mut</span> <span class="ident">State</span>,
 	<span class="ident">overlayed_db</span>: <span class="kw-2">&amp;mut</span> <span class="ident">OverlayedBackend</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="kw">impl</span> <span class="ident">Backend</span><span class="op">&gt;</span>,
 	<span class="ident">metrics</span>: <span class="kw-2">&amp;</span><span class="ident">Metrics</span>,
@@ -3431,7 +3423,6 @@
 			<span class="ident">Action::ScheduleWakeup</span> { <span class="ident">block_hash</span>, <span class="ident">block_number</span>, <span class="ident">candidate_hash</span>, <span class="ident">tick</span> } =&gt;
 				<span class="ident">wakeups</span>.<span class="ident">schedule</span>(<span class="ident">block_hash</span>, <span class="ident">block_number</span>, <span class="ident">candidate_hash</span>, <span class="ident">tick</span>),
 			<span class="ident">Action::IssueApproval</span>(<span class="ident">candidate_hash</span>, <span class="ident">approval_request</span>) =&gt; {
-				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sender</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">sender</span>().<span class="ident">clone</span>();
 				<span class="comment">// Note that the IssueApproval action will create additional</span>
 				<span class="comment">// actions that will need to all be processed before we can</span>
 				<span class="comment">// handle the next action in the set passed to the ambient</span>
@@ -3444,7 +3435,7 @@
 				<span class="comment">// Note that chaining these iterators is O(n) as we must consume</span>
 				<span class="comment">// the prior iterator.</span>
 				<span class="kw">let</span> <span class="ident">next_actions</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Action</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">issue_approval</span>(
-					<span class="kw-2">&amp;mut</span> <span class="ident">sender</span>,
+					<span class="ident">ctx</span>,
 					<span class="ident">state</span>,
 					<span class="ident">overlayed_db</span>,
 					<span class="ident">metrics</span>,
@@ -3649,9 +3640,9 @@
 }
 
 <span class="comment">// Handle an incoming signal from the overseer. Returns true if execution should conclude.</span>
-<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle_from_overseer</span>(
-	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">ApprovalVotingMessage</span><span class="op">&gt;</span>
-	          <span class="op">+</span> <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">ApprovalVotingMessage</span><span class="op">&gt;</span>),
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">ApprovalVoting</span>, <span class="ident">prefix</span> <span class="op">=</span> <span class="ident"><span class="self">self</span>::overseer</span>)]</span>
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle_from_overseer</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
+	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 	<span class="ident">state</span>: <span class="kw-2">&amp;mut</span> <span class="ident">State</span>,
 	<span class="ident">db</span>: <span class="kw-2">&amp;mut</span> <span class="ident">OverlayedBackend</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="kw">impl</span> <span class="ident">Backend</span><span class="op">&gt;</span>,
 	<span class="ident">metrics</span>: <span class="kw-2">&amp;</span><span class="ident">Metrics</span>,
@@ -3760,8 +3751,9 @@
 	<span class="prelude-val">Ok</span>(<span class="ident">actions</span>)
 }
 
-<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle_approved_ancestor</span>(
-	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">SubsystemContext</span> <span class="op">+</span> <span class="ident">overseer::SubsystemContext</span>),
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">ApprovalVoting</span>, <span class="ident">prefix</span> <span class="op">=</span> <span class="ident"><span class="self">self</span>::overseer</span>)]</span>
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle_approved_ancestor</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
+	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 	<span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="ident">OverlayedBackend</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="kw">impl</span> <span class="ident">Backend</span><span class="op">&gt;</span>,
 	<span class="ident">target</span>: <span class="ident">Hash</span>,
 	<span class="ident">lower_bound</span>: <span class="ident">BlockNumber</span>,
@@ -4710,9 +4702,9 @@
 <span class="comment">// Launch approval work, returning an `AbortHandle` which corresponds to the background task</span>
 <span class="comment">// spawned. When the background work is no longer needed, the `AbortHandle` should be dropped</span>
 <span class="comment">// to cancel the background work and any requests it has spawned.</span>
-<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">launch_approval</span>(
-	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">ApprovalVotingMessage</span><span class="op">&gt;</span>
-	          <span class="op">+</span> <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">ApprovalVotingMessage</span><span class="op">&gt;</span>),
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">ApprovalVoting</span>, <span class="ident">prefix</span> <span class="op">=</span> <span class="ident"><span class="self">self</span>::overseer</span>)]</span>
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">launch_approval</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
+	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 	<span class="ident">metrics</span>: <span class="ident">Metrics</span>,
 	<span class="ident">session_index</span>: <span class="ident">SessionIndex</span>,
 	<span class="ident">candidate</span>: <span class="ident">CandidateReceipt</span>,
@@ -4805,15 +4797,12 @@
 						);
 
 						<span class="ident">sender</span>
-							.<span class="ident">send_message</span>(
-								<span class="ident">DisputeCoordinatorMessage::IssueLocalStatement</span>(
-									<span class="ident">session_index</span>,
-									<span class="ident">candidate_hash</span>,
-									<span class="ident">candidate</span>.<span class="ident">clone</span>(),
-									<span class="bool-val">false</span>,
-								)
-								.<span class="ident">into</span>(),
-							)
+							.<span class="ident">send_message</span>(<span class="ident">DisputeCoordinatorMessage::IssueLocalStatement</span>(
+								<span class="ident">session_index</span>,
+								<span class="ident">candidate_hash</span>,
+								<span class="ident">candidate</span>.<span class="ident">clone</span>(),
+								<span class="bool-val">false</span>,
+							))
 							.<span class="kw">await</span>;
 						<span class="ident">metrics_guard</span>.<span class="ident">take</span>().<span class="ident">on_approval_invalid</span>();
 					},
@@ -4844,17 +4833,14 @@
 		<span class="kw">let</span> (<span class="ident">val_tx</span>, <span class="ident">val_rx</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
 
 		<span class="ident">sender</span>
-			.<span class="ident">send_message</span>(
-				<span class="ident">CandidateValidationMessage::ValidateFromExhaustive</span>(
-					<span class="ident">available_data</span>.<span class="ident">validation_data</span>,
-					<span class="ident">validation_code</span>,
-					<span class="ident">candidate</span>.<span class="ident">clone</span>(),
-					<span class="ident">available_data</span>.<span class="ident">pov</span>,
-					<span class="ident">APPROVAL_EXECUTION_TIMEOUT</span>,
-					<span class="ident">val_tx</span>,
-				)
-				.<span class="ident">into</span>(),
-			)
+			.<span class="ident">send_message</span>(<span class="ident">CandidateValidationMessage::ValidateFromExhaustive</span>(
+				<span class="ident">available_data</span>.<span class="ident">validation_data</span>,
+				<span class="ident">validation_code</span>,
+				<span class="ident">candidate</span>.<span class="ident">clone</span>(),
+				<span class="ident">available_data</span>.<span class="ident">pov</span>,
+				<span class="ident">APPROVAL_EXECUTION_TIMEOUT</span>,
+				<span class="ident">val_tx</span>,
+			))
 			.<span class="kw">await</span>;
 
 		<span class="kw">match</span> <span class="ident">val_rx</span>.<span class="kw">await</span> {
@@ -4872,15 +4858,12 @@
 				} <span class="kw">else</span> {
 					<span class="comment">// Commitments mismatch - issue a dispute.</span>
 					<span class="ident">sender</span>
-						.<span class="ident">send_message</span>(
-							<span class="ident">DisputeCoordinatorMessage::IssueLocalStatement</span>(
-								<span class="ident">session_index</span>,
-								<span class="ident">candidate_hash</span>,
-								<span class="ident">candidate</span>.<span class="ident">clone</span>(),
-								<span class="bool-val">false</span>,
-							)
-							.<span class="ident">into</span>(),
-						)
+						.<span class="ident">send_message</span>(<span class="ident">DisputeCoordinatorMessage::IssueLocalStatement</span>(
+							<span class="ident">session_index</span>,
+							<span class="ident">candidate_hash</span>,
+							<span class="ident">candidate</span>.<span class="ident">clone</span>(),
+							<span class="bool-val">false</span>,
+						))
 						.<span class="kw">await</span>;
 
 					<span class="ident">metrics_guard</span>.<span class="ident">take</span>().<span class="ident">on_approval_invalid</span>();
@@ -4897,15 +4880,12 @@
 				);
 
 				<span class="ident">sender</span>
-					.<span class="ident">send_message</span>(
-						<span class="ident">DisputeCoordinatorMessage::IssueLocalStatement</span>(
-							<span class="ident">session_index</span>,
-							<span class="ident">candidate_hash</span>,
-							<span class="ident">candidate</span>.<span class="ident">clone</span>(),
-							<span class="bool-val">false</span>,
-						)
-						.<span class="ident">into</span>(),
-					)
+					.<span class="ident">send_message</span>(<span class="ident">DisputeCoordinatorMessage::IssueLocalStatement</span>(
+						<span class="ident">session_index</span>,
+						<span class="ident">candidate_hash</span>,
+						<span class="ident">candidate</span>.<span class="ident">clone</span>(),
+						<span class="bool-val">false</span>,
+					))
 					.<span class="kw">await</span>;
 
 				<span class="ident">metrics_guard</span>.<span class="ident">take</span>().<span class="ident">on_approval_invalid</span>();
@@ -4931,8 +4911,9 @@
 
 <span class="comment">// Issue and import a local approval vote. Should only be invoked after approval checks</span>
 <span class="comment">// have been done.</span>
-<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">issue_approval</span>(
-	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">SubsystemSender</span>,
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">ApprovalVoting</span>, <span class="ident">prefix</span> <span class="op">=</span> <span class="ident"><span class="self">self</span>::overseer</span>)]</span>
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">issue_approval</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
+	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 	<span class="ident">state</span>: <span class="kw-2">&amp;mut</span> <span class="ident">State</span>,
 	<span class="ident">db</span>: <span class="kw-2">&amp;mut</span> <span class="ident">OverlayedBackend</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="kw">impl</span> <span class="ident">Backend</span><span class="op">&gt;</span>,
 	<span class="ident">metrics</span>: <span class="kw-2">&amp;</span><span class="ident">Metrics</span>,
@@ -5090,15 +5071,14 @@
 	<span class="ident">metrics</span>.<span class="ident">on_approval_produced</span>();
 
 	<span class="comment">// dispatch to approval distribution.</span>
-	<span class="ident">ctx</span>.<span class="ident">send_unbounded_message</span>(
-		<span class="ident">ApprovalDistributionMessage::DistributeApproval</span>(<span class="ident">IndirectSignedApprovalVote</span> {
+	<span class="ident">ctx</span>.<span class="ident">send_unbounded_message</span>(<span class="ident">ApprovalDistributionMessage::DistributeApproval</span>(
+		<span class="ident">IndirectSignedApprovalVote</span> {
 			<span class="ident">block_hash</span>,
 			<span class="ident">candidate_index</span>: <span class="ident">candidate_index</span> <span class="kw">as</span> <span class="kw">_</span>,
 			<span class="ident">validator</span>: <span class="ident">validator_index</span>,
 			<span class="ident">signature</span>: <span class="ident">sig</span>,
-		})
-		.<span class="ident">into</span>(),
-	);
+		},
+	));
 
 	<span class="comment">// dispatch to dispute coordinator.</span>
 	<span class="ident">actions</span>.<span class="ident">extend</span>(<span class="ident">inform_disputes_action</span>);

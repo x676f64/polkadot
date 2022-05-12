@@ -666,10 +666,6 @@
 <span id="661">661</span>
 <span id="662">662</span>
 <span id="663">663</span>
-<span id="664">664</span>
-<span id="665">665</span>
-<span id="666">666</span>
-<span id="667">667</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -692,7 +688,8 @@
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem</span>::{
 	<span class="ident">errors::ChainApiError</span>,
 	<span class="ident">messages</span>::{<span class="ident">ChainApiMessage</span>, <span class="ident">ChainSelectionMessage</span>},
-	<span class="ident">overseer</span>, <span class="ident">FromOverseer</span>, <span class="ident">OverseerSignal</span>, <span class="ident">SpawnedSubsystem</span>, <span class="ident">SubsystemContext</span>, <span class="ident">SubsystemError</span>,
+	<span class="ident">overseer</span>::{<span class="self">self</span>, <span class="ident">SubsystemSender</span>},
+	<span class="ident">FromOverseer</span>, <span class="ident">OverseerSignal</span>, <span class="ident">SpawnedSubsystem</span>, <span class="ident">SubsystemError</span>,
 };
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem_util::database::Database</span>;
 <span class="kw">use</span> <span class="ident">polkadot_primitives::v2</span>::{<span class="ident">BlockNumber</span>, <span class="ident">ConsensusLog</span>, <span class="ident">Hash</span>, <span class="ident">Header</span>};
@@ -1000,11 +997,8 @@
 	}
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span> <span class="ident">overseer::Subsystem</span><span class="op">&lt;</span><span class="ident">Context</span>, <span class="ident">SubsystemError</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ChainSelectionSubsystem</span>
-<span class="kw">where</span>
-	<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">ChainSelectionMessage</span><span class="op">&gt;</span>,
-	<span class="ident">Context</span>: <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">ChainSelectionMessage</span><span class="op">&gt;</span>,
-{
+<span class="attribute">#[<span class="ident">overseer::subsystem</span>(<span class="ident">ChainSelection</span>, <span class="ident">error</span> <span class="op">=</span> <span class="ident">SubsystemError</span>, <span class="ident">prefix</span> <span class="op">=</span> <span class="ident"><span class="self">self</span>::overseer</span>)]</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span> <span class="ident">ChainSelectionSubsystem</span> {
 	<span class="kw">fn</span> <span class="ident">start</span>(<span class="self">self</span>, <span class="ident">ctx</span>: <span class="ident">Context</span>) -&gt; <span class="ident">SpawnedSubsystem</span> {
 		<span class="kw">let</span> <span class="ident">backend</span> <span class="op">=</span> <span class="ident">db_backend::v1::DbBackend::new</span>(
 			<span class="self">self</span>.<span class="ident">db</span>,
@@ -1020,14 +1014,13 @@
 	}
 }
 
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">ChainSelection</span>, <span class="ident">prefix</span> <span class="op">=</span> <span class="ident"><span class="self">self</span>::overseer</span>)]</span>
 <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run</span><span class="op">&lt;</span><span class="ident">Context</span>, <span class="ident">B</span><span class="op">&gt;</span>(
 	<span class="kw-2">mut</span> <span class="ident">ctx</span>: <span class="ident">Context</span>,
 	<span class="kw-2">mut</span> <span class="ident">backend</span>: <span class="ident">B</span>,
 	<span class="ident">stagnant_check_interval</span>: <span class="ident">StagnantCheckInterval</span>,
 	<span class="ident">clock</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Clock</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span><span class="op">&gt;</span>,
 ) <span class="kw">where</span>
-	<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">ChainSelectionMessage</span><span class="op">&gt;</span>,
-	<span class="ident">Context</span>: <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">ChainSelectionMessage</span><span class="op">&gt;</span>,
 	<span class="ident">B</span>: <span class="ident">Backend</span>,
 {
 	<span class="kw">loop</span> {
@@ -1035,7 +1028,7 @@
 		<span class="kw">match</span> <span class="ident">res</span> {
 			<span class="prelude-val">Err</span>(<span class="ident">e</span>) =&gt; {
 				<span class="ident">e</span>.<span class="ident">trace</span>();
-				<span class="comment">// All errors right now are considered fatal:</span>
+				<span class="comment">// All errors are considered fatal right now:</span>
 				<span class="kw">break</span>
 			},
 			<span class="prelude-val">Ok</span>(()) =&gt; {
@@ -1051,6 +1044,7 @@
 <span class="comment">//</span>
 <span class="comment">// A return value of `Ok` indicates that an exit should be made, while non-fatal errors</span>
 <span class="comment">// lead to another call to this function.</span>
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">ChainSelection</span>, <span class="ident">prefix</span> <span class="op">=</span> <span class="ident"><span class="self">self</span>::overseer</span>)]</span>
 <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run_until_error</span><span class="op">&lt;</span><span class="ident">Context</span>, <span class="ident">B</span><span class="op">&gt;</span>(
 	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 	<span class="ident">backend</span>: <span class="kw-2">&amp;mut</span> <span class="ident">B</span>,
@@ -1058,8 +1052,6 @@
 	<span class="ident">clock</span>: <span class="kw-2">&amp;</span>(<span class="kw">dyn</span> <span class="ident">Clock</span> <span class="op">+</span> <span class="ident">Sync</span>),
 ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span>
 <span class="kw">where</span>
-	<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">ChainSelectionMessage</span><span class="op">&gt;</span>,
-	<span class="ident">Context</span>: <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">ChainSelectionMessage</span><span class="op">&gt;</span>,
 	<span class="ident">B</span>: <span class="ident">Backend</span>,
 {
 	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">stagnant_check_stream</span> <span class="op">=</span> <span class="ident">stagnant_check_interval</span>.<span class="ident">timeout_stream</span>();
@@ -1074,7 +1066,7 @@
 					<span class="ident">FromOverseer::Signal</span>(<span class="ident">OverseerSignal::ActiveLeaves</span>(<span class="ident">update</span>)) =&gt; {
 						<span class="kw">for</span> <span class="ident">leaf</span> <span class="kw">in</span> <span class="ident">update</span>.<span class="ident">activated</span> {
 							<span class="kw">let</span> <span class="ident">write_ops</span> <span class="op">=</span> <span class="ident">handle_active_leaf</span>(
-								<span class="ident">ctx</span>,
+								<span class="ident">ctx</span>.<span class="ident">sender</span>(),
 								<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">backend</span>,
 								<span class="ident">clock</span>.<span class="ident">timestamp_now</span>() <span class="op">+</span> <span class="ident">STAGNANT_TIMEOUT</span>,
 								<span class="ident">leaf</span>.<span class="ident">hash</span>,
@@ -1091,7 +1083,7 @@
 							<span class="ident">handle_approved_block</span>(<span class="ident">backend</span>, <span class="ident">hash</span>)<span class="question-mark">?</span>
 						}
 						<span class="ident">ChainSelectionMessage::Leaves</span>(<span class="ident">tx</span>) =&gt; {
-							<span class="kw">let</span> <span class="ident">leaves</span> <span class="op">=</span> <span class="ident">load_leaves</span>(<span class="ident">ctx</span>, <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">backend</span>).<span class="kw">await</span><span class="question-mark">?</span>;
+							<span class="kw">let</span> <span class="ident">leaves</span> <span class="op">=</span> <span class="ident">load_leaves</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">backend</span>).<span class="kw">await</span><span class="question-mark">?</span>;
 							<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">tx</span>.<span class="ident">send</span>(<span class="ident">leaves</span>);
 						}
 						<span class="ident">ChainSelectionMessage::BestLeafContaining</span>(<span class="ident">required</span>, <span class="ident">tx</span>) =&gt; {
@@ -1118,11 +1110,11 @@
 }
 
 <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">fetch_finalized</span>(
-	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">SubsystemContext</span>,
+	<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">SubsystemSender</span><span class="op">&lt;</span><span class="ident">ChainApiMessage</span><span class="op">&gt;</span>,
 ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">Hash</span>, <span class="ident">BlockNumber</span>)<span class="op">&gt;</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
 	<span class="kw">let</span> (<span class="ident">number_tx</span>, <span class="ident">number_rx</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
 
-	<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">ChainApiMessage::FinalizedBlockNumber</span>(<span class="ident">number_tx</span>)).<span class="kw">await</span>;
+	<span class="ident">sender</span>.<span class="ident">send_message</span>(<span class="ident">ChainApiMessage::FinalizedBlockNumber</span>(<span class="ident">number_tx</span>)).<span class="kw">await</span>;
 
 	<span class="kw">let</span> <span class="ident">number</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">number_rx</span>.<span class="kw">await</span><span class="question-mark">?</span> {
 		<span class="prelude-val">Ok</span>(<span class="ident">number</span>) =&gt; <span class="ident">number</span>,
@@ -1134,7 +1126,7 @@
 
 	<span class="kw">let</span> (<span class="ident">hash_tx</span>, <span class="ident">hash_rx</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
 
-	<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">ChainApiMessage::FinalizedBlockHash</span>(<span class="ident">number</span>, <span class="ident">hash_tx</span>)).<span class="kw">await</span>;
+	<span class="ident">sender</span>.<span class="ident">send_message</span>(<span class="ident">ChainApiMessage::FinalizedBlockHash</span>(<span class="ident">number</span>, <span class="ident">hash_tx</span>)).<span class="kw">await</span>;
 
 	<span class="kw">match</span> <span class="ident">hash_rx</span>.<span class="kw">await</span><span class="question-mark">?</span> {
 		<span class="prelude-val">Err</span>(<span class="ident">err</span>) =&gt; {
@@ -1150,11 +1142,11 @@
 }
 
 <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">fetch_header</span>(
-	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">SubsystemContext</span>,
+	<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">SubsystemSender</span><span class="op">&lt;</span><span class="ident">ChainApiMessage</span><span class="op">&gt;</span>,
 	<span class="ident">hash</span>: <span class="ident">Hash</span>,
 ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Header</span><span class="op">&gt;</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
 	<span class="kw">let</span> (<span class="ident">tx</span>, <span class="ident">rx</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
-	<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">ChainApiMessage::BlockHeader</span>(<span class="ident">hash</span>, <span class="ident">tx</span>)).<span class="kw">await</span>;
+	<span class="ident">sender</span>.<span class="ident">send_message</span>(<span class="ident">ChainApiMessage::BlockHeader</span>(<span class="ident">hash</span>, <span class="ident">tx</span>)).<span class="kw">await</span>;
 
 	<span class="prelude-val">Ok</span>(<span class="ident">rx</span>.<span class="kw">await</span><span class="question-mark">?</span>.<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> {
 		<span class="macro">gum::warn!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="question-mark">?</span><span class="ident">hash</span>, <span class="question-mark">?</span><span class="ident">err</span>, <span class="string">&quot;Missing hash for finalized block number&quot;</span>);
@@ -1163,11 +1155,11 @@
 }
 
 <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">fetch_block_weight</span>(
-	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">SubsystemContext</span>,
+	<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">overseer::SubsystemSender</span><span class="op">&lt;</span><span class="ident">ChainApiMessage</span><span class="op">&gt;</span>,
 	<span class="ident">hash</span>: <span class="ident">Hash</span>,
 ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">BlockWeight</span><span class="op">&gt;</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
 	<span class="kw">let</span> (<span class="ident">tx</span>, <span class="ident">rx</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
-	<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">ChainApiMessage::BlockWeight</span>(<span class="ident">hash</span>, <span class="ident">tx</span>)).<span class="kw">await</span>;
+	<span class="ident">sender</span>.<span class="ident">send_message</span>(<span class="ident">ChainApiMessage::BlockWeight</span>(<span class="ident">hash</span>, <span class="ident">tx</span>)).<span class="kw">await</span>;
 
 	<span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">rx</span>.<span class="kw">await</span><span class="question-mark">?</span>;
 
@@ -1179,7 +1171,7 @@
 
 <span class="comment">// Handle a new active leaf.</span>
 <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle_active_leaf</span>(
-	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">SubsystemContext</span>,
+	<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">overseer::ChainSelectionSenderTrait</span>,
 	<span class="ident">backend</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">Backend</span>,
 	<span class="ident">stagnant_at</span>: <span class="ident">Timestamp</span>,
 	<span class="ident">hash</span>: <span class="ident">Hash</span>,
@@ -1191,10 +1183,10 @@
 			<span class="comment">// tree.</span>
 			<span class="ident">l</span>.<span class="ident">saturating_sub</span>(<span class="number">1</span>)
 		},
-		<span class="prelude-val">None</span> =&gt; <span class="ident">fetch_finalized</span>(<span class="ident">ctx</span>).<span class="kw">await</span><span class="question-mark">?</span>.<span class="ident">map_or</span>(<span class="number">1</span>, <span class="op">|</span>(<span class="kw">_</span>, <span class="ident">n</span>)<span class="op">|</span> <span class="ident">n</span>),
+		<span class="prelude-val">None</span> =&gt; <span class="ident">fetch_finalized</span>(<span class="ident">sender</span>).<span class="kw">await</span><span class="question-mark">?</span>.<span class="ident">map_or</span>(<span class="number">1</span>, <span class="op">|</span>(<span class="kw">_</span>, <span class="ident">n</span>)<span class="op">|</span> <span class="ident">n</span>),
 	};
 
-	<span class="kw">let</span> <span class="ident">header</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">fetch_header</span>(<span class="ident">ctx</span>, <span class="ident">hash</span>).<span class="kw">await</span><span class="question-mark">?</span> {
+	<span class="kw">let</span> <span class="ident">header</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">fetch_header</span>(<span class="ident">sender</span>, <span class="ident">hash</span>).<span class="kw">await</span><span class="question-mark">?</span> {
 		<span class="prelude-val">None</span> =&gt; {
 			<span class="macro">gum::warn!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="question-mark">?</span><span class="ident">hash</span>, <span class="string">&quot;Missing header for new head&quot;</span>);
 			<span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">Vec::new</span>())
@@ -1203,7 +1195,7 @@
 	};
 
 	<span class="kw">let</span> <span class="ident">new_blocks</span> <span class="op">=</span> <span class="ident">polkadot_node_subsystem_util::determine_new_blocks</span>(
-		<span class="ident">ctx</span>.<span class="ident">sender</span>(),
+		<span class="ident">sender</span>,
 		<span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">backend</span>.<span class="ident">load_block_entry</span>(<span class="ident">h</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">b</span><span class="op">|</span> <span class="ident">b</span>.<span class="ident">is_some</span>()),
 		<span class="ident">hash</span>,
 		<span class="kw-2">&amp;</span><span class="ident">header</span>,
@@ -1216,7 +1208,7 @@
 	<span class="comment">// determine_new_blocks gives blocks in descending order.</span>
 	<span class="comment">// for this, we want ascending order.</span>
 	<span class="kw">for</span> (<span class="ident">hash</span>, <span class="ident">header</span>) <span class="kw">in</span> <span class="ident">new_blocks</span>.<span class="ident">into_iter</span>().<span class="ident">rev</span>() {
-		<span class="kw">let</span> <span class="ident">weight</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">fetch_block_weight</span>(<span class="ident">ctx</span>, <span class="ident">hash</span>).<span class="kw">await</span><span class="question-mark">?</span> {
+		<span class="kw">let</span> <span class="ident">weight</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">fetch_block_weight</span>(<span class="ident">sender</span>, <span class="ident">hash</span>).<span class="kw">await</span><span class="question-mark">?</span> {
 			<span class="prelude-val">None</span> =&gt; {
 				<span class="macro">gum::warn!</span>(
 					<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
@@ -1326,13 +1318,13 @@
 <span class="comment">// Load the leaves from the backend. If there are no leaves, then return</span>
 <span class="comment">// the finalized block.</span>
 <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">load_leaves</span>(
-	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">SubsystemContext</span>,
+	<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">overseer::SubsystemSender</span><span class="op">&lt;</span><span class="ident">ChainApiMessage</span><span class="op">&gt;</span>,
 	<span class="ident">backend</span>: <span class="kw-2">&amp;</span><span class="kw">impl</span> <span class="ident">Backend</span>,
 ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Hash</span><span class="op">&gt;</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
 	<span class="kw">let</span> <span class="ident">leaves</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">backend</span>.<span class="ident">load_leaves</span>()<span class="question-mark">?</span>.<span class="ident">into_hashes_descending</span>().<span class="ident">collect</span>();
 
 	<span class="kw">if</span> <span class="ident">leaves</span>.<span class="ident">is_empty</span>() {
-		<span class="prelude-val">Ok</span>(<span class="ident">fetch_finalized</span>(<span class="ident">ctx</span>).<span class="kw">await</span><span class="question-mark">?</span>.<span class="ident">map_or</span>(<span class="ident">Vec::new</span>(), <span class="op">|</span>(<span class="ident">h</span>, <span class="kw">_</span>)<span class="op">|</span> <span class="macro">vec!</span>[<span class="ident">h</span>]))
+		<span class="prelude-val">Ok</span>(<span class="ident">fetch_finalized</span>(<span class="ident">sender</span>).<span class="kw">await</span><span class="question-mark">?</span>.<span class="ident">map_or</span>(<span class="ident">Vec::new</span>(), <span class="op">|</span>(<span class="ident">h</span>, <span class="kw">_</span>)<span class="op">|</span> <span class="macro">vec!</span>[<span class="ident">h</span>]))
 	} <span class="kw">else</span> {
 		<span class="prelude-val">Ok</span>(<span class="ident">leaves</span>)
 	}

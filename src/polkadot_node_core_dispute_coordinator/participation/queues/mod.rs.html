@@ -386,7 +386,7 @@
 };
 
 <span class="kw">use</span> <span class="ident">futures::channel::oneshot</span>;
-<span class="kw">use</span> <span class="ident">polkadot_node_subsystem</span>::{<span class="ident">messages::ChainApiMessage</span>, <span class="ident">SubsystemSender</span>};
+<span class="kw">use</span> <span class="ident">polkadot_node_subsystem</span>::{<span class="ident">messages::ChainApiMessage</span>, <span class="ident">overseer</span>};
 <span class="kw">use</span> <span class="ident">polkadot_primitives::v2</span>::{<span class="ident">BlockNumber</span>, <span class="ident">CandidateHash</span>, <span class="ident">CandidateReceipt</span>, <span class="ident">Hash</span>, <span class="ident">SessionIndex</span>};
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
@@ -529,7 +529,7 @@
 	<span class="doccomment">/// Returns error in case a queue was found full already.</span>
 	<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">queue</span>(
 		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
-		<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">SubsystemSender</span>,
+		<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">overseer::DisputeCoordinatorSenderTrait</span>,
 		<span class="ident">priority</span>: <span class="ident">ParticipationPriority</span>,
 		<span class="ident">req</span>: <span class="ident">ParticipationRequest</span>,
 	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
@@ -671,7 +671,7 @@
 	<span class="doccomment">///		`Ok(None)` in case we could not lookup the candidate&#39;s relay parent, returns a</span>
 	<span class="doccomment">///		`FatalError` in case the chain API call fails with an unexpected error.</span>
 	<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">new</span>(
-		<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">SubsystemSender</span>,
+		<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">overseer::DisputeCoordinatorSenderTrait</span>,
 		<span class="ident">candidate</span>: <span class="kw-2">&amp;</span><span class="ident">CandidateReceipt</span>,
 	) -&gt; <span class="ident">FatalResult</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">candidate_hash</span> <span class="op">=</span> <span class="ident">candidate</span>.<span class="ident">hash</span>();
@@ -716,11 +716,11 @@
 }
 
 <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">get_block_number</span>(
-	<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">SubsystemSender</span>,
+	<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">overseer::DisputeCoordinatorSenderTrait</span>,
 	<span class="ident">relay_parent</span>: <span class="ident">Hash</span>,
 ) -&gt; <span class="ident">FatalResult</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">BlockNumber</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 	<span class="kw">let</span> (<span class="ident">tx</span>, <span class="ident">rx</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
-	<span class="ident">sender</span>.<span class="ident">send_message</span>(<span class="ident">ChainApiMessage::BlockNumber</span>(<span class="ident">relay_parent</span>, <span class="ident">tx</span>).<span class="ident">into</span>()).<span class="kw">await</span>;
+	<span class="ident">sender</span>.<span class="ident">send_message</span>(<span class="ident">ChainApiMessage::BlockNumber</span>(<span class="ident">relay_parent</span>, <span class="ident">tx</span>)).<span class="kw">await</span>;
 	<span class="ident">rx</span>.<span class="kw">await</span>
 		.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">FatalError::ChainApiSenderDropped</span>)<span class="question-mark">?</span>
 		.<span class="ident">map_err</span>(<span class="ident">FatalError::ChainApiAncestors</span>)

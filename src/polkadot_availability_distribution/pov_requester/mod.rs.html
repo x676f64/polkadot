@@ -224,8 +224,6 @@
 <span id="219">219</span>
 <span id="220">220</span>
 <span id="221">221</span>
-<span id="222">222</span>
-<span id="223">223</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -255,7 +253,7 @@
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem</span>::{
 	<span class="ident">jaeger</span>,
 	<span class="ident">messages</span>::{<span class="ident">IfDisconnected</span>, <span class="ident">NetworkBridgeMessage</span>},
-	<span class="ident">SubsystemContext</span>,
+	<span class="ident">overseer</span>,
 };
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem_util::runtime::RuntimeInfo</span>;
 <span class="kw">use</span> <span class="ident">polkadot_primitives::v2</span>::{<span class="ident">AuthorityDiscoveryId</span>, <span class="ident">CandidateHash</span>, <span class="ident">Hash</span>, <span class="ident">ValidatorIndex</span>};
@@ -267,6 +265,7 @@
 };
 
 <span class="doccomment">/// Start background worker for taking care of fetching the requested `PoV` from the network.</span>
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">AvailabilityDistribution</span>, <span class="ident">prefix</span> <span class="op">=</span> <span class="ident"><span class="self">self</span>::overseer</span>)]</span>
 <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">fetch_pov</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
 	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 	<span class="ident">runtime</span>: <span class="kw-2">&amp;mut</span> <span class="ident">RuntimeInfo</span>,
@@ -276,10 +275,7 @@
 	<span class="ident">pov_hash</span>: <span class="ident">Hash</span>,
 	<span class="ident">tx</span>: <span class="ident">oneshot::Sender</span><span class="op">&lt;</span><span class="ident">PoV</span><span class="op">&gt;</span>,
 	<span class="ident">metrics</span>: <span class="ident">Metrics</span>,
-) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
-<span class="kw">where</span>
-	<span class="ident">Context</span>: <span class="ident">SubsystemContext</span>,
-{
+) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 	<span class="kw">let</span> <span class="ident">info</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">runtime</span>.<span class="ident">get_session_info</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="ident">parent</span>).<span class="kw">await</span><span class="question-mark">?</span>.<span class="ident">session_info</span>;
 	<span class="kw">let</span> <span class="ident">authority_id</span> <span class="op">=</span> <span class="ident">info</span>
 		.<span class="ident">discovery_keys</span>

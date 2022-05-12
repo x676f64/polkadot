@@ -566,14 +566,6 @@
 <span id="561">561</span>
 <span id="562">562</span>
 <span id="563">563</span>
-<span id="564">564</span>
-<span id="565">565</span>
-<span id="566">566</span>
-<span id="567">567</span>
-<span id="568">568</span>
-<span id="569">569</span>
-<span id="570">570</span>
-<span id="571">571</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -598,9 +590,9 @@
 <span class="kw">use</span> <span class="ident">futures</span>::{<span class="ident">channel::oneshot</span>, <span class="ident">future::BoxFuture</span>, <span class="ident">prelude</span>::<span class="kw-2">*</span>, <span class="ident">stream::FuturesUnordered</span>};
 
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem</span>::{
-	<span class="ident">messages</span>::{<span class="ident">CandidateValidationMessage</span>, <span class="ident">PreCheckOutcome</span>, <span class="ident">PvfCheckerMessage</span>},
-	<span class="ident">overseer</span>, <span class="ident">ActiveLeavesUpdate</span>, <span class="ident">FromOverseer</span>, <span class="ident">OverseerSignal</span>, <span class="ident">SpawnedSubsystem</span>, <span class="ident">SubsystemContext</span>,
-	<span class="ident">SubsystemError</span>, <span class="ident">SubsystemResult</span>, <span class="ident">SubsystemSender</span>,
+	<span class="ident">messages</span>::{<span class="ident">CandidateValidationMessage</span>, <span class="ident">PreCheckOutcome</span>, <span class="ident">PvfCheckerMessage</span>, <span class="ident">RuntimeApiMessage</span>},
+	<span class="ident">overseer</span>, <span class="ident">ActiveLeavesUpdate</span>, <span class="ident">FromOverseer</span>, <span class="ident">OverseerSignal</span>, <span class="ident">SpawnedSubsystem</span>, <span class="ident">SubsystemError</span>,
+	<span class="ident">SubsystemResult</span>, <span class="ident">SubsystemSender</span>,
 };
 <span class="kw">use</span> <span class="ident">polkadot_primitives::v2</span>::{
 	<span class="ident">BlockNumber</span>, <span class="ident">Hash</span>, <span class="ident">PvfCheckStatement</span>, <span class="ident">SessionIndex</span>, <span class="ident">ValidationCodeHash</span>, <span class="ident">ValidatorId</span>,
@@ -636,11 +628,8 @@
 	}
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span> <span class="ident">overseer::Subsystem</span><span class="op">&lt;</span><span class="ident">Context</span>, <span class="ident">SubsystemError</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">PvfCheckerSubsystem</span>
-<span class="kw">where</span>
-	<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">PvfCheckerMessage</span><span class="op">&gt;</span>,
-	<span class="ident">Context</span>: <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">PvfCheckerMessage</span><span class="op">&gt;</span>,
-{
+<span class="attribute">#[<span class="ident">overseer::subsystem</span>(<span class="ident">PvfChecker</span>, <span class="ident">error</span><span class="op">=</span><span class="ident">SubsystemError</span>, <span class="ident">prefix</span> <span class="op">=</span> <span class="ident"><span class="self">self</span>::overseer</span>)]</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span> <span class="ident">PvfCheckerSubsystem</span> {
 	<span class="kw">fn</span> <span class="ident">start</span>(<span class="self">self</span>, <span class="ident">ctx</span>: <span class="ident">Context</span>) -&gt; <span class="ident">SpawnedSubsystem</span> {
 		<span class="kw">if</span> <span class="self">self</span>.<span class="ident">enabled</span> {
 			<span class="kw">let</span> <span class="ident">future</span> <span class="op">=</span> <span class="ident">run</span>(<span class="ident">ctx</span>, <span class="self">self</span>.<span class="ident">keystore</span>, <span class="self">self</span>.<span class="ident">metrics</span>)
@@ -699,15 +688,12 @@
 		<span class="ident">FuturesUnordered</span><span class="op">&lt;</span><span class="ident">BoxFuture</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span>, <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">PreCheckOutcome</span>, <span class="ident">ValidationCodeHash</span>)<span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 }
 
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">PvfChecker</span>, <span class="ident">prefix</span> <span class="op">=</span> <span class="ident"><span class="self">self</span>::overseer</span>)]</span>
 <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
 	<span class="kw-2">mut</span> <span class="ident">ctx</span>: <span class="ident">Context</span>,
 	<span class="ident">keystore</span>: <span class="ident">SyncCryptoStorePtr</span>,
 	<span class="ident">metrics</span>: <span class="ident">Metrics</span>,
-) -&gt; <span class="ident">SubsystemResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
-<span class="kw">where</span>
-	<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">PvfCheckerMessage</span><span class="op">&gt;</span>,
-	<span class="ident">Context</span>: <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">PvfCheckerMessage</span><span class="op">&gt;</span>,
-{
+) -&gt; <span class="ident">SubsystemResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">state</span> <span class="op">=</span> <span class="ident">State</span> {
 		<span class="ident">credentials</span>: <span class="prelude-val">None</span>,
 		<span class="ident">recent_block</span>: <span class="prelude-val">None</span>,
@@ -755,7 +741,7 @@
 <span class="doccomment">/// Handle an incoming PVF pre-check result from the candidate-validation subsystem.</span>
 <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle_pvf_check</span>(
 	<span class="ident">state</span>: <span class="kw-2">&amp;mut</span> <span class="ident">State</span>,
-	<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">SubsystemSender</span>,
+	<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">overseer::PvfCheckerSenderTrait</span>,
 	<span class="ident">keystore</span>: <span class="kw-2">&amp;</span><span class="ident">SyncCryptoStorePtr</span>,
 	<span class="ident">metrics</span>: <span class="kw-2">&amp;</span><span class="ident">Metrics</span>,
 	<span class="ident">outcome</span>: <span class="ident">PreCheckOutcome</span>,
@@ -823,7 +809,7 @@
 
 <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle_from_overseer</span>(
 	<span class="ident">state</span>: <span class="kw-2">&amp;mut</span> <span class="ident">State</span>,
-	<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">SubsystemSender</span>,
+	<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">overseer::PvfCheckerSenderTrait</span>,
 	<span class="ident">keystore</span>: <span class="kw-2">&amp;</span><span class="ident">SyncCryptoStorePtr</span>,
 	<span class="ident">metrics</span>: <span class="kw-2">&amp;</span><span class="ident">Metrics</span>,
 	<span class="ident">from_overseer</span>: <span class="ident">FromOverseer</span><span class="op">&lt;</span><span class="ident">PvfCheckerMessage</span><span class="op">&gt;</span>,
@@ -849,7 +835,7 @@
 
 <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle_leaves_update</span>(
 	<span class="ident">state</span>: <span class="kw-2">&amp;mut</span> <span class="ident">State</span>,
-	<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">SubsystemSender</span>,
+	<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">overseer::PvfCheckerSenderTrait</span>,
 	<span class="ident">keystore</span>: <span class="kw-2">&amp;</span><span class="ident">SyncCryptoStorePtr</span>,
 	<span class="ident">metrics</span>: <span class="kw-2">&amp;</span><span class="ident">Metrics</span>,
 	<span class="ident">update</span>: <span class="ident">ActiveLeavesUpdate</span>,
@@ -931,7 +917,7 @@
 <span class="doccomment">/// Returns `None` if the PVF pre-checking runtime API is not supported for the given leaf hash.</span>
 <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">examine_activation</span>(
 	<span class="ident">state</span>: <span class="kw-2">&amp;mut</span> <span class="ident">State</span>,
-	<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">SubsystemSender</span>,
+	<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">overseer::PvfCheckerSenderTrait</span>,
 	<span class="ident">keystore</span>: <span class="kw-2">&amp;</span><span class="ident">SyncCryptoStorePtr</span>,
 	<span class="ident">leaf_hash</span>: <span class="ident">Hash</span>,
 	<span class="ident">leaf_number</span>: <span class="ident">BlockNumber</span>,
@@ -990,7 +976,7 @@
 <span class="doccomment">/// Checks the active validators for the given leaf. If we have a signing key for one of them,</span>
 <span class="doccomment">/// returns the [`SigningCredentials`].</span>
 <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">check_signing_credentials</span>(
-	<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">SubsystemSender</span>,
+	<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">SubsystemSender</span><span class="op">&lt;</span><span class="ident">RuntimeApiMessage</span><span class="op">&gt;</span>,
 	<span class="ident">keystore</span>: <span class="kw-2">&amp;</span><span class="ident">SyncCryptoStorePtr</span>,
 	<span class="ident">leaf</span>: <span class="ident">Hash</span>,
 ) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">SigningCredentials</span><span class="op">&gt;</span> {
@@ -1019,7 +1005,7 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// If the validator already voted for the given code, this function does nothing.</span>
 <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">sign_and_submit_pvf_check_statement</span>(
-	<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">SubsystemSender</span>,
+	<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">overseer::PvfCheckerSenderTrait</span>,
 	<span class="ident">keystore</span>: <span class="kw-2">&amp;</span><span class="ident">SyncCryptoStorePtr</span>,
 	<span class="ident">voted</span>: <span class="kw-2">&amp;mut</span> <span class="ident">HashSet</span><span class="op">&lt;</span><span class="ident">ValidationCodeHash</span><span class="op">&gt;</span>,
 	<span class="ident">credentials</span>: <span class="kw-2">&amp;</span><span class="ident">SigningCredentials</span>,
@@ -1111,7 +1097,7 @@
 <span class="doccomment">/// into the `currently_checking` set.</span>
 <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">initiate_precheck</span>(
 	<span class="ident">state</span>: <span class="kw-2">&amp;mut</span> <span class="ident">State</span>,
-	<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">SubsystemSender</span>,
+	<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">overseer::PvfCheckerSenderTrait</span>,
 	<span class="ident">relay_parent</span>: <span class="ident">Hash</span>,
 	<span class="ident">validation_code_hash</span>: <span class="ident">ValidationCodeHash</span>,
 	<span class="ident">metrics</span>: <span class="kw-2">&amp;</span><span class="ident">Metrics</span>,
@@ -1120,9 +1106,7 @@
 
 	<span class="kw">let</span> (<span class="ident">tx</span>, <span class="ident">rx</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
 	<span class="ident">sender</span>
-		.<span class="ident">send_message</span>(
-			<span class="ident">CandidateValidationMessage::PreCheck</span>(<span class="ident">relay_parent</span>, <span class="ident">validation_code_hash</span>, <span class="ident">tx</span>).<span class="ident">into</span>(),
-		)
+		.<span class="ident">send_message</span>(<span class="ident">CandidateValidationMessage::PreCheck</span>(<span class="ident">relay_parent</span>, <span class="ident">validation_code_hash</span>, <span class="ident">tx</span>))
 		.<span class="kw">await</span>;
 
 	<span class="kw">let</span> <span class="ident">timer</span> <span class="op">=</span> <span class="ident">metrics</span>.<span class="ident">time_pre_check_judgement</span>();

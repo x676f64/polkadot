@@ -276,9 +276,6 @@
 <span id="271">271</span>
 <span id="272">272</span>
 <span id="273">273</span>
-<span id="274">274</span>
-<span id="275">275</span>
-<span id="276">276</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -352,11 +349,7 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Sender</span>, <span class="ident">Spawner</span><span class="op">&gt;</span> <span class="ident">MessageInterceptor</span><span class="op">&lt;</span><span class="ident">Sender</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">NoteCandidate</span><span class="op">&lt;</span><span class="ident">Spawner</span><span class="op">&gt;</span>
 <span class="kw">where</span>
-	<span class="ident">Sender</span>: <span class="ident">overseer::SubsystemSender</span><span class="op">&lt;</span><span class="ident">AllMessages</span><span class="op">&gt;</span>
-		<span class="op">+</span> <span class="ident">overseer::SubsystemSender</span><span class="op">&lt;</span><span class="ident">CandidateBackingMessage</span><span class="op">&gt;</span>
-		<span class="op">+</span> <span class="ident">Clone</span>
-		<span class="op">+</span> <span class="ident">Send</span>
-		<span class="op">+</span> <span class="lifetime">&#39;static</span>,
+	<span class="ident">Sender</span>: <span class="ident">overseer::CandidateBackingSenderTrait</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	<span class="ident">Spawner</span>: <span class="ident">SpawnNamed</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 {
 	<span class="kw">type</span> <span class="ident">Message</span> <span class="op">=</span> <span class="ident">CandidateBackingMessage</span>;
@@ -500,20 +493,21 @@
 		}
 	}
 
-	<span class="kw">fn</span> <span class="ident">intercept_outgoing</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">msg</span>: <span class="ident">AllMessages</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">AllMessages</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">intercept_outgoing</span>(
+		<span class="kw-2">&amp;</span><span class="self">self</span>,
+		<span class="ident">msg</span>: <span class="ident">overseer::CandidateBackingOutgoingMessages</span>,
+	) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">overseer::CandidateBackingOutgoingMessages</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">msg</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">msg</span> {
-			<span class="ident">AllMessages::CollatorProtocol</span>(<span class="ident">CollatorProtocolMessage::Seconded</span>(
-				<span class="ident">relay_parent</span>,
-				<span class="ident">statement</span>,
-			)) =&gt; {
+			<span class="ident">overseer::CandidateBackingOutgoingMessages::CollatorProtocolMessage</span>(
+				<span class="ident">CollatorProtocolMessage::Seconded</span>(<span class="ident">relay_parent</span>, <span class="ident">statement</span>),
+			) =&gt; {
 				<span class="comment">// `parachain::collator-protocol: received an unexpected `CollationSeconded`: unknown statement statement=...`</span>
 				<span class="comment">// TODO: Fix this error. We get this on colaltors because `malicious backing` creates a candidate that gets backed/included.</span>
 				<span class="comment">// It is harmless for test parachain collators, but it will prevent cumulus based collators to make progress</span>
 				<span class="comment">// as they wait for the relay chain to confirm the seconding of the collation.</span>
-				<span class="ident">AllMessages::CollatorProtocol</span>(<span class="ident">CollatorProtocolMessage::Seconded</span>(
-					<span class="ident">relay_parent</span>,
-					<span class="ident">statement</span>,
-				))
+				<span class="ident">overseer::CandidateBackingOutgoingMessages::CollatorProtocolMessage</span>(
+					<span class="ident">CollatorProtocolMessage::Seconded</span>(<span class="ident">relay_parent</span>, <span class="ident">statement</span>),
+				)
 			},
 			<span class="ident">msg</span> =&gt; <span class="ident">msg</span>,
 		};

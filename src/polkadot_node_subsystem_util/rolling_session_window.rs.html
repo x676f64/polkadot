@@ -597,6 +597,19 @@
 <span id="592">592</span>
 <span id="593">593</span>
 <span id="594">594</span>
+<span id="595">595</span>
+<span id="596">596</span>
+<span id="597">597</span>
+<span id="598">598</span>
+<span id="599">599</span>
+<span id="600">600</span>
+<span id="601">601</span>
+<span id="602">602</span>
+<span id="603">603</span>
+<span id="604">604</span>
+<span id="605">605</span>
+<span id="606">606</span>
+<span id="607">607</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -625,7 +638,7 @@
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem</span>::{
 	<span class="ident">errors::RuntimeApiError</span>,
 	<span class="ident">messages</span>::{<span class="ident">RuntimeApiMessage</span>, <span class="ident">RuntimeApiRequest</span>},
-	<span class="ident">overseer</span>, <span class="ident">SubsystemContext</span>,
+	<span class="ident">overseer</span>,
 };
 <span class="kw">use</span> <span class="ident">thiserror::Error</span>;
 
@@ -693,16 +706,19 @@
 
 <span class="kw">impl</span> <span class="ident">RollingSessionWindow</span> {
 	<span class="doccomment">/// Initialize a new session info cache with the given window size.</span>
-	<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">new</span>(
-		<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">SubsystemContext</span> <span class="op">+</span> <span class="ident">overseer::SubsystemContext</span>),
+	<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">new</span><span class="op">&lt;</span><span class="ident">Sender</span><span class="op">&gt;</span>(
+		<span class="kw-2">mut</span> <span class="ident">sender</span>: <span class="ident">Sender</span>,
 		<span class="ident">window_size</span>: <span class="ident">SessionWindowSize</span>,
 		<span class="ident">block_hash</span>: <span class="ident">Hash</span>,
-	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">SessionsUnavailable</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="ident">session_index</span> <span class="op">=</span> <span class="ident">get_session_index_for_child</span>(<span class="ident">ctx</span>, <span class="ident">block_hash</span>).<span class="kw">await</span><span class="question-mark">?</span>;
+	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">SessionsUnavailable</span><span class="op">&gt;</span>
+	<span class="kw">where</span>
+		<span class="ident">Sender</span>: <span class="ident">overseer::SubsystemSender</span><span class="op">&lt;</span><span class="ident">RuntimeApiMessage</span><span class="op">&gt;</span>,
+	{
+		<span class="kw">let</span> <span class="ident">session_index</span> <span class="op">=</span> <span class="ident">get_session_index_for_child</span>(<span class="kw-2">&amp;mut</span> <span class="ident">sender</span>, <span class="ident">block_hash</span>).<span class="kw">await</span><span class="question-mark">?</span>;
 
 		<span class="kw">let</span> <span class="ident">window_start</span> <span class="op">=</span> <span class="ident">session_index</span>.<span class="ident">saturating_sub</span>(<span class="ident">window_size</span>.<span class="ident">get</span>() <span class="op">-</span> <span class="number">1</span>);
 
-		<span class="kw">match</span> <span class="ident">load_all_sessions</span>(<span class="ident">ctx</span>, <span class="ident">block_hash</span>, <span class="ident">window_start</span>, <span class="ident">session_index</span>).<span class="kw">await</span> {
+		<span class="kw">match</span> <span class="ident">load_all_sessions</span>(<span class="kw-2">&amp;mut</span> <span class="ident">sender</span>, <span class="ident">block_hash</span>, <span class="ident">window_start</span>, <span class="ident">session_index</span>).<span class="kw">await</span> {
 			<span class="prelude-val">Err</span>(<span class="ident">kind</span>) =&gt; <span class="prelude-val">Err</span>(<span class="ident">SessionsUnavailable</span> {
 				<span class="ident">kind</span>,
 				<span class="ident">info</span>: <span class="prelude-val">Some</span>(<span class="ident">SessionsUnavailableInfo</span> {
@@ -753,10 +769,10 @@
 	<span class="doccomment">/// some backwards drift in session index is acceptable.</span>
 	<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">cache_session_info_for_head</span>(
 		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
-		<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">SubsystemContext</span> <span class="op">+</span> <span class="ident">overseer::SubsystemContext</span>),
+		<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">overseer::SubsystemSender</span><span class="op">&lt;</span><span class="ident">RuntimeApiMessage</span><span class="op">&gt;</span>,
 		<span class="ident">block_hash</span>: <span class="ident">Hash</span>,
 	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">SessionWindowUpdate</span>, <span class="ident">SessionsUnavailable</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="ident">session_index</span> <span class="op">=</span> <span class="ident">get_session_index_for_child</span>(<span class="ident">ctx</span>, <span class="ident">block_hash</span>).<span class="kw">await</span><span class="question-mark">?</span>;
+		<span class="kw">let</span> <span class="ident">session_index</span> <span class="op">=</span> <span class="ident">get_session_index_for_child</span>(<span class="ident">sender</span>, <span class="ident">block_hash</span>).<span class="kw">await</span><span class="question-mark">?</span>;
 
 		<span class="kw">let</span> <span class="ident">old_window_start</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">earliest_session</span>;
 
@@ -776,7 +792,7 @@
 
 		<span class="kw">let</span> <span class="ident">fresh_start</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">latest</span> <span class="op">&lt;</span> <span class="ident">window_start</span> { <span class="ident">window_start</span> } <span class="kw">else</span> { <span class="ident">latest</span> <span class="op">+</span> <span class="number">1</span> };
 
-		<span class="kw">match</span> <span class="ident">load_all_sessions</span>(<span class="ident">ctx</span>, <span class="ident">block_hash</span>, <span class="ident">fresh_start</span>, <span class="ident">session_index</span>).<span class="kw">await</span> {
+		<span class="kw">match</span> <span class="ident">load_all_sessions</span>(<span class="ident">sender</span>, <span class="ident">block_hash</span>, <span class="ident">fresh_start</span>, <span class="ident">session_index</span>).<span class="kw">await</span> {
 			<span class="prelude-val">Err</span>(<span class="ident">kind</span>) =&gt; <span class="prelude-val">Err</span>(<span class="ident">SessionsUnavailable</span> {
 				<span class="ident">kind</span>,
 				<span class="ident">info</span>: <span class="prelude-val">Some</span>(<span class="ident">SessionsUnavailableInfo</span> {
@@ -814,17 +830,18 @@
 <span class="comment">// cleaner to just call the runtime API directly without needing to create an instance</span>
 <span class="comment">// of `RuntimeInfo`.</span>
 <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">get_session_index_for_child</span>(
-	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">SubsystemContext</span> <span class="op">+</span> <span class="ident">overseer::SubsystemContext</span>),
+	<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">overseer::SubsystemSender</span><span class="op">&lt;</span><span class="ident">RuntimeApiMessage</span><span class="op">&gt;</span>,
 	<span class="ident">block_hash</span>: <span class="ident">Hash</span>,
 ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">SessionIndex</span>, <span class="ident">SessionsUnavailable</span><span class="op">&gt;</span> {
 	<span class="kw">let</span> (<span class="ident">s_tx</span>, <span class="ident">s_rx</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
 
 	<span class="comment">// We&#39;re requesting session index of a child to populate the cache in advance.</span>
-	<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">RuntimeApiMessage::Request</span>(
-		<span class="ident">block_hash</span>,
-		<span class="ident">RuntimeApiRequest::SessionIndexForChild</span>(<span class="ident">s_tx</span>),
-	))
-	.<span class="kw">await</span>;
+	<span class="ident">sender</span>
+		.<span class="ident">send_message</span>(<span class="ident">RuntimeApiMessage::Request</span>(
+			<span class="ident">block_hash</span>,
+			<span class="ident">RuntimeApiRequest::SessionIndexForChild</span>(<span class="ident">s_tx</span>),
+		))
+		.<span class="kw">await</span>;
 
 	<span class="kw">match</span> <span class="ident">s_rx</span>.<span class="kw">await</span> {
 		<span class="prelude-val">Ok</span>(<span class="prelude-val">Ok</span>(<span class="ident">s</span>)) =&gt; <span class="prelude-val">Ok</span>(<span class="ident">s</span>),
@@ -842,7 +859,7 @@
 }
 
 <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">load_all_sessions</span>(
-	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">SubsystemContext</span> <span class="op">+</span> <span class="ident">overseer::SubsystemContext</span>),
+	<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">overseer::SubsystemSender</span><span class="op">&lt;</span><span class="ident">RuntimeApiMessage</span><span class="op">&gt;</span>,
 	<span class="ident">block_hash</span>: <span class="ident">Hash</span>,
 	<span class="ident">start</span>: <span class="ident">SessionIndex</span>,
 	<span class="ident">end_inclusive</span>: <span class="ident">SessionIndex</span>,
@@ -850,11 +867,12 @@
 	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">v</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
 	<span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="ident">start</span>..<span class="op">=</span><span class="ident">end_inclusive</span> {
 		<span class="kw">let</span> (<span class="ident">tx</span>, <span class="ident">rx</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
-		<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">RuntimeApiMessage::Request</span>(
-			<span class="ident">block_hash</span>,
-			<span class="ident">RuntimeApiRequest::SessionInfo</span>(<span class="ident">i</span>, <span class="ident">tx</span>),
-		))
-		.<span class="kw">await</span>;
+		<span class="ident">sender</span>
+			.<span class="ident">send_message</span>(<span class="ident">RuntimeApiMessage::Request</span>(
+				<span class="ident">block_hash</span>,
+				<span class="ident">RuntimeApiRequest::SessionInfo</span>(<span class="ident">i</span>, <span class="ident">tx</span>),
+			))
+			.<span class="kw">await</span>;
 
 		<span class="kw">let</span> <span class="ident">session_info</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">rx</span>.<span class="kw">await</span> {
 			<span class="prelude-val">Ok</span>(<span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">s</span>))) =&gt; <span class="ident">s</span>,
@@ -873,7 +891,10 @@
 <span class="kw">mod</span> <span class="ident">tests</span> {
 	<span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
 	<span class="kw">use</span> <span class="ident">assert_matches::assert_matches</span>;
-	<span class="kw">use</span> <span class="ident">polkadot_node_subsystem::messages</span>::{<span class="ident">AllMessages</span>, <span class="ident">AvailabilityRecoveryMessage</span>};
+	<span class="kw">use</span> <span class="ident">polkadot_node_subsystem</span>::{
+		<span class="ident">messages</span>::{<span class="ident">AllMessages</span>, <span class="ident">AvailabilityRecoveryMessage</span>},
+		<span class="ident">SubsystemContext</span>,
+	};
 	<span class="kw">use</span> <span class="ident">polkadot_node_subsystem_test_helpers::make_subsystem_context</span>;
 	<span class="kw">use</span> <span class="ident">polkadot_primitives::v2::Header</span>;
 	<span class="kw">use</span> <span class="ident">sp_core::testing::TaskExecutor</span>;
@@ -918,13 +939,16 @@
 
 		<span class="kw">let</span> <span class="ident">hash</span> <span class="op">=</span> <span class="ident">header</span>.<span class="ident">hash</span>();
 
+		<span class="kw">let</span> <span class="ident">sender</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">sender</span>();
+
 		<span class="kw">let</span> <span class="ident">test_fut</span> <span class="op">=</span> {
 			<span class="ident">Box::pin</span>(<span class="kw">async</span> <span class="kw">move</span> {
 				<span class="kw">let</span> <span class="ident">window</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">window</span> {
-					<span class="prelude-val">None</span> =&gt;
-						<span class="ident">RollingSessionWindow::new</span>(<span class="kw-2">&amp;mut</span> <span class="ident">ctx</span>, <span class="ident">TEST_WINDOW_SIZE</span>, <span class="ident">hash</span>).<span class="kw">await</span>.<span class="ident">unwrap</span>(),
+					<span class="prelude-val">None</span> =&gt; <span class="ident">RollingSessionWindow::new</span>(<span class="ident">sender</span>.<span class="ident">clone</span>(), <span class="ident">TEST_WINDOW_SIZE</span>, <span class="ident">hash</span>)
+						.<span class="kw">await</span>
+						.<span class="ident">unwrap</span>(),
 					<span class="prelude-val">Some</span>(<span class="kw-2">mut</span> <span class="ident">window</span>) =&gt; {
-						<span class="ident">window</span>.<span class="ident">cache_session_info_for_head</span>(<span class="kw-2">&amp;mut</span> <span class="ident">ctx</span>, <span class="ident">hash</span>).<span class="kw">await</span>.<span class="ident">unwrap</span>();
+						<span class="ident">window</span>.<span class="ident">cache_session_info_for_head</span>(<span class="ident">sender</span>, <span class="ident">hash</span>).<span class="kw">await</span>.<span class="ident">unwrap</span>();
 						<span class="ident">window</span>
 					},
 				};
@@ -1094,8 +1118,9 @@
 		<span class="kw">let</span> <span class="ident">hash</span> <span class="op">=</span> <span class="ident">header</span>.<span class="ident">hash</span>();
 
 		<span class="kw">let</span> <span class="ident">test_fut</span> <span class="op">=</span> {
+			<span class="kw">let</span> <span class="ident">sender</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">sender</span>().<span class="ident">clone</span>();
 			<span class="ident">Box::pin</span>(<span class="kw">async</span> <span class="kw">move</span> {
-				<span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">RollingSessionWindow::new</span>(<span class="kw-2">&amp;mut</span> <span class="ident">ctx</span>, <span class="ident">TEST_WINDOW_SIZE</span>, <span class="ident">hash</span>).<span class="kw">await</span>;
+				<span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">RollingSessionWindow::new</span>(<span class="ident">sender</span>, <span class="ident">TEST_WINDOW_SIZE</span>, <span class="ident">hash</span>).<span class="kw">await</span>;
 				<span class="macro">assert!</span>(<span class="ident">res</span>.<span class="ident">is_err</span>());
 			})
 		};
@@ -1154,8 +1179,9 @@
 
 		<span class="kw">let</span> <span class="ident">test_fut</span> <span class="op">=</span> {
 			<span class="ident">Box::pin</span>(<span class="kw">async</span> <span class="kw">move</span> {
+				<span class="kw">let</span> <span class="ident">sender</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">sender</span>().<span class="ident">clone</span>();
 				<span class="kw">let</span> <span class="ident">window</span> <span class="op">=</span>
-					<span class="ident">RollingSessionWindow::new</span>(<span class="kw-2">&amp;mut</span> <span class="ident">ctx</span>, <span class="ident">TEST_WINDOW_SIZE</span>, <span class="ident">hash</span>).<span class="kw">await</span>.<span class="ident">unwrap</span>();
+					<span class="ident">RollingSessionWindow::new</span>(<span class="ident">sender</span>, <span class="ident">TEST_WINDOW_SIZE</span>, <span class="ident">hash</span>).<span class="kw">await</span>.<span class="ident">unwrap</span>();
 
 				<span class="macro">assert_eq!</span>(<span class="ident">window</span>.<span class="ident">earliest_session</span>, <span class="ident">session</span>);
 				<span class="macro">assert_eq!</span>(<span class="ident">window</span>.<span class="ident">session_info</span>, <span class="macro">vec!</span>[<span class="ident">dummy_session_info</span>(<span class="ident">session</span>)]);

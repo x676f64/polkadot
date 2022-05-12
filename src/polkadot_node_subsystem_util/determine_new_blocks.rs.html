@@ -645,7 +645,7 @@
 	<span class="ident">lower_bound_number</span>: <span class="ident">BlockNumber</span>,
 ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">Hash</span>, <span class="ident">Header</span>)<span class="op">&gt;</span>, <span class="ident">E</span><span class="op">&gt;</span>
 <span class="kw">where</span>
-	<span class="ident">Sender</span>: <span class="ident">SubsystemSender</span>,
+	<span class="ident">Sender</span>: <span class="ident">SubsystemSender</span><span class="op">&lt;</span><span class="ident">ChainApiMessage</span><span class="op">&gt;</span>,
 {
 	<span class="kw">const</span> <span class="ident">ANCESTRY_STEP</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">4</span>;
 

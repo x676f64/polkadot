@@ -1264,25 +1264,6 @@
 <span id="1259">1259</span>
 <span id="1260">1260</span>
 <span id="1261">1261</span>
-<span id="1262">1262</span>
-<span id="1263">1263</span>
-<span id="1264">1264</span>
-<span id="1265">1265</span>
-<span id="1266">1266</span>
-<span id="1267">1267</span>
-<span id="1268">1268</span>
-<span id="1269">1269</span>
-<span id="1270">1270</span>
-<span id="1271">1271</span>
-<span id="1272">1272</span>
-<span id="1273">1273</span>
-<span id="1274">1274</span>
-<span id="1275">1275</span>
-<span id="1276">1276</span>
-<span id="1277">1277</span>
-<span id="1278">1278</span>
-<span id="1279">1279</span>
-<span id="1280">1280</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -1321,8 +1302,7 @@
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem</span>::{
 	<span class="ident">errors</span>::{<span class="ident">ChainApiError</span>, <span class="ident">RuntimeApiError</span>},
 	<span class="ident">messages</span>::{<span class="ident">AvailabilityStoreMessage</span>, <span class="ident">ChainApiMessage</span>},
-	<span class="ident">overseer</span>, <span class="ident">ActiveLeavesUpdate</span>, <span class="ident">FromOverseer</span>, <span class="ident">OverseerSignal</span>, <span class="ident">SpawnedSubsystem</span>, <span class="ident">SubsystemContext</span>,
-	<span class="ident">SubsystemError</span>,
+	<span class="ident">overseer</span>, <span class="ident">ActiveLeavesUpdate</span>, <span class="ident">FromOverseer</span>, <span class="ident">OverseerSignal</span>, <span class="ident">SpawnedSubsystem</span>, <span class="ident">SubsystemError</span>,
 };
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem_util</span> <span class="kw">as</span> <span class="ident">util</span>;
 <span class="kw">use</span> <span class="ident">polkadot_primitives::v2</span>::{
@@ -1804,23 +1784,17 @@
 	}
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span> <span class="ident">overseer::Subsystem</span><span class="op">&lt;</span><span class="ident">Context</span>, <span class="ident">SubsystemError</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">AvailabilityStoreSubsystem</span>
-<span class="kw">where</span>
-	<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">AvailabilityStoreMessage</span><span class="op">&gt;</span>,
-	<span class="ident">Context</span>: <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">AvailabilityStoreMessage</span><span class="op">&gt;</span>,
-{
+<span class="attribute">#[<span class="ident">overseer::subsystem</span>(<span class="ident">AvailabilityStore</span>, <span class="ident">error</span><span class="op">=</span><span class="ident">SubsystemError</span>, <span class="ident">prefix</span><span class="op">=</span><span class="ident"><span class="self">self</span>::overseer</span>)]</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span> <span class="ident">AvailabilityStoreSubsystem</span> {
 	<span class="kw">fn</span> <span class="ident">start</span>(<span class="self">self</span>, <span class="ident">ctx</span>: <span class="ident">Context</span>) -&gt; <span class="ident">SpawnedSubsystem</span> {
-		<span class="kw">let</span> <span class="ident">future</span> <span class="op">=</span> <span class="ident">run</span>(<span class="self">self</span>, <span class="ident">ctx</span>).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="prelude-val">Ok</span>(())).<span class="ident">boxed</span>();
+		<span class="kw">let</span> <span class="ident">future</span> <span class="op">=</span> <span class="ident">run</span>::<span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">ctx</span>).<span class="ident">map</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="prelude-val">Ok</span>(())).<span class="ident">boxed</span>();
 
 		<span class="ident">SpawnedSubsystem</span> { <span class="ident">name</span>: <span class="string">&quot;availability-store-subsystem&quot;</span>, <span class="ident">future</span> }
 	}
 }
 
-<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="ident">subsystem</span>: <span class="ident">AvailabilityStoreSubsystem</span>, <span class="kw-2">mut</span> <span class="ident">ctx</span>: <span class="ident">Context</span>)
-<span class="kw">where</span>
-	<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">AvailabilityStoreMessage</span><span class="op">&gt;</span>,
-	<span class="ident">Context</span>: <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">AvailabilityStoreMessage</span><span class="op">&gt;</span>,
-{
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">AvailabilityStore</span>, <span class="ident">prefix</span> <span class="op">=</span> <span class="ident"><span class="self">self</span>::overseer</span>)]</span>
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="ident">subsystem</span>: <span class="ident">AvailabilityStoreSubsystem</span>, <span class="kw-2">mut</span> <span class="ident">ctx</span>: <span class="ident">Context</span>) {
 	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">next_pruning</span> <span class="op">=</span> <span class="ident">Delay::new</span>(<span class="ident">subsystem</span>.<span class="ident">pruning_config</span>.<span class="ident">pruning_interval</span>).<span class="ident">fuse</span>();
 
 	<span class="kw">loop</span> {
@@ -1841,15 +1815,12 @@
 	}
 }
 
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">AvailabilityStore</span>, <span class="ident">prefix</span> <span class="op">=</span> <span class="ident"><span class="self">self</span>::overseer</span>)]</span>
 <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run_iteration</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
 	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 	<span class="ident">subsystem</span>: <span class="kw-2">&amp;mut</span> <span class="ident">AvailabilityStoreSubsystem</span>,
 	<span class="kw-2">mut</span> <span class="ident">next_pruning</span>: <span class="kw-2">&amp;mut</span> <span class="ident">future::Fuse</span><span class="op">&lt;</span><span class="ident">Delay</span><span class="op">&gt;</span>,
-) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">bool</span>, <span class="ident">Error</span><span class="op">&gt;</span>
-<span class="kw">where</span>
-	<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">AvailabilityStoreMessage</span><span class="op">&gt;</span>,
-	<span class="ident">Context</span>: <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">AvailabilityStoreMessage</span><span class="op">&gt;</span>,
-{
+) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">bool</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
 	<span class="macro">select!</span> {
 		<span class="ident">incoming</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">recv</span>().<span class="ident">fuse</span>() =&gt; {
 			<span class="kw">match</span> <span class="ident">incoming</span>.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">Error::ContextChannelClosed</span>)<span class="question-mark">?</span> {
@@ -1893,15 +1864,12 @@
 	<span class="prelude-val">Ok</span>(<span class="bool-val">false</span>)
 }
 
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">AvailabilityStore</span>, <span class="ident">prefix</span> <span class="op">=</span> <span class="ident"><span class="self">self</span>::overseer</span>)]</span>
 <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">process_block_activated</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
 	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 	<span class="ident">subsystem</span>: <span class="kw-2">&amp;mut</span> <span class="ident">AvailabilityStoreSubsystem</span>,
 	<span class="ident">activated</span>: <span class="ident">Hash</span>,
-) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span>
-<span class="kw">where</span>
-	<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">AvailabilityStoreMessage</span><span class="op">&gt;</span>,
-	<span class="ident">Context</span>: <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">AvailabilityStoreMessage</span><span class="op">&gt;</span>,
-{
+) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
 	<span class="kw">let</span> <span class="ident">now</span> <span class="op">=</span> <span class="ident">subsystem</span>.<span class="ident">clock</span>.<span class="ident">now</span>()<span class="question-mark">?</span>;
 
 	<span class="kw">let</span> <span class="ident">block_header</span> <span class="op">=</span> {
@@ -1948,6 +1916,7 @@
 	<span class="prelude-val">Ok</span>(())
 }
 
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">AvailabilityStore</span>, <span class="ident">prefix</span> <span class="op">=</span> <span class="ident"><span class="self">self</span>::overseer</span>)]</span>
 <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">process_new_head</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
 	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 	<span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Database</span><span class="op">&gt;</span>,
@@ -1957,11 +1926,7 @@
 	<span class="ident">now</span>: <span class="ident">Duration</span>,
 	<span class="ident">hash</span>: <span class="ident">Hash</span>,
 	<span class="ident">header</span>: <span class="ident">Header</span>,
-) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span>
-<span class="kw">where</span>
-	<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">AvailabilityStoreMessage</span><span class="op">&gt;</span>,
-	<span class="ident">Context</span>: <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">AvailabilityStoreMessage</span><span class="op">&gt;</span>,
-{
+) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
 	<span class="kw">let</span> <span class="ident">candidate_events</span> <span class="op">=</span> <span class="ident">util::request_candidate_events</span>(<span class="ident">hash</span>, <span class="ident">ctx</span>.<span class="ident">sender</span>()).<span class="kw">await</span>.<span class="kw">await</span><span class="question-mark">?</span><span class="question-mark">?</span>;
 
 	<span class="comment">// We need to request the number of validators based on the parent state,</span>
@@ -2099,16 +2064,13 @@
 	};
 }
 
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">AvailabilityStore</span>, <span class="ident">prefix</span> <span class="op">=</span> <span class="ident"><span class="self">self</span>::overseer</span>)]</span>
 <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">process_block_finalized</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
 	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 	<span class="ident">subsystem</span>: <span class="kw-2">&amp;</span><span class="ident">AvailabilityStoreSubsystem</span>,
 	<span class="ident">finalized_hash</span>: <span class="ident">Hash</span>,
 	<span class="ident">finalized_number</span>: <span class="ident">BlockNumber</span>,
-) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span>
-<span class="kw">where</span>
-	<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">AvailabilityStoreMessage</span><span class="op">&gt;</span>,
-	<span class="ident">Context</span>: <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">AvailabilityStoreMessage</span><span class="op">&gt;</span>,
-{
+) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
 	<span class="kw">let</span> <span class="ident">now</span> <span class="op">=</span> <span class="ident">subsystem</span>.<span class="ident">clock</span>.<span class="ident">now</span>()<span class="question-mark">?</span>;
 
 	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">next_possible_batch</span> <span class="op">=</span> <span class="number">0</span>;

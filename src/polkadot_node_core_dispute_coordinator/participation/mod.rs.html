@@ -428,13 +428,6 @@
 <span id="423">423</span>
 <span id="424">424</span>
 <span id="425">425</span>
-<span id="426">426</span>
-<span id="427">427</span>
-<span id="428">428</span>
-<span id="429">429</span>
-<span id="430">430</span>
-<span id="431">431</span>
-<span id="432">432</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -465,7 +458,7 @@
 <span class="kw">use</span> <span class="ident">polkadot_node_primitives</span>::{<span class="ident">ValidationResult</span>, <span class="ident">APPROVAL_EXECUTION_TIMEOUT</span>};
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem</span>::{
 	<span class="ident">messages</span>::{<span class="ident">AvailabilityRecoveryMessage</span>, <span class="ident">AvailabilityStoreMessage</span>, <span class="ident">CandidateValidationMessage</span>},
-	<span class="ident">ActiveLeavesUpdate</span>, <span class="ident">RecoveryError</span>, <span class="ident">SubsystemContext</span>, <span class="ident">SubsystemSender</span>,
+	<span class="ident">overseer</span>, <span class="ident">ActiveLeavesUpdate</span>, <span class="ident">RecoveryError</span>,
 };
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem_util::runtime::get_validation_code_by_hash</span>;
 <span class="kw">use</span> <span class="ident">polkadot_primitives::v2</span>::{<span class="ident">BlockNumber</span>, <span class="ident">CandidateHash</span>, <span class="ident">CandidateReceipt</span>, <span class="ident">Hash</span>, <span class="ident">SessionIndex</span>};
@@ -560,6 +553,7 @@
 	}
 }
 
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">DisputeCoordinator</span>, <span class="ident">prefix</span> <span class="op">=</span> <span class="ident"><span class="self">self</span>::overseer</span>)]</span>
 <span class="kw">impl</span> <span class="ident">Participation</span> {
 	<span class="doccomment">/// Get ready for managing dispute participation requests.</span>
 	<span class="doccomment">///</span>
@@ -581,7 +575,7 @@
 	<span class="doccomment">/// `on_active_leaves_update`, the participation will be launched right away.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Returns: false, if queues are already full.</span>
-	<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">queue_participation</span><span class="op">&lt;</span><span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&gt;</span>(
+	<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">queue_participation</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
 		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
 		<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 		<span class="ident">priority</span>: <span class="ident">ParticipationPriority</span>,
@@ -611,7 +605,7 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Returns: The received `ParticipationStatement` or a fatal error, in case</span>
 	<span class="doccomment">/// something went wrong when dequeuing more requests (tasks could not be spawned).</span>
-	<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">get_participation_result</span><span class="op">&lt;</span><span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&gt;</span>(
+	<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">get_participation_result</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
 		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
 		<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 		<span class="ident">msg</span>: <span class="ident">WorkerMessage</span>,
@@ -627,7 +621,7 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Make sure we to dequeue participations if that became possible and update most recent</span>
 	<span class="doccomment">/// block.</span>
-	<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">process_active_leaves_update</span><span class="op">&lt;</span><span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&gt;</span>(
+	<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">process_active_leaves_update</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
 		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
 		<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 		<span class="ident">update</span>: <span class="kw-2">&amp;</span><span class="ident">ActiveLeavesUpdate</span>,
@@ -649,7 +643,8 @@
 	}
 
 	<span class="doccomment">/// Dequeue until `MAX_PARALLEL_PARTICIPATIONS` is reached.</span>
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">dequeue_until_capacity</span><span class="op">&lt;</span><span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&gt;</span>(
+
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">dequeue_until_capacity</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
 		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
 		<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 		<span class="ident">recent_head</span>: <span class="ident">Hash</span>,
@@ -665,7 +660,7 @@
 	}
 
 	<span class="doccomment">/// Fork a participation task in the background.</span>
-	<span class="kw">fn</span> <span class="ident">fork_participation</span><span class="op">&lt;</span><span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&gt;</span>(
+	<span class="kw">fn</span> <span class="ident">fork_participation</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
 		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
 		<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 		<span class="ident">req</span>: <span class="ident">ParticipationRequest</span>,
@@ -685,7 +680,7 @@
 
 <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">participate</span>(
 	<span class="kw-2">mut</span> <span class="ident">result_sender</span>: <span class="ident">WorkerMessageSender</span>,
-	<span class="kw-2">mut</span> <span class="ident">sender</span>: <span class="kw">impl</span> <span class="ident">SubsystemSender</span>,
+	<span class="kw-2">mut</span> <span class="ident">sender</span>: <span class="kw">impl</span> <span class="ident">overseer::DisputeCoordinatorSenderTrait</span>,
 	<span class="ident">block_hash</span>: <span class="ident">Hash</span>,
 	<span class="ident">req</span>: <span class="ident">ParticipationRequest</span>,
 ) {
@@ -696,15 +691,12 @@
 	<span class="comment">// available data</span>
 	<span class="kw">let</span> (<span class="ident">recover_available_data_tx</span>, <span class="ident">recover_available_data_rx</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
 	<span class="ident">sender</span>
-		.<span class="ident">send_message</span>(
-			<span class="ident">AvailabilityRecoveryMessage::RecoverAvailableData</span>(
-				<span class="ident">req</span>.<span class="ident">candidate_receipt</span>().<span class="ident">clone</span>(),
-				<span class="ident">req</span>.<span class="ident">session</span>(),
-				<span class="prelude-val">None</span>,
-				<span class="ident">recover_available_data_tx</span>,
-			)
-			.<span class="ident">into</span>(),
-		)
+		.<span class="ident">send_message</span>(<span class="ident">AvailabilityRecoveryMessage::RecoverAvailableData</span>(
+			<span class="ident">req</span>.<span class="ident">candidate_receipt</span>().<span class="ident">clone</span>(),
+			<span class="ident">req</span>.<span class="ident">session</span>(),
+			<span class="prelude-val">None</span>,
+			<span class="ident">recover_available_data_tx</span>,
+		))
 		.<span class="kw">await</span>;
 
 	<span class="kw">let</span> <span class="ident">available_data</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">recover_available_data_rx</span>.<span class="kw">await</span> {
@@ -763,15 +755,12 @@
 	<span class="comment">// in the dispute</span>
 	<span class="kw">let</span> (<span class="ident">store_available_data_tx</span>, <span class="ident">store_available_data_rx</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
 	<span class="ident">sender</span>
-		.<span class="ident">send_message</span>(
-			<span class="ident">AvailabilityStoreMessage::StoreAvailableData</span> {
-				<span class="ident">candidate_hash</span>: <span class="kw-2">*</span><span class="ident">req</span>.<span class="ident">candidate_hash</span>(),
-				<span class="ident">n_validators</span>: <span class="ident">req</span>.<span class="ident">n_validators</span>() <span class="kw">as</span> <span class="ident">u32</span>,
-				<span class="ident">available_data</span>: <span class="ident">available_data</span>.<span class="ident">clone</span>(),
-				<span class="ident">tx</span>: <span class="ident">store_available_data_tx</span>,
-			}
-			.<span class="ident">into</span>(),
-		)
+		.<span class="ident">send_message</span>(<span class="ident">AvailabilityStoreMessage::StoreAvailableData</span> {
+			<span class="ident">candidate_hash</span>: <span class="kw-2">*</span><span class="ident">req</span>.<span class="ident">candidate_hash</span>(),
+			<span class="ident">n_validators</span>: <span class="ident">req</span>.<span class="ident">n_validators</span>() <span class="kw">as</span> <span class="ident">u32</span>,
+			<span class="ident">available_data</span>: <span class="ident">available_data</span>.<span class="ident">clone</span>(),
+			<span class="ident">tx</span>: <span class="ident">store_available_data_tx</span>,
+		})
 		.<span class="kw">await</span>;
 
 	<span class="kw">match</span> <span class="ident">store_available_data_rx</span>.<span class="kw">await</span> {
@@ -801,17 +790,14 @@
 	<span class="comment">// same level of leeway.</span>
 	<span class="kw">let</span> (<span class="ident">validation_tx</span>, <span class="ident">validation_rx</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
 	<span class="ident">sender</span>
-		.<span class="ident">send_message</span>(
-			<span class="ident">CandidateValidationMessage::ValidateFromExhaustive</span>(
-				<span class="ident">available_data</span>.<span class="ident">validation_data</span>,
-				<span class="ident">validation_code</span>,
-				<span class="ident">req</span>.<span class="ident">candidate_receipt</span>().<span class="ident">clone</span>(),
-				<span class="ident">available_data</span>.<span class="ident">pov</span>,
-				<span class="ident">APPROVAL_EXECUTION_TIMEOUT</span>,
-				<span class="ident">validation_tx</span>,
-			)
-			.<span class="ident">into</span>(),
-		)
+		.<span class="ident">send_message</span>(<span class="ident">CandidateValidationMessage::ValidateFromExhaustive</span>(
+			<span class="ident">available_data</span>.<span class="ident">validation_data</span>,
+			<span class="ident">validation_code</span>,
+			<span class="ident">req</span>.<span class="ident">candidate_receipt</span>().<span class="ident">clone</span>(),
+			<span class="ident">available_data</span>.<span class="ident">pov</span>,
+			<span class="ident">APPROVAL_EXECUTION_TIMEOUT</span>,
+			<span class="ident">validation_tx</span>,
+		))
 		.<span class="kw">await</span>;
 
 	<span class="comment">// we cast votes (either positive or negative) depending on the outcome of</span>

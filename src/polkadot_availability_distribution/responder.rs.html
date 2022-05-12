@@ -305,7 +305,7 @@
 	<span class="kw-2">mut</span> <span class="ident">receiver</span>: <span class="ident">IncomingRequestReceiver</span><span class="op">&lt;</span><span class="ident">v1::PoVFetchingRequest</span><span class="op">&gt;</span>,
 	<span class="ident">metrics</span>: <span class="ident">Metrics</span>,
 ) <span class="kw">where</span>
-	<span class="ident">Sender</span>: <span class="ident">SubsystemSender</span>,
+	<span class="ident">Sender</span>: <span class="ident">SubsystemSender</span><span class="op">&lt;</span><span class="ident">AvailabilityStoreMessage</span><span class="op">&gt;</span>,
 {
 	<span class="kw">loop</span> {
 		<span class="kw">match</span> <span class="ident">receiver</span>.<span class="ident">recv</span>(<span class="op">|</span><span class="op">|</span> <span class="macro">vec!</span>[<span class="ident">COST_INVALID_REQUEST</span>]).<span class="kw">await</span>.<span class="ident">into_nested</span>() {
@@ -333,7 +333,7 @@
 	<span class="kw-2">mut</span> <span class="ident">receiver</span>: <span class="ident">IncomingRequestReceiver</span><span class="op">&lt;</span><span class="ident">v1::ChunkFetchingRequest</span><span class="op">&gt;</span>,
 	<span class="ident">metrics</span>: <span class="ident">Metrics</span>,
 ) <span class="kw">where</span>
-	<span class="ident">Sender</span>: <span class="ident">SubsystemSender</span>,
+	<span class="ident">Sender</span>: <span class="ident">SubsystemSender</span><span class="op">&lt;</span><span class="ident">AvailabilityStoreMessage</span><span class="op">&gt;</span>,
 {
 	<span class="kw">loop</span> {
 		<span class="kw">match</span> <span class="ident">receiver</span>.<span class="ident">recv</span>(<span class="op">|</span><span class="op">|</span> <span class="macro">vec!</span>[<span class="ident">COST_INVALID_REQUEST</span>]).<span class="kw">await</span>.<span class="ident">into_nested</span>() {
@@ -367,7 +367,7 @@
 	<span class="ident">req</span>: <span class="ident">IncomingRequest</span><span class="op">&lt;</span><span class="ident">v1::PoVFetchingRequest</span><span class="op">&gt;</span>,
 	<span class="ident">metrics</span>: <span class="kw-2">&amp;</span><span class="ident">Metrics</span>,
 ) <span class="kw">where</span>
-	<span class="ident">Sender</span>: <span class="ident">SubsystemSender</span>,
+	<span class="ident">Sender</span>: <span class="ident">SubsystemSender</span><span class="op">&lt;</span><span class="ident">AvailabilityStoreMessage</span><span class="op">&gt;</span>,
 {
 	<span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">answer_pov_request</span>(<span class="ident">sender</span>, <span class="ident">req</span>).<span class="kw">await</span>;
 	<span class="kw">match</span> <span class="ident">res</span> {
@@ -392,7 +392,7 @@
 	<span class="ident">metrics</span>: <span class="kw-2">&amp;</span><span class="ident">Metrics</span>,
 ) -&gt; ()
 <span class="kw">where</span>
-	<span class="ident">Sender</span>: <span class="ident">SubsystemSender</span>,
+	<span class="ident">Sender</span>: <span class="ident">SubsystemSender</span><span class="op">&lt;</span><span class="ident">AvailabilityStoreMessage</span><span class="op">&gt;</span>,
 {
 	<span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">answer_chunk_request</span>(<span class="ident">sender</span>, <span class="ident">req</span>).<span class="kw">await</span>;
 	<span class="kw">match</span> <span class="ident">res</span> {
@@ -416,7 +416,7 @@
 	<span class="ident">req</span>: <span class="ident">IncomingRequest</span><span class="op">&lt;</span><span class="ident">v1::PoVFetchingRequest</span><span class="op">&gt;</span>,
 ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span>
 <span class="kw">where</span>
-	<span class="ident">Sender</span>: <span class="ident">SubsystemSender</span>,
+	<span class="ident">Sender</span>: <span class="ident">SubsystemSender</span><span class="op">&lt;</span><span class="ident">AvailabilityStoreMessage</span><span class="op">&gt;</span>,
 {
 	<span class="kw">let</span> <span class="ident">_span</span> <span class="op">=</span> <span class="ident">jaeger::Span::new</span>(<span class="ident">req</span>.<span class="ident">payload</span>.<span class="ident">candidate_hash</span>, <span class="string">&quot;answer-pov-request&quot;</span>);
 
@@ -444,7 +444,7 @@
 	<span class="ident">req</span>: <span class="ident">IncomingRequest</span><span class="op">&lt;</span><span class="ident">v1::ChunkFetchingRequest</span><span class="op">&gt;</span>,
 ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span>
 <span class="kw">where</span>
-	<span class="ident">Sender</span>: <span class="ident">SubsystemSender</span>,
+	<span class="ident">Sender</span>: <span class="ident">SubsystemSender</span><span class="op">&lt;</span><span class="ident">AvailabilityStoreMessage</span><span class="op">&gt;</span>,
 {
 	<span class="kw">let</span> <span class="ident">span</span> <span class="op">=</span> <span class="ident">jaeger::Span::new</span>(<span class="ident">req</span>.<span class="ident">payload</span>.<span class="ident">candidate_hash</span>, <span class="string">&quot;answer-chunk-request&quot;</span>);
 
@@ -479,7 +479,7 @@
 	<span class="ident">validator_index</span>: <span class="ident">ValidatorIndex</span>,
 ) -&gt; <span class="ident">std::result::Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ErasureChunk</span><span class="op">&gt;</span>, <span class="ident">JfyiError</span><span class="op">&gt;</span>
 <span class="kw">where</span>
-	<span class="ident">Sender</span>: <span class="ident">SubsystemSender</span>,
+	<span class="ident">Sender</span>: <span class="ident">SubsystemSender</span><span class="op">&lt;</span><span class="ident">AvailabilityStoreMessage</span><span class="op">&gt;</span>,
 {
 	<span class="kw">let</span> (<span class="ident">tx</span>, <span class="ident">rx</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
 	<span class="ident">sender</span>
@@ -507,7 +507,7 @@
 	<span class="ident">candidate_hash</span>: <span class="ident">CandidateHash</span>,
 ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">AvailableData</span><span class="op">&gt;</span><span class="op">&gt;</span>
 <span class="kw">where</span>
-	<span class="ident">Sender</span>: <span class="ident">SubsystemSender</span>,
+	<span class="ident">Sender</span>: <span class="ident">SubsystemSender</span><span class="op">&lt;</span><span class="ident">AvailabilityStoreMessage</span><span class="op">&gt;</span>,
 {
 	<span class="kw">let</span> (<span class="ident">tx</span>, <span class="ident">rx</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
 	<span class="ident">sender</span>

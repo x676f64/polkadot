@@ -810,6 +810,10 @@
 <span id="805">805</span>
 <span id="806">806</span>
 <span id="807">807</span>
+<span id="808">808</span>
+<span id="809">809</span>
+<span id="810">810</span>
+<span id="811">811</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -844,7 +848,7 @@
 		<span class="ident">CandidateBackingMessage</span>, <span class="ident">ChainApiMessage</span>, <span class="ident">DisputeCoordinatorMessage</span>, <span class="ident">ProvisionableData</span>,
 		<span class="ident">ProvisionerInherentData</span>, <span class="ident">ProvisionerMessage</span>,
 	},
-	<span class="ident">ActivatedLeaf</span>, <span class="ident">LeafStatus</span>, <span class="ident">PerLeafSpan</span>, <span class="ident">SubsystemSender</span>,
+	<span class="ident">overseer</span>, <span class="ident">ActivatedLeaf</span>, <span class="ident">LeafStatus</span>, <span class="ident">PerLeafSpan</span>,
 };
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem_util</span>::{
 	<span class="ident">request_availability_cores</span>, <span class="ident">request_persisted_validation_data</span>, <span class="ident">JobSender</span>, <span class="ident">JobSubsystem</span>,
@@ -907,8 +911,12 @@
 	}
 }
 
+<span class="doccomment">/// Provisioner run arguments.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Copy</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ProvisionerConfig</span>;
+
 <span class="doccomment">/// A per-relay-parent job for the provisioning subsystem.</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ProvisionerJob</span> {
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ProvisionerJob</span><span class="op">&lt;</span><span class="ident">Sender</span><span class="op">&gt;</span> {
 	<span class="ident">leaf</span>: <span class="ident">ActivatedLeaf</span>,
 	<span class="ident">receiver</span>: <span class="ident">mpsc::Receiver</span><span class="op">&lt;</span><span class="ident">ProvisionerMessage</span><span class="op">&gt;</span>,
 	<span class="ident">backed_candidates</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">CandidateReceipt</span><span class="op">&gt;</span>,
@@ -916,14 +924,16 @@
 	<span class="ident">metrics</span>: <span class="ident">Metrics</span>,
 	<span class="ident">inherent_after</span>: <span class="ident">InherentAfter</span>,
 	<span class="ident">awaiting_inherent</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">oneshot::Sender</span><span class="op">&lt;</span><span class="ident">ProvisionerInherentData</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+	<span class="ident">_phantom</span>: <span class="ident">std::marker::PhantomData</span><span class="op">&lt;</span><span class="ident">Sender</span><span class="op">&gt;</span>,
 }
 
-<span class="doccomment">/// Provisioner run arguments.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Copy</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ProvisionerConfig</span>;
-
-<span class="kw">impl</span> <span class="ident">JobTrait</span> <span class="kw">for</span> <span class="ident">ProvisionerJob</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Sender</span><span class="op">&gt;</span> <span class="ident">JobTrait</span> <span class="kw">for</span> <span class="ident">ProvisionerJob</span><span class="op">&lt;</span><span class="ident">Sender</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+	<span class="ident">Sender</span>: <span class="ident">overseer::ProvisionerSenderTrait</span> <span class="op">+</span> <span class="ident">std::marker::Unpin</span>,
+{
 	<span class="kw">type</span> <span class="ident">ToJob</span> <span class="op">=</span> <span class="ident">ProvisionerMessage</span>;
+	<span class="kw">type</span> <span class="ident">OutgoingMessages</span> <span class="op">=</span> <span class="ident">overseer::ProvisionerOutgoingMessages</span>;
+	<span class="kw">type</span> <span class="ident">Sender</span> <span class="op">=</span> <span class="ident">Sender</span>;
 	<span class="kw">type</span> <span class="ident">Error</span> <span class="op">=</span> <span class="ident">Error</span>;
 	<span class="kw">type</span> <span class="ident">RunArgs</span> <span class="op">=</span> <span class="ident">ProvisionerConfig</span>;
 	<span class="kw">type</span> <span class="ident">Metrics</span> <span class="op">=</span> <span class="ident">Metrics</span>;
@@ -933,12 +943,12 @@
 	<span class="doccomment">/// Run a job for the parent block indicated</span>
 	<span class="comment">//</span>
 	<span class="comment">// this function is in charge of creating and executing the job&#39;s main loop</span>
-	<span class="kw">fn</span> <span class="ident">run</span><span class="op">&lt;</span><span class="ident">S</span>: <span class="ident">SubsystemSender</span><span class="op">&gt;</span>(
+	<span class="kw">fn</span> <span class="ident">run</span>(
 		<span class="ident">leaf</span>: <span class="ident">ActivatedLeaf</span>,
 		<span class="kw">_</span>: <span class="ident"><span class="self">Self</span>::RunArgs</span>,
 		<span class="ident">metrics</span>: <span class="ident"><span class="self">Self</span>::Metrics</span>,
 		<span class="ident">receiver</span>: <span class="ident">mpsc::Receiver</span><span class="op">&lt;</span><span class="ident">ProvisionerMessage</span><span class="op">&gt;</span>,
-		<span class="kw-2">mut</span> <span class="ident">sender</span>: <span class="ident">JobSender</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>,
+		<span class="kw-2">mut</span> <span class="ident">sender</span>: <span class="ident">JobSender</span><span class="op">&lt;</span><span class="ident">Sender</span><span class="op">&gt;</span>,
 	) -&gt; <span class="ident">Pin</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Future</span><span class="op">&lt;</span><span class="ident">Output</span> <span class="op">=</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident"><span class="self">Self</span>::Error</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Send</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">span</span> <span class="op">=</span> <span class="ident">leaf</span>.<span class="ident">span</span>.<span class="ident">clone</span>();
 		<span class="kw">async</span> <span class="kw">move</span> {
@@ -951,7 +961,10 @@
 	}
 }
 
-<span class="kw">impl</span> <span class="ident">ProvisionerJob</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Sender</span><span class="op">&gt;</span> <span class="ident">ProvisionerJob</span><span class="op">&lt;</span><span class="ident">Sender</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+	<span class="ident">Sender</span>: <span class="ident">overseer::ProvisionerSenderTrait</span>,
+{
 	<span class="kw">fn</span> <span class="ident">new</span>(
 		<span class="ident">leaf</span>: <span class="ident">ActivatedLeaf</span>,
 		<span class="ident">metrics</span>: <span class="ident">Metrics</span>,
@@ -965,14 +978,11 @@
 			<span class="ident">metrics</span>,
 			<span class="ident">inherent_after</span>: <span class="ident">InherentAfter::new_from_now</span>(),
 			<span class="ident">awaiting_inherent</span>: <span class="ident">Vec::new</span>(),
+			<span class="ident">_phantom</span>: <span class="ident">std::marker::PhantomData</span>::<span class="op">&lt;</span><span class="ident">Sender</span><span class="op">&gt;</span><span class="ident">::default</span>(),
 		}
 	}
 
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run_loop</span>(
-		<span class="kw-2">mut</span> <span class="self">self</span>,
-		<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">SubsystemSender</span>,
-		<span class="ident">span</span>: <span class="ident">PerLeafSpan</span>,
-	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run_loop</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Sender</span>, <span class="ident">span</span>: <span class="ident">PerLeafSpan</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
 		<span class="kw">loop</span> {
 			<span class="macro">futures::select!</span> {
 				<span class="ident">msg</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">receiver</span>.<span class="ident">next</span>() =&gt; <span class="kw">match</span> <span class="ident">msg</span> {
@@ -1009,7 +1019,7 @@
 
 	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">send_inherent_data</span>(
 		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
-		<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">SubsystemSender</span>,
+		<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Sender</span>,
 		<span class="ident">return_senders</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">oneshot::Sender</span><span class="op">&lt;</span><span class="ident">ProvisionerInherentData</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	) {
 		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span> <span class="ident">send_inherent_data</span>(
@@ -1087,7 +1097,7 @@
 	<span class="ident">bitfields</span>: <span class="kw-2">&amp;</span>[<span class="ident">SignedAvailabilityBitfield</span>],
 	<span class="ident">candidates</span>: <span class="kw-2">&amp;</span>[<span class="ident">CandidateReceipt</span>],
 	<span class="ident">return_senders</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">oneshot::Sender</span><span class="op">&lt;</span><span class="ident">ProvisionerInherentData</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-	<span class="ident">from_job</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">SubsystemSender</span>,
+	<span class="ident">from_job</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">overseer::ProvisionerSenderTrait</span>,
 	<span class="ident">metrics</span>: <span class="kw-2">&amp;</span><span class="ident">Metrics</span>,
 ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
 	<span class="kw">let</span> <span class="ident">availability_cores</span> <span class="op">=</span> <span class="ident">request_availability_cores</span>(<span class="ident">leaf</span>.<span class="ident">hash</span>, <span class="ident">from_job</span>)
@@ -1206,7 +1216,7 @@
 	<span class="ident">bitfields</span>: <span class="kw-2">&amp;</span>[<span class="ident">SignedAvailabilityBitfield</span>],
 	<span class="ident">candidates</span>: <span class="kw-2">&amp;</span>[<span class="ident">CandidateReceipt</span>],
 	<span class="ident">relay_parent</span>: <span class="ident">Hash</span>,
-	<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">SubsystemSender</span>,
+	<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">overseer::ProvisionerSenderTrait</span>,
 ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">BackedCandidate</span><span class="op">&gt;</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
 	<span class="kw">let</span> <span class="ident">block_number</span> <span class="op">=</span> <span class="ident">get_block_number_under_construction</span>(<span class="ident">relay_parent</span>, <span class="ident">sender</span>).<span class="kw">await</span><span class="question-mark">?</span>;
 
@@ -1284,14 +1294,11 @@
 	<span class="comment">// now get the backed candidates corresponding to these candidate receipts</span>
 	<span class="kw">let</span> (<span class="ident">tx</span>, <span class="ident">rx</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
 	<span class="ident">sender</span>
-		.<span class="ident">send_message</span>(
-			<span class="ident">CandidateBackingMessage::GetBackedCandidates</span>(
-				<span class="ident">relay_parent</span>,
-				<span class="ident">selected_candidates</span>.<span class="ident">clone</span>(),
-				<span class="ident">tx</span>,
-			)
-			.<span class="ident">into</span>(),
-		)
+		.<span class="ident">send_message</span>(<span class="ident">CandidateBackingMessage::GetBackedCandidates</span>(
+			<span class="ident">relay_parent</span>,
+			<span class="ident">selected_candidates</span>.<span class="ident">clone</span>(),
+			<span class="ident">tx</span>,
+		))
 		.<span class="kw">await</span>;
 	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">candidates</span> <span class="op">=</span> <span class="ident">rx</span>.<span class="kw">await</span>.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> <span class="ident">Error::CanceledBackedCandidates</span>(<span class="ident">err</span>))<span class="question-mark">?</span>;
 
@@ -1342,10 +1349,10 @@
 <span class="doccomment">/// in the event of an invalid `relay_parent`, returns `Ok(0)`</span>
 <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">get_block_number_under_construction</span>(
 	<span class="ident">relay_parent</span>: <span class="ident">Hash</span>,
-	<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">SubsystemSender</span>,
+	<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">overseer::ProvisionerSenderTrait</span>,
 ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">BlockNumber</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
 	<span class="kw">let</span> (<span class="ident">tx</span>, <span class="ident">rx</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
-	<span class="ident">sender</span>.<span class="ident">send_message</span>(<span class="ident">ChainApiMessage::BlockNumber</span>(<span class="ident">relay_parent</span>, <span class="ident">tx</span>).<span class="ident">into</span>()).<span class="kw">await</span>;
+	<span class="ident">sender</span>.<span class="ident">send_message</span>(<span class="ident">ChainApiMessage::BlockNumber</span>(<span class="ident">relay_parent</span>, <span class="ident">tx</span>)).<span class="kw">await</span>;
 
 	<span class="kw">match</span> <span class="ident">rx</span>.<span class="kw">await</span>.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> <span class="ident">Error::CanceledBlockNumber</span>(<span class="ident">err</span>))<span class="question-mark">?</span> {
 		<span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">n</span>)) =&gt; <span class="prelude-val">Ok</span>(<span class="ident">n</span> <span class="op">+</span> <span class="number">1</span>),
@@ -1403,7 +1410,7 @@
 
 <span class="doccomment">/// Request open disputes identified by `CandidateHash` and the `SessionIndex`.</span>
 <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">request_disputes</span>(
-	<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">SubsystemSender</span>,
+	<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">overseer::ProvisionerSenderTrait</span>,
 	<span class="ident">active_or_recent</span>: <span class="ident">RequestType</span>,
 ) -&gt; <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">SessionIndex</span>, <span class="ident">CandidateHash</span>)<span class="op">&gt;</span> {
 	<span class="kw">let</span> (<span class="ident">tx</span>, <span class="ident">rx</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
@@ -1412,7 +1419,7 @@
 		<span class="ident">RequestType::Active</span> =&gt; <span class="ident">DisputeCoordinatorMessage::ActiveDisputes</span>(<span class="ident">tx</span>),
 	};
 	<span class="comment">// Bounded by block production - `ProvisionerMessage::RequestInherentData`.</span>
-	<span class="ident">sender</span>.<span class="ident">send_unbounded_message</span>(<span class="ident">msg</span>.<span class="ident">into</span>());
+	<span class="ident">sender</span>.<span class="ident">send_unbounded_message</span>(<span class="ident">msg</span>);
 
 	<span class="kw">let</span> <span class="ident">recent_disputes</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">rx</span>.<span class="kw">await</span> {
 		<span class="prelude-val">Ok</span>(<span class="ident">r</span>) =&gt; <span class="ident">r</span>,
@@ -1426,14 +1433,15 @@
 
 <span class="doccomment">/// Request the relevant dispute statements for a set of disputes identified by `CandidateHash` and the `SessionIndex`.</span>
 <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">request_votes</span>(
-	<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">SubsystemSender</span>,
+	<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">overseer::ProvisionerSenderTrait</span>,
 	<span class="ident">disputes_to_query</span>: <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">SessionIndex</span>, <span class="ident">CandidateHash</span>)<span class="op">&gt;</span>,
 ) -&gt; <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">SessionIndex</span>, <span class="ident">CandidateHash</span>, <span class="ident">CandidateVotes</span>)<span class="op">&gt;</span> {
 	<span class="kw">let</span> (<span class="ident">tx</span>, <span class="ident">rx</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
 	<span class="comment">// Bounded by block production - `ProvisionerMessage::RequestInherentData`.</span>
-	<span class="ident">sender</span>.<span class="ident">send_unbounded_message</span>(
-		<span class="ident">DisputeCoordinatorMessage::QueryCandidateVotes</span>(<span class="ident">disputes_to_query</span>, <span class="ident">tx</span>).<span class="ident">into</span>(),
-	);
+	<span class="ident">sender</span>.<span class="ident">send_unbounded_message</span>(<span class="ident">DisputeCoordinatorMessage::QueryCandidateVotes</span>(
+		<span class="ident">disputes_to_query</span>,
+		<span class="ident">tx</span>,
+	));
 
 	<span class="kw">match</span> <span class="ident">rx</span>.<span class="kw">await</span> {
 		<span class="prelude-val">Ok</span>(<span class="ident">v</span>) =&gt; <span class="ident">v</span>,
@@ -1477,7 +1485,7 @@
 <span class="kw">const</span> <span class="ident">MAX_DISPUTES_FORWARDED_TO_RUNTIME</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">1_000</span>;
 
 <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">select_disputes</span>(
-	<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">SubsystemSender</span>,
+	<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">overseer::ProvisionerSenderTrait</span>,
 	<span class="ident">metrics</span>: <span class="kw-2">&amp;</span><span class="ident">metrics::Metrics</span>,
 	<span class="ident">_leaf</span>: <span class="kw-2">&amp;</span><span class="ident">ActivatedLeaf</span>,
 ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">MultiDisputeStatementSet</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
@@ -1616,7 +1624,7 @@
 }
 
 <span class="doccomment">/// The provisioner subsystem.</span>
-<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">ProvisionerSubsystem</span><span class="op">&lt;</span><span class="ident">Spawner</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">JobSubsystem</span><span class="op">&lt;</span><span class="ident">ProvisionerJob</span>, <span class="ident">Spawner</span><span class="op">&gt;</span>;
+<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">ProvisionerSubsystem</span><span class="op">&lt;</span><span class="ident">Spawner</span>, <span class="ident">Sender</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">JobSubsystem</span><span class="op">&lt;</span><span class="ident">ProvisionerJob</span><span class="op">&lt;</span><span class="ident">Sender</span><span class="op">&gt;</span>, <span class="ident">Spawner</span><span class="op">&gt;</span>;
 </code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="polkadot_node_core_provisioner" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.62.0-nightly (6dd68402c 2022-05-11)" ></div>
 </body></html>

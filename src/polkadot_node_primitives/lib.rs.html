@@ -606,7 +606,7 @@
 <span class="doccomment">/// We are not using `NonZeroU32` here because `expect` and `unwrap` are not yet const, so global</span>
 <span class="doccomment">/// constants of `SessionWindowSize` would require `lazy_static` in that case.</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// See: https://github.com/rust-lang/rust/issues/67441</span>
+<span class="doccomment">/// See: &lt;https://github.com/rust-lang/rust/issues/67441&gt;</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Ord</span>, <span class="ident">PartialOrd</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SessionWindowSize</span>(<span class="ident">SessionIndex</span>);
 

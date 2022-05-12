@@ -139,14 +139,6 @@
 <span id="134">134</span>
 <span id="135">135</span>
 <span id="136">136</span>
-<span id="137">137</span>
-<span id="138">138</span>
-<span id="139">139</span>
-<span id="140">140</span>
-<span id="141">141</span>
-<span id="142">142</span>
-<span id="143">143</span>
-<span id="144">144</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -183,9 +175,7 @@
 <span class="kw">use</span> <span class="ident">polkadot_primitives::v2::CollatorPair</span>;
 
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem</span>::{
-	<span class="ident">errors::SubsystemError</span>,
-	<span class="ident">messages</span>::{<span class="ident">CollatorProtocolMessage</span>, <span class="ident">NetworkBridgeMessage</span>},
-	<span class="ident">overseer</span>, <span class="ident">SpawnedSubsystem</span>, <span class="ident">SubsystemContext</span>, <span class="ident">SubsystemSender</span>,
+	<span class="ident">errors::SubsystemError</span>, <span class="ident">messages::NetworkBridgeMessage</span>, <span class="ident">overseer</span>, <span class="ident">SpawnedSubsystem</span>,
 };
 
 <span class="kw">mod</span> <span class="ident">error</span>;
@@ -238,6 +228,7 @@
 	<span class="ident">protocol_side</span>: <span class="ident">ProtocolSide</span>,
 }
 
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">CollatorProtocol</span>, <span class="ident">prefix</span> <span class="op">=</span> <span class="ident"><span class="self">self</span>::overseer</span>)]</span>
 <span class="kw">impl</span> <span class="ident">CollatorProtocolSubsystem</span> {
 	<span class="doccomment">/// Start the collator protocol.</span>
 	<span class="doccomment">/// If `id` is `Some` this is a collator side of the protocol.</span>
@@ -247,11 +238,7 @@
 		<span class="self">Self</span> { <span class="ident">protocol_side</span> }
 	}
 
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">ctx</span>: <span class="ident">Context</span>) -&gt; <span class="ident">std::result::Result</span><span class="op">&lt;</span>(), <span class="ident">error::FatalError</span><span class="op">&gt;</span>
-	<span class="kw">where</span>
-		<span class="ident">Context</span>: <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">CollatorProtocolMessage</span><span class="op">&gt;</span>,
-		<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">CollatorProtocolMessage</span><span class="op">&gt;</span>,
-	{
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">ctx</span>: <span class="ident">Context</span>) -&gt; <span class="ident">std::result::Result</span><span class="op">&lt;</span>(), <span class="ident">error::FatalError</span><span class="op">&gt;</span> {
 		<span class="kw">match</span> <span class="self">self</span>.<span class="ident">protocol_side</span> {
 			<span class="ident">ProtocolSide::Validator</span> { <span class="ident">keystore</span>, <span class="ident">eviction_policy</span>, <span class="ident">metrics</span> } =&gt;
 				<span class="ident">validator_side::run</span>(<span class="ident">ctx</span>, <span class="ident">keystore</span>, <span class="ident">eviction_policy</span>, <span class="ident">metrics</span>).<span class="kw">await</span>,
@@ -261,12 +248,8 @@
 	}
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span> <span class="ident">overseer::Subsystem</span><span class="op">&lt;</span><span class="ident">Context</span>, <span class="ident">SubsystemError</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">CollatorProtocolSubsystem</span>
-<span class="kw">where</span>
-	<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">CollatorProtocolMessage</span><span class="op">&gt;</span>,
-	<span class="ident">Context</span>: <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">CollatorProtocolMessage</span><span class="op">&gt;</span>,
-	<span class="op">&lt;</span><span class="ident">Context</span> <span class="kw">as</span> <span class="ident">SubsystemContext</span><span class="op">&gt;</span><span class="ident">::Sender</span>: <span class="ident">SubsystemSender</span>,
-{
+<span class="attribute">#[<span class="ident">overseer::subsystem</span>(<span class="ident">CollatorProtocol</span>, <span class="ident">error</span><span class="op">=</span><span class="ident">SubsystemError</span>, <span class="ident">prefix</span><span class="op">=</span><span class="ident"><span class="self">self</span>::overseer</span>)]</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span> <span class="ident">CollatorProtocolSubsystem</span> {
 	<span class="kw">fn</span> <span class="ident">start</span>(<span class="self">self</span>, <span class="ident">ctx</span>: <span class="ident">Context</span>) -&gt; <span class="ident">SpawnedSubsystem</span> {
 		<span class="kw">let</span> <span class="ident">future</span> <span class="op">=</span> <span class="self">self</span>
 			.<span class="ident">run</span>(<span class="ident">ctx</span>)
@@ -278,10 +261,11 @@
 }
 
 <span class="doccomment">/// Modify the reputation of a peer based on its behavior.</span>
-<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">modify_reputation</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>, <span class="ident">peer</span>: <span class="ident">PeerId</span>, <span class="ident">rep</span>: <span class="ident">Rep</span>)
-<span class="kw">where</span>
-	<span class="ident">Context</span>: <span class="ident">SubsystemContext</span>,
-{
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">modify_reputation</span>(
+	<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">overseer::CollatorProtocolSenderTrait</span>,
+	<span class="ident">peer</span>: <span class="ident">PeerId</span>,
+	<span class="ident">rep</span>: <span class="ident">Rep</span>,
+) {
 	<span class="macro">gum::trace!</span>(
 		<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
 		<span class="ident">rep</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">rep</span>,
@@ -289,7 +273,7 @@
 		<span class="string">&quot;reputation change for peer&quot;</span>,
 	);
 
-	<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeMessage::ReportPeer</span>(<span class="ident">peer</span>, <span class="ident">rep</span>)).<span class="kw">await</span>;
+	<span class="ident">sender</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeMessage::ReportPeer</span>(<span class="ident">peer</span>, <span class="ident">rep</span>)).<span class="kw">await</span>;
 }
 </code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="polkadot_collator_protocol" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.62.0-nightly (6dd68402c 2022-05-11)" ></div>

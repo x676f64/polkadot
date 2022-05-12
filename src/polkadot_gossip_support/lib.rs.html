@@ -622,22 +622,6 @@
 <span id="617">617</span>
 <span id="618">618</span>
 <span id="619">619</span>
-<span id="620">620</span>
-<span id="621">621</span>
-<span id="622">622</span>
-<span id="623">623</span>
-<span id="624">624</span>
-<span id="625">625</span>
-<span id="626">626</span>
-<span id="627">627</span>
-<span id="628">628</span>
-<span id="629">629</span>
-<span id="630">630</span>
-<span id="631">631</span>
-<span id="632">632</span>
-<span id="633">633</span>
-<span id="634">634</span>
-<span id="635">635</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -688,8 +672,7 @@
 		<span class="ident">GossipSupportMessage</span>, <span class="ident">NetworkBridgeEvent</span>, <span class="ident">NetworkBridgeMessage</span>, <span class="ident">RuntimeApiMessage</span>,
 		<span class="ident">RuntimeApiRequest</span>,
 	},
-	<span class="ident">overseer</span>, <span class="ident">ActiveLeavesUpdate</span>, <span class="ident">FromOverseer</span>, <span class="ident">OverseerSignal</span>, <span class="ident">SpawnedSubsystem</span>, <span class="ident">SubsystemContext</span>,
-	<span class="ident">SubsystemError</span>,
+	<span class="ident">overseer</span>, <span class="ident">ActiveLeavesUpdate</span>, <span class="ident">FromOverseer</span>, <span class="ident">OverseerSignal</span>, <span class="ident">SpawnedSubsystem</span>, <span class="ident">SubsystemError</span>,
 };
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem_util</span> <span class="kw">as</span> <span class="ident">util</span>;
 <span class="kw">use</span> <span class="ident">polkadot_primitives::v2</span>::{
@@ -755,6 +738,7 @@
 	<span class="ident">metrics</span>: <span class="ident">Metrics</span>,
 }
 
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">GossipSupport</span>, <span class="ident">prefix</span> <span class="op">=</span> <span class="ident"><span class="self">self</span>::overseer</span>)]</span>
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">AD</span><span class="op">&gt;</span> <span class="ident">GossipSupport</span><span class="op">&lt;</span><span class="ident">AD</span><span class="op">&gt;</span>
 <span class="kw">where</span>
 	<span class="ident">AD</span>: <span class="ident">AuthorityDiscovery</span>,
@@ -778,11 +762,7 @@
 		}
 	}
 
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">ctx</span>: <span class="ident">Context</span>) -&gt; <span class="self">Self</span>
-	<span class="kw">where</span>
-		<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">GossipSupportMessage</span><span class="op">&gt;</span>,
-		<span class="ident">Context</span>: <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">GossipSupportMessage</span><span class="op">&gt;</span>,
-	{
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">ctx</span>: <span class="ident">Context</span>) -&gt; <span class="self">Self</span> {
 		<span class="kw">fn</span> <span class="ident">get_connectivity_check_delay</span>() -&gt; <span class="ident">Delay</span> {
 			<span class="ident">Delay::new</span>(<span class="ident">LOW_CONNECTIVITY_WARN_DELAY</span>)
 		}
@@ -818,7 +798,7 @@
 					<span class="macro">gum::trace!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="string">&quot;active leaves signal&quot;</span>);
 
 					<span class="kw">let</span> <span class="ident">leaves</span> <span class="op">=</span> <span class="ident">activated</span>.<span class="ident">into_iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">a</span><span class="op">|</span> <span class="ident">a</span>.<span class="ident">hash</span>);
-					<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">handle_active_leaves</span>(<span class="kw-2">&amp;mut</span> <span class="ident">ctx</span>, <span class="ident">leaves</span>).<span class="kw">await</span> {
+					<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">handle_active_leaves</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="ident">leaves</span>).<span class="kw">await</span> {
 						<span class="macro">gum::debug!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="ident">error</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">e</span>);
 					}
 				},
@@ -831,18 +811,13 @@
 	<span class="doccomment">/// 1. Determine if the current session index has changed.</span>
 	<span class="doccomment">/// 2. If it has, determine relevant validators</span>
 	<span class="doccomment">///    and issue a connection request.</span>
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle_active_leaves</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle_active_leaves</span>(
 		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
-		<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
+		<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">overseer::GossipSupportSenderTrait</span>,
 		<span class="ident">leaves</span>: <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">Hash</span><span class="op">&gt;</span>,
-	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">util::Error</span><span class="op">&gt;</span>
-	<span class="kw">where</span>
-		<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">GossipSupportMessage</span><span class="op">&gt;</span>,
-		<span class="ident">Context</span>: <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">GossipSupportMessage</span><span class="op">&gt;</span>,
-	{
+	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">util::Error</span><span class="op">&gt;</span> {
 		<span class="kw">for</span> <span class="ident">leaf</span> <span class="kw">in</span> <span class="ident">leaves</span> {
-			<span class="kw">let</span> <span class="ident">current_index</span> <span class="op">=</span>
-				<span class="ident">util::request_session_index_for_child</span>(<span class="ident">leaf</span>, <span class="ident">ctx</span>.<span class="ident">sender</span>()).<span class="kw">await</span>.<span class="kw">await</span><span class="question-mark">?</span><span class="question-mark">?</span>;
+			<span class="kw">let</span> <span class="ident">current_index</span> <span class="op">=</span> <span class="ident">util::request_session_index_for_child</span>(<span class="ident">leaf</span>, <span class="ident">sender</span>).<span class="kw">await</span>.<span class="kw">await</span><span class="question-mark">?</span><span class="question-mark">?</span>;
 			<span class="kw">let</span> <span class="ident">since_failure</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">last_failure</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">i</span><span class="op">|</span> <span class="ident">i</span>.<span class="ident">elapsed</span>()).<span class="ident">unwrap_or_default</span>();
 			<span class="kw">let</span> <span class="ident">force_request</span> <span class="op">=</span> <span class="ident">since_failure</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">BACKOFF_DURATION</span>;
 			<span class="kw">let</span> <span class="ident">leaf_session</span> <span class="op">=</span> <span class="prelude-val">Some</span>((<span class="ident">current_index</span>, <span class="ident">leaf</span>));
@@ -856,7 +831,7 @@
 
 			<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">session_index</span>, <span class="ident">relay_parent</span>)) <span class="op">=</span> <span class="ident">maybe_issue_connection</span> {
 				<span class="kw">let</span> <span class="ident">session_info</span> <span class="op">=</span>
-					<span class="ident">util::request_session_info</span>(<span class="ident">leaf</span>, <span class="ident">session_index</span>, <span class="ident">ctx</span>.<span class="ident">sender</span>()).<span class="kw">await</span>.<span class="kw">await</span><span class="question-mark">?</span><span class="question-mark">?</span>;
+					<span class="ident">util::request_session_info</span>(<span class="ident">leaf</span>, <span class="ident">session_index</span>, <span class="ident">sender</span>).<span class="kw">await</span>.<span class="kw">await</span><span class="question-mark">?</span><span class="question-mark">?</span>;
 
 				<span class="kw">let</span> <span class="ident">session_info</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">session_info</span> {
 					<span class="prelude-val">Some</span>(<span class="ident">s</span>) =&gt; <span class="ident">s</span>,
@@ -895,13 +870,13 @@
 				<span class="comment">// by virtue of a new session being entered. Therefore we maintain</span>
 				<span class="comment">// connections to a much broader set of validators.</span>
 				{
-					<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">connections</span> <span class="op">=</span> <span class="ident">authorities_past_present_future</span>(<span class="ident">ctx</span>, <span class="ident">leaf</span>).<span class="kw">await</span><span class="question-mark">?</span>;
+					<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">connections</span> <span class="op">=</span> <span class="ident">authorities_past_present_future</span>(<span class="ident">sender</span>, <span class="ident">leaf</span>).<span class="kw">await</span><span class="question-mark">?</span>;
 
 					<span class="comment">// Remove all of our locally controlled validator indices so we don&#39;t connect to ourself.</span>
 					<span class="comment">// If we control none of them, don&#39;t issue connection requests - we&#39;re outside</span>
 					<span class="comment">// of the &#39;clique&#39; of recent validators.</span>
 					<span class="kw">if</span> <span class="ident">remove_all_controlled</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">keystore</span>, <span class="kw-2">&amp;mut</span> <span class="ident">connections</span>).<span class="kw">await</span> <span class="op">!</span><span class="op">=</span> <span class="number">0</span> {
-						<span class="self">self</span>.<span class="ident">issue_connection_request</span>(<span class="ident">ctx</span>, <span class="ident">connections</span>).<span class="kw">await</span>;
+						<span class="self">self</span>.<span class="ident">issue_connection_request</span>(<span class="ident">sender</span>, <span class="ident">connections</span>).<span class="kw">await</span>;
 					}
 				}
 
@@ -913,7 +888,7 @@
 					<span class="self">self</span>.<span class="ident">update_authority_status_metrics</span>(<span class="kw-2">&amp;</span><span class="ident">session_info</span>).<span class="kw">await</span>;
 
 					<span class="ident">update_gossip_topology</span>(
-						<span class="ident">ctx</span>,
+						<span class="ident">sender</span>,
 						<span class="ident">our_index</span>,
 						<span class="ident">session_info</span>.<span class="ident">discovery_keys</span>,
 						<span class="ident">relay_parent</span>,
@@ -957,13 +932,12 @@
 		}
 	}
 
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">issue_connection_request</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">issue_connection_request</span><span class="op">&lt;</span><span class="ident">Sender</span><span class="op">&gt;</span>(
 		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
-		<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
+		<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Sender</span>,
 		<span class="ident">authorities</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">AuthorityDiscoveryId</span><span class="op">&gt;</span>,
 	) <span class="kw">where</span>
-		<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">GossipSupportMessage</span><span class="op">&gt;</span>,
-		<span class="ident">Context</span>: <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">GossipSupportMessage</span><span class="op">&gt;</span>,
+		<span class="ident">Sender</span>: <span class="ident">overseer::GossipSupportSenderTrait</span>,
 	{
 		<span class="kw">let</span> <span class="ident">num</span> <span class="op">=</span> <span class="ident">authorities</span>.<span class="ident">len</span>();
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">validator_addrs</span> <span class="op">=</span> <span class="ident">Vec::with_capacity</span>(<span class="ident">authorities</span>.<span class="ident">len</span>());
@@ -987,11 +961,12 @@
 		<span class="self">self</span>.<span class="ident">resolved_authorities</span> <span class="op">=</span> <span class="ident">resolved</span>;
 		<span class="macro">gum::debug!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="op">%</span><span class="ident">num</span>, <span class="string">&quot;Issuing a connection request&quot;</span>);
 
-		<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeMessage::ConnectToResolvedValidators</span> {
-			<span class="ident">validator_addrs</span>,
-			<span class="ident">peer_set</span>: <span class="ident">PeerSet::Validation</span>,
-		})
-		.<span class="kw">await</span>;
+		<span class="ident">sender</span>
+			.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeMessage::ConnectToResolvedValidators</span> {
+				<span class="ident">validator_addrs</span>,
+				<span class="ident">peer_set</span>: <span class="ident">PeerSet::Validation</span>,
+			})
+			.<span class="kw">await</span>;
 
 		<span class="comment">// issue another request for the same session</span>
 		<span class="comment">// if at least a third of the authorities were not resolved.</span>
@@ -1082,15 +1057,11 @@
 }
 
 <span class="comment">// Get the authorities of the past, present, and future.</span>
-<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">authorities_past_present_future</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
-	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">authorities_past_present_future</span>(
+	<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">overseer::GossipSupportSenderTrait</span>,
 	<span class="ident">relay_parent</span>: <span class="ident">Hash</span>,
-) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">AuthorityDiscoveryId</span><span class="op">&gt;</span>, <span class="ident">util::Error</span><span class="op">&gt;</span>
-<span class="kw">where</span>
-	<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">GossipSupportMessage</span><span class="op">&gt;</span>,
-	<span class="ident">Context</span>: <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">GossipSupportMessage</span><span class="op">&gt;</span>,
-{
-	<span class="kw">let</span> <span class="ident">authorities</span> <span class="op">=</span> <span class="ident">util::request_authorities</span>(<span class="ident">relay_parent</span>, <span class="ident">ctx</span>.<span class="ident">sender</span>()).<span class="kw">await</span>.<span class="kw">await</span><span class="question-mark">?</span><span class="question-mark">?</span>;
+) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">AuthorityDiscoveryId</span><span class="op">&gt;</span>, <span class="ident">util::Error</span><span class="op">&gt;</span> {
+	<span class="kw">let</span> <span class="ident">authorities</span> <span class="op">=</span> <span class="ident">util::request_authorities</span>(<span class="ident">relay_parent</span>, <span class="ident">sender</span>).<span class="kw">await</span>.<span class="kw">await</span><span class="question-mark">?</span><span class="question-mark">?</span>;
 	<span class="macro">gum::debug!</span>(
 		<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
 		<span class="ident">authority_count</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">authorities</span>.<span class="ident">len</span>(),
@@ -1140,28 +1111,25 @@
 <span class="doccomment">/// This limits the amount of gossip peers to 2 * `sqrt(len)` and ensures the diameter of 2.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// [web3]: https://research.web3.foundation/en/latest/polkadot/networking/3-avail-valid.html#topology</span>
-<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">update_gossip_topology</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
-	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">update_gossip_topology</span>(
+	<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">overseer::GossipSupportSenderTrait</span>,
 	<span class="ident">our_index</span>: <span class="ident">usize</span>,
 	<span class="ident">authorities</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">AuthorityDiscoveryId</span><span class="op">&gt;</span>,
 	<span class="ident">relay_parent</span>: <span class="ident">Hash</span>,
 	<span class="ident">session_index</span>: <span class="ident">SessionIndex</span>,
-) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">util::Error</span><span class="op">&gt;</span>
-<span class="kw">where</span>
-	<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">GossipSupportMessage</span><span class="op">&gt;</span>,
-	<span class="ident">Context</span>: <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">GossipSupportMessage</span><span class="op">&gt;</span>,
-{
+) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">util::Error</span><span class="op">&gt;</span> {
 	<span class="comment">// retrieve BABE randomness</span>
 	<span class="kw">let</span> <span class="ident">random_seed</span> <span class="op">=</span> {
 		<span class="kw">let</span> (<span class="ident">tx</span>, <span class="ident">rx</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
 
 		<span class="comment">// TODO https://github.com/paritytech/polkadot/issues/5316:</span>
 		<span class="comment">// get the random seed from the `SessionInfo` instead.</span>
-		<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">RuntimeApiMessage::Request</span>(
-			<span class="ident">relay_parent</span>,
-			<span class="ident">RuntimeApiRequest::CurrentBabeEpoch</span>(<span class="ident">tx</span>),
-		))
-		.<span class="kw">await</span>;
+		<span class="ident">sender</span>
+			.<span class="ident">send_message</span>(<span class="ident">RuntimeApiMessage::Request</span>(
+				<span class="ident">relay_parent</span>,
+				<span class="ident">RuntimeApiRequest::CurrentBabeEpoch</span>(<span class="ident">tx</span>),
+			))
+			.<span class="kw">await</span>;
 
 		<span class="kw">let</span> <span class="ident">randomness</span> <span class="op">=</span> <span class="ident">rx</span>.<span class="kw">await</span><span class="question-mark">?</span><span class="question-mark">?</span>.<span class="ident">randomness</span>;
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">subject</span> <span class="op">=</span> [<span class="number">0u8</span>; <span class="number">40</span>];
@@ -1193,12 +1161,13 @@
 		.<span class="ident">map</span>(<span class="op">|</span><span class="ident">i</span><span class="op">|</span> (<span class="ident">authorities</span>[<span class="ident">i</span>].<span class="ident">clone</span>(), <span class="ident">ValidatorIndex::from</span>(<span class="ident">i</span> <span class="kw">as</span> <span class="ident">u32</span>)))
 		.<span class="ident">collect</span>();
 
-	<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeMessage::NewGossipTopology</span> {
-		<span class="ident">session</span>: <span class="ident">session_index</span>,
-		<span class="ident">our_neighbors_x</span>: <span class="ident">row_neighbors</span>,
-		<span class="ident">our_neighbors_y</span>: <span class="ident">column_neighbors</span>,
-	})
-	.<span class="kw">await</span>;
+	<span class="ident">sender</span>
+		.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeMessage::NewGossipTopology</span> {
+			<span class="ident">session</span>: <span class="ident">session_index</span>,
+			<span class="ident">our_neighbors_x</span>: <span class="ident">row_neighbors</span>,
+			<span class="ident">our_neighbors_y</span>: <span class="ident">column_neighbors</span>,
+		})
+		.<span class="kw">await</span>;
 
 	<span class="prelude-val">Ok</span>(())
 }
@@ -1236,10 +1205,9 @@
 	}
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Context</span>, <span class="ident">AD</span><span class="op">&gt;</span> <span class="ident">overseer::Subsystem</span><span class="op">&lt;</span><span class="ident">Context</span>, <span class="ident">SubsystemError</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">GossipSupport</span><span class="op">&lt;</span><span class="ident">AD</span><span class="op">&gt;</span>
+<span class="attribute">#[<span class="ident">overseer::subsystem</span>(<span class="ident">GossipSupport</span>, <span class="ident">error</span> <span class="op">=</span> <span class="ident">SubsystemError</span>, <span class="ident">prefix</span> <span class="op">=</span> <span class="ident"><span class="self">self</span>::overseer</span>)]</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Context</span>, <span class="ident">AD</span><span class="op">&gt;</span> <span class="ident">GossipSupport</span><span class="op">&lt;</span><span class="ident">AD</span><span class="op">&gt;</span>
 <span class="kw">where</span>
-	<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">GossipSupportMessage</span><span class="op">&gt;</span>,
-	<span class="ident">Context</span>: <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">GossipSupportMessage</span><span class="op">&gt;</span>,
 	<span class="ident">AD</span>: <span class="ident">AuthorityDiscovery</span> <span class="op">+</span> <span class="ident">Clone</span>,
 {
 	<span class="kw">fn</span> <span class="ident">start</span>(<span class="self">self</span>, <span class="ident">ctx</span>: <span class="ident">Context</span>) -&gt; <span class="ident">SpawnedSubsystem</span> {

@@ -1535,37 +1535,6 @@
 <span id="1530">1530</span>
 <span id="1531">1531</span>
 <span id="1532">1532</span>
-<span id="1533">1533</span>
-<span id="1534">1534</span>
-<span id="1535">1535</span>
-<span id="1536">1536</span>
-<span id="1537">1537</span>
-<span id="1538">1538</span>
-<span id="1539">1539</span>
-<span id="1540">1540</span>
-<span id="1541">1541</span>
-<span id="1542">1542</span>
-<span id="1543">1543</span>
-<span id="1544">1544</span>
-<span id="1545">1545</span>
-<span id="1546">1546</span>
-<span id="1547">1547</span>
-<span id="1548">1548</span>
-<span id="1549">1549</span>
-<span id="1550">1550</span>
-<span id="1551">1551</span>
-<span id="1552">1552</span>
-<span id="1553">1553</span>
-<span id="1554">1554</span>
-<span id="1555">1555</span>
-<span id="1556">1556</span>
-<span id="1557">1557</span>
-<span id="1558">1558</span>
-<span id="1559">1559</span>
-<span id="1560">1560</span>
-<span id="1561">1561</span>
-<span id="1562">1562</span>
-<span id="1563">1563</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -1616,9 +1585,9 @@
 	<span class="ident">jaeger</span>,
 	<span class="ident">messages</span>::{
 		<span class="ident">CandidateBackingMessage</span>, <span class="ident">CollatorProtocolMessage</span>, <span class="ident">IfDisconnected</span>, <span class="ident">NetworkBridgeEvent</span>,
-		<span class="ident">NetworkBridgeMessage</span>,
+		<span class="ident">NetworkBridgeMessage</span>, <span class="ident">RuntimeApiMessage</span>,
 	},
-	<span class="ident">overseer</span>, <span class="ident">FromOverseer</span>, <span class="ident">OverseerSignal</span>, <span class="ident">PerLeafSpan</span>, <span class="ident">SubsystemContext</span>, <span class="ident">SubsystemSender</span>,
+	<span class="ident">overseer</span>, <span class="ident">FromOverseer</span>, <span class="ident">OverseerSignal</span>, <span class="ident">PerLeafSpan</span>, <span class="ident">SubsystemSender</span>,
 };
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem_util::metrics</span>::{<span class="self">self</span>, <span class="ident">prometheus</span>};
 <span class="kw">use</span> <span class="ident">polkadot_primitives::v2</span>::{<span class="ident">CandidateReceipt</span>, <span class="ident">CollatorId</span>, <span class="ident">Hash</span>, <span class="ident">Id</span> <span class="kw">as</span> <span class="ident">ParaId</span>};
@@ -1930,7 +1899,7 @@
 <span class="kw">impl</span> <span class="ident">ActiveParas</span> {
 	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">assign_incoming</span>(
 		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
-		<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">SubsystemSender</span>,
+		<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">SubsystemSender</span><span class="op">&lt;</span><span class="ident">RuntimeApiMessage</span><span class="op">&gt;</span>,
 		<span class="ident">keystore</span>: <span class="kw-2">&amp;</span><span class="ident">SyncCryptoStorePtr</span>,
 		<span class="ident">new_relay_parents</span>: <span class="kw">impl</span> <span class="ident">IntoIterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">Hash</span><span class="op">&gt;</span>,
 	) {
@@ -2198,25 +2167,19 @@
 	})
 }
 
-<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">disconnect_peer</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>, <span class="ident">peer_id</span>: <span class="ident">PeerId</span>)
-<span class="kw">where</span>
-	<span class="ident">Context</span>: <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">CollatorProtocolMessage</span><span class="op">&gt;</span>,
-	<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">CollatorProtocolMessage</span><span class="op">&gt;</span>,
-{
-	<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeMessage::DisconnectPeer</span>(<span class="ident">peer_id</span>, <span class="ident">PeerSet::Collation</span>))
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">disconnect_peer</span>(<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">overseer::CollatorProtocolSenderTrait</span>, <span class="ident">peer_id</span>: <span class="ident">PeerId</span>) {
+	<span class="ident">sender</span>
+		.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeMessage::DisconnectPeer</span>(<span class="ident">peer_id</span>, <span class="ident">PeerSet::Collation</span>))
 		.<span class="kw">await</span>
 }
 
 <span class="doccomment">/// Another subsystem has requested to fetch collations on a particular leaf for some para.</span>
-<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">fetch_collation</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
-	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">fetch_collation</span>(
+	<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">overseer::CollatorProtocolSenderTrait</span>,
 	<span class="ident">state</span>: <span class="kw-2">&amp;mut</span> <span class="ident">State</span>,
 	<span class="ident">pc</span>: <span class="ident">PendingCollation</span>,
 	<span class="ident">id</span>: <span class="ident">CollatorId</span>,
-) <span class="kw">where</span>
-	<span class="ident">Context</span>: <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">CollatorProtocolMessage</span><span class="op">&gt;</span>,
-	<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">CollatorProtocolMessage</span><span class="op">&gt;</span>,
-{
+) {
 	<span class="kw">let</span> (<span class="ident">tx</span>, <span class="ident">rx</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
 
 	<span class="kw">let</span> <span class="ident">PendingCollation</span> { <span class="ident">relay_parent</span>, <span class="ident">para_id</span>, <span class="ident">peer_id</span>, .. } <span class="op">=</span> <span class="ident">pc</span>;
@@ -2231,7 +2194,7 @@
 
 	<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">peer_data</span>) <span class="op">=</span> <span class="ident">state</span>.<span class="ident">peer_data</span>.<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="ident">peer_id</span>) {
 		<span class="kw">if</span> <span class="ident">peer_data</span>.<span class="ident">has_advertised</span>(<span class="kw-2">&amp;</span><span class="ident">relay_parent</span>) {
-			<span class="ident">request_collation</span>(<span class="ident">ctx</span>, <span class="ident">state</span>, <span class="ident">relay_parent</span>, <span class="ident">para_id</span>, <span class="ident">peer_id</span>, <span class="ident">tx</span>).<span class="kw">await</span>;
+			<span class="ident">request_collation</span>(<span class="ident">sender</span>, <span class="ident">state</span>, <span class="ident">relay_parent</span>, <span class="ident">para_id</span>, <span class="ident">peer_id</span>, <span class="ident">tx</span>).<span class="kw">await</span>;
 		} <span class="kw">else</span> {
 			<span class="macro">gum::debug!</span>(
 				<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
@@ -2255,51 +2218,44 @@
 }
 
 <span class="doccomment">/// Report a collator for some malicious actions.</span>
-<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">report_collator</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
-	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">report_collator</span>(
+	<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">overseer::CollatorProtocolSenderTrait</span>,
 	<span class="ident">peer_data</span>: <span class="kw-2">&amp;</span><span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">PeerId</span>, <span class="ident">PeerData</span><span class="op">&gt;</span>,
 	<span class="ident">id</span>: <span class="ident">CollatorId</span>,
-) <span class="kw">where</span>
-	<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">CollatorProtocolMessage</span><span class="op">&gt;</span>,
-{
+) {
 	<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">peer_id</span>) <span class="op">=</span> <span class="ident">collator_peer_id</span>(<span class="ident">peer_data</span>, <span class="kw-2">&amp;</span><span class="ident">id</span>) {
-		<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>, <span class="ident">peer_id</span>, <span class="ident">COST_REPORT_BAD</span>).<span class="kw">await</span>;
+		<span class="ident">modify_reputation</span>(<span class="ident">sender</span>, <span class="ident">peer_id</span>, <span class="ident">COST_REPORT_BAD</span>).<span class="kw">await</span>;
 	}
 }
 
 <span class="doccomment">/// Some other subsystem has reported a collator as a good one, bump reputation.</span>
-<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">note_good_collation</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
-	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">note_good_collation</span>(
+	<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">overseer::CollatorProtocolSenderTrait</span>,
 	<span class="ident">peer_data</span>: <span class="kw-2">&amp;</span><span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">PeerId</span>, <span class="ident">PeerData</span><span class="op">&gt;</span>,
 	<span class="ident">id</span>: <span class="ident">CollatorId</span>,
-) <span class="kw">where</span>
-	<span class="ident">Context</span>: <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">CollatorProtocolMessage</span><span class="op">&gt;</span>,
-	<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">CollatorProtocolMessage</span><span class="op">&gt;</span>,
-{
+) {
 	<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">peer_id</span>) <span class="op">=</span> <span class="ident">collator_peer_id</span>(<span class="ident">peer_data</span>, <span class="kw-2">&amp;</span><span class="ident">id</span>) {
-		<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>, <span class="ident">peer_id</span>, <span class="ident">BENEFIT_NOTIFY_GOOD</span>).<span class="kw">await</span>;
+		<span class="ident">modify_reputation</span>(<span class="ident">sender</span>, <span class="ident">peer_id</span>, <span class="ident">BENEFIT_NOTIFY_GOOD</span>).<span class="kw">await</span>;
 	}
 }
 
 <span class="doccomment">/// Notify a collator that its collation got seconded.</span>
-<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">notify_collation_seconded</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
-	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">notify_collation_seconded</span>(
+	<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">overseer::CollatorProtocolSenderTrait</span>,
 	<span class="ident">peer_id</span>: <span class="ident">PeerId</span>,
 	<span class="ident">relay_parent</span>: <span class="ident">Hash</span>,
 	<span class="ident">statement</span>: <span class="ident">SignedFullStatement</span>,
-) <span class="kw">where</span>
-	<span class="ident">Context</span>: <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">CollatorProtocolMessage</span><span class="op">&gt;</span>,
-	<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">CollatorProtocolMessage</span><span class="op">&gt;</span>,
-{
+) {
 	<span class="kw">let</span> <span class="ident">wire_message</span> <span class="op">=</span>
 		<span class="ident">protocol_v1::CollatorProtocolMessage::CollationSeconded</span>(<span class="ident">relay_parent</span>, <span class="ident">statement</span>.<span class="ident">into</span>());
-	<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeMessage::SendCollationMessage</span>(
-		<span class="macro">vec!</span>[<span class="ident">peer_id</span>],
-		<span class="ident">Versioned::V1</span>(<span class="ident">protocol_v1::CollationProtocol::CollatorProtocol</span>(<span class="ident">wire_message</span>)),
-	))
-	.<span class="kw">await</span>;
+	<span class="ident">sender</span>
+		.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeMessage::SendCollationMessage</span>(
+			<span class="macro">vec!</span>[<span class="ident">peer_id</span>],
+			<span class="ident">Versioned::V1</span>(<span class="ident">protocol_v1::CollationProtocol::CollatorProtocol</span>(<span class="ident">wire_message</span>)),
+		))
+		.<span class="kw">await</span>;
 
-	<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>, <span class="ident">peer_id</span>, <span class="ident">BENEFIT_NOTIFY_GOOD</span>).<span class="kw">await</span>;
+	<span class="ident">modify_reputation</span>(<span class="ident">sender</span>, <span class="ident">peer_id</span>, <span class="ident">BENEFIT_NOTIFY_GOOD</span>).<span class="kw">await</span>;
 }
 
 <span class="doccomment">/// A peer&#39;s view has changed. A number of things should be done:</span>
@@ -2322,17 +2278,14 @@
 <span class="doccomment">///  - Check if the requested collation is in our view.</span>
 <span class="doccomment">///  - Update `PerRequest` records with the `result` field if necessary.</span>
 <span class="doccomment">/// And as such invocations of this function may rely on that.</span>
-<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">request_collation</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
-	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">request_collation</span>(
+	<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">overseer::CollatorProtocolSenderTrait</span>,
 	<span class="ident">state</span>: <span class="kw-2">&amp;mut</span> <span class="ident">State</span>,
 	<span class="ident">relay_parent</span>: <span class="ident">Hash</span>,
 	<span class="ident">para_id</span>: <span class="ident">ParaId</span>,
 	<span class="ident">peer_id</span>: <span class="ident">PeerId</span>,
 	<span class="ident">result</span>: <span class="ident">oneshot::Sender</span><span class="op">&lt;</span>(<span class="ident">CandidateReceipt</span>, <span class="ident">PoV</span>)<span class="op">&gt;</span>,
-) <span class="kw">where</span>
-	<span class="ident">Context</span>: <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">CollatorProtocolMessage</span><span class="op">&gt;</span>,
-	<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">CollatorProtocolMessage</span><span class="op">&gt;</span>,
-{
+) {
 	<span class="kw">if</span> <span class="op">!</span><span class="ident">state</span>.<span class="ident">view</span>.<span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="ident">relay_parent</span>) {
 		<span class="macro">gum::debug!</span>(
 			<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
@@ -2383,29 +2336,28 @@
 		<span class="string">&quot;Requesting collation&quot;</span>,
 	);
 
-	<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeMessage::SendRequests</span>(
-		<span class="macro">vec!</span>[<span class="ident">requests</span>],
-		<span class="ident">IfDisconnected::ImmediateError</span>,
-	))
-	.<span class="kw">await</span>;
+	<span class="ident">sender</span>
+		.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeMessage::SendRequests</span>(
+			<span class="macro">vec!</span>[<span class="ident">requests</span>],
+			<span class="ident">IfDisconnected::ImmediateError</span>,
+		))
+		.<span class="kw">await</span>;
 }
 
 <span class="doccomment">/// Networking message has been received.</span>
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">CollatorProtocol</span>, <span class="ident">prefix</span> <span class="op">=</span> <span class="ident">overseer</span>)]</span>
 <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">process_incoming_peer_message</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
 	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 	<span class="ident">state</span>: <span class="kw-2">&amp;mut</span> <span class="ident">State</span>,
 	<span class="ident">origin</span>: <span class="ident">PeerId</span>,
 	<span class="ident">msg</span>: <span class="ident">protocol_v1::CollatorProtocolMessage</span>,
-) <span class="kw">where</span>
-	<span class="ident">Context</span>: <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">CollatorProtocolMessage</span><span class="op">&gt;</span>,
-	<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">CollatorProtocolMessage</span><span class="op">&gt;</span>,
-{
+) {
 	<span class="kw">use</span> <span class="ident">protocol_v1::CollatorProtocolMessage</span>::<span class="kw-2">*</span>;
 	<span class="kw">use</span> <span class="ident">sp_runtime::traits::AppVerify</span>;
 	<span class="kw">match</span> <span class="ident">msg</span> {
 		<span class="ident">Declare</span>(<span class="ident">collator_id</span>, <span class="ident">para_id</span>, <span class="ident">signature</span>) =&gt; {
 			<span class="kw">if</span> <span class="ident">collator_peer_id</span>(<span class="kw-2">&amp;</span><span class="ident">state</span>.<span class="ident">peer_data</span>, <span class="kw-2">&amp;</span><span class="ident">collator_id</span>).<span class="ident">is_some</span>() {
-				<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>, <span class="ident">origin</span>, <span class="ident">COST_UNEXPECTED_MESSAGE</span>).<span class="kw">await</span>;
+				<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="ident">origin</span>, <span class="ident">COST_UNEXPECTED_MESSAGE</span>).<span class="kw">await</span>;
 				<span class="kw">return</span>
 			}
 
@@ -2418,7 +2370,7 @@
 						<span class="question-mark">?</span><span class="ident">para_id</span>,
 						<span class="string">&quot;Unknown peer&quot;</span>,
 					);
-					<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>, <span class="ident">origin</span>, <span class="ident">COST_UNEXPECTED_MESSAGE</span>).<span class="kw">await</span>;
+					<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="ident">origin</span>, <span class="ident">COST_UNEXPECTED_MESSAGE</span>).<span class="kw">await</span>;
 					<span class="kw">return</span>
 				},
 			};
@@ -2430,7 +2382,7 @@
 					<span class="question-mark">?</span><span class="ident">para_id</span>,
 					<span class="string">&quot;Peer is not in the collating state&quot;</span>,
 				);
-				<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>, <span class="ident">origin</span>, <span class="ident">COST_UNEXPECTED_MESSAGE</span>).<span class="kw">await</span>;
+				<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="ident">origin</span>, <span class="ident">COST_UNEXPECTED_MESSAGE</span>).<span class="kw">await</span>;
 				<span class="kw">return</span>
 			}
 
@@ -2441,7 +2393,7 @@
 					<span class="question-mark">?</span><span class="ident">para_id</span>,
 					<span class="string">&quot;Signature verification failure&quot;</span>,
 				);
-				<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>, <span class="ident">origin</span>, <span class="ident">COST_INVALID_SIGNATURE</span>).<span class="kw">await</span>;
+				<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="ident">origin</span>, <span class="ident">COST_INVALID_SIGNATURE</span>).<span class="kw">await</span>;
 				<span class="kw">return</span>
 			}
 
@@ -2464,9 +2416,9 @@
 					<span class="string">&quot;Declared as collator for unneeded para&quot;</span>,
 				);
 
-				<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>, <span class="ident">origin</span>.<span class="ident">clone</span>(), <span class="ident">COST_UNNEEDED_COLLATOR</span>).<span class="kw">await</span>;
+				<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="ident">origin</span>.<span class="ident">clone</span>(), <span class="ident">COST_UNNEEDED_COLLATOR</span>).<span class="kw">await</span>;
 				<span class="macro">gum::trace!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="string">&quot;Disconnecting unneeded collator&quot;</span>);
-				<span class="ident">disconnect_peer</span>(<span class="ident">ctx</span>, <span class="ident">origin</span>).<span class="kw">await</span>;
+				<span class="ident">disconnect_peer</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="ident">origin</span>).<span class="kw">await</span>;
 			}
 		},
 		<span class="ident">AdvertiseCollation</span>(<span class="ident">relay_parent</span>) =&gt; {
@@ -2482,7 +2434,7 @@
 					<span class="string">&quot;Advertise collation out of view&quot;</span>,
 				);
 
-				<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>, <span class="ident">origin</span>, <span class="ident">COST_UNEXPECTED_MESSAGE</span>).<span class="kw">await</span>;
+				<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="ident">origin</span>, <span class="ident">COST_UNEXPECTED_MESSAGE</span>).<span class="kw">await</span>;
 				<span class="kw">return</span>
 			}
 
@@ -2494,7 +2446,7 @@
 						<span class="question-mark">?</span><span class="ident">relay_parent</span>,
 						<span class="string">&quot;Advertise collation message has been received from an unknown peer&quot;</span>,
 					);
-					<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>, <span class="ident">origin</span>, <span class="ident">COST_UNEXPECTED_MESSAGE</span>).<span class="kw">await</span>;
+					<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="ident">origin</span>, <span class="ident">COST_UNEXPECTED_MESSAGE</span>).<span class="kw">await</span>;
 					<span class="kw">return</span>
 				},
 				<span class="prelude-val">Some</span>(<span class="ident">p</span>) =&gt; <span class="ident">p</span>,
@@ -2530,7 +2482,8 @@
 							<span class="ident">collations</span>.<span class="ident">status</span> <span class="op">=</span> <span class="ident">CollationStatus::Fetching</span>;
 							<span class="ident">collations</span>.<span class="ident">waiting_collation</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">id</span>.<span class="ident">clone</span>());
 
-							<span class="ident">fetch_collation</span>(<span class="ident">ctx</span>, <span class="ident">state</span>, <span class="ident">pending_collation</span>.<span class="ident">clone</span>(), <span class="ident">id</span>).<span class="kw">await</span>;
+							<span class="ident">fetch_collation</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="ident">state</span>, <span class="ident">pending_collation</span>.<span class="ident">clone</span>(), <span class="ident">id</span>)
+								.<span class="kw">await</span>;
 						},
 						<span class="ident">CollationStatus::Seconded</span> =&gt; {
 							<span class="macro">gum::trace!</span>(
@@ -2552,7 +2505,7 @@
 						<span class="string">&quot;Invalid advertisement&quot;</span>,
 					);
 
-					<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>, <span class="ident">origin</span>, <span class="ident">COST_UNEXPECTED_MESSAGE</span>).<span class="kw">await</span>;
+					<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="ident">origin</span>, <span class="ident">COST_UNEXPECTED_MESSAGE</span>).<span class="kw">await</span>;
 				},
 			}
 		},
@@ -2579,16 +2532,13 @@
 }
 
 <span class="doccomment">/// Our view has changed.</span>
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">CollatorProtocol</span>, <span class="ident">prefix</span> <span class="op">=</span> <span class="ident"><span class="self">self</span>::overseer</span>)]</span>
 <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle_our_view_change</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
 	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 	<span class="ident">state</span>: <span class="kw-2">&amp;mut</span> <span class="ident">State</span>,
 	<span class="ident">keystore</span>: <span class="kw-2">&amp;</span><span class="ident">SyncCryptoStorePtr</span>,
 	<span class="ident">view</span>: <span class="ident">OurView</span>,
-) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
-<span class="kw">where</span>
-	<span class="ident">Context</span>: <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">CollatorProtocolMessage</span><span class="op">&gt;</span>,
-	<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">CollatorProtocolMessage</span><span class="op">&gt;</span>,
-{
+) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 	<span class="kw">let</span> <span class="ident">old_view</span> <span class="op">=</span> <span class="ident">std::mem::replace</span>(<span class="kw-2">&amp;mut</span> <span class="ident">state</span>.<span class="ident">view</span>, <span class="ident">view</span>);
 
 	<span class="kw">let</span> <span class="ident">added</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">Hash</span>, <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">jaeger::Span</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">state</span>
@@ -2629,7 +2579,7 @@
 					<span class="question-mark">?</span><span class="ident">para_id</span>,
 					<span class="string">&quot;Disconnecting peer on view change (not current parachain id)&quot;</span>
 				);
-				<span class="ident">disconnect_peer</span>(<span class="ident">ctx</span>, <span class="ident">peer_id</span>.<span class="ident">clone</span>()).<span class="kw">await</span>;
+				<span class="ident">disconnect_peer</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="ident">peer_id</span>.<span class="ident">clone</span>()).<span class="kw">await</span>;
 			}
 		}
 	}
@@ -2638,16 +2588,13 @@
 }
 
 <span class="doccomment">/// Bridge event switch.</span>
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">CollatorProtocol</span>, <span class="ident">prefix</span> <span class="op">=</span> <span class="ident"><span class="self">self</span>::overseer</span>)]</span>
 <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle_network_msg</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
 	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 	<span class="ident">state</span>: <span class="kw-2">&amp;mut</span> <span class="ident">State</span>,
 	<span class="ident">keystore</span>: <span class="kw-2">&amp;</span><span class="ident">SyncCryptoStorePtr</span>,
 	<span class="ident">bridge_message</span>: <span class="ident">NetworkBridgeEvent</span><span class="op">&lt;</span><span class="ident">net_protocol::CollatorProtocolMessage</span><span class="op">&gt;</span>,
-) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
-<span class="kw">where</span>
-	<span class="ident">Context</span>: <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">CollatorProtocolMessage</span><span class="op">&gt;</span>,
-	<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">CollatorProtocolMessage</span><span class="op">&gt;</span>,
-{
+) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 	<span class="kw">use</span> <span class="ident">NetworkBridgeEvent</span>::<span class="kw-2">*</span>;
 
 	<span class="kw">match</span> <span class="ident">bridge_message</span> {
@@ -2677,15 +2624,13 @@
 }
 
 <span class="doccomment">/// The main message receiver switch.</span>
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">CollatorProtocol</span>, <span class="ident">prefix</span> <span class="op">=</span> <span class="ident"><span class="self">self</span>::overseer</span>)]</span>
 <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">process_msg</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
 	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 	<span class="ident">keystore</span>: <span class="kw-2">&amp;</span><span class="ident">SyncCryptoStorePtr</span>,
 	<span class="ident">msg</span>: <span class="ident">CollatorProtocolMessage</span>,
 	<span class="ident">state</span>: <span class="kw-2">&amp;mut</span> <span class="ident">State</span>,
-) <span class="kw">where</span>
-	<span class="ident">Context</span>: <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">CollatorProtocolMessage</span><span class="op">&gt;</span>,
-	<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">CollatorProtocolMessage</span><span class="op">&gt;</span>,
-{
+) {
 	<span class="kw">use</span> <span class="ident">CollatorProtocolMessage</span>::<span class="kw-2">*</span>;
 
 	<span class="kw">let</span> <span class="ident">_timer</span> <span class="op">=</span> <span class="ident">state</span>.<span class="ident">metrics</span>.<span class="ident">time_process_msg</span>();
@@ -2705,7 +2650,7 @@
 			);
 		},
 		<span class="ident">ReportCollator</span>(<span class="ident">id</span>) =&gt; {
-			<span class="ident">report_collator</span>(<span class="ident">ctx</span>, <span class="kw-2">&amp;</span><span class="ident">state</span>.<span class="ident">peer_data</span>, <span class="ident">id</span>).<span class="kw">await</span>;
+			<span class="ident">report_collator</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="kw-2">&amp;</span><span class="ident">state</span>.<span class="ident">peer_data</span>, <span class="ident">id</span>).<span class="kw">await</span>;
 		},
 		<span class="ident">NetworkBridgeUpdate</span>(<span class="ident">event</span>) =&gt; {
 			<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="ident">handle_network_msg</span>(<span class="ident">ctx</span>, <span class="ident">state</span>, <span class="ident">keystore</span>, <span class="ident">event</span>).<span class="kw">await</span> {
@@ -2720,8 +2665,8 @@
 			<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">collation_event</span>) <span class="op">=</span> <span class="ident">state</span>.<span class="ident">pending_candidates</span>.<span class="ident">remove</span>(<span class="kw-2">&amp;</span><span class="ident">parent</span>) {
 				<span class="kw">let</span> (<span class="ident">collator_id</span>, <span class="ident">pending_collation</span>) <span class="op">=</span> <span class="ident">collation_event</span>;
 				<span class="kw">let</span> <span class="ident">PendingCollation</span> { <span class="ident">relay_parent</span>, <span class="ident">peer_id</span>, .. } <span class="op">=</span> <span class="ident">pending_collation</span>;
-				<span class="ident">note_good_collation</span>(<span class="ident">ctx</span>, <span class="kw-2">&amp;</span><span class="ident">state</span>.<span class="ident">peer_data</span>, <span class="ident">collator_id</span>).<span class="kw">await</span>;
-				<span class="ident">notify_collation_seconded</span>(<span class="ident">ctx</span>, <span class="ident">peer_id</span>, <span class="ident">relay_parent</span>, <span class="ident">stmt</span>).<span class="kw">await</span>;
+				<span class="ident">note_good_collation</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="kw-2">&amp;</span><span class="ident">state</span>.<span class="ident">peer_data</span>, <span class="ident">collator_id</span>).<span class="kw">await</span>;
+				<span class="ident">notify_collation_seconded</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="ident">peer_id</span>, <span class="ident">relay_parent</span>, <span class="ident">stmt</span>).<span class="kw">await</span>;
 
 				<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">collations</span>) <span class="op">=</span> <span class="ident">state</span>.<span class="ident">collations_per_relay_parent</span>.<span class="ident">get_mut</span>(<span class="kw-2">&amp;</span><span class="ident">parent</span>) {
 					<span class="ident">collations</span>.<span class="ident">status</span> <span class="op">=</span> <span class="ident">CollationStatus::Seconded</span>;
@@ -2752,7 +2697,7 @@
 				<span class="ident">Entry::Vacant</span>(<span class="kw">_</span>) =&gt; <span class="kw">return</span>,
 			};
 
-			<span class="ident">report_collator</span>(<span class="ident">ctx</span>, <span class="kw-2">&amp;</span><span class="ident">state</span>.<span class="ident">peer_data</span>, <span class="ident">id</span>.<span class="ident">clone</span>()).<span class="kw">await</span>;
+			<span class="ident">report_collator</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="kw-2">&amp;</span><span class="ident">state</span>.<span class="ident">peer_data</span>, <span class="ident">id</span>.<span class="ident">clone</span>()).<span class="kw">await</span>;
 
 			<span class="ident">dequeue_next_collation_and_fetch</span>(<span class="ident">ctx</span>, <span class="ident">state</span>, <span class="ident">parent</span>, <span class="ident">id</span>).<span class="kw">await</span>;
 		},
@@ -2779,16 +2724,13 @@
 }
 
 <span class="doccomment">/// The main run loop.</span>
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">CollatorProtocol</span>, <span class="ident">prefix</span> <span class="op">=</span> <span class="ident"><span class="self">self</span>::overseer</span>)]</span>
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
 	<span class="kw-2">mut</span> <span class="ident">ctx</span>: <span class="ident">Context</span>,
 	<span class="ident">keystore</span>: <span class="ident">SyncCryptoStorePtr</span>,
 	<span class="ident">eviction_policy</span>: <span class="ident"><span class="kw">crate</span>::CollatorEvictionPolicy</span>,
 	<span class="ident">metrics</span>: <span class="ident">Metrics</span>,
-) -&gt; <span class="ident">std::result::Result</span><span class="op">&lt;</span>(), <span class="ident"><span class="kw">crate</span>::error::FatalError</span><span class="op">&gt;</span>
-<span class="kw">where</span>
-	<span class="ident">Context</span>: <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">CollatorProtocolMessage</span><span class="op">&gt;</span>,
-	<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">CollatorProtocolMessage</span><span class="op">&gt;</span>,
-{
+) -&gt; <span class="ident">std::result::Result</span><span class="op">&lt;</span>(), <span class="ident"><span class="kw">crate</span>::error::FatalError</span><span class="op">&gt;</span> {
 	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">state</span> <span class="op">=</span> <span class="ident">State</span> { <span class="ident">metrics</span>, ..<span class="ident">Default::default</span>() };
 
 	<span class="kw">let</span> <span class="ident">next_inactivity_stream</span> <span class="op">=</span> <span class="ident">infinite_stream</span>(<span class="ident">ACTIVITY_POLL</span>);
@@ -2815,7 +2757,7 @@
 				}
 			}
 			<span class="kw">_</span> <span class="op">=</span> <span class="ident">next_inactivity_stream</span>.<span class="ident">next</span>() =&gt; {
-				<span class="ident">disconnect_inactive_peers</span>(<span class="kw-2">&amp;mut</span> <span class="ident">ctx</span>, <span class="kw-2">&amp;</span><span class="ident">eviction_policy</span>, <span class="kw-2">&amp;</span><span class="ident">state</span>.<span class="ident">peer_data</span>).<span class="kw">await</span>;
+				<span class="ident">disconnect_inactive_peers</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="kw-2">&amp;</span><span class="ident">eviction_policy</span>, <span class="kw-2">&amp;</span><span class="ident">state</span>.<span class="ident">peer_data</span>).<span class="kw">await</span>;
 			}
 			<span class="ident">res</span> <span class="op">=</span> <span class="ident">state</span>.<span class="ident">collation_fetches</span>.<span class="ident">select_next_some</span>() =&gt; {
 				<span class="ident">handle_collation_fetched_result</span>(<span class="kw-2">&amp;mut</span> <span class="ident">ctx</span>, <span class="kw-2">&amp;mut</span> <span class="ident">state</span>, <span class="ident">res</span>).<span class="kw">await</span>;
@@ -2838,7 +2780,7 @@
 				).<span class="kw">await</span>;
 
 				<span class="kw">for</span> (<span class="ident">peer_id</span>, <span class="ident">rep</span>) <span class="kw">in</span> <span class="ident">reputation_changes</span> {
-					<span class="ident">modify_reputation</span>(<span class="kw-2">&amp;mut</span> <span class="ident">ctx</span>, <span class="ident">peer_id</span>, <span class="ident">rep</span>).<span class="kw">await</span>;
+					<span class="ident">modify_reputation</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="ident">peer_id</span>, <span class="ident">rep</span>).<span class="kw">await</span>;
 				}
 			},
 		}
@@ -2872,9 +2814,9 @@
 }
 
 <span class="doccomment">/// Dequeue another collation and fetch.</span>
-<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">dequeue_next_collation_and_fetch</span>(
-	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> (<span class="kw">impl</span> <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">CollatorProtocolMessage</span><span class="op">&gt;</span>
-	          <span class="op">+</span> <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">CollatorProtocolMessage</span><span class="op">&gt;</span>),
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">CollatorProtocol</span>, <span class="ident">prefix</span> <span class="op">=</span> <span class="ident"><span class="self">self</span>::overseer</span>)]</span>
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">dequeue_next_collation_and_fetch</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
+	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 	<span class="ident">state</span>: <span class="kw-2">&amp;mut</span> <span class="ident">State</span>,
 	<span class="ident">relay_parent</span>: <span class="ident">Hash</span>,
 	<span class="comment">// The collator we tried to fetch from last.</span>
@@ -2891,7 +2833,7 @@
 			<span class="question-mark">?</span><span class="ident">id</span>,
 			<span class="string">&quot;Successfully dequeued next advertisement - fetching ...&quot;</span>
 		);
-		<span class="ident">fetch_collation</span>(<span class="ident">ctx</span>, <span class="ident">state</span>, <span class="ident">next</span>, <span class="ident">id</span>).<span class="kw">await</span>;
+		<span class="ident">fetch_collation</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="ident">state</span>, <span class="ident">next</span>, <span class="ident">id</span>).<span class="kw">await</span>;
 	} <span class="kw">else</span> {
 		<span class="macro">gum::debug!</span>(
 			<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
@@ -2903,14 +2845,12 @@
 }
 
 <span class="doccomment">/// Handle a fetched collation result.</span>
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">CollatorProtocol</span>, <span class="ident">prefix</span> <span class="op">=</span> <span class="ident"><span class="self">self</span>::overseer</span>)]</span>
 <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle_collation_fetched_result</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
 	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
 	<span class="ident">state</span>: <span class="kw-2">&amp;mut</span> <span class="ident">State</span>,
 	(<span class="kw-2">mut</span> <span class="ident">collation_event</span>, <span class="ident">res</span>): <span class="ident">PendingCollationFetch</span>,
-) <span class="kw">where</span>
-	<span class="ident">Context</span>: <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">CollatorProtocolMessage</span><span class="op">&gt;</span>,
-	<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">CollatorProtocolMessage</span><span class="op">&gt;</span>,
-{
+) {
 	<span class="comment">// If no prior collation for this relay parent has been seconded, then</span>
 	<span class="comment">// memorize the `collation_event` for that `relay_parent`, such that we may</span>
 	<span class="comment">// notify the collator of their successful second backing</span>
@@ -2948,12 +2888,13 @@
 
 	<span class="kw">if</span> <span class="kw">let</span> <span class="ident">Entry::Vacant</span>(<span class="ident">entry</span>) <span class="op">=</span> <span class="ident">state</span>.<span class="ident">pending_candidates</span>.<span class="ident">entry</span>(<span class="ident">relay_parent</span>) {
 		<span class="ident">collation_event</span>.<span class="number">1</span>.<span class="ident">commitments_hash</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">candidate_receipt</span>.<span class="ident">commitments_hash</span>);
-		<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">CandidateBackingMessage::Second</span>(
-			<span class="ident">relay_parent</span>.<span class="ident">clone</span>(),
-			<span class="ident">candidate_receipt</span>,
-			<span class="ident">pov</span>,
-		))
-		.<span class="kw">await</span>;
+		<span class="ident">ctx</span>.<span class="ident">sender</span>()
+			.<span class="ident">send_message</span>(<span class="ident">CandidateBackingMessage::Second</span>(
+				<span class="ident">relay_parent</span>.<span class="ident">clone</span>(),
+				<span class="ident">candidate_receipt</span>,
+				<span class="ident">pov</span>,
+			))
+			.<span class="kw">await</span>;
 
 		<span class="ident">entry</span>.<span class="ident">insert</span>(<span class="ident">collation_event</span>);
 	} <span class="kw">else</span> {
@@ -2969,18 +2910,15 @@
 <span class="comment">// This issues `NetworkBridge` notifications to disconnect from all inactive peers at the</span>
 <span class="comment">// earliest possible point. This does not yet clean up any metadata, as that will be done upon</span>
 <span class="comment">// receipt of the `PeerDisconnected` event.</span>
-<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">disconnect_inactive_peers</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
-	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">disconnect_inactive_peers</span>(
+	<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">overseer::CollatorProtocolSenderTrait</span>,
 	<span class="ident">eviction_policy</span>: <span class="kw-2">&amp;</span><span class="ident"><span class="kw">crate</span>::CollatorEvictionPolicy</span>,
 	<span class="ident">peers</span>: <span class="kw-2">&amp;</span><span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">PeerId</span>, <span class="ident">PeerData</span><span class="op">&gt;</span>,
-) <span class="kw">where</span>
-	<span class="ident">Context</span>: <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">CollatorProtocolMessage</span><span class="op">&gt;</span>,
-	<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">CollatorProtocolMessage</span><span class="op">&gt;</span>,
-{
+) {
 	<span class="kw">for</span> (<span class="ident">peer</span>, <span class="ident">peer_data</span>) <span class="kw">in</span> <span class="ident">peers</span> {
 		<span class="kw">if</span> <span class="ident">peer_data</span>.<span class="ident">is_inactive</span>(<span class="kw-2">&amp;</span><span class="ident">eviction_policy</span>) {
 			<span class="macro">gum::trace!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="string">&quot;Disconnecting inactive peer&quot;</span>);
-			<span class="ident">disconnect_peer</span>(<span class="ident">ctx</span>, <span class="ident">peer</span>.<span class="ident">clone</span>()).<span class="kw">await</span>;
+			<span class="ident">disconnect_peer</span>(<span class="ident">sender</span>, <span class="ident">peer</span>.<span class="ident">clone</span>()).<span class="kw">await</span>;
 		}
 	}
 }

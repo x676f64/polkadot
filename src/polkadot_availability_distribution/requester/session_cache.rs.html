@@ -221,9 +221,6 @@
 <span id="216">216</span>
 <span id="217">217</span>
 <span id="218">218</span>
-<span id="219">219</span>
-<span id="220">220</span>
-<span id="221">221</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -245,7 +242,7 @@
 <span class="kw">use</span> <span class="ident">lru::LruCache</span>;
 <span class="kw">use</span> <span class="ident">rand</span>::{<span class="ident">seq::SliceRandom</span>, <span class="ident">thread_rng</span>};
 
-<span class="kw">use</span> <span class="ident">polkadot_node_subsystem::SubsystemContext</span>;
+<span class="kw">use</span> <span class="ident">polkadot_node_subsystem::overseer</span>;
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem_util::runtime::RuntimeInfo</span>;
 <span class="kw">use</span> <span class="ident">polkadot_primitives::v2</span>::{
 	<span class="ident">AuthorityDiscoveryId</span>, <span class="ident">GroupIndex</span>, <span class="ident">Hash</span>, <span class="ident">SessionIndex</span>, <span class="ident">ValidatorIndex</span>,
@@ -305,6 +302,7 @@
 	<span class="kw">pub</span> <span class="ident">bad_validators</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">AuthorityDiscoveryId</span><span class="op">&gt;</span>,
 }
 
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">AvailabilityDistribution</span>, <span class="ident">prefix</span> <span class="op">=</span> <span class="ident"><span class="self">self</span>::overseer</span>)]</span>
 <span class="kw">impl</span> <span class="ident">SessionCache</span> {
 	<span class="doccomment">/// Create a new `SessionCache`.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() -&gt; <span class="self">Self</span> {
@@ -329,7 +327,6 @@
 		<span class="ident">with_info</span>: <span class="ident">F</span>,
 	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">R</span><span class="op">&gt;</span><span class="op">&gt;</span>
 	<span class="kw">where</span>
-		<span class="ident">Context</span>: <span class="ident">SubsystemContext</span>,
 		<span class="ident">F</span>: <span class="ident">FnOnce</span>(<span class="kw-2">&amp;</span><span class="ident">SessionInfo</span>) -&gt; <span class="ident">R</span>,
 	{
 		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">o_info</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">session_info_cache</span>.<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="ident">session_index</span>) {
@@ -404,10 +401,7 @@
 		<span class="ident">runtime</span>: <span class="kw-2">&amp;mut</span> <span class="ident">RuntimeInfo</span>,
 		<span class="ident">relay_parent</span>: <span class="ident">Hash</span>,
 		<span class="ident">session_index</span>: <span class="ident">SessionIndex</span>,
-	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">SessionInfo</span><span class="op">&gt;</span><span class="op">&gt;</span>
-	<span class="kw">where</span>
-		<span class="ident">Context</span>: <span class="ident">SubsystemContext</span>,
-	{
+	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">SessionInfo</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">info</span> <span class="op">=</span> <span class="ident">runtime</span>
 			.<span class="ident">get_session_info_by_index</span>(<span class="ident">ctx</span>.<span class="ident">sender</span>(), <span class="ident">relay_parent</span>, <span class="ident">session_index</span>)
 			.<span class="kw">await</span><span class="question-mark">?</span>;

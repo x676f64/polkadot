@@ -686,12 +686,6 @@
 <span id="681">681</span>
 <span id="682">682</span>
 <span id="683">683</span>
-<span id="684">684</span>
-<span id="685">685</span>
-<span id="686">686</span>
-<span id="687">687</span>
-<span id="688">688</span>
-<span id="689">689</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020-2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -729,8 +723,8 @@
 		<span class="ident">CandidateValidationMessage</span>, <span class="ident">PreCheckOutcome</span>, <span class="ident">RuntimeApiMessage</span>, <span class="ident">RuntimeApiRequest</span>,
 		<span class="ident">ValidationFailed</span>,
 	},
-	<span class="ident">overseer</span>, <span class="ident">FromOverseer</span>, <span class="ident">OverseerSignal</span>, <span class="ident">SpawnedSubsystem</span>, <span class="ident">SubsystemContext</span>, <span class="ident">SubsystemError</span>,
-	<span class="ident">SubsystemResult</span>, <span class="ident">SubsystemSender</span>,
+	<span class="ident">overseer</span>, <span class="ident">FromOverseer</span>, <span class="ident">OverseerSignal</span>, <span class="ident">SpawnedSubsystem</span>, <span class="ident">SubsystemError</span>, <span class="ident">SubsystemResult</span>,
+	<span class="ident">SubsystemSender</span>,
 };
 <span class="kw">use</span> <span class="ident">polkadot_parachain::primitives</span>::{<span class="ident">ValidationParams</span>, <span class="ident">ValidationResult</span> <span class="kw">as</span> <span class="ident">WasmValidationResult</span>};
 <span class="kw">use</span> <span class="ident">polkadot_primitives::v2</span>::{
@@ -787,11 +781,8 @@
 	}
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span> <span class="ident">overseer::Subsystem</span><span class="op">&lt;</span><span class="ident">Context</span>, <span class="ident">SubsystemError</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">CandidateValidationSubsystem</span>
-<span class="kw">where</span>
-	<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">CandidateValidationMessage</span><span class="op">&gt;</span>,
-	<span class="ident">Context</span>: <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">CandidateValidationMessage</span><span class="op">&gt;</span>,
-{
+<span class="attribute">#[<span class="ident">overseer::subsystem</span>(<span class="ident">CandidateValidation</span>, <span class="ident">error</span><span class="op">=</span><span class="ident">SubsystemError</span>, <span class="ident">prefix</span><span class="op">=</span><span class="ident"><span class="self">self</span>::overseer</span>)]</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span> <span class="ident">CandidateValidationSubsystem</span> {
 	<span class="kw">fn</span> <span class="ident">start</span>(<span class="self">self</span>, <span class="ident">ctx</span>: <span class="ident">Context</span>) -&gt; <span class="ident">SpawnedSubsystem</span> {
 		<span class="kw">let</span> <span class="ident">future</span> <span class="op">=</span> <span class="ident">run</span>(
 			<span class="ident">ctx</span>,
@@ -806,17 +797,14 @@
 	}
 }
 
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">CandidateValidation</span>, <span class="ident">prefix</span> <span class="op">=</span> <span class="ident"><span class="self">self</span>::overseer</span>)]</span>
 <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
 	<span class="kw-2">mut</span> <span class="ident">ctx</span>: <span class="ident">Context</span>,
 	<span class="ident">metrics</span>: <span class="ident">Metrics</span>,
 	<span class="ident">pvf_metrics</span>: <span class="ident">polkadot_node_core_pvf::Metrics</span>,
 	<span class="ident">cache_path</span>: <span class="ident">PathBuf</span>,
 	<span class="ident">program_path</span>: <span class="ident">PathBuf</span>,
-) -&gt; <span class="ident">SubsystemResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
-<span class="kw">where</span>
-	<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">CandidateValidationMessage</span><span class="op">&gt;</span>,
-	<span class="ident">Context</span>: <span class="ident">overseer::SubsystemContext</span><span class="op">&lt;</span><span class="ident">Message</span> <span class="op">=</span> <span class="ident">CandidateValidationMessage</span><span class="op">&gt;</span>,
-{
+) -&gt; <span class="ident">SubsystemResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
 	<span class="kw">let</span> (<span class="ident">validation_host</span>, <span class="ident">task</span>) <span class="op">=</span> <span class="ident">polkadot_node_core_pvf::start</span>(
 		<span class="ident">polkadot_node_core_pvf::Config::new</span>(<span class="ident">cache_path</span>, <span class="ident">program_path</span>),
 		<span class="ident">pvf_metrics</span>,
@@ -929,7 +917,7 @@
 	<span class="ident">receiver</span>: <span class="ident">oneshot::Receiver</span><span class="op">&lt;</span><span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">RuntimeApiError</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">RuntimeRequestFailed</span><span class="op">&gt;</span>
 <span class="kw">where</span>
-	<span class="ident">Sender</span>: <span class="ident">SubsystemSender</span>,
+	<span class="ident">Sender</span>: <span class="ident">SubsystemSender</span><span class="op">&lt;</span><span class="ident">RuntimeApiMessage</span><span class="op">&gt;</span>,
 {
 	<span class="ident">sender</span>
 		.<span class="ident">send_message</span>(<span class="ident">RuntimeApiMessage::Request</span>(<span class="ident">relay_parent</span>, <span class="ident">request</span>).<span class="ident">into</span>())
@@ -962,7 +950,7 @@
 	<span class="ident">validation_code_hash</span>: <span class="ident">ValidationCodeHash</span>,
 ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ValidationCode</span><span class="op">&gt;</span>, <span class="ident">RuntimeRequestFailed</span><span class="op">&gt;</span>
 <span class="kw">where</span>
-	<span class="ident">Sender</span>: <span class="ident">SubsystemSender</span>,
+	<span class="ident">Sender</span>: <span class="ident">SubsystemSender</span><span class="op">&lt;</span><span class="ident">RuntimeApiMessage</span><span class="op">&gt;</span>,
 {
 	<span class="kw">let</span> (<span class="ident">tx</span>, <span class="ident">rx</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
 	<span class="ident">runtime_api_request</span>(
@@ -981,7 +969,7 @@
 	<span class="ident">validation_code_hash</span>: <span class="ident">ValidationCodeHash</span>,
 ) -&gt; <span class="ident">PreCheckOutcome</span>
 <span class="kw">where</span>
-	<span class="ident">Sender</span>: <span class="ident">SubsystemSender</span>,
+	<span class="ident">Sender</span>: <span class="ident">SubsystemSender</span><span class="op">&lt;</span><span class="ident">RuntimeApiMessage</span><span class="op">&gt;</span>,
 {
 	<span class="kw">let</span> <span class="ident">validation_code</span> <span class="op">=</span>
 		<span class="kw">match</span> <span class="ident">request_validation_code_by_hash</span>(<span class="ident">sender</span>, <span class="ident">relay_parent</span>, <span class="ident">validation_code_hash</span>).<span class="kw">await</span> {
@@ -1036,7 +1024,7 @@
 	<span class="ident">assumption</span>: <span class="ident">OccupiedCoreAssumption</span>,
 ) -&gt; <span class="ident">AssumptionCheckOutcome</span>
 <span class="kw">where</span>
-	<span class="ident">Sender</span>: <span class="ident">SubsystemSender</span>,
+	<span class="ident">Sender</span>: <span class="ident">SubsystemSender</span><span class="op">&lt;</span><span class="ident">RuntimeApiMessage</span><span class="op">&gt;</span>,
 {
 	<span class="kw">let</span> <span class="ident">validation_data</span> <span class="op">=</span> {
 		<span class="kw">let</span> (<span class="ident">tx</span>, <span class="ident">rx</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
@@ -1080,7 +1068,7 @@
 	<span class="ident">descriptor</span>: <span class="kw-2">&amp;</span><span class="ident">CandidateDescriptor</span>,
 ) -&gt; <span class="ident">AssumptionCheckOutcome</span>
 <span class="kw">where</span>
-	<span class="ident">Sender</span>: <span class="ident">SubsystemSender</span>,
+	<span class="ident">Sender</span>: <span class="ident">SubsystemSender</span><span class="op">&lt;</span><span class="ident">RuntimeApiMessage</span><span class="op">&gt;</span>,
 {
 	<span class="comment">// The candidate descriptor has a `persisted_validation_data_hash` which corresponds to</span>
 	<span class="comment">// one of up to two possible values that we can derive from the state of the</span>
@@ -1115,7 +1103,7 @@
 	<span class="ident">descriptor</span>: <span class="kw-2">&amp;</span><span class="ident">CandidateDescriptor</span>,
 ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">PersistedValidationData</span>, <span class="ident">ValidationCode</span>)<span class="op">&gt;</span>, <span class="ident">ValidationFailed</span><span class="op">&gt;</span>
 <span class="kw">where</span>
-	<span class="ident">Sender</span>: <span class="ident">SubsystemSender</span>,
+	<span class="ident">Sender</span>: <span class="ident">SubsystemSender</span><span class="op">&lt;</span><span class="ident">RuntimeApiMessage</span><span class="op">&gt;</span>,
 {
 	<span class="kw">match</span> <span class="ident">find_assumed_validation_data</span>(<span class="ident">sender</span>, <span class="kw-2">&amp;</span><span class="ident">descriptor</span>).<span class="kw">await</span> {
 		<span class="ident">AssumptionCheckOutcome::Matches</span>(<span class="ident">validation_data</span>, <span class="ident">validation_code</span>) =&gt;
@@ -1140,7 +1128,7 @@
 	<span class="ident">metrics</span>: <span class="kw-2">&amp;</span><span class="ident">Metrics</span>,
 ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">ValidationResult</span>, <span class="ident">ValidationFailed</span><span class="op">&gt;</span>
 <span class="kw">where</span>
-	<span class="ident">Sender</span>: <span class="ident">SubsystemSender</span>,
+	<span class="ident">Sender</span>: <span class="ident">SubsystemSender</span><span class="op">&lt;</span><span class="ident">RuntimeApiMessage</span><span class="op">&gt;</span>,
 {
 	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">new_sender</span> <span class="op">=</span> <span class="ident">sender</span>.<span class="ident">clone</span>();
 	<span class="kw">let</span> (<span class="ident">validation_data</span>, <span class="ident">validation_code</span>) <span class="op">=</span>
