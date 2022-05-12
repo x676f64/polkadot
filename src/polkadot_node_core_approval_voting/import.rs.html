@@ -1961,7 +1961,7 @@
 	<span class="kw">use</span> <span class="ident">polkadot_node_subsystem::messages::AllMessages</span>;
 	<span class="kw">use</span> <span class="ident">polkadot_node_subsystem_test_helpers::make_subsystem_context</span>;
 	<span class="kw">use</span> <span class="ident">polkadot_node_subsystem_util::database::Database</span>;
-	<span class="kw">use</span> <span class="ident">polkadot_primitives::v2</span>::{<span class="ident">SessionInfo</span>, <span class="ident">ValidatorIndex</span>};
+	<span class="kw">use</span> <span class="ident">polkadot_primitives::v2</span>::{<span class="ident">Id</span> <span class="kw">as</span> <span class="ident">ParaId</span>, <span class="ident">SessionInfo</span>, <span class="ident">ValidatorIndex</span>};
 	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">use</span> <span class="ident">sp_consensus_babe</span>::{
 		<span class="ident">digests</span>::{<span class="ident">CompatibleDigestItem</span>, <span class="ident">PreDigest</span>, <span class="ident">SecondaryVRFPreDigest</span>},
 		<span class="ident">AllowedSlots</span>, <span class="ident">BabeEpochConfiguration</span>, <span class="ident">Epoch</span> <span class="kw">as</span> <span class="ident">BabeEpoch</span>,
@@ -2555,8 +2555,8 @@
 			<span class="ident">r</span>
 		};
 		<span class="kw">let</span> <span class="ident">candidates</span> <span class="op">=</span> <span class="macro">vec!</span>[
-			(<span class="ident">make_candidate</span>(<span class="number">1</span>.<span class="ident">into</span>()), <span class="ident">CoreIndex</span>(<span class="number">0</span>), <span class="ident">GroupIndex</span>(<span class="number">0</span>)),
-			(<span class="ident">make_candidate</span>(<span class="number">2</span>.<span class="ident">into</span>()), <span class="ident">CoreIndex</span>(<span class="number">1</span>), <span class="ident">GroupIndex</span>(<span class="number">1</span>)),
+			(<span class="ident">make_candidate</span>(<span class="ident">ParaId::from</span>(<span class="number">1</span>)), <span class="ident">CoreIndex</span>(<span class="number">0</span>), <span class="ident">GroupIndex</span>(<span class="number">0</span>)),
+			(<span class="ident">make_candidate</span>(<span class="ident">ParaId::from</span>(<span class="number">2</span>)), <span class="ident">CoreIndex</span>(<span class="number">1</span>), <span class="ident">GroupIndex</span>(<span class="number">1</span>)),
 		];
 		<span class="kw">let</span> <span class="ident">inclusion_events</span> <span class="op">=</span> <span class="ident">candidates</span>
 			.<span class="ident">iter</span>()
