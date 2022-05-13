@@ -2161,6 +2161,9 @@
 <span id="2156">2156</span>
 <span id="2157">2157</span>
 <span id="2158">2158</span>
+<span id="2159">2159</span>
+<span id="2160">2160</span>
+<span id="2161">2161</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -2417,27 +2420,27 @@
 	<span class="attribute">#[<span class="ident">pallet::event</span>]</span>
 	<span class="attribute">#[<span class="ident">pallet::generate_deposit</span>(<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">deposit_event</span>)]</span>
 	<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Event</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> {
-		<span class="doccomment">/// Create a new crowdloaning campaign. `[fund_index]`</span>
-		<span class="ident">Created</span>(<span class="ident">ParaId</span>),
-		<span class="doccomment">/// Contributed to a crowd sale. `[who, fund_index, amount]`</span>
-		<span class="ident">Contributed</span>(<span class="ident">T::AccountId</span>, <span class="ident">ParaId</span>, <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>),
-		<span class="doccomment">/// Withdrew full balance of a contributor. `[who, fund_index, amount]`</span>
-		<span class="ident">Withdrew</span>(<span class="ident">T::AccountId</span>, <span class="ident">ParaId</span>, <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>),
+		<span class="doccomment">/// Create a new crowdloaning campaign.</span>
+		<span class="ident">Created</span> { <span class="ident">para_id</span>: <span class="ident">ParaId</span> },
+		<span class="doccomment">/// Contributed to a crowd sale.</span>
+		<span class="ident">Contributed</span> { <span class="ident">who</span>: <span class="ident">T::AccountId</span>, <span class="ident">fund_index</span>: <span class="ident">ParaId</span>, <span class="ident">amount</span>: <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> },
+		<span class="doccomment">/// Withdrew full balance of a contributor.</span>
+		<span class="ident">Withdrew</span> { <span class="ident">who</span>: <span class="ident">T::AccountId</span>, <span class="ident">fund_index</span>: <span class="ident">ParaId</span>, <span class="ident">amount</span>: <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> },
 		<span class="doccomment">/// The loans in a fund have been partially dissolved, i.e. there are some left</span>
-		<span class="doccomment">/// over child keys that still need to be killed. `[fund_index]`</span>
-		<span class="ident">PartiallyRefunded</span>(<span class="ident">ParaId</span>),
-		<span class="doccomment">/// All loans in a fund have been refunded. `[fund_index]`</span>
-		<span class="ident">AllRefunded</span>(<span class="ident">ParaId</span>),
-		<span class="doccomment">/// Fund is dissolved. `[fund_index]`</span>
-		<span class="ident">Dissolved</span>(<span class="ident">ParaId</span>),
+		<span class="doccomment">/// over child keys that still need to be killed.</span>
+		<span class="ident">PartiallyRefunded</span> { <span class="ident">para_id</span>: <span class="ident">ParaId</span> },
+		<span class="doccomment">/// All loans in a fund have been refunded.</span>
+		<span class="ident">AllRefunded</span> { <span class="ident">para_id</span>: <span class="ident">ParaId</span> },
+		<span class="doccomment">/// Fund is dissolved.</span>
+		<span class="ident">Dissolved</span> { <span class="ident">para_id</span>: <span class="ident">ParaId</span> },
 		<span class="doccomment">/// The result of trying to submit a new bid to the Slots pallet.</span>
-		<span class="ident">HandleBidResult</span>(<span class="ident">ParaId</span>, <span class="ident">DispatchResult</span>),
-		<span class="doccomment">/// The configuration to a crowdloan has been edited. `[fund_index]`</span>
-		<span class="ident">Edited</span>(<span class="ident">ParaId</span>),
-		<span class="doccomment">/// A memo has been updated. `[who, fund_index, memo]`</span>
-		<span class="ident">MemoUpdated</span>(<span class="ident">T::AccountId</span>, <span class="ident">ParaId</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>),
+		<span class="ident">HandleBidResult</span> { <span class="ident">para_id</span>: <span class="ident">ParaId</span>, <span class="ident">result</span>: <span class="ident">DispatchResult</span> },
+		<span class="doccomment">/// The configuration to a crowdloan has been edited.</span>
+		<span class="ident">Edited</span> { <span class="ident">para_id</span>: <span class="ident">ParaId</span> },
+		<span class="doccomment">/// A memo has been updated.</span>
+		<span class="ident">MemoUpdated</span> { <span class="ident">who</span>: <span class="ident">T::AccountId</span>, <span class="ident">para_id</span>: <span class="ident">ParaId</span>, <span class="ident">memo</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span> },
 		<span class="doccomment">/// A parachain has been moved to `NewRaise`</span>
-		<span class="ident">AddedToNewRaise</span>(<span class="ident">ParaId</span>),
+		<span class="ident">AddedToNewRaise</span> { <span class="ident">para_id</span>: <span class="ident">ParaId</span> },
 	}
 
 	<span class="attribute">#[<span class="ident">pallet::error</span>]</span>
@@ -2514,7 +2517,7 @@
 						<span class="ident">fund</span>.<span class="ident">raised</span>,
 					);
 
-					<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::HandleBidResult</span>(<span class="ident">para_id</span>, <span class="ident">result</span>));
+					<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::HandleBidResult</span> { <span class="ident">para_id</span>, <span class="ident">result</span> });
 				}
 				<span class="ident">T::WeightInfo::on_initialize</span>(<span class="ident">new_raise_len</span>)
 			} <span class="kw">else</span> {
@@ -2600,7 +2603,7 @@
 			<span class="comment">// Add a lock to the para so that the configuration cannot be changed.</span>
 			<span class="ident">T::Registrar::apply_lock</span>(<span class="ident">index</span>);
 
-			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::Created</span>(<span class="ident">index</span>));
+			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::Created</span> { <span class="ident">para_id</span>: <span class="ident">index</span> });
 			<span class="prelude-val">Ok</span>(())
 		}
 
@@ -2657,7 +2660,7 @@
 
 			<span class="ident">Funds</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">index</span>, <span class="kw-2">&amp;</span><span class="ident">fund</span>);
 
-			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::Withdrew</span>(<span class="ident">who</span>, <span class="ident">index</span>, <span class="ident">balance</span>));
+			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::Withdrew</span> { <span class="ident">who</span>, <span class="ident">fund_index</span>: <span class="ident">index</span>, <span class="ident">amount</span>: <span class="ident">balance</span> });
 			<span class="prelude-val">Ok</span>(())
 		}
 
@@ -2699,11 +2702,11 @@
 			<span class="ident">Funds</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">index</span>, <span class="kw-2">&amp;</span><span class="ident">fund</span>);
 
 			<span class="kw">if</span> <span class="ident">all_refunded</span> {
-				<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::AllRefunded</span>(<span class="ident">index</span>));
+				<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::AllRefunded</span> { <span class="ident">para_id</span>: <span class="ident">index</span> });
 				<span class="comment">// Refund for unused refund count.</span>
 				<span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">T::WeightInfo::refund</span>(<span class="ident">refund_count</span>)).<span class="ident">into</span>())
 			} <span class="kw">else</span> {
-				<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::PartiallyRefunded</span>(<span class="ident">index</span>));
+				<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::PartiallyRefunded</span> { <span class="ident">para_id</span>: <span class="ident">index</span> });
 				<span class="comment">// No weight to refund since we did not finish the loop.</span>
 				<span class="prelude-val">Ok</span>(().<span class="ident">into</span>())
 			}
@@ -2730,7 +2733,7 @@
 
 			<span class="ident">CurrencyOf</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::unreserve</span>(<span class="kw-2">&amp;</span><span class="ident">fund</span>.<span class="ident">depositor</span>, <span class="ident">fund</span>.<span class="ident">deposit</span>);
 			<span class="ident">Funds</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::remove</span>(<span class="ident">index</span>);
-			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::Dissolved</span>(<span class="ident">index</span>));
+			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::Dissolved</span> { <span class="ident">para_id</span>: <span class="ident">index</span> });
 			<span class="prelude-val">Ok</span>(())
 		}
 
@@ -2767,7 +2770,7 @@
 				},
 			);
 
-			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::Edited</span>(<span class="ident">index</span>));
+			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::Edited</span> { <span class="ident">para_id</span>: <span class="ident">index</span> });
 			<span class="prelude-val">Ok</span>(())
 		}
 
@@ -2785,7 +2788,7 @@
 			<span class="macro">ensure!</span>(<span class="ident">balance</span> <span class="op">&gt;</span> <span class="ident">Zero::zero</span>(), <span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::NoContributions</span>);
 
 			<span class="ident"><span class="self">Self</span>::contribution_put</span>(<span class="ident">fund</span>.<span class="ident">fund_index</span>, <span class="kw-2">&amp;</span><span class="ident">who</span>, <span class="kw-2">&amp;</span><span class="ident">balance</span>, <span class="kw-2">&amp;</span><span class="ident">memo</span>);
-			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::MemoUpdated</span>(<span class="ident">who</span>, <span class="ident">index</span>, <span class="ident">memo</span>));
+			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::MemoUpdated</span> { <span class="ident">who</span>, <span class="ident">para_id</span>: <span class="ident">index</span>, <span class="ident">memo</span> });
 			<span class="prelude-val">Ok</span>(())
 		}
 
@@ -2799,7 +2802,7 @@
 			<span class="macro">ensure!</span>(<span class="op">!</span><span class="ident">fund</span>.<span class="ident">raised</span>.<span class="ident">is_zero</span>(), <span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::NoContributions</span>);
 			<span class="macro">ensure!</span>(<span class="op">!</span><span class="ident">NewRaise</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>().<span class="ident">contains</span>(<span class="kw-2">&amp;</span><span class="ident">index</span>), <span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::AlreadyInNewRaise</span>);
 			<span class="ident">NewRaise</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::append</span>(<span class="ident">index</span>);
-			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::AddedToNewRaise</span>(<span class="ident">index</span>));
+			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::AddedToNewRaise</span> { <span class="ident">para_id</span>: <span class="ident">index</span> });
 			<span class="prelude-val">Ok</span>(())
 		}
 
@@ -2973,7 +2976,7 @@
 
 		<span class="ident">Funds</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">index</span>, <span class="kw-2">&amp;</span><span class="ident">fund</span>);
 
-		<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::Contributed</span>(<span class="ident">who</span>, <span class="ident">index</span>, <span class="ident">value</span>));
+		<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::Contributed</span> { <span class="ident">who</span>, <span class="ident">fund_index</span>: <span class="ident">index</span>, <span class="ident">amount</span>: <span class="ident">value</span> });
 		<span class="prelude-val">Ok</span>(())
 	}
 }
@@ -3811,14 +3814,17 @@
 			<span class="comment">// Move to the end of the crowdloan</span>
 			<span class="ident">run_to_block</span>(<span class="number">10</span>);
 			<span class="macro">assert_ok!</span>(<span class="ident">Crowdloan::refund</span>(<span class="ident">Origin::signed</span>(<span class="number">1337</span>), <span class="ident">para</span>));
-			<span class="macro">assert_eq!</span>(<span class="ident">last_event</span>(), <span class="ident"><span class="kw">super</span>::Event</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::PartiallyRefunded</span>(<span class="ident">para</span>).<span class="ident">into</span>());
+			<span class="macro">assert_eq!</span>(
+				<span class="ident">last_event</span>(),
+				<span class="ident"><span class="kw">super</span>::Event</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::PartiallyRefunded</span> { <span class="ident">para_id</span>: <span class="ident">para</span> }.<span class="ident">into</span>()
+			);
 
 			<span class="comment">// Funds still left over</span>
 			<span class="macro">assert!</span>(<span class="op">!</span><span class="ident">Balances::free_balance</span>(<span class="ident">account_id</span>).<span class="ident">is_zero</span>());
 
 			<span class="comment">// Call again</span>
 			<span class="macro">assert_ok!</span>(<span class="ident">Crowdloan::refund</span>(<span class="ident">Origin::signed</span>(<span class="number">1337</span>), <span class="ident">para</span>));
-			<span class="macro">assert_eq!</span>(<span class="ident">last_event</span>(), <span class="ident"><span class="kw">super</span>::Event</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::AllRefunded</span>(<span class="ident">para</span>).<span class="ident">into</span>());
+			<span class="macro">assert_eq!</span>(<span class="ident">last_event</span>(), <span class="ident"><span class="kw">super</span>::Event</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="ident">::AllRefunded</span> { <span class="ident">para_id</span>: <span class="ident">para</span> }.<span class="ident">into</span>());
 
 			<span class="comment">// Funds are returned</span>
 			<span class="macro">assert_eq!</span>(<span class="ident">Balances::free_balance</span>(<span class="ident">account_id</span>), <span class="number">0</span>);
@@ -4146,7 +4152,7 @@
 
 		}: <span class="kw">_</span>(<span class="ident">RawOrigin::Signed</span>(<span class="ident">caller</span>), <span class="ident">para_id</span>, <span class="ident">cap</span>, <span class="ident">first_period</span>, <span class="ident">last_period</span>, <span class="ident">end</span>, <span class="prelude-val">Some</span>(<span class="ident">verifier</span>))
 		<span class="ident">verify</span> {
-			<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::Created</span>(<span class="ident">para_id</span>).<span class="ident">into</span>())
+			<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::Created</span> { <span class="ident">para_id</span> }.<span class="ident">into</span>())
 		}
 
 		<span class="comment">// Contribute has two arms: PreEnding and Ending, but both are equal complexity.</span>
@@ -4167,7 +4173,7 @@
 		<span class="ident">verify</span> {
 			<span class="comment">// NewRaise is appended to, so we don&#39;t need to fill it up for worst case scenario.</span>
 			<span class="macro">assert!</span>(<span class="op">!</span><span class="ident">NewRaise</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>().<span class="ident">is_empty</span>());
-			<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::Contributed</span>(<span class="ident">caller</span>, <span class="ident">fund_index</span>, <span class="ident">contribution</span>).<span class="ident">into</span>());
+			<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::Contributed</span> { <span class="ident">who</span>: <span class="ident">caller</span>, <span class="ident">fund_index</span>, <span class="ident">amount</span>: <span class="ident">contribution</span> }.<span class="ident">into</span>());
 		}
 
 		<span class="ident">withdraw</span> {
@@ -4180,7 +4186,7 @@
 			<span class="ident">frame_system::Pallet</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::set_block_number</span>(<span class="ident">T::BlockNumber::max_value</span>());
 		}: <span class="kw">_</span>(<span class="ident">RawOrigin::Signed</span>(<span class="ident">caller</span>), <span class="ident">contributor</span>.<span class="ident">clone</span>(), <span class="ident">fund_index</span>)
 		<span class="ident">verify</span> {
-			<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::Withdrew</span>(<span class="ident">contributor</span>, <span class="ident">fund_index</span>, <span class="ident">T::MinContribution::get</span>()).<span class="ident">into</span>());
+			<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::Withdrew</span> { <span class="ident">who</span>: <span class="ident">contributor</span>, <span class="ident">fund_index</span>, <span class="ident">amount</span>: <span class="ident">T::MinContribution::get</span>() }.<span class="ident">into</span>());
 		}
 
 		<span class="comment">// Worst case: Refund removes `RemoveKeysLimit` keys, and is fully refunded.</span>
@@ -4200,7 +4206,7 @@
 			<span class="ident">frame_system::Pallet</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::set_block_number</span>(<span class="ident">T::BlockNumber::max_value</span>());
 		}: <span class="kw">_</span>(<span class="ident">RawOrigin::Signed</span>(<span class="ident">caller</span>), <span class="ident">fund_index</span>)
 		<span class="ident">verify</span> {
-			<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::AllRefunded</span>(<span class="ident">fund_index</span>).<span class="ident">into</span>());
+			<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::AllRefunded</span> { <span class="ident">para_id</span>: <span class="ident">fund_index</span> }.<span class="ident">into</span>());
 		}
 
 		<span class="ident">dissolve</span> {
@@ -4211,7 +4217,7 @@
 			<span class="ident">frame_system::Pallet</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::set_block_number</span>(<span class="ident">T::BlockNumber::max_value</span>());
 		}: <span class="kw">_</span>(<span class="ident">RawOrigin::Signed</span>(<span class="ident">caller</span>.<span class="ident">clone</span>()), <span class="ident">fund_index</span>)
 		<span class="ident">verify</span> {
-			<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::Dissolved</span>(<span class="ident">fund_index</span>).<span class="ident">into</span>());
+			<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::Dissolved</span> { <span class="ident">para_id</span>: <span class="ident">fund_index</span> }.<span class="ident">into</span>());
 		}
 
 		<span class="ident">edit</span> {
@@ -4240,7 +4246,7 @@
 			<span class="comment">// Doesn&#39;t matter what we edit to, so use the same values.</span>
 		}: <span class="kw">_</span>(<span class="ident">RawOrigin::Root</span>, <span class="ident">para_id</span>, <span class="ident">cap</span>, <span class="ident">first_period</span>, <span class="ident">last_period</span>, <span class="ident">end</span>, <span class="prelude-val">Some</span>(<span class="ident">verifier</span>))
 		<span class="ident">verify</span> {
-			<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::Edited</span>(<span class="ident">para_id</span>).<span class="ident">into</span>())
+			<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::Edited</span> { <span class="ident">para_id</span> }.<span class="ident">into</span>())
 		}
 
 		<span class="ident">add_memo</span> {
@@ -4270,7 +4276,7 @@
 		}: <span class="kw">_</span>(<span class="ident">RawOrigin::Signed</span>(<span class="ident">caller</span>), <span class="ident">fund_index</span>)
 		<span class="ident">verify</span> {
 			<span class="macro">assert!</span>(<span class="op">!</span><span class="ident">NewRaise</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>().<span class="ident">is_empty</span>());
-			<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::AddedToNewRaise</span>(<span class="ident">fund_index</span>).<span class="ident">into</span>())
+			<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::AddedToNewRaise</span> { <span class="ident">para_id</span>: <span class="ident">fund_index</span> }.<span class="ident">into</span>())
 		}
 
 		<span class="comment">// Worst case scenario: N funds are all in the `NewRaise` list, we are</span>
@@ -4309,7 +4315,7 @@
 			<span class="ident">Crowdloan</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::on_initialize</span>(<span class="ident">end_block</span>);
 		} <span class="ident">verify</span> {
 			<span class="macro">assert_eq!</span>(<span class="ident">EndingsCount</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(), <span class="ident">old_endings_count</span> <span class="op">+</span> <span class="number">1</span>);
-			<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::HandleBidResult</span>((<span class="ident">n</span> <span class="op">-</span> <span class="number">1</span>).<span class="ident">into</span>(), <span class="prelude-val">Ok</span>(())).<span class="ident">into</span>());
+			<span class="ident">assert_last_event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::HandleBidResult</span> { <span class="ident">para_id</span>: (<span class="ident">n</span> <span class="op">-</span> <span class="number">1</span>).<span class="ident">into</span>(), <span class="ident">result</span>: <span class="prelude-val">Ok</span>(()) }.<span class="ident">into</span>());
 		}
 
 		<span class="macro">impl_benchmark_test_suite!</span>(

@@ -1173,6 +1173,10 @@
 <span id="1168">1168</span>
 <span id="1169">1169</span>
 <span id="1170">1170</span>
+<span id="1171">1171</span>
+<span id="1172">1172</span>
+<span id="1173">1173</span>
+<span id="1174">1174</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -1308,19 +1312,19 @@
 	<span class="attribute">#[<span class="ident">pallet::generate_deposit</span>(<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">deposit_event</span>)]</span>
 	<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Event</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> {
 		<span class="doccomment">/// A [new] account was created.</span>
-		<span class="ident">AccountCreated</span>(<span class="ident">T::AccountId</span>),
-		<span class="doccomment">/// Someone&#39;s account validity was updated. [who, validity]</span>
-		<span class="ident">ValidityUpdated</span>(<span class="ident">T::AccountId</span>, <span class="ident">AccountValidity</span>),
-		<span class="doccomment">/// Someone&#39;s purchase balance was updated. [who, free, locked]</span>
-		<span class="ident">BalanceUpdated</span>(<span class="ident">T::AccountId</span>, <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>),
-		<span class="doccomment">/// A payout was made to a purchaser. [who, free, locked]</span>
-		<span class="ident">PaymentComplete</span>(<span class="ident">T::AccountId</span>, <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>),
-		<span class="doccomment">/// A new payment account was set. [who]</span>
-		<span class="ident">PaymentAccountSet</span>(<span class="ident">T::AccountId</span>),
+		<span class="ident">AccountCreated</span> { <span class="ident">who</span>: <span class="ident">T::AccountId</span> },
+		<span class="doccomment">/// Someone&#39;s account validity was updated.</span>
+		<span class="ident">ValidityUpdated</span> { <span class="ident">who</span>: <span class="ident">T::AccountId</span>, <span class="ident">validity</span>: <span class="ident">AccountValidity</span> },
+		<span class="doccomment">/// Someone&#39;s purchase balance was updated.</span>
+		<span class="ident">BalanceUpdated</span> { <span class="ident">who</span>: <span class="ident">T::AccountId</span>, <span class="ident">free</span>: <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">locked</span>: <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> },
+		<span class="doccomment">/// A payout was made to a purchaser.</span>
+		<span class="ident">PaymentComplete</span> { <span class="ident">who</span>: <span class="ident">T::AccountId</span>, <span class="ident">free</span>: <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">locked</span>: <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> },
+		<span class="doccomment">/// A new payment account was set.</span>
+		<span class="ident">PaymentAccountSet</span> { <span class="ident">who</span>: <span class="ident">T::AccountId</span> },
 		<span class="doccomment">/// A new statement was set.</span>
 		<span class="ident">StatementUpdated</span>,
 		<span class="doccomment">/// A new statement was set. `[block_number]`</span>
-		<span class="ident">UnlockBlockUpdated</span>(<span class="ident">T::BlockNumber</span>),
+		<span class="ident">UnlockBlockUpdated</span> { <span class="ident">block_number</span>: <span class="ident">T::BlockNumber</span> },
 	}
 
 	<span class="attribute">#[<span class="ident">pallet::error</span>]</span>
@@ -1397,7 +1401,7 @@
 				<span class="ident">vat</span>: <span class="ident">Permill::zero</span>(),
 			};
 			<span class="ident">Accounts</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="kw-2">&amp;</span><span class="ident">who</span>, <span class="ident">status</span>);
-			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::AccountCreated</span>(<span class="ident">who</span>));
+			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::AccountCreated</span> { <span class="ident">who</span> });
 			<span class="prelude-val">Ok</span>(())
 		}
 
@@ -1426,7 +1430,7 @@
 					<span class="prelude-val">Ok</span>(())
 				},
 			)<span class="question-mark">?</span>;
-			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::ValidityUpdated</span>(<span class="ident">who</span>, <span class="ident">validity</span>));
+			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::ValidityUpdated</span> { <span class="ident">who</span>, <span class="ident">validity</span> });
 			<span class="prelude-val">Ok</span>(())
 		}
 
@@ -1458,7 +1462,11 @@
 					<span class="prelude-val">Ok</span>(())
 				},
 			)<span class="question-mark">?</span>;
-			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::BalanceUpdated</span>(<span class="ident">who</span>, <span class="ident">free_balance</span>, <span class="ident">locked_balance</span>));
+			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::BalanceUpdated</span> {
+				<span class="ident">who</span>,
+				<span class="ident">free</span>: <span class="ident">free_balance</span>,
+				<span class="ident">locked</span>: <span class="ident">locked_balance</span>,
+			});
 			<span class="prelude-val">Ok</span>(())
 		}
 
@@ -1521,11 +1529,11 @@
 
 					<span class="comment">// Setting the user account to `Completed` ends the purchase process for this user.</span>
 					<span class="ident">status</span>.<span class="ident">validity</span> <span class="op">=</span> <span class="ident">AccountValidity::Completed</span>;
-					<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::PaymentComplete</span>(
-						<span class="ident">who</span>.<span class="ident">clone</span>(),
-						<span class="ident">status</span>.<span class="ident">free_balance</span>,
-						<span class="ident">status</span>.<span class="ident">locked_balance</span>,
-					));
+					<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::PaymentComplete</span> {
+						<span class="ident">who</span>: <span class="ident">who</span>.<span class="ident">clone</span>(),
+						<span class="ident">free</span>: <span class="ident">status</span>.<span class="ident">free_balance</span>,
+						<span class="ident">locked</span>: <span class="ident">status</span>.<span class="ident">locked_balance</span>,
+					});
 					<span class="prelude-val">Ok</span>(())
 				},
 			)<span class="question-mark">?</span>;
@@ -1542,7 +1550,7 @@
 			<span class="ident">T::ConfigurationOrigin::ensure_origin</span>(<span class="ident">origin</span>)<span class="question-mark">?</span>;
 			<span class="comment">// Possibly this is worse than having the caller account be the payment account?</span>
 			<span class="ident">PaymentAccount</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::put</span>(<span class="ident">who</span>.<span class="ident">clone</span>());
-			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::PaymentAccountSet</span>(<span class="ident">who</span>));
+			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::PaymentAccountSet</span> { <span class="ident">who</span> });
 			<span class="prelude-val">Ok</span>(())
 		}
 
@@ -1577,7 +1585,7 @@
 			);
 			<span class="comment">// Possibly this is worse than having the caller account be the payment account?</span>
 			<span class="ident">UnlockBlock</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::set</span>(<span class="ident">unlock_block</span>);
-			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::UnlockBlockUpdated</span>(<span class="ident">unlock_block</span>));
+			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::UnlockBlockUpdated</span> { <span class="ident">block_number</span>: <span class="ident">unlock_block</span> });
 			<span class="prelude-val">Ok</span>(())
 		}
 	}
