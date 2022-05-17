@@ -188,11 +188,6 @@
 <span id="183">183</span>
 <span id="184">184</span>
 <span id="185">185</span>
-<span id="186">186</span>
-<span id="187">187</span>
-<span id="188">188</span>
-<span id="189">189</span>
-<span id="190">190</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -210,11 +205,22 @@
 <span class="comment">// along with Polkadot.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
 
 <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident">frame_support</span>::{<span class="ident">generate_storage_alias</span>, <span class="ident">Twox64Concat</span>};
+<span class="kw">use</span> <span class="ident">frame_support</span>::{<span class="ident">storage_alias</span>, <span class="ident">Twox64Concat</span>};
 
 <span class="doccomment">/// Migrations for using fund index to create fund accounts instead of para ID.</span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">crowdloan_index_migration</span> {
 	<span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
+
+	<span class="attribute">#[<span class="ident">storage_alias</span>]</span>
+	<span class="kw">type</span> <span class="ident">NextTrieIndex</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">StorageValue</span><span class="op">&lt;</span><span class="ident">Pallet</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">FundIndex</span><span class="op">&gt;</span>;
+
+	<span class="attribute">#[<span class="ident">storage_alias</span>]</span>
+	<span class="kw">type</span> <span class="ident">Leases</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">StorageMap</span><span class="op">&lt;</span>
+		<span class="ident">Slots</span>,
+		<span class="ident">Twox64Concat</span>,
+		<span class="ident">ParaId</span>,
+		<span class="ident">Vec</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">frame_system::Config</span><span class="op">&gt;</span><span class="ident">::AccountId</span>, <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>)<span class="op">&gt;</span><span class="op">&gt;</span>,
+	<span class="op">&gt;</span>;
 
 	<span class="comment">// The old way we generated fund accounts.</span>
 	<span class="kw">fn</span> <span class="ident">old_fund_account_id</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span>(<span class="ident">index</span>: <span class="ident">ParaId</span>) -&gt; <span class="ident">T::AccountId</span> {
@@ -223,13 +229,8 @@
 
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">pre_migrate</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span>() -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span><span class="op">&gt;</span> {
 		<span class="comment">// `NextTrieIndex` should have a value.</span>
-		<span class="macro">generate_storage_alias!</span>(<span class="ident">Crowdloan</span>, <span class="ident">NextTrieIndex</span> =&gt; <span class="ident">Value</span><span class="op">&lt;</span><span class="ident">FundIndex</span><span class="op">&gt;</span>);
 
-		<span class="macro">generate_storage_alias!</span>(
-			<span class="ident">Slots</span>,
-			<span class="ident">Leases</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> =&gt; <span class="ident">Map</span><span class="op">&lt;</span>(<span class="ident">Twox64Concat</span>, <span class="ident">ParaId</span>), <span class="ident">Vec</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">T::AccountId</span>, <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>)<span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>
-		);
-		<span class="kw">let</span> <span class="ident">next_index</span> <span class="op">=</span> <span class="ident">NextTrieIndex::get</span>().<span class="ident">unwrap_or_default</span>();
+		<span class="kw">let</span> <span class="ident">next_index</span> <span class="op">=</span> <span class="ident">NextTrieIndex</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>().<span class="ident">unwrap_or_default</span>();
 		<span class="macro">ensure!</span>(<span class="ident">next_index</span> <span class="op">&gt;</span> <span class="number">0</span>, <span class="string">&quot;Next index is zero, which implies no migration is needed.&quot;</span>);
 
 		<span class="macro">log::info!</span>(
@@ -282,13 +283,8 @@
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">weight</span> <span class="op">=</span> <span class="number">0</span>;
 
 		<span class="comment">// First migrate `NextTrieIndex` counter to `NextFundIndex`.</span>
-		<span class="macro">generate_storage_alias!</span>(<span class="ident">Crowdloan</span>, <span class="ident">NextTrieIndex</span> =&gt; <span class="ident">Value</span><span class="op">&lt;</span><span class="ident">FundIndex</span><span class="op">&gt;</span>);
 
-		<span class="macro">generate_storage_alias!</span>(
-			<span class="ident">Slots</span>,
-			<span class="ident">Leases</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> =&gt; <span class="ident">Map</span><span class="op">&lt;</span>(<span class="ident">Twox64Concat</span>, <span class="ident">ParaId</span>), <span class="ident">Vec</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">T::AccountId</span>, <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>)<span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>
-		);
-		<span class="kw">let</span> <span class="ident">next_index</span> <span class="op">=</span> <span class="ident">NextTrieIndex::take</span>().<span class="ident">unwrap_or_default</span>();
+		<span class="kw">let</span> <span class="ident">next_index</span> <span class="op">=</span> <span class="ident">NextTrieIndex</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::take</span>().<span class="ident">unwrap_or_default</span>();
 		<span class="ident">NextFundIndex</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::set</span>(<span class="ident">next_index</span>);
 
 		<span class="ident">weight</span> <span class="op">=</span> <span class="ident">weight</span>.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">reads_writes</span>(<span class="number">1</span>, <span class="number">2</span>));
@@ -322,13 +318,7 @@
 
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">post_migrate</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span>() -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span><span class="op">&gt;</span> {
 		<span class="comment">// `NextTrieIndex` should not have a value, and `NextFundIndex` should.</span>
-		<span class="macro">generate_storage_alias!</span>(<span class="ident">Crowdloan</span>, <span class="ident">NextTrieIndex</span> =&gt; <span class="ident">Value</span><span class="op">&lt;</span><span class="ident">FundIndex</span><span class="op">&gt;</span>);
-		<span class="macro">ensure!</span>(<span class="ident">NextTrieIndex::get</span>().<span class="ident">is_none</span>(), <span class="string">&quot;NextTrieIndex still has a value.&quot;</span>);
-
-		<span class="macro">generate_storage_alias!</span>(
-			<span class="ident">Slots</span>,
-			<span class="ident">Leases</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> =&gt; <span class="ident">Map</span><span class="op">&lt;</span>(<span class="ident">Twox64Concat</span>, <span class="ident">ParaId</span>), <span class="ident">Vec</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">T::AccountId</span>, <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>)<span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>
-		);
+		<span class="macro">ensure!</span>(<span class="ident">NextTrieIndex</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>().<span class="ident">is_none</span>(), <span class="string">&quot;NextTrieIndex still has a value.&quot;</span>);
 
 		<span class="kw">let</span> <span class="ident">next_index</span> <span class="op">=</span> <span class="ident">NextFundIndex</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>();
 		<span class="macro">log::info!</span>(
