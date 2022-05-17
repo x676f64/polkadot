@@ -246,7 +246,7 @@
 <span class="doccomment">/// /// Our relay chain&#39;s location.</span>
 <span class="doccomment">/// parameter_types! {</span>
 <span class="doccomment">///     pub RelayChain: MultiLocation = Parent.into();</span>
-<span class="doccomment">///     pub CheckingAccount: AccountId = PalletId(*b&quot;checking&quot;).into_account();</span>
+<span class="doccomment">///     pub CheckingAccount: AccountId = PalletId(*b&quot;checking&quot;).into_account_truncating();</span>
 <span class="doccomment">/// }</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// /// Some items that implement `Convert&lt;MultiLocation, AccountId&gt;`. Can be more, but for now we just assume we accept</span>

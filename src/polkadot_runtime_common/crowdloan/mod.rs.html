@@ -2827,7 +2827,7 @@
 	<span class="doccomment">/// This actually does computation. If you need to keep using it, then make sure you cache the</span>
 	<span class="doccomment">/// value and only call this once.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">fund_account_id</span>(<span class="ident">index</span>: <span class="ident">FundIndex</span>) -&gt; <span class="ident">T::AccountId</span> {
-		<span class="ident">T::PalletId::get</span>().<span class="ident">into_sub_account</span>(<span class="ident">index</span>)
+		<span class="ident">T::PalletId::get</span>().<span class="ident">into_sub_account_truncating</span>(<span class="ident">index</span>)
 	}
 
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">id_from_index</span>(<span class="ident">index</span>: <span class="ident">FundIndex</span>) -&gt; <span class="ident">child::ChildInfo</span> {

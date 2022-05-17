@@ -384,7 +384,7 @@
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">para_account_id</span>(<span class="ident">id</span>: <span class="ident">u32</span>) -&gt; <span class="ident">relay_chain::AccountId</span> {
-	<span class="ident">ParaId::from</span>(<span class="ident">id</span>).<span class="ident">into_account</span>()
+	<span class="ident">ParaId::from</span>(<span class="ident">id</span>).<span class="ident">into_account_truncating</span>()
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">para_ext</span>(<span class="ident">para_id</span>: <span class="ident">u32</span>) -&gt; <span class="ident">sp_io::TestExternalities</span> {

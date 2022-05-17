@@ -19,7 +19,7 @@
 <span class="doccomment">/// Our relay chain&#39;s location.</span>
 <span class="macro">parameter_types!</span> {
     <span class="kw">pub</span> <span class="ident">RelayChain</span>: <span class="ident">MultiLocation</span> <span class="op">=</span> <span class="ident">Parent</span>.<span class="ident">into</span>();
-    <span class="kw">pub</span> <span class="ident">CheckingAccount</span>: <span class="ident">AccountId</span> <span class="op">=</span> <span class="ident">PalletId</span>(<span class="kw-2">*</span><span class="string">b&quot;checking&quot;</span>).<span class="ident">into_account</span>();
+    <span class="kw">pub</span> <span class="ident">CheckingAccount</span>: <span class="ident">AccountId</span> <span class="op">=</span> <span class="ident">PalletId</span>(<span class="kw-2">*</span><span class="string">b&quot;checking&quot;</span>).<span class="ident">into_account_truncating</span>();
 }
 
 <span class="doccomment">/// Some items that implement `Convert&lt;MultiLocation, AccountId&gt;`. Can be more, but for now we just assume we accept</span>
