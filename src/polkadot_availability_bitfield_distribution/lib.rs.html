@@ -780,40 +780,6 @@
 <span id="775">775</span>
 <span id="776">776</span>
 <span id="777">777</span>
-<span id="778">778</span>
-<span id="779">779</span>
-<span id="780">780</span>
-<span id="781">781</span>
-<span id="782">782</span>
-<span id="783">783</span>
-<span id="784">784</span>
-<span id="785">785</span>
-<span id="786">786</span>
-<span id="787">787</span>
-<span id="788">788</span>
-<span id="789">789</span>
-<span id="790">790</span>
-<span id="791">791</span>
-<span id="792">792</span>
-<span id="793">793</span>
-<span id="794">794</span>
-<span id="795">795</span>
-<span id="796">796</span>
-<span id="797">797</span>
-<span id="798">798</span>
-<span id="799">799</span>
-<span id="800">800</span>
-<span id="801">801</span>
-<span id="802">802</span>
-<span id="803">803</span>
-<span id="804">804</span>
-<span id="805">805</span>
-<span id="806">806</span>
-<span id="807">807</span>
-<span id="808">808</span>
-<span id="809">809</span>
-<span id="810">810</span>
-<span id="811">811</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020-2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -842,7 +808,9 @@
 
 <span class="kw">use</span> <span class="ident">polkadot_node_network_protocol</span>::{
 	<span class="self">self</span> <span class="kw">as</span> <span class="ident">net_protocol</span>,
-	<span class="ident">grid_topology</span>::{<span class="ident">RandomRouting</span>, <span class="ident">RequiredRouting</span>, <span class="ident">SessionGridTopology</span>},
+	<span class="ident">grid_topology</span>::{
+		<span class="ident">RandomRouting</span>, <span class="ident">RequiredRouting</span>, <span class="ident">SessionBoundGridTopologyStorage</span>, <span class="ident">SessionGridTopology</span>,
+	},
 	<span class="ident">v1</span> <span class="kw">as</span> <span class="ident">protocol_v1</span>, <span class="ident">OurView</span>, <span class="ident">PeerId</span>, <span class="ident">UnifiedReputationChange</span> <span class="kw">as</span> <span class="ident">Rep</span>, <span class="ident">Versioned</span>, <span class="ident">View</span>,
 };
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem</span>::{
@@ -850,9 +818,8 @@
 	<span class="ident">SpawnedSubsystem</span>, <span class="ident">SubsystemError</span>, <span class="ident">SubsystemResult</span>,
 };
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem_util</span>::{<span class="self">self</span> <span class="kw">as</span> <span class="ident">util</span>};
-<span class="kw">use</span> <span class="ident">polkadot_primitives::v2</span>::{
-	<span class="ident">Hash</span>, <span class="ident">SessionIndex</span>, <span class="ident">SignedAvailabilityBitfield</span>, <span class="ident">SigningContext</span>, <span class="ident">ValidatorId</span>,
-};
+
+<span class="kw">use</span> <span class="ident">polkadot_primitives::v2</span>::{<span class="ident">Hash</span>, <span class="ident">SignedAvailabilityBitfield</span>, <span class="ident">SigningContext</span>, <span class="ident">ValidatorId</span>};
 <span class="kw">use</span> <span class="ident">rand</span>::{<span class="ident">CryptoRng</span>, <span class="ident">Rng</span>, <span class="ident">SeedableRng</span>};
 <span class="kw">use</span> <span class="ident">std::collections</span>::{<span class="ident">HashMap</span>, <span class="ident">HashSet</span>};
 
@@ -896,44 +863,6 @@
 	}
 }
 
-<span class="doccomment">/// A simple storage for a topology and the corresponding session index</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Default</span>, <span class="ident">Debug</span>)]</span>
-<span class="kw">struct</span> <span class="ident">GridTopologySessionBound</span>(<span class="ident">SessionGridTopology</span>, <span class="ident">SessionIndex</span>);
-
-<span class="doccomment">/// A storage for the current and maybe previous topology</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Default</span>, <span class="ident">Debug</span>)]</span>
-<span class="kw">struct</span> <span class="ident">BitfieldGridTopologyStorage</span> {
-	<span class="ident">current_topology</span>: <span class="ident">GridTopologySessionBound</span>,
-	<span class="ident">prev_topology</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">GridTopologySessionBound</span><span class="op">&gt;</span>,
-}
-
-<span class="kw">impl</span> <span class="ident">BitfieldGridTopologyStorage</span> {
-	<span class="doccomment">/// Return a grid topology based on the session index:</span>
-	<span class="doccomment">/// If we need a previous session and it is registered in the storage, then return that session.</span>
-	<span class="doccomment">/// Otherwise, return a current session to have some grid topology in any case</span>
-	<span class="kw">fn</span> <span class="ident">get_topology</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">idx</span>: <span class="ident">SessionIndex</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">SessionGridTopology</span> {
-		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">prev_topology</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">prev_topology</span> {
-			<span class="kw">if</span> <span class="ident">idx</span> <span class="op">==</span> <span class="ident">prev_topology</span>.<span class="number">1</span> {
-				<span class="kw">return</span> <span class="kw-2">&amp;</span><span class="ident">prev_topology</span>.<span class="number">0</span>
-			}
-		}
-		<span class="comment">// Return the current topology by default</span>
-		<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">current_topology</span>.<span class="number">0</span>
-	}
-
-	<span class="doccomment">/// Update the current topology preserving the previous one</span>
-	<span class="kw">fn</span> <span class="ident">update_topology</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">idx</span>: <span class="ident">SessionIndex</span>, <span class="ident">topology</span>: <span class="ident">SessionGridTopology</span>) {
-		<span class="kw">let</span> <span class="ident">old_current</span> <span class="op">=</span>
-			<span class="ident">std::mem::replace</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">current_topology</span>, <span class="ident">GridTopologySessionBound</span>(<span class="ident">topology</span>, <span class="ident">idx</span>));
-		<span class="self">self</span>.<span class="ident">prev_topology</span>.<span class="ident">replace</span>(<span class="ident">old_current</span>);
-	}
-
-	<span class="doccomment">/// Returns a current grid topology</span>
-	<span class="kw">fn</span> <span class="ident">get_current_topology</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">SessionGridTopology</span> {
-		<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">current_topology</span>.<span class="number">0</span>
-	}
-}
-
 <span class="doccomment">/// Data used to track information of peers and relay parents the</span>
 <span class="doccomment">/// overseer ordered us to work on.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Default</span>, <span class="ident">Debug</span>)]</span>
@@ -943,7 +872,7 @@
 	<span class="ident">peer_views</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">PeerId</span>, <span class="ident">View</span><span class="op">&gt;</span>,
 
 	<span class="doccomment">/// The current and previous gossip topologies</span>
-	<span class="ident">topologies</span>: <span class="ident">BitfieldGridTopologyStorage</span>,
+	<span class="ident">topologies</span>: <span class="ident">SessionBoundGridTopologyStorage</span>,
 
 	<span class="doccomment">/// Our current view.</span>
 	<span class="ident">view</span>: <span class="ident">OurView</span>,
@@ -1180,8 +1109,9 @@
 	};
 
 	<span class="kw">let</span> <span class="ident">msg</span> <span class="op">=</span> <span class="ident">BitfieldGossipMessage</span> { <span class="ident">relay_parent</span>, <span class="ident">signed_availability</span> };
-	<span class="kw">let</span> <span class="ident">topology</span> <span class="op">=</span> <span class="ident">state</span>.<span class="ident">topologies</span>.<span class="ident">get_topology</span>(<span class="ident">session_idx</span>);
-	<span class="kw">let</span> <span class="ident">required_routing</span> <span class="op">=</span> <span class="ident">topology</span>.<span class="ident">required_routing_for</span>(<span class="ident">validator_index</span>, <span class="bool-val">true</span>);
+	<span class="kw">let</span> <span class="ident">topology</span> <span class="op">=</span> <span class="ident">state</span>.<span class="ident">topologies</span>.<span class="ident">get_topology_or_fallback</span>(<span class="ident">session_idx</span>);
+	<span class="kw">let</span> <span class="ident">required_routing</span> <span class="op">=</span> <span class="ident">topology</span>.<span class="ident">required_routing_by_index</span>(<span class="ident">validator_index</span>, <span class="bool-val">true</span>);
+
 	<span class="ident">relay_message</span>(
 		<span class="ident">ctx</span>,
 		<span class="ident">job_data</span>,
@@ -1383,8 +1313,10 @@
 
 	<span class="kw">let</span> <span class="ident">message</span> <span class="op">=</span> <span class="ident">BitfieldGossipMessage</span> { <span class="ident">relay_parent</span>, <span class="ident">signed_availability</span> };
 
-	<span class="kw">let</span> <span class="ident">topology</span> <span class="op">=</span> <span class="ident">state</span>.<span class="ident">topologies</span>.<span class="ident">get_topology</span>(<span class="ident">job_data</span>.<span class="ident">signing_context</span>.<span class="ident">session_index</span>);
-	<span class="kw">let</span> <span class="ident">required_routing</span> <span class="op">=</span> <span class="ident">topology</span>.<span class="ident">required_routing_for</span>(<span class="ident">validator_index</span>, <span class="bool-val">false</span>);
+	<span class="kw">let</span> <span class="ident">topology</span> <span class="op">=</span> <span class="ident">state</span>
+		.<span class="ident">topologies</span>
+		.<span class="ident">get_topology_or_fallback</span>(<span class="ident">job_data</span>.<span class="ident">signing_context</span>.<span class="ident">session_index</span>);
+	<span class="kw">let</span> <span class="ident">required_routing</span> <span class="op">=</span> <span class="ident">topology</span>.<span class="ident">required_routing_by_index</span>(<span class="ident">validator_index</span>, <span class="bool-val">false</span>);
 
 	<span class="ident">metrics</span>.<span class="ident">on_bitfield_received</span>();
 	<span class="ident">one_per_validator</span>.<span class="ident">insert</span>(<span class="ident">validator</span>.<span class="ident">clone</span>(), <span class="ident">message</span>.<span class="ident">clone</span>());

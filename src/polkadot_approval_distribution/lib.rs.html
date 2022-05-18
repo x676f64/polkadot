@@ -2211,7 +2211,7 @@
 			<span class="op">|</span><span class="ident">block_entry</span><span class="op">|</span> <span class="ident">block_entry</span>.<span class="ident">session</span> <span class="op">==</span> <span class="ident">session</span>,
 			<span class="op">|</span><span class="ident">required_routing</span>, <span class="ident">local</span>, <span class="ident">validator_index</span><span class="op">|</span> {
 				<span class="kw">if</span> <span class="kw-2">*</span><span class="ident">required_routing</span> <span class="op">==</span> <span class="ident">RequiredRouting::PendingTopology</span> {
-					<span class="kw-2">*</span><span class="ident">required_routing</span> <span class="op">=</span> <span class="ident">topology</span>.<span class="ident">required_routing_for</span>(<span class="kw-2">*</span><span class="ident">validator_index</span>, <span class="ident">local</span>);
+					<span class="kw-2">*</span><span class="ident">required_routing</span> <span class="op">=</span> <span class="ident">topology</span>.<span class="ident">required_routing_by_index</span>(<span class="kw-2">*</span><span class="ident">validator_index</span>, <span class="ident">local</span>);
 				}
 			},
 		)
@@ -2561,7 +2561,7 @@
 		<span class="kw">let</span> <span class="ident">local</span> <span class="op">=</span> <span class="ident">source</span> <span class="op">==</span> <span class="ident">MessageSource::Local</span>;
 
 		<span class="kw">let</span> <span class="ident">required_routing</span> <span class="op">=</span> <span class="ident">topology</span>.<span class="ident">map_or</span>(<span class="ident">RequiredRouting::PendingTopology</span>, <span class="op">|</span><span class="ident">t</span><span class="op">|</span> {
-			<span class="ident">t</span>.<span class="ident">required_routing_for</span>(<span class="ident">validator_index</span>, <span class="ident">local</span>)
+			<span class="ident">t</span>.<span class="ident">required_routing_by_index</span>(<span class="ident">validator_index</span>, <span class="ident">local</span>)
 		});
 
 		<span class="kw">let</span> <span class="ident">message_state</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">entry</span>.<span class="ident">candidates</span>.<span class="ident">get_mut</span>(<span class="ident">claimed_candidate_index</span> <span class="kw">as</span> <span class="ident">usize</span>) {
