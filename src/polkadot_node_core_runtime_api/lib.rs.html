@@ -528,14 +528,6 @@
 <span id="523">523</span>
 <span id="524">524</span>
 <span id="525">525</span>
-<span id="526">526</span>
-<span id="527">527</span>
-<span id="528">528</span>
-<span id="529">529</span>
-<span id="530">530</span>
-<span id="531">531</span>
-<span id="532">532</span>
-<span id="533">533</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -577,7 +569,7 @@
 
 <span class="kw">use</span> <span class="ident">cache</span>::{<span class="ident">RequestResult</span>, <span class="ident">RequestResultCache</span>};
 <span class="kw">use</span> <span class="ident">futures</span>::{<span class="ident">channel::oneshot</span>, <span class="ident">prelude</span>::<span class="kw-2">*</span>, <span class="ident">select</span>, <span class="ident">stream::FuturesUnordered</span>};
-<span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">collections::VecDeque</span>, <span class="ident">pin::Pin</span>, <span class="ident">sync::Arc</span>};
+<span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
 
 <span class="kw">mod</span> <span class="ident">cache</span>;
 
@@ -589,7 +581,8 @@
 
 <span class="kw">const</span> <span class="ident">LOG_TARGET</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;parachain::runtime-api&quot;</span>;
 
-<span class="doccomment">/// The number of maximum runtime API requests can be executed in parallel. Further requests will be buffered.</span>
+<span class="doccomment">/// The number of maximum runtime API requests can be executed in parallel.</span>
+<span class="doccomment">/// Further requests will backpressure the bounded channel.</span>
 <span class="kw">const</span> <span class="ident">MAX_PARALLEL_REQUESTS</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">4</span>;
 
 <span class="doccomment">/// The name of the blocking task that executes a runtime API request.</span>
@@ -600,11 +593,6 @@
 	<span class="ident">client</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Client</span><span class="op">&gt;</span>,
 	<span class="ident">metrics</span>: <span class="ident">Metrics</span>,
 	<span class="ident">spawn_handle</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">SpawnNamed</span><span class="op">&gt;</span>,
-	<span class="doccomment">/// If there are [`MAX_PARALLEL_REQUESTS`] requests being executed, we buffer them in here until they can be executed.</span>
-	<span class="ident">waiting_requests</span>: <span class="ident">VecDeque</span><span class="op">&lt;</span>(
-		<span class="ident">Pin</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Future</span><span class="op">&lt;</span><span class="ident">Output</span> <span class="op">=</span> ()<span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Send</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-		<span class="ident">oneshot::Receiver</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">RequestResult</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-	)<span class="op">&gt;</span>,
 	<span class="doccomment">/// All the active runtime API requests that are currently being executed.</span>
 	<span class="ident">active_requests</span>: <span class="ident">FuturesUnordered</span><span class="op">&lt;</span><span class="ident">oneshot::Receiver</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">RequestResult</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	<span class="doccomment">/// Requests results cache</span>
@@ -622,7 +610,6 @@
 			<span class="ident">client</span>,
 			<span class="ident">metrics</span>,
 			<span class="ident">spawn_handle</span>: <span class="ident">Box::new</span>(<span class="ident">spawn_handle</span>),
-			<span class="ident">waiting_requests</span>: <span class="ident">Default::default</span>(),
 			<span class="ident">active_requests</span>: <span class="ident">Default::default</span>(),
 			<span class="ident">requests_cache</span>: <span class="ident">RequestResultCache::default</span>(),
 		}
@@ -814,13 +801,12 @@
 	}
 
 	<span class="doccomment">/// Spawn a runtime API request.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// If there are already [`MAX_PARALLEL_REQUESTS`] requests being executed, the request will be buffered.</span>
 	<span class="kw">fn</span> <span class="ident">spawn_request</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">relay_parent</span>: <span class="ident">Hash</span>, <span class="ident">request</span>: <span class="ident">Request</span>) {
 		<span class="kw">let</span> <span class="ident">client</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">client</span>.<span class="ident">clone</span>();
 		<span class="kw">let</span> <span class="ident">metrics</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">metrics</span>.<span class="ident">clone</span>();
 		<span class="kw">let</span> (<span class="ident">sender</span>, <span class="ident">receiver</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
 
+		<span class="comment">// TODO: make the cache great again https://github.com/paritytech/polkadot/issues/5546</span>
 		<span class="kw">let</span> <span class="ident">request</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">query_cache</span>(<span class="ident">relay_parent</span>.<span class="ident">clone</span>(), <span class="ident">request</span>) {
 			<span class="prelude-val">Some</span>(<span class="ident">request</span>) =&gt; <span class="ident">request</span>,
 			<span class="prelude-val">None</span> =&gt; <span class="kw">return</span>,
@@ -832,21 +818,9 @@
 		}
 		.<span class="ident">boxed</span>();
 
-		<span class="kw">if</span> <span class="self">self</span>.<span class="ident">active_requests</span>.<span class="ident">len</span>() <span class="op">&gt;</span><span class="op">=</span> <span class="ident">MAX_PARALLEL_REQUESTS</span> {
-			<span class="self">self</span>.<span class="ident">waiting_requests</span>.<span class="ident">push_back</span>((<span class="ident">request</span>, <span class="ident">receiver</span>));
-
-			<span class="kw">if</span> <span class="self">self</span>.<span class="ident">waiting_requests</span>.<span class="ident">len</span>() <span class="op">&gt;</span> <span class="ident">MAX_PARALLEL_REQUESTS</span> <span class="op">*</span> <span class="number">10</span> {
-				<span class="macro">gum::warn!</span>(
-					<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
-					<span class="string">&quot;{} runtime API requests waiting to be executed.&quot;</span>,
-					<span class="self">self</span>.<span class="ident">waiting_requests</span>.<span class="ident">len</span>(),
-				)
-			}
-		} <span class="kw">else</span> {
-			<span class="self">self</span>.<span class="ident">spawn_handle</span>
-				.<span class="ident">spawn_blocking</span>(<span class="ident">API_REQUEST_TASK_NAME</span>, <span class="prelude-val">Some</span>(<span class="string">&quot;runtime-api&quot;</span>), <span class="ident">request</span>);
-			<span class="self">self</span>.<span class="ident">active_requests</span>.<span class="ident">push</span>(<span class="ident">receiver</span>);
-		}
+		<span class="self">self</span>.<span class="ident">spawn_handle</span>
+			.<span class="ident">spawn_blocking</span>(<span class="ident">API_REQUEST_TASK_NAME</span>, <span class="prelude-val">Some</span>(<span class="string">&quot;runtime-api&quot;</span>), <span class="ident">request</span>);
+		<span class="self">self</span>.<span class="ident">active_requests</span>.<span class="ident">push</span>(<span class="ident">receiver</span>);
 	}
 
 	<span class="doccomment">/// Poll the active runtime API requests.</span>
@@ -860,12 +834,11 @@
 		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">result</span>))) <span class="op">=</span> <span class="self">self</span>.<span class="ident">active_requests</span>.<span class="ident">next</span>().<span class="kw">await</span> {
 			<span class="self">self</span>.<span class="ident">store_cache</span>(<span class="ident">result</span>);
 		}
+	}
 
-		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">req</span>, <span class="ident">recv</span>)) <span class="op">=</span> <span class="self">self</span>.<span class="ident">waiting_requests</span>.<span class="ident">pop_front</span>() {
-			<span class="self">self</span>.<span class="ident">spawn_handle</span>
-				.<span class="ident">spawn_blocking</span>(<span class="ident">API_REQUEST_TASK_NAME</span>, <span class="prelude-val">Some</span>(<span class="string">&quot;runtime-api&quot;</span>), <span class="ident">req</span>);
-			<span class="self">self</span>.<span class="ident">active_requests</span>.<span class="ident">push</span>(<span class="ident">recv</span>);
-		}
+	<span class="doccomment">/// Returns true if our `active_requests` queue is full.</span>
+	<span class="kw">fn</span> <span class="ident">is_busy</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
+		<span class="self">self</span>.<span class="ident">active_requests</span>.<span class="ident">len</span>() <span class="op">&gt;</span><span class="op">=</span> <span class="ident">MAX_PARALLEL_REQUESTS</span>
 	}
 }
 
@@ -879,6 +852,17 @@
 	<span class="ident">Client::Api</span>: <span class="ident">ParachainHost</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">BabeApi</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">AuthorityDiscoveryApi</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>,
 {
 	<span class="kw">loop</span> {
+		<span class="comment">// Let&#39;s add some back pressure when the subsystem is running at `MAX_PARALLEL_REQUESTS`.</span>
+		<span class="comment">// This can never block forever, because `active_requests` is owned by this task and any mutations</span>
+		<span class="comment">// happen either in `poll_requests` or `spawn_request` - so if `is_busy` returns true, then</span>
+		<span class="comment">// even if all of the requests finish before us calling `poll_requests` the `active_requests` length</span>
+		<span class="comment">// remains invariant.</span>
+		<span class="kw">if</span> <span class="ident">subsystem</span>.<span class="ident">is_busy</span>() {
+			<span class="comment">// Since we are not using any internal waiting queues, we need to wait for exactly</span>
+			<span class="comment">// one request to complete before we can read the next one from the overseer channel.</span>
+			<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">subsystem</span>.<span class="ident">poll_requests</span>().<span class="kw">await</span>;
+		}
+
 		<span class="macro">select!</span> {
 			<span class="ident">req</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">recv</span>().<span class="ident">fuse</span>() =&gt; <span class="kw">match</span> <span class="ident">req</span><span class="question-mark">?</span> {
 				<span class="ident">FromOverseer::Signal</span>(<span class="ident">OverseerSignal::Conclude</span>) =&gt; <span class="kw">return</span> <span class="prelude-val">Ok</span>(()),
