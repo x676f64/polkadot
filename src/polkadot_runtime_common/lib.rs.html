@@ -361,6 +361,7 @@
 <span id="356">356</span>
 <span id="357">357</span>
 <span id="358">358</span>
+<span id="359">359</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2019-2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -589,6 +590,7 @@
 <span class="doccomment">/// 	pub LaunchPeriod: BlockNumber = prod_or_fast!(7 * DAYS, 1, &quot;KSM_LAUNCH_PERIOD&quot;);</span>
 <span class="doccomment">/// 	pub const VotingPeriod: BlockNumber = prod_or_fast!(7 * DAYS, 1 * MINUTES);</span>
 <span class="doccomment">/// }</span>
+<span class="doccomment">/// ```</span>
 <span class="attribute">#[<span class="ident">macro_export</span>]</span>
 <span class="macro">macro_rules!</span> <span class="ident">prod_or_fast</span> {
 	(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">prod</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">test</span>:<span class="ident">expr</span>) =&gt; {
