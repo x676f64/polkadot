@@ -433,7 +433,7 @@
 
 <span class="kw">use</span> <span class="ident">polkadot_node_primitives</span>::{<span class="ident">CandidateVotes</span>, <span class="ident">DISPUTE_WINDOW</span>};
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem</span>::{
-	<span class="ident">overseer</span>, <span class="ident">ActivatedLeaf</span>, <span class="ident">FromOverseer</span>, <span class="ident">OverseerSignal</span>, <span class="ident">SpawnedSubsystem</span>, <span class="ident">SubsystemError</span>,
+	<span class="ident">overseer</span>, <span class="ident">ActivatedLeaf</span>, <span class="ident">FromOrchestra</span>, <span class="ident">OverseerSignal</span>, <span class="ident">SpawnedSubsystem</span>, <span class="ident">SubsystemError</span>,
 };
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem_util</span>::{
 	<span class="ident">database::Database</span>, <span class="ident">rolling_session_window::RollingSessionWindow</span>,
@@ -770,14 +770,14 @@
 <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">wait_for_first_leaf</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ActivatedLeaf</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 	<span class="kw">loop</span> {
 		<span class="kw">match</span> <span class="ident">ctx</span>.<span class="ident">recv</span>().<span class="kw">await</span><span class="question-mark">?</span> {
-			<span class="ident">FromOverseer::Signal</span>(<span class="ident">OverseerSignal::Conclude</span>) =&gt; <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>),
-			<span class="ident">FromOverseer::Signal</span>(<span class="ident">OverseerSignal::ActiveLeaves</span>(<span class="ident">update</span>)) =&gt; {
+			<span class="ident">FromOrchestra::Signal</span>(<span class="ident">OverseerSignal::Conclude</span>) =&gt; <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>),
+			<span class="ident">FromOrchestra::Signal</span>(<span class="ident">OverseerSignal::ActiveLeaves</span>(<span class="ident">update</span>)) =&gt; {
 				<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">activated</span>) <span class="op">=</span> <span class="ident">update</span>.<span class="ident">activated</span> {
 					<span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">activated</span>))
 				}
 			},
-			<span class="ident">FromOverseer::Signal</span>(<span class="ident">OverseerSignal::BlockFinalized</span>(<span class="kw">_</span>, <span class="kw">_</span>)) =&gt; {},
-			<span class="ident">FromOverseer::Communication</span> { <span class="ident">msg</span> } =&gt;
+			<span class="ident">FromOrchestra::Signal</span>(<span class="ident">OverseerSignal::BlockFinalized</span>(<span class="kw">_</span>, <span class="kw">_</span>)) =&gt; {},
+			<span class="ident">FromOrchestra::Communication</span> { <span class="ident">msg</span> } =&gt;
 			<span class="comment">// NOTE: We could technically actually handle a couple of message types, even if</span>
 			<span class="comment">// not initialized (e.g. all requests that only query the database). The problem</span>
 			<span class="comment">// is, we would deliver potentially outdated information, especially in the event</span>

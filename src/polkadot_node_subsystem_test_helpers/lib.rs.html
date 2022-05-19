@@ -433,6 +433,7 @@
 <span id="428">428</span>
 <span id="429">429</span>
 <span id="430">430</span>
+<span id="431">431</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -454,14 +455,14 @@
 <span class="attribute">#![<span class="ident">warn</span>(<span class="ident">missing_docs</span>)]</span>
 
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem</span>::{
-	<span class="ident">messages::AllMessages</span>, <span class="ident">overseer</span>, <span class="ident">FromOverseer</span>, <span class="ident">OverseerSignal</span>, <span class="ident">SpawnedSubsystem</span>,
+	<span class="ident">messages::AllMessages</span>, <span class="ident">overseer</span>, <span class="ident">FromOrchestra</span>, <span class="ident">OverseerSignal</span>, <span class="ident">SpawnGlue</span>, <span class="ident">SpawnedSubsystem</span>,
 	<span class="ident">SubsystemError</span>, <span class="ident">SubsystemResult</span>,
 };
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem_util::TimeoutExt</span>;
 
 <span class="kw">use</span> <span class="ident">futures</span>::{<span class="ident">channel::mpsc</span>, <span class="ident">poll</span>, <span class="ident">prelude</span>::<span class="kw-2">*</span>};
 <span class="kw">use</span> <span class="ident">parking_lot::Mutex</span>;
-<span class="kw">use</span> <span class="ident">sp_core</span>::{<span class="ident">testing::TaskExecutor</span>, <span class="ident">traits::SpawnNamed</span>};
+<span class="kw">use</span> <span class="ident">sp_core::testing::TaskExecutor</span>;
 
 <span class="kw">use</span> <span class="ident">std</span>::{
 	<span class="ident">convert::Infallible</span>,
@@ -611,7 +612,7 @@
 <span class="doccomment">/// A test subsystem context.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">TestSubsystemContext</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">S</span><span class="op">&gt;</span> {
 	<span class="ident">tx</span>: <span class="ident">TestSubsystemSender</span>,
-	<span class="ident">rx</span>: <span class="ident">SingleItemStream</span><span class="op">&lt;</span><span class="ident">FromOverseer</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+	<span class="ident">rx</span>: <span class="ident">SingleItemStream</span><span class="op">&lt;</span><span class="ident">FromOrchestra</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	<span class="ident">spawn</span>: <span class="ident">S</span>,
 }
 
@@ -621,7 +622,7 @@
 	<span class="ident">M</span>: <span class="ident">overseer::AssociateOutgoing</span> <span class="op">+</span> <span class="ident">std::fmt::Debug</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	<span class="ident">AllMessages</span>: <span class="ident">From</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">M</span> <span class="kw">as</span> <span class="ident">overseer::AssociateOutgoing</span><span class="op">&gt;</span><span class="ident">::OutgoingMessages</span><span class="op">&gt;</span>,
 	<span class="ident">AllMessages</span>: <span class="ident">From</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>,
-	<span class="ident">Spawner</span>: <span class="ident">SpawnNamed</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+	<span class="ident">Spawner</span>: <span class="ident">overseer::gen::Spawner</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 {
 	<span class="kw">type</span> <span class="ident">Message</span> <span class="op">=</span> <span class="ident">M</span>;
 	<span class="kw">type</span> <span class="ident">Sender</span> <span class="op">=</span> <span class="ident">TestSubsystemSender</span>;
@@ -629,7 +630,7 @@
 	<span class="kw">type</span> <span class="ident">OutgoingMessages</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">M</span> <span class="kw">as</span> <span class="ident">overseer::AssociateOutgoing</span><span class="op">&gt;</span><span class="ident">::OutgoingMessages</span>;
 	<span class="kw">type</span> <span class="ident">Error</span> <span class="op">=</span> <span class="ident">SubsystemError</span>;
 
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">try_recv</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">FromOverseer</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span><span class="op">&gt;</span>, ()<span class="op">&gt;</span> {
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">try_recv</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">FromOrchestra</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span><span class="op">&gt;</span>, ()<span class="op">&gt;</span> {
 		<span class="kw">match</span> <span class="macro">poll!</span>(<span class="self">self</span>.<span class="ident">rx</span>.<span class="ident">next</span>()) {
 			<span class="ident">Poll::Ready</span>(<span class="prelude-val">Some</span>(<span class="ident">msg</span>)) =&gt; <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">msg</span>)),
 			<span class="ident">Poll::Ready</span>(<span class="prelude-val">None</span>) =&gt; <span class="prelude-val">Err</span>(()),
@@ -637,7 +638,7 @@
 		}
 	}
 
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">recv</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="ident">SubsystemResult</span><span class="op">&lt;</span><span class="ident">FromOverseer</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">recv</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="ident">SubsystemResult</span><span class="op">&lt;</span><span class="ident">FromOrchestra</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 		<span class="self">self</span>.<span class="ident">rx</span>
 			.<span class="ident">next</span>()
 			.<span class="kw">await</span>
@@ -673,7 +674,7 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Useful for shared ownership situations (one can have multiple senders, but only one</span>
 	<span class="doccomment">/// receiver.</span>
-	<span class="kw">pub</span> <span class="ident">tx</span>: <span class="ident">SingleItemSink</span><span class="op">&lt;</span><span class="ident">FromOverseer</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+	<span class="kw">pub</span> <span class="ident">tx</span>: <span class="ident">SingleItemSink</span><span class="op">&lt;</span><span class="ident">FromOrchestra</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 
 	<span class="doccomment">/// Direct access to the receiver.</span>
 	<span class="kw">pub</span> <span class="ident">rx</span>: <span class="ident">mpsc::UnboundedReceiver</span><span class="op">&lt;</span><span class="ident">AllMessages</span><span class="op">&gt;</span>,
@@ -682,7 +683,7 @@
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="ident">TestSubsystemContextHandle</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Send a message or signal to the subsystem. This resolves at the point in time when the</span>
 	<span class="doccomment">/// subsystem has _read_ the message.</span>
-	<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">send</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">from_overseer</span>: <span class="ident">FromOverseer</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>) {
+	<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">send</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">from_overseer</span>: <span class="ident">FromOrchestra</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>) {
 		<span class="self">self</span>.<span class="ident">tx</span>.<span class="ident">send</span>(<span class="ident">from_overseer</span>).<span class="kw">await</span>.<span class="ident">expect</span>(<span class="string">&quot;Test subsystem no longer live&quot;</span>);
 	}
 
@@ -699,8 +700,8 @@
 
 <span class="doccomment">/// Make a test subsystem context.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">make_subsystem_context</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">S</span><span class="op">&gt;</span>(
-	<span class="ident">spawn</span>: <span class="ident">S</span>,
-) -&gt; (<span class="ident">TestSubsystemContext</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">S</span><span class="op">&gt;</span>, <span class="ident">TestSubsystemContextHandle</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>) {
+	<span class="ident">spawner</span>: <span class="ident">S</span>,
+) -&gt; (<span class="ident">TestSubsystemContext</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">SpawnGlue</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">TestSubsystemContextHandle</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>) {
 	<span class="kw">let</span> (<span class="ident">overseer_tx</span>, <span class="ident">overseer_rx</span>) <span class="op">=</span> <span class="ident">single_item_sink</span>();
 	<span class="kw">let</span> (<span class="ident">all_messages_tx</span>, <span class="ident">all_messages_rx</span>) <span class="op">=</span> <span class="ident">mpsc::unbounded</span>();
 
@@ -708,7 +709,7 @@
 		<span class="ident">TestSubsystemContext</span> {
 			<span class="ident">tx</span>: <span class="ident">TestSubsystemSender</span> { <span class="ident">tx</span>: <span class="ident">all_messages_tx</span> },
 			<span class="ident">rx</span>: <span class="ident">overseer_rx</span>,
-			<span class="ident">spawn</span>,
+			<span class="ident">spawn</span>: <span class="ident">SpawnGlue</span>(<span class="ident">spawner</span>),
 		},
 		<span class="ident">TestSubsystemContextHandle</span> { <span class="ident">tx</span>: <span class="ident">overseer_tx</span>, <span class="ident">rx</span>: <span class="ident">all_messages_rx</span> },
 	)
@@ -725,7 +726,7 @@
 ) <span class="kw">where</span>
 	<span class="ident">OverseerFactory</span>: <span class="ident">FnOnce</span>(<span class="ident">TestSubsystemContextHandle</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>) -&gt; <span class="ident">Overseer</span>,
 	<span class="ident">Overseer</span>: <span class="ident">Future</span><span class="op">&lt;</span><span class="ident">Output</span> <span class="op">=</span> ()<span class="op">&gt;</span>,
-	<span class="ident">TestFactory</span>: <span class="ident">FnOnce</span>(<span class="ident">TestSubsystemContext</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">TaskExecutor</span><span class="op">&gt;</span>) -&gt; <span class="ident">Test</span>,
+	<span class="ident">TestFactory</span>: <span class="ident">FnOnce</span>(<span class="ident">TestSubsystemContext</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">overseer::SpawnGlue</span><span class="op">&lt;</span><span class="ident">TaskExecutor</span><span class="op">&gt;</span><span class="op">&gt;</span>) -&gt; <span class="ident">Test</span>,
 	<span class="ident">Test</span>: <span class="ident">Future</span><span class="op">&lt;</span><span class="ident">Output</span> <span class="op">=</span> ()<span class="op">&gt;</span>,
 {
 	<span class="kw">let</span> <span class="ident">pool</span> <span class="op">=</span> <span class="ident">TaskExecutor::new</span>();
@@ -765,8 +766,8 @@
 		<span class="kw">let</span> <span class="ident">future</span> <span class="op">=</span> <span class="ident">Box::pin</span>(<span class="kw">async</span> <span class="kw">move</span> {
 			<span class="kw">loop</span> {
 				<span class="kw">match</span> <span class="ident">ctx</span>.<span class="ident">recv</span>().<span class="kw">await</span> {
-					<span class="prelude-val">Ok</span>(<span class="ident">FromOverseer::Signal</span>(<span class="ident">OverseerSignal::Conclude</span>)) =&gt; <span class="kw">return</span> <span class="prelude-val">Ok</span>(()),
-					<span class="prelude-val">Ok</span>(<span class="ident">FromOverseer::Communication</span> { <span class="ident">msg</span> }) =&gt; {
+					<span class="prelude-val">Ok</span>(<span class="ident">FromOrchestra::Signal</span>(<span class="ident">OverseerSignal::Conclude</span>)) =&gt; <span class="kw">return</span> <span class="prelude-val">Ok</span>(()),
+					<span class="prelude-val">Ok</span>(<span class="ident">FromOrchestra::Communication</span> { <span class="ident">msg</span> }) =&gt; {
 						<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">send</span>(<span class="ident">msg</span>).<span class="kw">await</span>;
 					},
 					<span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; <span class="kw">return</span> <span class="prelude-val">Ok</span>(()),
@@ -816,6 +817,7 @@
 	<span class="kw">use</span> <span class="ident">polkadot_node_subsystem::messages::CollatorProtocolMessage</span>;
 	<span class="kw">use</span> <span class="ident">polkadot_overseer</span>::{<span class="ident">dummy::dummy_overseer_builder</span>, <span class="ident">Handle</span>, <span class="ident">HeadSupportsParachains</span>};
 	<span class="kw">use</span> <span class="ident">polkadot_primitives::v2::Hash</span>;
+	<span class="kw">use</span> <span class="ident">sp_core::traits::SpawnNamed</span>;
 
 	<span class="kw">struct</span> <span class="ident">AlwaysSupportsParachains</span>;
 	<span class="kw">impl</span> <span class="ident">HeadSupportsParachains</span> <span class="kw">for</span> <span class="ident">AlwaysSupportsParachains</span> {

@@ -1119,7 +1119,7 @@
 	<span class="ident">errors::RecoveryError</span>,
 	<span class="ident">jaeger</span>,
 	<span class="ident">messages</span>::{<span class="ident">AvailabilityRecoveryMessage</span>, <span class="ident">AvailabilityStoreMessage</span>, <span class="ident">NetworkBridgeMessage</span>},
-	<span class="ident">overseer</span>, <span class="ident">ActiveLeavesUpdate</span>, <span class="ident">FromOverseer</span>, <span class="ident">OverseerSignal</span>, <span class="ident">SpawnedSubsystem</span>, <span class="ident">SubsystemError</span>,
+	<span class="ident">overseer</span>, <span class="ident">ActiveLeavesUpdate</span>, <span class="ident">FromOrchestra</span>, <span class="ident">OverseerSignal</span>, <span class="ident">SpawnedSubsystem</span>, <span class="ident">SubsystemError</span>,
 	<span class="ident">SubsystemResult</span>,
 };
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem_util::request_session_info</span>;
@@ -2056,13 +2056,13 @@
 			<span class="macro">futures::select!</span> {
 				<span class="ident">v</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">recv</span>().<span class="ident">fuse</span>() =&gt; {
 					<span class="kw">match</span> <span class="ident">v</span><span class="question-mark">?</span> {
-						<span class="ident">FromOverseer::Signal</span>(<span class="ident">signal</span>) =&gt; <span class="kw">if</span> <span class="ident">handle_signal</span>(
+						<span class="ident">FromOrchestra::Signal</span>(<span class="ident">signal</span>) =&gt; <span class="kw">if</span> <span class="ident">handle_signal</span>(
 							<span class="kw-2">&amp;mut</span> <span class="ident">state</span>,
 							<span class="ident">signal</span>,
 						).<span class="kw">await</span><span class="question-mark">?</span> {
 							<span class="kw">return</span> <span class="prelude-val">Ok</span>(());
 						}
-						<span class="ident">FromOverseer::Communication</span> { <span class="ident">msg</span> } =&gt; {
+						<span class="ident">FromOrchestra::Communication</span> { <span class="ident">msg</span> } =&gt; {
 							<span class="kw">match</span> <span class="ident">msg</span> {
 								<span class="ident">AvailabilityRecoveryMessage::RecoverAvailableData</span>(
 									<span class="ident">receipt</span>,

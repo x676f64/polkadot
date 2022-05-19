@@ -2174,7 +2174,7 @@
 		<span class="ident">CandidateBackingMessage</span>, <span class="ident">NetworkBridgeEvent</span>, <span class="ident">NetworkBridgeMessage</span>,
 		<span class="ident">StatementDistributionMessage</span>,
 	},
-	<span class="ident">overseer</span>, <span class="ident">ActiveLeavesUpdate</span>, <span class="ident">FromOverseer</span>, <span class="ident">OverseerSignal</span>, <span class="ident">PerLeafSpan</span>, <span class="ident">SpawnedSubsystem</span>,
+	<span class="ident">overseer</span>, <span class="ident">ActiveLeavesUpdate</span>, <span class="ident">FromOrchestra</span>, <span class="ident">OverseerSignal</span>, <span class="ident">PerLeafSpan</span>, <span class="ident">SpawnedSubsystem</span>,
 	<span class="ident">SubsystemError</span>,
 };
 <span class="kw">use</span> <span class="ident">polkadot_primitives::v2</span>::{
@@ -2752,7 +2752,7 @@
 <span class="doccomment">/// Messages to be handled in this subsystem.</span>
 <span class="kw">enum</span> <span class="ident">MuxedMessage</span> {
 	<span class="doccomment">/// Messages from other subsystems.</span>
-	<span class="ident">Subsystem</span>(<span class="ident">FatalResult</span><span class="op">&lt;</span><span class="ident">FromOverseer</span><span class="op">&lt;</span><span class="ident">StatementDistributionMessage</span><span class="op">&gt;</span><span class="op">&gt;</span>),
+	<span class="ident">Subsystem</span>(<span class="ident">FatalResult</span><span class="op">&lt;</span><span class="ident">FromOrchestra</span><span class="op">&lt;</span><span class="ident">StatementDistributionMessage</span><span class="op">&gt;</span><span class="op">&gt;</span>),
 	<span class="doccomment">/// Messages from spawned requester background tasks.</span>
 	<span class="ident">Requester</span>(<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">RequesterMessage</span><span class="op">&gt;</span>),
 	<span class="doccomment">/// Messages from spawned responder background task.</span>
@@ -4110,12 +4110,12 @@
 		<span class="ident">active_heads</span>: <span class="kw-2">&amp;mut</span> <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">Hash</span>, <span class="ident">ActiveHeadData</span><span class="op">&gt;</span>,
 		<span class="ident">recent_outdated_heads</span>: <span class="kw-2">&amp;mut</span> <span class="ident">RecentOutdatedHeads</span>,
 		<span class="ident">req_sender</span>: <span class="kw-2">&amp;</span><span class="ident">mpsc::Sender</span><span class="op">&lt;</span><span class="ident">RequesterMessage</span><span class="op">&gt;</span>,
-		<span class="ident">message</span>: <span class="ident">FromOverseer</span><span class="op">&lt;</span><span class="ident">StatementDistributionMessage</span><span class="op">&gt;</span>,
+		<span class="ident">message</span>: <span class="ident">FromOrchestra</span><span class="op">&lt;</span><span class="ident">StatementDistributionMessage</span><span class="op">&gt;</span>,
 	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">metrics</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">metrics</span>;
 
 		<span class="kw">match</span> <span class="ident">message</span> {
-			<span class="ident">FromOverseer::Signal</span>(<span class="ident">OverseerSignal::ActiveLeaves</span>(<span class="ident">ActiveLeavesUpdate</span> {
+			<span class="ident">FromOrchestra::Signal</span>(<span class="ident">OverseerSignal::ActiveLeaves</span>(<span class="ident">ActiveLeavesUpdate</span> {
 				<span class="ident">activated</span>,
 				<span class="ident">deactivated</span>,
 			})) =&gt; {
@@ -4157,11 +4157,11 @@
 					));
 				}
 			},
-			<span class="ident">FromOverseer::Signal</span>(<span class="ident">OverseerSignal::BlockFinalized</span>(..)) =&gt; {
+			<span class="ident">FromOrchestra::Signal</span>(<span class="ident">OverseerSignal::BlockFinalized</span>(..)) =&gt; {
 				<span class="comment">// do nothing</span>
 			},
-			<span class="ident">FromOverseer::Signal</span>(<span class="ident">OverseerSignal::Conclude</span>) =&gt; <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>),
-			<span class="ident">FromOverseer::Communication</span> { <span class="ident">msg</span> } =&gt; <span class="kw">match</span> <span class="ident">msg</span> {
+			<span class="ident">FromOrchestra::Signal</span>(<span class="ident">OverseerSignal::Conclude</span>) =&gt; <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>),
+			<span class="ident">FromOrchestra::Communication</span> { <span class="ident">msg</span> } =&gt; <span class="kw">match</span> <span class="ident">msg</span> {
 				<span class="ident">StatementDistributionMessage::Share</span>(<span class="ident">relay_parent</span>, <span class="ident">statement</span>) =&gt; {
 					<span class="kw">let</span> <span class="ident">_timer</span> <span class="op">=</span> <span class="ident">metrics</span>.<span class="ident">time_share</span>();
 

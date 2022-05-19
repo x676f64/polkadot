@@ -1587,7 +1587,7 @@
 		<span class="ident">CandidateBackingMessage</span>, <span class="ident">CollatorProtocolMessage</span>, <span class="ident">IfDisconnected</span>, <span class="ident">NetworkBridgeEvent</span>,
 		<span class="ident">NetworkBridgeMessage</span>, <span class="ident">RuntimeApiMessage</span>,
 	},
-	<span class="ident">overseer</span>, <span class="ident">FromOverseer</span>, <span class="ident">OverseerSignal</span>, <span class="ident">PerLeafSpan</span>, <span class="ident">SubsystemSender</span>,
+	<span class="ident">overseer</span>, <span class="ident">FromOrchestra</span>, <span class="ident">OverseerSignal</span>, <span class="ident">PerLeafSpan</span>, <span class="ident">SubsystemSender</span>,
 };
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem_util::metrics</span>::{<span class="self">self</span>, <span class="ident">prometheus</span>};
 <span class="kw">use</span> <span class="ident">polkadot_primitives::v2</span>::{<span class="ident">CandidateReceipt</span>, <span class="ident">CollatorId</span>, <span class="ident">Hash</span>, <span class="ident">Id</span> <span class="kw">as</span> <span class="ident">ParaId</span>};
@@ -2743,7 +2743,7 @@
 		<span class="macro">select!</span> {
 			<span class="ident">res</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">recv</span>().<span class="ident">fuse</span>() =&gt; {
 				<span class="kw">match</span> <span class="ident">res</span> {
-					<span class="prelude-val">Ok</span>(<span class="ident">FromOverseer::Communication</span> { <span class="ident">msg</span> }) =&gt; {
+					<span class="prelude-val">Ok</span>(<span class="ident">FromOrchestra::Communication</span> { <span class="ident">msg</span> }) =&gt; {
 						<span class="macro">gum::trace!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="ident">msg</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">msg</span>, <span class="string">&quot;received a message&quot;</span>);
 						<span class="ident">process_msg</span>(
 							<span class="kw-2">&amp;mut</span> <span class="ident">ctx</span>,
@@ -2752,8 +2752,8 @@
 							<span class="kw-2">&amp;mut</span> <span class="ident">state</span>,
 						).<span class="kw">await</span>;
 					}
-					<span class="prelude-val">Ok</span>(<span class="ident">FromOverseer::Signal</span>(<span class="ident">OverseerSignal::Conclude</span>)) <span class="op">|</span> <span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; <span class="kw">break</span>,
-					<span class="prelude-val">Ok</span>(<span class="ident">FromOverseer::Signal</span>(<span class="kw">_</span>)) =&gt; <span class="kw">continue</span>,
+					<span class="prelude-val">Ok</span>(<span class="ident">FromOrchestra::Signal</span>(<span class="ident">OverseerSignal::Conclude</span>)) <span class="op">|</span> <span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; <span class="kw">break</span>,
+					<span class="prelude-val">Ok</span>(<span class="ident">FromOrchestra::Signal</span>(<span class="kw">_</span>)) =&gt; <span class="kw">continue</span>,
 				}
 			}
 			<span class="kw">_</span> <span class="op">=</span> <span class="ident">next_inactivity_stream</span>.<span class="ident">next</span>() =&gt; {

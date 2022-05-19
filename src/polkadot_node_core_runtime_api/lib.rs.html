@@ -527,7 +527,6 @@
 <span id="522">522</span>
 <span id="523">523</span>
 <span id="524">524</span>
-<span id="525">525</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -555,7 +554,7 @@
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem</span>::{
 	<span class="ident">errors::RuntimeApiError</span>,
 	<span class="ident">messages</span>::{<span class="ident">RuntimeApiMessage</span>, <span class="ident">RuntimeApiRequest</span> <span class="kw">as</span> <span class="ident">Request</span>},
-	<span class="ident">overseer</span>, <span class="ident">FromOverseer</span>, <span class="ident">OverseerSignal</span>, <span class="ident">SpawnedSubsystem</span>, <span class="ident">SubsystemError</span>, <span class="ident">SubsystemResult</span>,
+	<span class="ident">overseer</span>, <span class="ident">FromOrchestra</span>, <span class="ident">OverseerSignal</span>, <span class="ident">SpawnedSubsystem</span>, <span class="ident">SubsystemError</span>, <span class="ident">SubsystemResult</span>,
 };
 <span class="kw">use</span> <span class="ident">polkadot_primitives</span>::{
 	<span class="ident">runtime_api::ParachainHost</span>,
@@ -565,7 +564,6 @@
 <span class="kw">use</span> <span class="ident">sp_api::ProvideRuntimeApi</span>;
 <span class="kw">use</span> <span class="ident">sp_authority_discovery::AuthorityDiscoveryApi</span>;
 <span class="kw">use</span> <span class="ident">sp_consensus_babe::BabeApi</span>;
-<span class="kw">use</span> <span class="ident">sp_core::traits::SpawnNamed</span>;
 
 <span class="kw">use</span> <span class="ident">cache</span>::{<span class="ident">RequestResult</span>, <span class="ident">RequestResultCache</span>};
 <span class="kw">use</span> <span class="ident">futures</span>::{<span class="ident">channel::oneshot</span>, <span class="ident">prelude</span>::<span class="kw-2">*</span>, <span class="ident">select</span>, <span class="ident">stream::FuturesUnordered</span>};
@@ -592,7 +590,7 @@
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">RuntimeApiSubsystem</span><span class="op">&lt;</span><span class="ident">Client</span><span class="op">&gt;</span> {
 	<span class="ident">client</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Client</span><span class="op">&gt;</span>,
 	<span class="ident">metrics</span>: <span class="ident">Metrics</span>,
-	<span class="ident">spawn_handle</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">SpawnNamed</span><span class="op">&gt;</span>,
+	<span class="ident">spawn_handle</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">overseer::gen::Spawner</span><span class="op">&gt;</span>,
 	<span class="doccomment">/// All the active runtime API requests that are currently being executed.</span>
 	<span class="ident">active_requests</span>: <span class="ident">FuturesUnordered</span><span class="op">&lt;</span><span class="ident">oneshot::Receiver</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">RequestResult</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	<span class="doccomment">/// Requests results cache</span>
@@ -604,12 +602,12 @@
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(
 		<span class="ident">client</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Client</span><span class="op">&gt;</span>,
 		<span class="ident">metrics</span>: <span class="ident">Metrics</span>,
-		<span class="ident">spawn_handle</span>: <span class="kw">impl</span> <span class="ident">SpawnNamed</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+		<span class="ident">spawner</span>: <span class="kw">impl</span> <span class="ident">overseer::gen::Spawner</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	) -&gt; <span class="self">Self</span> {
 		<span class="ident">RuntimeApiSubsystem</span> {
 			<span class="ident">client</span>,
 			<span class="ident">metrics</span>,
-			<span class="ident">spawn_handle</span>: <span class="ident">Box::new</span>(<span class="ident">spawn_handle</span>),
+			<span class="ident">spawn_handle</span>: <span class="ident">Box::new</span>(<span class="ident">spawner</span>),
 			<span class="ident">active_requests</span>: <span class="ident">Default::default</span>(),
 			<span class="ident">requests_cache</span>: <span class="ident">RequestResultCache::default</span>(),
 		}
@@ -865,10 +863,10 @@
 
 		<span class="macro">select!</span> {
 			<span class="ident">req</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">recv</span>().<span class="ident">fuse</span>() =&gt; <span class="kw">match</span> <span class="ident">req</span><span class="question-mark">?</span> {
-				<span class="ident">FromOverseer::Signal</span>(<span class="ident">OverseerSignal::Conclude</span>) =&gt; <span class="kw">return</span> <span class="prelude-val">Ok</span>(()),
-				<span class="ident">FromOverseer::Signal</span>(<span class="ident">OverseerSignal::ActiveLeaves</span>(<span class="kw">_</span>)) =&gt; {},
-				<span class="ident">FromOverseer::Signal</span>(<span class="ident">OverseerSignal::BlockFinalized</span>(..)) =&gt; {},
-				<span class="ident">FromOverseer::Communication</span> { <span class="ident">msg</span> } =&gt; <span class="kw">match</span> <span class="ident">msg</span> {
+				<span class="ident">FromOrchestra::Signal</span>(<span class="ident">OverseerSignal::Conclude</span>) =&gt; <span class="kw">return</span> <span class="prelude-val">Ok</span>(()),
+				<span class="ident">FromOrchestra::Signal</span>(<span class="ident">OverseerSignal::ActiveLeaves</span>(<span class="kw">_</span>)) =&gt; {},
+				<span class="ident">FromOrchestra::Signal</span>(<span class="ident">OverseerSignal::BlockFinalized</span>(..)) =&gt; {},
+				<span class="ident">FromOrchestra::Communication</span> { <span class="ident">msg</span> } =&gt; <span class="kw">match</span> <span class="ident">msg</span> {
 					<span class="ident">RuntimeApiMessage::Request</span>(<span class="ident">relay_parent</span>, <span class="ident">request</span>) =&gt; {
 						<span class="ident">subsystem</span>.<span class="ident">spawn_request</span>(<span class="ident">relay_parent</span>, <span class="ident">request</span>);
 					},

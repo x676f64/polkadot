@@ -99,6 +99,8 @@
 <span id="94">94</span>
 <span id="95">95</span>
 <span id="96">96</span>
+<span id="97">97</span>
+<span id="98">98</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -128,10 +130,12 @@
 	<span class="ident">service</span>::{
 		<span class="ident">AuthorityDiscoveryApi</span>, <span class="ident">AuxStore</span>, <span class="ident">BabeApi</span>, <span class="ident">Block</span>, <span class="ident">Error</span>, <span class="ident">HeaderBackend</span>, <span class="ident">Overseer</span>,
 		<span class="ident">OverseerConnector</span>, <span class="ident">OverseerGen</span>, <span class="ident">OverseerGenArgs</span>, <span class="ident">OverseerHandle</span>, <span class="ident">ParachainHost</span>,
-		<span class="ident">ProvideRuntimeApi</span>, <span class="ident">SpawnNamed</span>,
+		<span class="ident">ProvideRuntimeApi</span>,
 	},
 	<span class="ident">RunCmd</span>,
 };
+<span class="kw">use</span> <span class="ident">polkadot_node_subsystem::SpawnGlue</span>;
+<span class="kw">use</span> <span class="ident">sp_core::traits::SpawnNamed</span>;
 
 <span class="comment">// Filter wrapping related types.</span>
 <span class="kw">use</span> <span class="ident"><span class="kw">super</span>::common</span>::{<span class="ident">FakeCandidateValidation</span>, <span class="ident">FakeCandidateValidationError</span>};
@@ -174,7 +178,7 @@
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">connector</span>: <span class="ident">OverseerConnector</span>,
 		<span class="ident">args</span>: <span class="ident">OverseerGenArgs</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">Spawner</span>, <span class="ident">RuntimeClient</span><span class="op">&gt;</span>,
-	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">Overseer</span><span class="op">&lt;</span><span class="ident">Spawner</span>, <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">RuntimeClient</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">OverseerHandle</span>), <span class="ident">Error</span><span class="op">&gt;</span>
+	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">Overseer</span><span class="op">&lt;</span><span class="ident">SpawnGlue</span><span class="op">&lt;</span><span class="ident">Spawner</span><span class="op">&gt;</span>, <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">RuntimeClient</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">OverseerHandle</span>), <span class="ident">Error</span><span class="op">&gt;</span>
 	<span class="kw">where</span>
 		<span class="ident">RuntimeClient</span>: <span class="lifetime">&#39;static</span> <span class="op">+</span> <span class="ident">ProvideRuntimeApi</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">HeaderBackend</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">AuxStore</span>,
 		<span class="ident">RuntimeClient::Api</span>: <span class="ident">ParachainHost</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">BabeApi</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">AuthorityDiscoveryApi</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>,
@@ -184,7 +188,7 @@
 		<span class="kw">let</span> <span class="ident">validation_filter</span> <span class="op">=</span> <span class="ident">ReplaceValidationResult::new</span>(
 			<span class="self">self</span>.<span class="ident">opts</span>.<span class="ident">fake_validation</span>,
 			<span class="self">self</span>.<span class="ident">opts</span>.<span class="ident">fake_validation_error</span>,
-			<span class="ident">spawner</span>.<span class="ident">clone</span>(),
+			<span class="ident">SpawnGlue</span>(<span class="ident">spawner</span>.<span class="ident">clone</span>()),
 		);
 
 		<span class="ident">prepared_overseer_builder</span>(<span class="ident">args</span>)<span class="question-mark">?</span>

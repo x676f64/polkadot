@@ -1168,9 +1168,9 @@
 		<span class="ident">GossipSupportMessage</span>, <span class="ident">NetworkBridgeEvent</span>, <span class="ident">NetworkBridgeMessage</span>,
 		<span class="ident">StatementDistributionMessage</span>,
 	},
-	<span class="ident">overseer</span>, <span class="ident">ActivatedLeaf</span>, <span class="ident">ActiveLeavesUpdate</span>, <span class="ident">FromOverseer</span>, <span class="ident">OverseerSignal</span>, <span class="ident">SpawnedSubsystem</span>,
+	<span class="ident">overseer</span>, <span class="ident">ActivatedLeaf</span>, <span class="ident">ActiveLeavesUpdate</span>, <span class="ident">FromOrchestra</span>, <span class="ident">OverseerSignal</span>, <span class="ident">SpawnedSubsystem</span>,
 };
-<span class="kw">use</span> <span class="ident">polkadot_overseer::gen::OverseerError</span>;
+<span class="kw">use</span> <span class="ident">polkadot_overseer::gen::OrchestraError</span> <span class="kw">as</span> <span class="ident">OverseerError</span>;
 <span class="kw">use</span> <span class="ident">polkadot_primitives::v2</span>::{<span class="ident">AuthorityDiscoveryId</span>, <span class="ident">BlockNumber</span>, <span class="ident">Hash</span>, <span class="ident">ValidatorIndex</span>};
 
 <span class="doccomment">/// Peer set info for network initialization.</span>
@@ -1334,7 +1334,7 @@
 	<span class="kw">loop</span> {
 		<span class="macro">futures::select!</span> {
 			<span class="ident">msg</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">recv</span>().<span class="ident">fuse</span>() =&gt; <span class="kw">match</span> <span class="ident">msg</span> {
-				<span class="prelude-val">Ok</span>(<span class="ident">FromOverseer::Signal</span>(<span class="ident">OverseerSignal::ActiveLeaves</span>(<span class="ident">active_leaves</span>))) =&gt; {
+				<span class="prelude-val">Ok</span>(<span class="ident">FromOrchestra::Signal</span>(<span class="ident">OverseerSignal::ActiveLeaves</span>(<span class="ident">active_leaves</span>))) =&gt; {
 					<span class="kw">let</span> <span class="ident">ActiveLeavesUpdate</span> { <span class="ident">activated</span>, <span class="ident">deactivated</span> } <span class="op">=</span> <span class="ident">active_leaves</span>;
 					<span class="macro">gum::trace!</span>(
 						<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
@@ -1374,7 +1374,7 @@
 						}
 					}
 				}
-				<span class="prelude-val">Ok</span>(<span class="ident">FromOverseer::Signal</span>(<span class="ident">OverseerSignal::BlockFinalized</span>(<span class="ident">_hash</span>, <span class="ident">number</span>))) =&gt; {
+				<span class="prelude-val">Ok</span>(<span class="ident">FromOrchestra::Signal</span>(<span class="ident">OverseerSignal::BlockFinalized</span>(<span class="ident">_hash</span>, <span class="ident">number</span>))) =&gt; {
 					<span class="macro">gum::trace!</span>(
 						<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
 						<span class="ident">action</span> <span class="op">=</span> <span class="string">&quot;BlockFinalized&quot;</span>
@@ -1387,10 +1387,10 @@
 					<span class="comment">// that we never send the same `ActiveLeavesUpdate`</span>
 					<span class="ident">finalized_number</span> <span class="op">=</span> <span class="ident">number</span>;
 				}
-				<span class="prelude-val">Ok</span>(<span class="ident">FromOverseer::Signal</span>(<span class="ident">OverseerSignal::Conclude</span>)) =&gt; {
+				<span class="prelude-val">Ok</span>(<span class="ident">FromOrchestra::Signal</span>(<span class="ident">OverseerSignal::Conclude</span>)) =&gt; {
 					<span class="kw">return</span> <span class="prelude-val">Ok</span>(());
 				}
-				<span class="prelude-val">Ok</span>(<span class="ident">FromOverseer::Communication</span> { <span class="ident">msg</span> }) =&gt; <span class="kw">match</span> <span class="ident">msg</span> {
+				<span class="prelude-val">Ok</span>(<span class="ident">FromOrchestra::Communication</span> { <span class="ident">msg</span> }) =&gt; <span class="kw">match</span> <span class="ident">msg</span> {
 					<span class="ident">NetworkBridgeMessage::ReportPeer</span>(<span class="ident">peer</span>, <span class="ident">rep</span>) =&gt; {
 						<span class="kw">if</span> <span class="op">!</span><span class="ident">rep</span>.<span class="ident">is_benefit</span>() {
 							<span class="macro">gum::debug!</span>(

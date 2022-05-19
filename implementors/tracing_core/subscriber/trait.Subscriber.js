@@ -1,4 +1,5 @@
 (function() {var implementors = {};
+implementors["polkadot_node_subsystem"] = [];
 implementors["tracing"] = [];
 implementors["tracing_core"] = [];
 implementors["tracing_log"] = [{"text":"impl <a class=\"trait\" href=\"tracing_core/subscriber/trait.Subscriber.html\" title=\"trait tracing_core::subscriber::Subscriber\">Subscriber</a> for <a class=\"struct\" href=\"tracing_log/struct.TraceLogger.html\" title=\"struct tracing_log::TraceLogger\">TraceLogger</a>","synthetic":false,"types":["tracing_log::trace_logger::TraceLogger"]}];

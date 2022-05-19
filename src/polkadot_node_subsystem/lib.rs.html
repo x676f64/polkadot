@@ -107,7 +107,7 @@
 <span class="comment">// subsystems at once.</span>
 
 <span class="doccomment">/// Specialized message type originating from the overseer.</span>
-<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">FromOverseer</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">polkadot_overseer::gen::FromOverseer</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">OverseerSignal</span><span class="op">&gt;</span>;
+<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">FromOrchestra</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">polkadot_overseer::gen::FromOrchestra</span><span class="op">&lt;</span><span class="ident">M</span>, <span class="ident">OverseerSignal</span><span class="op">&gt;</span>;
 
 <span class="doccomment">/// Specialized subsystem instance type of subsystems consuming a particular message type.</span>
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">SubsystemInstance</span><span class="op">&lt;</span><span class="ident">Message</span><span class="op">&gt;</span> <span class="op">=</span>

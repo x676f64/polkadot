@@ -689,7 +689,7 @@
 	<span class="ident">errors::ChainApiError</span>,
 	<span class="ident">messages</span>::{<span class="ident">ChainApiMessage</span>, <span class="ident">ChainSelectionMessage</span>},
 	<span class="ident">overseer</span>::{<span class="self">self</span>, <span class="ident">SubsystemSender</span>},
-	<span class="ident">FromOverseer</span>, <span class="ident">OverseerSignal</span>, <span class="ident">SpawnedSubsystem</span>, <span class="ident">SubsystemError</span>,
+	<span class="ident">FromOrchestra</span>, <span class="ident">OverseerSignal</span>, <span class="ident">SpawnedSubsystem</span>, <span class="ident">SubsystemError</span>,
 };
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem_util::database::Database</span>;
 <span class="kw">use</span> <span class="ident">polkadot_primitives::v2</span>::{<span class="ident">BlockNumber</span>, <span class="ident">ConsensusLog</span>, <span class="ident">Hash</span>, <span class="ident">Header</span>};
@@ -1060,10 +1060,10 @@
 			<span class="ident">msg</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">recv</span>().<span class="ident">fuse</span>() =&gt; {
 				<span class="kw">let</span> <span class="ident">msg</span> <span class="op">=</span> <span class="ident">msg</span><span class="question-mark">?</span>;
 				<span class="kw">match</span> <span class="ident">msg</span> {
-					<span class="ident">FromOverseer::Signal</span>(<span class="ident">OverseerSignal::Conclude</span>) =&gt; {
+					<span class="ident">FromOrchestra::Signal</span>(<span class="ident">OverseerSignal::Conclude</span>) =&gt; {
 						<span class="kw">return</span> <span class="prelude-val">Ok</span>(())
 					}
-					<span class="ident">FromOverseer::Signal</span>(<span class="ident">OverseerSignal::ActiveLeaves</span>(<span class="ident">update</span>)) =&gt; {
+					<span class="ident">FromOrchestra::Signal</span>(<span class="ident">OverseerSignal::ActiveLeaves</span>(<span class="ident">update</span>)) =&gt; {
 						<span class="kw">for</span> <span class="ident">leaf</span> <span class="kw">in</span> <span class="ident">update</span>.<span class="ident">activated</span> {
 							<span class="kw">let</span> <span class="ident">write_ops</span> <span class="op">=</span> <span class="ident">handle_active_leaf</span>(
 								<span class="ident">ctx</span>.<span class="ident">sender</span>(),
@@ -1075,10 +1075,10 @@
 							<span class="ident">backend</span>.<span class="ident">write</span>(<span class="ident">write_ops</span>)<span class="question-mark">?</span>;
 						}
 					}
-					<span class="ident">FromOverseer::Signal</span>(<span class="ident">OverseerSignal::BlockFinalized</span>(<span class="ident">h</span>, <span class="ident">n</span>)) =&gt; {
+					<span class="ident">FromOrchestra::Signal</span>(<span class="ident">OverseerSignal::BlockFinalized</span>(<span class="ident">h</span>, <span class="ident">n</span>)) =&gt; {
 						<span class="ident">handle_finalized_block</span>(<span class="ident">backend</span>, <span class="ident">h</span>, <span class="ident">n</span>)<span class="question-mark">?</span>
 					}
-					<span class="ident">FromOverseer::Communication</span> { <span class="ident">msg</span> } =&gt; <span class="kw">match</span> <span class="ident">msg</span> {
+					<span class="ident">FromOrchestra::Communication</span> { <span class="ident">msg</span> } =&gt; <span class="kw">match</span> <span class="ident">msg</span> {
 						<span class="ident">ChainSelectionMessage::Approved</span>(<span class="ident">hash</span>) =&gt; {
 							<span class="ident">handle_approved_block</span>(<span class="ident">backend</span>, <span class="ident">hash</span>)<span class="question-mark">?</span>
 						}

@@ -1582,12 +1582,12 @@
 	<span class="ident">polkadot_node_core_dispute_coordinator::Config</span> <span class="kw">as</span> <span class="ident">DisputeCoordinatorConfig</span>,
 	<span class="ident">polkadot_overseer::BlockInfo</span>,
 	<span class="ident">sc_client_api</span>::{<span class="ident">BlockBackend</span>, <span class="ident">ExecutorProvider</span>},
+	<span class="ident">sp_core::traits::SpawnNamed</span>,
 	<span class="ident">sp_trie::PrefixedMemoryDB</span>,
 };
 
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem_util::database::Database</span>;
 
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sp_core::traits::SpawnNamed</span>;
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;full-node&quot;</span>)]</span>
 <span class="kw">pub</span> <span class="kw">use</span> {
 	<span class="ident">polkadot_overseer</span>::{<span class="ident">Handle</span>, <span class="ident">Overseer</span>, <span class="ident">OverseerConnector</span>, <span class="ident">OverseerHandle</span>},

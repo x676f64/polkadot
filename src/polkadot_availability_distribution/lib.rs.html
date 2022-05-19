@@ -201,7 +201,7 @@
 
 <span class="kw">use</span> <span class="ident">polkadot_node_network_protocol::request_response</span>::{<span class="ident">v1</span>, <span class="ident">IncomingRequestReceiver</span>};
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem</span>::{
-	<span class="ident">messages::AvailabilityDistributionMessage</span>, <span class="ident">overseer</span>, <span class="ident">FromOverseer</span>, <span class="ident">OverseerSignal</span>,
+	<span class="ident">messages::AvailabilityDistributionMessage</span>, <span class="ident">overseer</span>, <span class="ident">FromOrchestra</span>, <span class="ident">OverseerSignal</span>,
 	<span class="ident">SpawnedSubsystem</span>, <span class="ident">SubsystemError</span>,
 };
 
@@ -315,7 +315,7 @@
 				},
 			};
 			<span class="kw">match</span> <span class="ident">message</span> {
-				<span class="ident">FromOverseer::Signal</span>(<span class="ident">OverseerSignal::ActiveLeaves</span>(<span class="ident">update</span>)) =&gt; {
+				<span class="ident">FromOrchestra::Signal</span>(<span class="ident">OverseerSignal::ActiveLeaves</span>(<span class="ident">update</span>)) =&gt; {
 					<span class="ident">log_error</span>(
 						<span class="ident">requester</span>
 							.<span class="ident">get_mut</span>()
@@ -324,9 +324,9 @@
 						<span class="string">&quot;Error in Requester::update_fetching_heads&quot;</span>,
 					)<span class="question-mark">?</span>;
 				},
-				<span class="ident">FromOverseer::Signal</span>(<span class="ident">OverseerSignal::BlockFinalized</span>(..)) =&gt; {},
-				<span class="ident">FromOverseer::Signal</span>(<span class="ident">OverseerSignal::Conclude</span>) =&gt; <span class="kw">return</span> <span class="prelude-val">Ok</span>(()),
-				<span class="ident">FromOverseer::Communication</span> {
+				<span class="ident">FromOrchestra::Signal</span>(<span class="ident">OverseerSignal::BlockFinalized</span>(..)) =&gt; {},
+				<span class="ident">FromOrchestra::Signal</span>(<span class="ident">OverseerSignal::Conclude</span>) =&gt; <span class="kw">return</span> <span class="prelude-val">Ok</span>(()),
+				<span class="ident">FromOrchestra::Communication</span> {
 					<span class="ident">msg</span>:
 						<span class="ident">AvailabilityDistributionMessage::FetchPoV</span> {
 							<span class="ident">relay_parent</span>,

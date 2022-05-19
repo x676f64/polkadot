@@ -815,12 +815,12 @@
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem</span>::{
 	<span class="ident">errors</span>::{<span class="ident">RuntimeApiError</span>, <span class="ident">SubsystemError</span>},
 	<span class="ident">messages</span>::{<span class="ident">BoundToRelayParent</span>, <span class="ident">RuntimeApiMessage</span>, <span class="ident">RuntimeApiRequest</span>, <span class="ident">RuntimeApiSender</span>},
-	<span class="ident">overseer</span>, <span class="ident">ActivatedLeaf</span>, <span class="ident">ActiveLeavesUpdate</span>, <span class="ident">FromOverseer</span>, <span class="ident">OverseerSignal</span>, <span class="ident">SpawnedSubsystem</span>,
+	<span class="ident">overseer</span>, <span class="ident">ActivatedLeaf</span>, <span class="ident">ActiveLeavesUpdate</span>, <span class="ident">FromOrchestra</span>, <span class="ident">OverseerSignal</span>, <span class="ident">SpawnedSubsystem</span>,
 	<span class="ident">SubsystemContext</span>, <span class="ident">SubsystemSender</span>,
 };
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">overseer</span>::{
-	<span class="ident">gen</span>::{<span class="ident">OverseerError</span>, <span class="ident">Timeout</span>},
+	<span class="ident">gen</span>::{<span class="ident">OrchestraError</span> <span class="kw">as</span> <span class="ident">OverseerError</span>, <span class="ident">Timeout</span>},
 	<span class="ident">Subsystem</span>, <span class="ident">TimeoutExt</span>,
 };
 
@@ -844,7 +844,7 @@
 };
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">rand</span>;
 <span class="kw">use</span> <span class="ident">sp_application_crypto::AppKey</span>;
-<span class="kw">use</span> <span class="ident">sp_core</span>::{<span class="ident">traits::SpawnNamed</span>, <span class="ident">ByteArray</span>};
+<span class="kw">use</span> <span class="ident">sp_core::ByteArray</span>;
 <span class="kw">use</span> <span class="ident">sp_keystore</span>::{<span class="ident">CryptoStore</span>, <span class="ident">Error</span> <span class="kw">as</span> <span class="ident">KeystoreError</span>, <span class="ident">SyncCryptoStorePtr</span>};
 <span class="kw">use</span> <span class="ident">std</span>::{
 	<span class="ident">collections</span>::{<span class="ident">hash_map::Entry</span>, <span class="ident">HashMap</span>},
@@ -863,7 +863,7 @@
 
 <span class="doccomment">/// These reexports are required so that external crates can use the `delegated_subsystem` macro properly.</span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">reexports</span> {
-	<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">polkadot_overseer::gen</span>::{<span class="ident">SpawnNamed</span>, <span class="ident">SpawnedSubsystem</span>, <span class="ident">Subsystem</span>, <span class="ident">SubsystemContext</span>};
+	<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">polkadot_overseer::gen</span>::{<span class="ident">SpawnedSubsystem</span>, <span class="ident">Spawner</span>, <span class="ident">Subsystem</span>, <span class="ident">SubsystemContext</span>};
 }
 
 <span class="doccomment">/// A rolling session window cache.</span>
@@ -1336,7 +1336,7 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Spawner</span>, <span class="ident">ToJob</span><span class="op">&gt;</span> <span class="ident">Jobs</span><span class="op">&lt;</span><span class="ident">Spawner</span>, <span class="ident">ToJob</span><span class="op">&gt;</span>
 <span class="kw">where</span>
-	<span class="ident">Spawner</span>: <span class="ident">SpawnNamed</span>,
+	<span class="ident">Spawner</span>: <span class="ident">overseer::gen::Spawner</span> <span class="op">+</span> <span class="ident">Clone</span>,
 	<span class="ident">ToJob</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 {
 	<span class="doccomment">/// Create a new Jobs manager which handles spawning appropriate jobs.</span>
@@ -1410,7 +1410,7 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Spawner</span>, <span class="ident">ToJob</span><span class="op">&gt;</span> <span class="ident">Stream</span> <span class="kw">for</span> <span class="ident">Jobs</span><span class="op">&lt;</span><span class="ident">Spawner</span>, <span class="ident">ToJob</span><span class="op">&gt;</span>
 <span class="kw">where</span>
-	<span class="ident">Spawner</span>: <span class="ident">SpawnNamed</span>,
+	<span class="ident">Spawner</span>: <span class="ident">overseer::gen::Spawner</span> <span class="op">+</span> <span class="ident">Clone</span>,
 {
 	<span class="kw">type</span> <span class="ident">Item</span> <span class="op">=</span> <span class="ident">FromJobCommand</span>;
 
@@ -1425,7 +1425,7 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Spawner</span>, <span class="ident">ToJob</span><span class="op">&gt;</span> <span class="ident">stream::FusedStream</span> <span class="kw">for</span> <span class="ident">Jobs</span><span class="op">&lt;</span><span class="ident">Spawner</span>, <span class="ident">ToJob</span><span class="op">&gt;</span>
 <span class="kw">where</span>
-	<span class="ident">Spawner</span>: <span class="ident">SpawnNamed</span>,
+	<span class="ident">Spawner</span>: <span class="ident">overseer::gen::Spawner</span> <span class="op">+</span> <span class="ident">Clone</span>,
 {
 	<span class="kw">fn</span> <span class="ident">is_terminated</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
 		<span class="bool-val">false</span>
@@ -1468,7 +1468,7 @@
 	<span class="doccomment">/// Run the subsystem to completion.</span>
 	<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="kw-2">mut</span> <span class="ident">ctx</span>: <span class="ident">Context</span>)
 	<span class="kw">where</span>
-		<span class="ident">Spawner</span>: <span class="ident">SpawnNamed</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">Unpin</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+		<span class="ident">Spawner</span>: <span class="ident">overseer::gen::Spawner</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">Unpin</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 		<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span>
 			<span class="ident">Message</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">Job</span> <span class="kw">as</span> <span class="ident">JobTrait</span><span class="op">&gt;</span><span class="ident">::ToJob</span>,
 			<span class="ident">OutgoingMessages</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">Job</span> <span class="kw">as</span> <span class="ident">JobTrait</span><span class="op">&gt;</span><span class="ident">::OutgoingMessages</span>,
@@ -1489,7 +1489,7 @@
 			<span class="macro">select!</span> {
 				<span class="ident">incoming</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">recv</span>().<span class="ident">fuse</span>() =&gt; {
 					<span class="kw">match</span> <span class="ident">incoming</span> {
-						<span class="prelude-val">Ok</span>(<span class="ident">FromOverseer::Signal</span>(<span class="ident">OverseerSignal::ActiveLeaves</span>(<span class="ident">ActiveLeavesUpdate</span> {
+						<span class="prelude-val">Ok</span>(<span class="ident">FromOrchestra::Signal</span>(<span class="ident">OverseerSignal::ActiveLeaves</span>(<span class="ident">ActiveLeavesUpdate</span> {
 							<span class="ident">activated</span>,
 							<span class="ident">deactivated</span>,
 						}))) =&gt; {
@@ -1507,12 +1507,12 @@
 								<span class="ident">jobs</span>.<span class="ident">stop_job</span>(<span class="ident">hash</span>).<span class="kw">await</span>;
 							}
 						}
-						<span class="prelude-val">Ok</span>(<span class="ident">FromOverseer::Signal</span>(<span class="ident">OverseerSignal::Conclude</span>)) =&gt; {
+						<span class="prelude-val">Ok</span>(<span class="ident">FromOrchestra::Signal</span>(<span class="ident">OverseerSignal::Conclude</span>)) =&gt; {
 							<span class="ident">jobs</span>.<span class="ident">running</span>.<span class="ident">clear</span>();
 							<span class="kw">break</span>;
 						}
-						<span class="prelude-val">Ok</span>(<span class="ident">FromOverseer::Signal</span>(<span class="ident">OverseerSignal::BlockFinalized</span>(..))) =&gt; {}
-						<span class="prelude-val">Ok</span>(<span class="ident">FromOverseer::Communication</span> { <span class="ident">msg</span> }) =&gt; {
+						<span class="prelude-val">Ok</span>(<span class="ident">FromOrchestra::Signal</span>(<span class="ident">OverseerSignal::BlockFinalized</span>(..))) =&gt; {}
+						<span class="prelude-val">Ok</span>(<span class="ident">FromOrchestra::Communication</span> { <span class="ident">msg</span> }) =&gt; {
 							<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">to_job</span>) <span class="op">=</span> <span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">Context</span> <span class="kw">as</span> <span class="ident">SubsystemContext</span><span class="op">&gt;</span><span class="ident">::Message</span><span class="op">&gt;</span><span class="ident">::try_from</span>(<span class="ident">msg</span>) {
 								<span class="ident">jobs</span>.<span class="ident">send_msg</span>(<span class="ident">to_job</span>.<span class="ident">relay_parent</span>(), <span class="ident">to_job</span>).<span class="kw">await</span>;
 							}
@@ -1548,7 +1548,7 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Context</span>, <span class="ident">Job</span>, <span class="ident">Spawner</span><span class="op">&gt;</span> <span class="ident">Subsystem</span><span class="op">&lt;</span><span class="ident">Context</span>, <span class="ident">SubsystemError</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">JobSubsystem</span><span class="op">&lt;</span><span class="ident">Job</span>, <span class="ident">Spawner</span><span class="op">&gt;</span>
 <span class="kw">where</span>
-	<span class="ident">Spawner</span>: <span class="ident">SpawnNamed</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">Unpin</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+	<span class="ident">Spawner</span>: <span class="ident">overseer::gen::Spawner</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">Unpin</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	<span class="ident">Context</span>: <span class="ident">SubsystemContext</span><span class="op">&lt;</span>
 		<span class="ident">Message</span> <span class="op">=</span> <span class="ident">Job::ToJob</span>,
 		<span class="ident">Signal</span> <span class="op">=</span> <span class="ident">OverseerSignal</span>,

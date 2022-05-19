@@ -672,7 +672,7 @@
 		<span class="ident">GossipSupportMessage</span>, <span class="ident">NetworkBridgeEvent</span>, <span class="ident">NetworkBridgeMessage</span>, <span class="ident">RuntimeApiMessage</span>,
 		<span class="ident">RuntimeApiRequest</span>,
 	},
-	<span class="ident">overseer</span>, <span class="ident">ActiveLeavesUpdate</span>, <span class="ident">FromOverseer</span>, <span class="ident">OverseerSignal</span>, <span class="ident">SpawnedSubsystem</span>, <span class="ident">SubsystemError</span>,
+	<span class="ident">overseer</span>, <span class="ident">ActiveLeavesUpdate</span>, <span class="ident">FromOrchestra</span>, <span class="ident">OverseerSignal</span>, <span class="ident">SpawnedSubsystem</span>, <span class="ident">SubsystemError</span>,
 };
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem_util</span> <span class="kw">as</span> <span class="ident">util</span>;
 <span class="kw">use</span> <span class="ident">polkadot_primitives::v2</span>::{
@@ -788,10 +788,10 @@
 					}
 			);
 			<span class="kw">match</span> <span class="ident">message</span> {
-				<span class="ident">FromOverseer::Communication</span> {
+				<span class="ident">FromOrchestra::Communication</span> {
 					<span class="ident">msg</span>: <span class="ident">GossipSupportMessage::NetworkBridgeUpdate</span>(<span class="ident">ev</span>),
 				} =&gt; <span class="self">self</span>.<span class="ident">handle_connect_disconnect</span>(<span class="ident">ev</span>),
-				<span class="ident">FromOverseer::Signal</span>(<span class="ident">OverseerSignal::ActiveLeaves</span>(<span class="ident">ActiveLeavesUpdate</span> {
+				<span class="ident">FromOrchestra::Signal</span>(<span class="ident">OverseerSignal::ActiveLeaves</span>(<span class="ident">ActiveLeavesUpdate</span> {
 					<span class="ident">activated</span>,
 					..
 				})) =&gt; {
@@ -802,8 +802,8 @@
 						<span class="macro">gum::debug!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="ident">error</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">e</span>);
 					}
 				},
-				<span class="ident">FromOverseer::Signal</span>(<span class="ident">OverseerSignal::BlockFinalized</span>(<span class="ident">_hash</span>, <span class="ident">_number</span>)) =&gt; {},
-				<span class="ident">FromOverseer::Signal</span>(<span class="ident">OverseerSignal::Conclude</span>) =&gt; <span class="kw">return</span> <span class="self">self</span>,
+				<span class="ident">FromOrchestra::Signal</span>(<span class="ident">OverseerSignal::BlockFinalized</span>(<span class="ident">_hash</span>, <span class="ident">_number</span>)) =&gt; {},
+				<span class="ident">FromOrchestra::Signal</span>(<span class="ident">OverseerSignal::Conclude</span>) =&gt; <span class="kw">return</span> <span class="self">self</span>,
 			}
 		}
 	}

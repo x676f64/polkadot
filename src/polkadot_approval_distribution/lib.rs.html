@@ -1734,7 +1734,7 @@
 		<span class="ident">ApprovalCheckResult</span>, <span class="ident">ApprovalDistributionMessage</span>, <span class="ident">ApprovalVotingMessage</span>,
 		<span class="ident">AssignmentCheckResult</span>, <span class="ident">NetworkBridgeEvent</span>, <span class="ident">NetworkBridgeMessage</span>,
 	},
-	<span class="ident">overseer</span>, <span class="ident">ActiveLeavesUpdate</span>, <span class="ident">FromOverseer</span>, <span class="ident">OverseerSignal</span>, <span class="ident">SpawnedSubsystem</span>, <span class="ident">SubsystemError</span>,
+	<span class="ident">overseer</span>, <span class="ident">ActiveLeavesUpdate</span>, <span class="ident">FromOrchestra</span>, <span class="ident">OverseerSignal</span>, <span class="ident">SpawnedSubsystem</span>, <span class="ident">SubsystemError</span>,
 };
 <span class="kw">use</span> <span class="ident">polkadot_primitives::v2</span>::{
 	<span class="ident">BlockNumber</span>, <span class="ident">CandidateIndex</span>, <span class="ident">Hash</span>, <span class="ident">SessionIndex</span>, <span class="ident">ValidatorIndex</span>, <span class="ident">ValidatorSignature</span>,
@@ -3317,9 +3317,9 @@
 				},
 			};
 			<span class="kw">match</span> <span class="ident">message</span> {
-				<span class="ident">FromOverseer::Communication</span> { <span class="ident">msg</span> } =&gt;
+				<span class="ident">FromOrchestra::Communication</span> { <span class="ident">msg</span> } =&gt;
 					<span class="ident"><span class="self">Self</span>::handle_incoming</span>(<span class="kw-2">&amp;mut</span> <span class="ident">ctx</span>, <span class="ident">state</span>, <span class="ident">msg</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">metrics</span>, <span class="ident">rng</span>).<span class="kw">await</span>,
-				<span class="ident">FromOverseer::Signal</span>(<span class="ident">OverseerSignal::ActiveLeaves</span>(<span class="ident">ActiveLeavesUpdate</span> {
+				<span class="ident">FromOrchestra::Signal</span>(<span class="ident">OverseerSignal::ActiveLeaves</span>(<span class="ident">ActiveLeavesUpdate</span> {
 					..
 				})) =&gt; {
 					<span class="macro">gum::trace!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="string">&quot;active leaves signal (ignored)&quot;</span>);
@@ -3327,11 +3327,11 @@
 					<span class="comment">// are those that are available, but not finalized yet</span>
 					<span class="comment">// actived and deactivated heads hence are irrelevant to this subsystem</span>
 				},
-				<span class="ident">FromOverseer::Signal</span>(<span class="ident">OverseerSignal::BlockFinalized</span>(<span class="ident">_hash</span>, <span class="ident">number</span>)) =&gt; {
+				<span class="ident">FromOrchestra::Signal</span>(<span class="ident">OverseerSignal::BlockFinalized</span>(<span class="ident">_hash</span>, <span class="ident">number</span>)) =&gt; {
 					<span class="macro">gum::trace!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="ident">number</span> <span class="op">=</span> <span class="op">%</span><span class="ident">number</span>, <span class="string">&quot;finalized signal&quot;</span>);
 					<span class="ident">state</span>.<span class="ident">handle_block_finalized</span>(<span class="kw-2">&amp;mut</span> <span class="ident">ctx</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">metrics</span>, <span class="ident">number</span>).<span class="kw">await</span>;
 				},
-				<span class="ident">FromOverseer::Signal</span>(<span class="ident">OverseerSignal::Conclude</span>) =&gt; <span class="kw">return</span>,
+				<span class="ident">FromOrchestra::Signal</span>(<span class="ident">OverseerSignal::Conclude</span>) =&gt; <span class="kw">return</span>,
 			}
 		}
 	}

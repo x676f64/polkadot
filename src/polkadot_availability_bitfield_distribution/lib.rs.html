@@ -814,7 +814,7 @@
 	<span class="ident">v1</span> <span class="kw">as</span> <span class="ident">protocol_v1</span>, <span class="ident">OurView</span>, <span class="ident">PeerId</span>, <span class="ident">UnifiedReputationChange</span> <span class="kw">as</span> <span class="ident">Rep</span>, <span class="ident">Versioned</span>, <span class="ident">View</span>,
 };
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem</span>::{
-	<span class="ident">jaeger</span>, <span class="ident">messages</span>::<span class="kw-2">*</span>, <span class="ident">overseer</span>, <span class="ident">ActiveLeavesUpdate</span>, <span class="ident">FromOverseer</span>, <span class="ident">OverseerSignal</span>, <span class="ident">PerLeafSpan</span>,
+	<span class="ident">jaeger</span>, <span class="ident">messages</span>::<span class="kw-2">*</span>, <span class="ident">overseer</span>, <span class="ident">ActiveLeavesUpdate</span>, <span class="ident">FromOrchestra</span>, <span class="ident">OverseerSignal</span>, <span class="ident">PerLeafSpan</span>,
 	<span class="ident">SpawnedSubsystem</span>, <span class="ident">SubsystemError</span>, <span class="ident">SubsystemResult</span>,
 };
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem_util</span>::{<span class="self">self</span> <span class="kw">as</span> <span class="ident">util</span>};
@@ -984,7 +984,7 @@
 				},
 			};
 			<span class="kw">match</span> <span class="ident">message</span> {
-				<span class="ident">FromOverseer::Communication</span> {
+				<span class="ident">FromOrchestra::Communication</span> {
 					<span class="ident">msg</span>:
 						<span class="ident">BitfieldDistributionMessage::DistributeBitfield</span>(
 							<span class="ident">relay_parent</span>,
@@ -1002,14 +1002,14 @@
 					)
 					.<span class="kw">await</span>;
 				},
-				<span class="ident">FromOverseer::Communication</span> {
+				<span class="ident">FromOrchestra::Communication</span> {
 					<span class="ident">msg</span>: <span class="ident">BitfieldDistributionMessage::NetworkBridgeUpdate</span>(<span class="ident">event</span>),
 				} =&gt; {
 					<span class="macro">gum::trace!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="string">&quot;Processing NetworkMessage&quot;</span>);
 					<span class="comment">// a network message was received</span>
 					<span class="ident">handle_network_msg</span>(<span class="kw-2">&amp;mut</span> <span class="ident">ctx</span>, <span class="ident">state</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">metrics</span>, <span class="ident">event</span>, <span class="ident">rng</span>).<span class="kw">await</span>;
 				},
-				<span class="ident">FromOverseer::Signal</span>(<span class="ident">OverseerSignal::ActiveLeaves</span>(<span class="ident">ActiveLeavesUpdate</span> {
+				<span class="ident">FromOrchestra::Signal</span>(<span class="ident">OverseerSignal::ActiveLeaves</span>(<span class="ident">ActiveLeavesUpdate</span> {
 					<span class="ident">activated</span>,
 					..
 				})) =&gt; {
@@ -1042,10 +1042,10 @@
 						}
 					}
 				},
-				<span class="ident">FromOverseer::Signal</span>(<span class="ident">OverseerSignal::BlockFinalized</span>(<span class="ident">hash</span>, <span class="ident">number</span>)) =&gt; {
+				<span class="ident">FromOrchestra::Signal</span>(<span class="ident">OverseerSignal::BlockFinalized</span>(<span class="ident">hash</span>, <span class="ident">number</span>)) =&gt; {
 					<span class="macro">gum::trace!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="question-mark">?</span><span class="ident">hash</span>, <span class="op">%</span><span class="ident">number</span>, <span class="string">&quot;block finalized&quot;</span>);
 				},
-				<span class="ident">FromOverseer::Signal</span>(<span class="ident">OverseerSignal::Conclude</span>) =&gt; {
+				<span class="ident">FromOrchestra::Signal</span>(<span class="ident">OverseerSignal::Conclude</span>) =&gt; {
 					<span class="macro">gum::info!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="string">&quot;Conclude&quot;</span>);
 					<span class="kw">return</span>
 				},

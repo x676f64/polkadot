@@ -357,6 +357,10 @@
 <span id="352">352</span>
 <span id="353">353</span>
 <span id="354">354</span>
+<span id="355">355</span>
+<span id="356">356</span>
+<span id="357">357</span>
+<span id="358">358</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -373,7 +377,9 @@
 <span class="comment">// You should have received a copy of the GNU General Public License</span>
 <span class="comment">// along with Polkadot.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
 
-<span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">AuthorityDiscoveryApi</span>, <span class="ident">Block</span>, <span class="ident">Error</span>, <span class="ident">Hash</span>, <span class="ident">IsCollator</span>, <span class="ident">Registry</span>, <span class="ident">SpawnNamed</span>};
+<span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">AuthorityDiscoveryApi</span>, <span class="ident">Block</span>, <span class="ident">Error</span>, <span class="ident">Hash</span>, <span class="ident">IsCollator</span>, <span class="ident">Registry</span>};
+<span class="kw">use</span> <span class="ident">sp_core::traits::SpawnNamed</span>;
+
 <span class="kw">use</span> <span class="ident">lru::LruCache</span>;
 <span class="kw">use</span> <span class="ident">polkadot_availability_distribution::IncomingRequestReceivers</span>;
 <span class="kw">use</span> <span class="ident">polkadot_node_core_approval_voting::Config</span> <span class="kw">as</span> <span class="ident">ApprovalVotingConfig</span>;
@@ -392,7 +398,7 @@
 <span class="kw">use</span> <span class="ident">polkadot_overseer</span>::{
 	<span class="ident">gen::SubsystemContext</span>, <span class="ident">metrics::Metrics</span> <span class="kw">as</span> <span class="ident">OverseerMetrics</span>, <span class="ident">BlockInfo</span>,
 	<span class="ident">InitializedOverseerBuilder</span>, <span class="ident">MetricsTrait</span>, <span class="ident">Overseer</span>, <span class="ident">OverseerConnector</span>, <span class="ident">OverseerHandle</span>,
-	<span class="ident">OverseerSubsystemContext</span>,
+	<span class="ident">OverseerSubsystemContext</span>, <span class="ident">SpawnGlue</span>,
 };
 
 <span class="kw">use</span> <span class="ident">polkadot_primitives::runtime_api::ParachainHost</span>;
@@ -505,7 +511,7 @@
 	}: <span class="ident">OverseerGenArgs</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">Spawner</span>, <span class="ident">RuntimeClient</span><span class="op">&gt;</span>,
 ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>
 	<span class="ident">InitializedOverseerBuilder</span><span class="op">&lt;</span>
-		<span class="ident">Spawner</span>,
+		<span class="ident">SpawnGlue</span><span class="op">&lt;</span><span class="ident">Spawner</span><span class="op">&gt;</span>,
 		<span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">RuntimeClient</span><span class="op">&gt;</span>,
 		<span class="ident">CandidateValidationSubsystem</span>,
 		<span class="ident">PvfCheckerSubsystem</span>,
@@ -516,7 +522,7 @@
 		<span class="ident">BitfieldSigningSubsystem</span>,
 		<span class="ident">BitfieldDistributionSubsystem</span>,
 		<span class="ident">ProvisionerSubsystem</span><span class="op">&lt;</span>
-			<span class="ident">Spawner</span>,
+			<span class="ident">SpawnGlue</span><span class="op">&lt;</span><span class="ident">Spawner</span><span class="op">&gt;</span>,
 			<span class="op">&lt;</span><span class="ident">OverseerSubsystemContext</span><span class="op">&lt;</span><span class="ident">ProvisionerMessage</span><span class="op">&gt;</span> <span class="kw">as</span> <span class="ident">SubsystemContext</span><span class="op">&gt;</span><span class="ident">::Sender</span>,
 		<span class="op">&gt;</span>,
 		<span class="ident">RuntimeApiSubsystem</span><span class="op">&lt;</span><span class="ident">RuntimeClient</span><span class="op">&gt;</span>,
@@ -545,6 +551,8 @@
 	<span class="kw">use</span> <span class="ident">polkadot_node_subsystem_util::metrics::Metrics</span>;
 
 	<span class="kw">let</span> <span class="ident">metrics</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">OverseerMetrics</span> <span class="kw">as</span> <span class="ident">MetricsTrait</span><span class="op">&gt;</span><span class="ident">::register</span>(<span class="ident">registry</span>)<span class="question-mark">?</span>;
+
+	<span class="kw">let</span> <span class="ident">spawner</span> <span class="op">=</span> <span class="ident">SpawnGlue</span>(<span class="ident">spawner</span>);
 
 	<span class="kw">let</span> <span class="ident">builder</span> <span class="op">=</span> <span class="ident">Overseer::builder</span>()
 		.<span class="ident">availability_distribution</span>(<span class="ident">AvailabilityDistributionSubsystem::new</span>(
@@ -676,7 +684,7 @@
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">connector</span>: <span class="ident">OverseerConnector</span>,
 		<span class="ident">args</span>: <span class="ident">OverseerGenArgs</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">Spawner</span>, <span class="ident">RuntimeClient</span><span class="op">&gt;</span>,
-	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">Overseer</span><span class="op">&lt;</span><span class="ident">Spawner</span>, <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">RuntimeClient</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">OverseerHandle</span>), <span class="ident">Error</span><span class="op">&gt;</span>
+	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">Overseer</span><span class="op">&lt;</span><span class="ident">SpawnGlue</span><span class="op">&lt;</span><span class="ident">Spawner</span><span class="op">&gt;</span>, <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">RuntimeClient</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">OverseerHandle</span>), <span class="ident">Error</span><span class="op">&gt;</span>
 	<span class="kw">where</span>
 		<span class="ident">RuntimeClient</span>: <span class="lifetime">&#39;static</span> <span class="op">+</span> <span class="ident">ProvideRuntimeApi</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">HeaderBackend</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">AuxStore</span>,
 		<span class="ident">RuntimeClient::Api</span>: <span class="ident">ParachainHost</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">BabeApi</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">AuthorityDiscoveryApi</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>,
@@ -700,7 +708,7 @@
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">connector</span>: <span class="ident">OverseerConnector</span>,
 		<span class="ident">args</span>: <span class="ident">OverseerGenArgs</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">Spawner</span>, <span class="ident">RuntimeClient</span><span class="op">&gt;</span>,
-	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">Overseer</span><span class="op">&lt;</span><span class="ident">Spawner</span>, <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">RuntimeClient</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">OverseerHandle</span>), <span class="ident">Error</span><span class="op">&gt;</span>
+	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">Overseer</span><span class="op">&lt;</span><span class="ident">SpawnGlue</span><span class="op">&lt;</span><span class="ident">Spawner</span><span class="op">&gt;</span>, <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">RuntimeClient</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">OverseerHandle</span>), <span class="ident">Error</span><span class="op">&gt;</span>
 	<span class="kw">where</span>
 		<span class="ident">RuntimeClient</span>: <span class="lifetime">&#39;static</span> <span class="op">+</span> <span class="ident">ProvideRuntimeApi</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">HeaderBackend</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">AuxStore</span>,
 		<span class="ident">RuntimeClient::Api</span>: <span class="ident">ParachainHost</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">BabeApi</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">AuthorityDiscoveryApi</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>,

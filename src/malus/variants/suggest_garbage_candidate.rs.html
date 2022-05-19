@@ -276,6 +276,10 @@
 <span id="271">271</span>
 <span id="272">272</span>
 <span id="273">273</span>
+<span id="274">274</span>
+<span id="275">275</span>
+<span id="276">276</span>
+<span id="277">277</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -305,7 +309,7 @@
 	<span class="ident">service</span>::{
 		<span class="ident">AuthorityDiscoveryApi</span>, <span class="ident">AuxStore</span>, <span class="ident">BabeApi</span>, <span class="ident">Block</span>, <span class="ident">Error</span>, <span class="ident">HeaderBackend</span>, <span class="ident">Overseer</span>,
 		<span class="ident">OverseerConnector</span>, <span class="ident">OverseerGen</span>, <span class="ident">OverseerGenArgs</span>, <span class="ident">OverseerHandle</span>, <span class="ident">ParachainHost</span>,
-		<span class="ident">ProvideRuntimeApi</span>, <span class="ident">SpawnNamed</span>,
+		<span class="ident">ProvideRuntimeApi</span>,
 	},
 };
 <span class="kw">use</span> <span class="ident">polkadot_node_core_candidate_validation::find_validation_data</span>;
@@ -313,6 +317,7 @@
 <span class="kw">use</span> <span class="ident">polkadot_primitives::v2</span>::{<span class="ident">CandidateDescriptor</span>, <span class="ident">CandidateHash</span>};
 
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem_util::request_validators</span>;
+<span class="kw">use</span> <span class="ident">sp_core::traits::SpawnNamed</span>;
 
 <span class="comment">// Filter wrapping related types.</span>
 <span class="kw">use</span> <span class="kw">crate</span>::{
@@ -326,7 +331,10 @@
 
 <span class="comment">// Import extra types relevant to the particular</span>
 <span class="comment">// subsystem.</span>
-<span class="kw">use</span> <span class="ident">polkadot_node_subsystem::messages</span>::{<span class="ident">CandidateBackingMessage</span>, <span class="ident">CollatorProtocolMessage</span>};
+<span class="kw">use</span> <span class="ident">polkadot_node_subsystem</span>::{
+	<span class="ident">messages</span>::{<span class="ident">CandidateBackingMessage</span>, <span class="ident">CollatorProtocolMessage</span>},
+	<span class="ident">SpawnGlue</span>,
+};
 <span class="kw">use</span> <span class="ident">polkadot_primitives::v2::CandidateReceipt</span>;
 
 <span class="kw">use</span> <span class="ident">std</span>::{
@@ -350,7 +358,7 @@
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Sender</span>, <span class="ident">Spawner</span><span class="op">&gt;</span> <span class="ident">MessageInterceptor</span><span class="op">&lt;</span><span class="ident">Sender</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">NoteCandidate</span><span class="op">&lt;</span><span class="ident">Spawner</span><span class="op">&gt;</span>
 <span class="kw">where</span>
 	<span class="ident">Sender</span>: <span class="ident">overseer::CandidateBackingSenderTrait</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
-	<span class="ident">Spawner</span>: <span class="ident">SpawnNamed</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+	<span class="ident">Spawner</span>: <span class="ident">overseer::gen::Spawner</span> <span class="op">+</span> <span class="ident">Clone</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 {
 	<span class="kw">type</span> <span class="ident">Message</span> <span class="op">=</span> <span class="ident">CandidateBackingMessage</span>;
 
@@ -358,10 +366,10 @@
 	<span class="kw">fn</span> <span class="ident">intercept_incoming</span>(
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">subsystem_sender</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Sender</span>,
-		<span class="ident">msg</span>: <span class="ident">FromOverseer</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Message</span><span class="op">&gt;</span>,
-	) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">FromOverseer</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Message</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+		<span class="ident">msg</span>: <span class="ident">FromOrchestra</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Message</span><span class="op">&gt;</span>,
+	) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">FromOrchestra</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Message</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 		<span class="kw">match</span> <span class="ident">msg</span> {
-			<span class="ident">FromOverseer::Communication</span> {
+			<span class="ident">FromOrchestra::Communication</span> {
 				<span class="ident">msg</span>: <span class="ident">CandidateBackingMessage::Second</span>(<span class="ident">relay_parent</span>, <span class="ident">candidate</span>, <span class="ident">_pov</span>),
 			} =&gt; {
 				<span class="macro">gum::debug!</span>(
@@ -482,14 +490,14 @@
 					.<span class="ident">map</span>
 					.<span class="ident">insert</span>(<span class="ident">malicious_candidate_hash</span>, <span class="ident">candidate</span>.<span class="ident">hash</span>());
 
-				<span class="kw">let</span> <span class="ident">message</span> <span class="op">=</span> <span class="ident">FromOverseer::Communication</span> {
+				<span class="kw">let</span> <span class="ident">message</span> <span class="op">=</span> <span class="ident">FromOrchestra::Communication</span> {
 					<span class="ident">msg</span>: <span class="ident">CandidateBackingMessage::Second</span>(<span class="ident">relay_parent</span>, <span class="ident">malicious_candidate</span>, <span class="ident">pov</span>),
 				};
 
 				<span class="prelude-val">Some</span>(<span class="ident">message</span>)
 			},
-			<span class="ident">FromOverseer::Communication</span> { <span class="ident">msg</span> } =&gt; <span class="prelude-val">Some</span>(<span class="ident">FromOverseer::Communication</span> { <span class="ident">msg</span> }),
-			<span class="ident">FromOverseer::Signal</span>(<span class="ident">signal</span>) =&gt; <span class="prelude-val">Some</span>(<span class="ident">FromOverseer::Signal</span>(<span class="ident">signal</span>)),
+			<span class="ident">FromOrchestra::Communication</span> { <span class="ident">msg</span> } =&gt; <span class="prelude-val">Some</span>(<span class="ident">FromOrchestra::Communication</span> { <span class="ident">msg</span> }),
+			<span class="ident">FromOrchestra::Signal</span>(<span class="ident">signal</span>) =&gt; <span class="prelude-val">Some</span>(<span class="ident">FromOrchestra::Signal</span>(<span class="ident">signal</span>)),
 		}
 	}
 
@@ -523,7 +531,7 @@
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">connector</span>: <span class="ident">OverseerConnector</span>,
 		<span class="ident">args</span>: <span class="ident">OverseerGenArgs</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">Spawner</span>, <span class="ident">RuntimeClient</span><span class="op">&gt;</span>,
-	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">Overseer</span><span class="op">&lt;</span><span class="ident">Spawner</span>, <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">RuntimeClient</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">OverseerHandle</span>), <span class="ident">Error</span><span class="op">&gt;</span>
+	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">Overseer</span><span class="op">&lt;</span><span class="ident">SpawnGlue</span><span class="op">&lt;</span><span class="ident">Spawner</span><span class="op">&gt;</span>, <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">RuntimeClient</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">OverseerHandle</span>), <span class="ident">Error</span><span class="op">&gt;</span>
 	<span class="kw">where</span>
 		<span class="ident">RuntimeClient</span>: <span class="lifetime">&#39;static</span> <span class="op">+</span> <span class="ident">ProvideRuntimeApi</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">HeaderBackend</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">AuxStore</span>,
 		<span class="ident">RuntimeClient::Api</span>: <span class="ident">ParachainHost</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">BabeApi</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">AuthorityDiscoveryApi</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>,
@@ -532,12 +540,12 @@
 		<span class="kw">let</span> <span class="ident">inner</span> <span class="op">=</span> <span class="ident">Inner</span> { <span class="ident">map</span>: <span class="ident">std::collections::HashMap::new</span>() };
 		<span class="kw">let</span> <span class="ident">inner_mut</span> <span class="op">=</span> <span class="ident">Arc::new</span>(<span class="ident">Mutex::new</span>(<span class="ident">inner</span>));
 		<span class="kw">let</span> <span class="ident">note_candidate</span> <span class="op">=</span>
-			<span class="ident">NoteCandidate</span> { <span class="ident">inner</span>: <span class="ident">inner_mut</span>.<span class="ident">clone</span>(), <span class="ident">spawner</span>: <span class="ident">args</span>.<span class="ident">spawner</span>.<span class="ident">clone</span>() };
+			<span class="ident">NoteCandidate</span> { <span class="ident">inner</span>: <span class="ident">inner_mut</span>.<span class="ident">clone</span>(), <span class="ident">spawner</span>: <span class="ident">SpawnGlue</span>(<span class="ident">args</span>.<span class="ident">spawner</span>.<span class="ident">clone</span>()) };
 
 		<span class="kw">let</span> <span class="ident">validation_filter</span> <span class="op">=</span> <span class="ident">ReplaceValidationResult::new</span>(
 			<span class="ident">FakeCandidateValidation::BackingAndApprovalValid</span>,
 			<span class="ident">FakeCandidateValidationError::InvalidOutputs</span>,
-			<span class="ident">args</span>.<span class="ident">spawner</span>.<span class="ident">clone</span>(),
+			<span class="ident">SpawnGlue</span>(<span class="ident">args</span>.<span class="ident">spawner</span>.<span class="ident">clone</span>()),
 		);
 
 		<span class="ident">prepared_overseer_builder</span>(<span class="ident">args</span>)<span class="question-mark">?</span>
