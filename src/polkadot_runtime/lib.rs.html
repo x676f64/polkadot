@@ -2153,6 +2153,21 @@
 <span id="2148">2148</span>
 <span id="2149">2149</span>
 <span id="2150">2150</span>
+<span id="2151">2151</span>
+<span id="2152">2152</span>
+<span id="2153">2153</span>
+<span id="2154">2154</span>
+<span id="2155">2155</span>
+<span id="2156">2156</span>
+<span id="2157">2157</span>
+<span id="2158">2158</span>
+<span id="2159">2159</span>
+<span id="2160">2160</span>
+<span id="2161">2161</span>
+<span id="2162">2162</span>
+<span id="2163">2163</span>
+<span id="2164">2164</span>
+<span id="2165">2165</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -2336,7 +2351,7 @@
 			<span class="ident">Call::Registrar</span>(<span class="kw">_</span>) <span class="op">|</span>
 			<span class="ident">Call::Auctions</span>(<span class="kw">_</span>) <span class="op">|</span>
 			<span class="ident">Call::Crowdloan</span>(<span class="kw">_</span>) <span class="op">|</span>
-			<span class="ident">Call::BagsList</span>(<span class="kw">_</span>) <span class="op">|</span>
+			<span class="ident">Call::VoterList</span>(<span class="kw">_</span>) <span class="op">|</span>
 			<span class="ident">Call::XcmPallet</span>(<span class="kw">_</span>) =&gt; <span class="bool-val">true</span>,
 			<span class="comment">// All pallets are allowed, but exhaustive match is defensive</span>
 			<span class="comment">// in the case of adding new pallets.</span>
@@ -2763,7 +2778,7 @@
 	<span class="kw">type</span> <span class="ident">NextNewSession</span> <span class="op">=</span> <span class="ident">Session</span>;
 	<span class="kw">type</span> <span class="ident">ElectionProvider</span> <span class="op">=</span> <span class="ident">ElectionProviderMultiPhase</span>;
 	<span class="kw">type</span> <span class="ident">GenesisElectionProvider</span> <span class="op">=</span> <span class="ident">onchain::UnboundedExecution</span><span class="op">&lt;</span><span class="ident">OnChainSeqPhragmen</span><span class="op">&gt;</span>;
-	<span class="kw">type</span> <span class="ident">VoterList</span> <span class="op">=</span> <span class="ident">BagsList</span>;
+	<span class="kw">type</span> <span class="ident">VoterList</span> <span class="op">=</span> <span class="ident">VoterList</span>;
 	<span class="kw">type</span> <span class="ident">MaxUnlockingChunks</span> <span class="op">=</span> <span class="ident">frame_support::traits::ConstU32</span><span class="op">&lt;</span><span class="number">32</span><span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">BenchmarkingConfig</span> <span class="op">=</span> <span class="ident">runtime_common::StakingBenchmarkingConfig</span>;
 	<span class="kw">type</span> <span class="ident">OnStakerSlash</span> <span class="op">=</span> ();
@@ -3332,7 +3347,7 @@
 				<span class="ident">Call::Crowdloan</span>(..) <span class="op">|</span>
 				<span class="ident">Call::Slots</span>(..) <span class="op">|</span>
 				<span class="ident">Call::Auctions</span>(..) <span class="op">|</span> <span class="comment">// Specifically omitting the entire XCM Pallet</span>
-				<span class="ident">Call::BagsList</span>(..)
+				<span class="ident">Call::VoterList</span>(..)
 			),
 			<span class="ident">ProxyType::Governance</span> =&gt; <span class="macro">matches!</span>(
 				<span class="ident">c</span>,
@@ -3608,7 +3623,7 @@
 		<span class="ident">ElectionProviderMultiPhase</span>: <span class="ident">pallet_election_provider_multi_phase</span>::{<span class="ident">Pallet</span>, <span class="ident">Call</span>, <span class="ident">Storage</span>, <span class="ident">Event</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">ValidateUnsigned</span>} <span class="op">=</span> <span class="number">36</span>,
 
 		<span class="comment">// Provides a semi-sorted list of nominators for staking.</span>
-		<span class="ident">BagsList</span>: <span class="ident">pallet_bags_list</span>::{<span class="ident">Pallet</span>, <span class="ident">Call</span>, <span class="ident">Storage</span>, <span class="ident">Event</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>} <span class="op">=</span> <span class="number">37</span>,
+		<span class="ident">VoterList</span>: <span class="ident">pallet_bags_list</span>::{<span class="ident">Pallet</span>, <span class="ident">Call</span>, <span class="ident">Storage</span>, <span class="ident">Event</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>} <span class="op">=</span> <span class="number">37</span>,
 
 		<span class="comment">// Parachains pallets. Start indices at 50 to leave room.</span>
 		<span class="ident">ParachainsOrigin</span>: <span class="ident">parachains_origin</span>::{<span class="ident">Pallet</span>, <span class="ident">Origin</span>} <span class="op">=</span> <span class="number">50</span>,
@@ -3667,10 +3682,25 @@
 	<span class="ident">frame_system::ChainContext</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>,
 	<span class="ident">Runtime</span>,
 	<span class="ident">AllPalletsWithSystem</span>,
-	(),
+	(<span class="ident">RenameBagsListToVoterList</span>, <span class="ident">pallet_bags_list::migrations::AddScore</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>),
 <span class="op">&gt;</span>;
 <span class="doccomment">/// The payload being signed in transactions.</span>
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">SignedPayload</span> <span class="op">=</span> <span class="ident">generic::SignedPayload</span><span class="op">&lt;</span><span class="ident">Call</span>, <span class="ident">SignedExtra</span><span class="op">&gt;</span>;
+
+<span class="doccomment">/// A migration which renames the pallet `BagsList` to `VoterList`</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">RenameBagsListToVoterList</span>;
+<span class="kw">impl</span> <span class="ident">frame_support::traits::OnRuntimeUpgrade</span> <span class="kw">for</span> <span class="ident">RenameBagsListToVoterList</span> {
+	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;try-runtime&quot;</span>)]</span>
+	<span class="kw">fn</span> <span class="ident">pre_upgrade</span>() -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span><span class="op">&gt;</span> {
+		<span class="comment">// For other pre-upgrade checks, we need the storage to already be migrated.</span>
+		<span class="ident">frame_support::storage::migration::move_pallet</span>(<span class="string">b&quot;BagsList&quot;</span>, <span class="string">b&quot;VoterList&quot;</span>);
+		<span class="prelude-val">Ok</span>(())
+	}
+	<span class="kw">fn</span> <span class="ident">on_runtime_upgrade</span>() -&gt; <span class="ident">frame_support::weights::Weight</span> {
+		<span class="ident">frame_support::storage::migration::move_pallet</span>(<span class="string">b&quot;BagsList&quot;</span>, <span class="string">b&quot;VoterList&quot;</span>);
+		<span class="ident">frame_support::weights::Weight::MAX</span>
+	}
+}
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;runtime-benchmarks&quot;</span>)]</span>
 <span class="attribute">#[<span class="ident">macro_use</span>]</span>
@@ -3694,7 +3724,7 @@
 		[<span class="ident">runtime_parachains::paras_inherent</span>, <span class="ident">ParaInherent</span>]
 		[<span class="ident">runtime_parachains::ump</span>, <span class="ident">Ump</span>]
 		<span class="comment">// Substrate</span>
-		[<span class="ident">pallet_bags_list</span>, <span class="ident">BagsList</span>]
+		[<span class="ident">pallet_bags_list</span>, <span class="ident">VoterList</span>]
 		[<span class="ident">pallet_balances</span>, <span class="ident">Balances</span>]
 		[<span class="ident">frame_benchmarking::baseline</span>, <span class="ident">Baseline</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>]
 		[<span class="ident">pallet_bounties</span>, <span class="ident">Bounties</span>]
