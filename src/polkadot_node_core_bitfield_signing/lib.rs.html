@@ -298,6 +298,45 @@
 <span id="293">293</span>
 <span id="294">294</span>
 <span id="295">295</span>
+<span id="296">296</span>
+<span id="297">297</span>
+<span id="298">298</span>
+<span id="299">299</span>
+<span id="300">300</span>
+<span id="301">301</span>
+<span id="302">302</span>
+<span id="303">303</span>
+<span id="304">304</span>
+<span id="305">305</span>
+<span id="306">306</span>
+<span id="307">307</span>
+<span id="308">308</span>
+<span id="309">309</span>
+<span id="310">310</span>
+<span id="311">311</span>
+<span id="312">312</span>
+<span id="313">313</span>
+<span id="314">314</span>
+<span id="315">315</span>
+<span id="316">316</span>
+<span id="317">317</span>
+<span id="318">318</span>
+<span id="319">319</span>
+<span id="320">320</span>
+<span id="321">321</span>
+<span id="322">322</span>
+<span id="323">323</span>
+<span id="324">324</span>
+<span id="325">325</span>
+<span id="326">326</span>
+<span id="327">327</span>
+<span id="328">328</span>
+<span id="329">329</span>
+<span id="330">330</span>
+<span id="331">331</span>
+<span id="332">332</span>
+<span id="333">333</span>
+<span id="334">334</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -324,22 +363,21 @@
 	<span class="ident">channel</span>::{<span class="ident">mpsc</span>, <span class="ident">oneshot</span>},
 	<span class="ident">future</span>,
 	<span class="ident">lock::Mutex</span>,
-	<span class="ident">prelude</span>::<span class="kw-2">*</span>,
-	<span class="ident">Future</span>,
+	<span class="ident">FutureExt</span>,
 };
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem</span>::{
 	<span class="ident">errors::RuntimeApiError</span>,
 	<span class="ident">jaeger</span>,
 	<span class="ident">messages</span>::{
-		<span class="ident">AvailabilityStoreMessage</span>, <span class="ident">BitfieldDistributionMessage</span>, <span class="ident">BitfieldSigningMessage</span>,
-		<span class="ident">RuntimeApiMessage</span>, <span class="ident">RuntimeApiRequest</span>,
+		<span class="ident">AvailabilityStoreMessage</span>, <span class="ident">BitfieldDistributionMessage</span>, <span class="ident">RuntimeApiMessage</span>, <span class="ident">RuntimeApiRequest</span>,
 	},
-	<span class="ident">overseer</span>, <span class="ident">ActivatedLeaf</span>, <span class="ident">LeafStatus</span>, <span class="ident">PerLeafSpan</span>, <span class="ident">SubsystemSender</span>,
+	<span class="ident">overseer</span>, <span class="ident">ActivatedLeaf</span>, <span class="ident">FromOverseer</span>, <span class="ident">LeafStatus</span>, <span class="ident">OverseerSignal</span>, <span class="ident">PerLeafSpan</span>,
+	<span class="ident">SpawnedSubsystem</span>, <span class="ident">SubsystemError</span>, <span class="ident">SubsystemResult</span>, <span class="ident">SubsystemSender</span>,
 };
-<span class="kw">use</span> <span class="ident">polkadot_node_subsystem_util</span>::{<span class="self">self</span> <span class="kw">as</span> <span class="ident">util</span>, <span class="ident">JobSender</span>, <span class="ident">JobSubsystem</span>, <span class="ident">JobTrait</span>, <span class="ident">Validator</span>};
+<span class="kw">use</span> <span class="ident">polkadot_node_subsystem_util</span>::{<span class="self">self</span> <span class="kw">as</span> <span class="ident">util</span>, <span class="ident">Validator</span>};
 <span class="kw">use</span> <span class="ident">polkadot_primitives::v2</span>::{<span class="ident">AvailabilityBitfield</span>, <span class="ident">CoreState</span>, <span class="ident">Hash</span>, <span class="ident">ValidatorIndex</span>};
 <span class="kw">use</span> <span class="ident">sp_keystore</span>::{<span class="ident">Error</span> <span class="kw">as</span> <span class="ident">KeystoreError</span>, <span class="ident">SyncCryptoStorePtr</span>};
-<span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">iter::FromIterator</span>, <span class="ident">pin::Pin</span>, <span class="ident">time::Duration</span>};
+<span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">collections::HashMap</span>, <span class="ident">iter::FromIterator</span>, <span class="ident">time::Duration</span>};
 <span class="kw">use</span> <span class="ident">wasm_timer</span>::{<span class="ident">Delay</span>, <span class="ident">Instant</span>};
 
 <span class="kw">mod</span> <span class="ident">metrics</span>;
@@ -349,12 +387,10 @@
 <span class="kw">mod</span> <span class="ident">tests</span>;
 
 <span class="doccomment">/// Delay between starting a bitfield signing job and its attempting to create a bitfield.</span>
-<span class="kw">const</span> <span class="ident">JOB_DELAY</span>: <span class="ident">Duration</span> <span class="op">=</span> <span class="ident">Duration::from_millis</span>(<span class="number">1500</span>);
+<span class="kw">const</span> <span class="ident">SPAWNED_TASK_DELAY</span>: <span class="ident">Duration</span> <span class="op">=</span> <span class="ident">Duration::from_millis</span>(<span class="number">1500</span>);
 <span class="kw">const</span> <span class="ident">LOG_TARGET</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;parachain::bitfield-signing&quot;</span>;
 
-<span class="doccomment">/// Each `BitfieldSigningJob` prepares a signed bitfield for a single relay parent.</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">BitfieldSigningJob</span><span class="op">&lt;</span><span class="ident">Sender</span><span class="op">&gt;</span>(<span class="ident">std::marker::PhantomData</span><span class="op">&lt;</span><span class="ident">Sender</span><span class="op">&gt;</span>);
-
+<span class="comment">// TODO: use `fatality` (https://github.com/paritytech/polkadot/issues/5540).</span>
 <span class="doccomment">/// Errors we may encounter in the course of executing the `BitfieldSigningSubsystem`.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">thiserror::Error</span>)]</span>
 <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">missing_docs</span>)]</span>
@@ -482,117 +518,159 @@
 	<span class="prelude-val">Ok</span>(<span class="ident">AvailabilityBitfield</span>(<span class="ident">core_bits</span>))
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Sender</span><span class="op">&gt;</span> <span class="ident">JobTrait</span> <span class="kw">for</span> <span class="ident">BitfieldSigningJob</span><span class="op">&lt;</span><span class="ident">Sender</span><span class="op">&gt;</span>
-<span class="kw">where</span>
-	<span class="ident">Sender</span>: <span class="ident">overseer::BitfieldSigningSenderTrait</span> <span class="op">+</span> <span class="ident">Unpin</span>,
-{
-	<span class="kw">type</span> <span class="ident">ToJob</span> <span class="op">=</span> <span class="ident">BitfieldSigningMessage</span>;
-	<span class="kw">type</span> <span class="ident">OutgoingMessages</span> <span class="op">=</span> <span class="ident">overseer::BitfieldSigningOutgoingMessages</span>;
-	<span class="kw">type</span> <span class="ident">Sender</span> <span class="op">=</span> <span class="ident">Sender</span>;
-	<span class="kw">type</span> <span class="ident">Error</span> <span class="op">=</span> <span class="ident">Error</span>;
-	<span class="kw">type</span> <span class="ident">RunArgs</span> <span class="op">=</span> <span class="ident">SyncCryptoStorePtr</span>;
-	<span class="kw">type</span> <span class="ident">Metrics</span> <span class="op">=</span> <span class="ident">Metrics</span>;
+<span class="doccomment">/// The bitfield signing subsystem.</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">BitfieldSigningSubsystem</span> {
+	<span class="ident">keystore</span>: <span class="ident">SyncCryptoStorePtr</span>,
+	<span class="ident">metrics</span>: <span class="ident">Metrics</span>,
+}
 
-	<span class="kw">const</span> <span class="ident">NAME</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;bitfield-signing-job&quot;</span>;
-
-	<span class="doccomment">/// Run a job for the parent block indicated</span>
-	<span class="kw">fn</span> <span class="ident">run</span>(
-		<span class="ident">leaf</span>: <span class="ident">ActivatedLeaf</span>,
-		<span class="ident">keystore</span>: <span class="ident"><span class="self">Self</span>::RunArgs</span>,
-		<span class="ident">metrics</span>: <span class="ident"><span class="self">Self</span>::Metrics</span>,
-		<span class="ident">_receiver</span>: <span class="ident">mpsc::Receiver</span><span class="op">&lt;</span><span class="ident">BitfieldSigningMessage</span><span class="op">&gt;</span>,
-		<span class="kw-2">mut</span> <span class="ident">sender</span>: <span class="ident">JobSender</span><span class="op">&lt;</span><span class="ident">Sender</span><span class="op">&gt;</span>,
-	) -&gt; <span class="ident">Pin</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Future</span><span class="op">&lt;</span><span class="ident">Output</span> <span class="op">=</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident"><span class="self">Self</span>::Error</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Send</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="ident">metrics</span> <span class="op">=</span> <span class="ident">metrics</span>.<span class="ident">clone</span>();
-		<span class="kw">async</span> <span class="kw">move</span> {
-			<span class="kw">if</span> <span class="kw">let</span> <span class="ident">LeafStatus::Stale</span> <span class="op">=</span> <span class="ident">leaf</span>.<span class="ident">status</span> {
-				<span class="macro">gum::debug!</span>(
-					<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
-					<span class="ident">hash</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">leaf</span>.<span class="ident">hash</span>,
-					<span class="ident">block_number</span> <span class="op">=</span>  <span class="question-mark">?</span><span class="ident">leaf</span>.<span class="ident">number</span>,
-					<span class="string">&quot;Stale leaf - don&#39;t sign bitfields.&quot;</span>
-				);
-				<span class="kw">return</span> <span class="prelude-val">Ok</span>(())
-			}
-
-			<span class="kw">let</span> <span class="ident">span</span> <span class="op">=</span> <span class="ident">PerLeafSpan::new</span>(<span class="ident">leaf</span>.<span class="ident">span</span>, <span class="string">&quot;bitfield-signing&quot;</span>);
-			<span class="kw">let</span> <span class="ident">_span</span> <span class="op">=</span> <span class="ident">span</span>.<span class="ident">child</span>(<span class="string">&quot;delay&quot;</span>);
-			<span class="kw">let</span> <span class="ident">wait_until</span> <span class="op">=</span> <span class="ident">Instant::now</span>() <span class="op">+</span> <span class="ident">JOB_DELAY</span>;
-
-			<span class="comment">// now do all the work we can before we need to wait for the availability store</span>
-			<span class="comment">// if we&#39;re not a validator, we can just succeed effortlessly</span>
-			<span class="kw">let</span> <span class="ident">validator</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">Validator::new</span>(<span class="ident">leaf</span>.<span class="ident">hash</span>, <span class="ident">keystore</span>.<span class="ident">clone</span>(), <span class="kw-2">&amp;mut</span> <span class="ident">sender</span>).<span class="kw">await</span> {
-				<span class="prelude-val">Ok</span>(<span class="ident">validator</span>) =&gt; <span class="ident">validator</span>,
-				<span class="prelude-val">Err</span>(<span class="ident">util::Error::NotAValidator</span>) =&gt; <span class="kw">return</span> <span class="prelude-val">Ok</span>(()),
-				<span class="prelude-val">Err</span>(<span class="ident">err</span>) =&gt; <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error::Util</span>(<span class="ident">err</span>)),
-			};
-
-			<span class="comment">// wait a bit before doing anything else</span>
-			<span class="ident">Delay::new_at</span>(<span class="ident">wait_until</span>).<span class="kw">await</span><span class="question-mark">?</span>;
-
-			<span class="comment">// this timer does not appear at the head of the function because we don&#39;t want to include</span>
-			<span class="comment">// JOB_DELAY each time.</span>
-			<span class="kw">let</span> <span class="ident">_timer</span> <span class="op">=</span> <span class="ident">metrics</span>.<span class="ident">time_run</span>();
-
-			<span class="ident">drop</span>(<span class="ident">_span</span>);
-			<span class="kw">let</span> <span class="ident">span_availability</span> <span class="op">=</span> <span class="ident">span</span>.<span class="ident">child</span>(<span class="string">&quot;availability&quot;</span>);
-
-			<span class="kw">let</span> <span class="ident">bitfield</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">construct_availability_bitfield</span>(
-				<span class="ident">leaf</span>.<span class="ident">hash</span>,
-				<span class="kw-2">&amp;</span><span class="ident">span_availability</span>,
-				<span class="ident">validator</span>.<span class="ident">index</span>(),
-				<span class="ident">sender</span>.<span class="ident">subsystem_sender</span>(),
-			)
-			.<span class="kw">await</span>
-			{
-				<span class="prelude-val">Err</span>(<span class="ident">Error::Runtime</span>(<span class="ident">runtime_err</span>)) =&gt; {
-					<span class="comment">// Don&#39;t take down the node on runtime API errors.</span>
-					<span class="macro">gum::warn!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="ident">err</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">runtime_err</span>, <span class="string">&quot;Encountered a runtime API error&quot;</span>);
-					<span class="kw">return</span> <span class="prelude-val">Ok</span>(())
-				},
-				<span class="prelude-val">Err</span>(<span class="ident">err</span>) =&gt; <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>),
-				<span class="prelude-val">Ok</span>(<span class="ident">bitfield</span>) =&gt; <span class="ident">bitfield</span>,
-			};
-
-			<span class="ident">drop</span>(<span class="ident">span_availability</span>);
-			<span class="kw">let</span> <span class="ident">_span</span> <span class="op">=</span> <span class="ident">span</span>.<span class="ident">child</span>(<span class="string">&quot;signing&quot;</span>);
-
-			<span class="kw">let</span> <span class="ident">signed_bitfield</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">validator</span>
-				.<span class="ident">sign</span>(<span class="ident">keystore</span>.<span class="ident">clone</span>(), <span class="ident">bitfield</span>)
-				.<span class="kw">await</span>
-				.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">Error::Keystore</span>(<span class="ident">e</span>))<span class="question-mark">?</span>
-			{
-				<span class="prelude-val">Some</span>(<span class="ident">b</span>) =&gt; <span class="ident">b</span>,
-				<span class="prelude-val">None</span> =&gt; {
-					<span class="macro">gum::error!</span>(
-						<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
-						<span class="string">&quot;Key was found at construction, but while signing it could not be found.&quot;</span>,
-					);
-					<span class="kw">return</span> <span class="prelude-val">Ok</span>(())
-				},
-			};
-
-			<span class="ident">metrics</span>.<span class="ident">on_bitfield_signed</span>();
-
-			<span class="ident">drop</span>(<span class="ident">_span</span>);
-			<span class="kw">let</span> <span class="ident">_span</span> <span class="op">=</span> <span class="ident">span</span>.<span class="ident">child</span>(<span class="string">&quot;gossip&quot;</span>);
-
-			<span class="ident">sender</span>
-				.<span class="ident">send_message</span>(<span class="ident">BitfieldDistributionMessage::DistributeBitfield</span>(
-					<span class="ident">leaf</span>.<span class="ident">hash</span>,
-					<span class="ident">signed_bitfield</span>,
-				))
-				.<span class="kw">await</span>;
-
-			<span class="prelude-val">Ok</span>(())
-		}
-		.<span class="ident">boxed</span>()
+<span class="kw">impl</span> <span class="ident">BitfieldSigningSubsystem</span> {
+	<span class="doccomment">/// Create a new instance of the `BitfieldSigningSubsystem`.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">keystore</span>: <span class="ident">SyncCryptoStorePtr</span>, <span class="ident">metrics</span>: <span class="ident">Metrics</span>) -&gt; <span class="self">Self</span> {
+		<span class="self">Self</span> { <span class="ident">keystore</span>, <span class="ident">metrics</span> }
 	}
 }
 
-<span class="doccomment">/// `BitfieldSigningSubsystem` manages a number of bitfield signing jobs.</span>
-<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">BitfieldSigningSubsystem</span><span class="op">&lt;</span><span class="ident">Spawner</span>, <span class="ident">Sender</span><span class="op">&gt;</span> <span class="op">=</span>
-	<span class="ident">JobSubsystem</span><span class="op">&lt;</span><span class="ident">BitfieldSigningJob</span><span class="op">&lt;</span><span class="ident">Sender</span><span class="op">&gt;</span>, <span class="ident">Spawner</span><span class="op">&gt;</span>;
+<span class="attribute">#[<span class="ident">overseer::subsystem</span>(<span class="ident">BitfieldSigning</span>, <span class="ident">error</span><span class="op">=</span><span class="ident">SubsystemError</span>, <span class="ident">prefix</span><span class="op">=</span><span class="ident"><span class="self">self</span>::overseer</span>)]</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span> <span class="ident">BitfieldSigningSubsystem</span> {
+	<span class="kw">fn</span> <span class="ident">start</span>(<span class="self">self</span>, <span class="ident">ctx</span>: <span class="ident">Context</span>) -&gt; <span class="ident">SpawnedSubsystem</span> {
+		<span class="kw">let</span> <span class="ident">future</span> <span class="op">=</span> <span class="kw">async</span> <span class="kw">move</span> {
+			<span class="ident">run</span>(<span class="ident">ctx</span>, <span class="self">self</span>.<span class="ident">keystore</span>, <span class="self">self</span>.<span class="ident">metrics</span>)
+				.<span class="kw">await</span>
+				.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">SubsystemError::with_origin</span>(<span class="string">&quot;bitfield-signing&quot;</span>, <span class="ident">e</span>))
+		}
+		.<span class="ident">boxed</span>();
+
+		<span class="ident">SpawnedSubsystem</span> { <span class="ident">name</span>: <span class="string">&quot;bitfield-signing-subsystem&quot;</span>, <span class="ident">future</span> }
+	}
+}
+
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">BitfieldSigning</span>, <span class="ident">prefix</span> <span class="op">=</span> <span class="ident"><span class="self">self</span>::overseer</span>)]</span>
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
+	<span class="kw-2">mut</span> <span class="ident">ctx</span>: <span class="ident">Context</span>,
+	<span class="ident">keystore</span>: <span class="ident">SyncCryptoStorePtr</span>,
+	<span class="ident">metrics</span>: <span class="ident">Metrics</span>,
+) -&gt; <span class="ident">SubsystemResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+	<span class="comment">// Track spawned jobs per active leaf.</span>
+	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">running</span> <span class="op">=</span> <span class="ident">HashMap</span>::<span class="op">&lt;</span><span class="ident">Hash</span>, <span class="ident">future::AbortHandle</span><span class="op">&gt;</span><span class="ident">::new</span>();
+
+	<span class="kw">loop</span> {
+		<span class="kw">match</span> <span class="ident">ctx</span>.<span class="ident">recv</span>().<span class="kw">await</span><span class="question-mark">?</span> {
+			<span class="ident">FromOverseer::Signal</span>(<span class="ident">OverseerSignal::ActiveLeaves</span>(<span class="ident">update</span>)) =&gt; {
+				<span class="comment">// Abort jobs for deactivated leaves.</span>
+				<span class="kw">for</span> <span class="ident">leaf</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">update</span>.<span class="ident">deactivated</span> {
+					<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">handle</span>) <span class="op">=</span> <span class="ident">running</span>.<span class="ident">remove</span>(<span class="ident">leaf</span>) {
+						<span class="ident">handle</span>.<span class="ident">abort</span>();
+					}
+				}
+
+				<span class="kw">for</span> <span class="ident">leaf</span> <span class="kw">in</span> <span class="ident">update</span>.<span class="ident">activated</span> {
+					<span class="kw">let</span> <span class="ident">sender</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">sender</span>().<span class="ident">clone</span>();
+					<span class="kw">let</span> <span class="ident">leaf_hash</span> <span class="op">=</span> <span class="ident">leaf</span>.<span class="ident">hash</span>;
+
+					<span class="kw">let</span> (<span class="ident">fut</span>, <span class="ident">handle</span>) <span class="op">=</span> <span class="ident">future::abortable</span>(<span class="ident">handle_active_leaves_update</span>(
+						<span class="ident">sender</span>,
+						<span class="ident">leaf</span>,
+						<span class="ident">keystore</span>.<span class="ident">clone</span>(),
+						<span class="ident">metrics</span>.<span class="ident">clone</span>(),
+					));
+
+					<span class="ident">running</span>.<span class="ident">insert</span>(<span class="ident">leaf_hash</span>, <span class="ident">handle</span>);
+
+					<span class="ident">ctx</span>.<span class="ident">spawn</span>(<span class="string">&quot;bitfield-signing-job&quot;</span>, <span class="ident">fut</span>.<span class="ident">map</span>(<span class="ident">drop</span>).<span class="ident">boxed</span>())<span class="question-mark">?</span>;
+				}
+			},
+			<span class="ident">FromOverseer::Signal</span>(<span class="ident">OverseerSignal::BlockFinalized</span>(..)) =&gt; {},
+			<span class="ident">FromOverseer::Signal</span>(<span class="ident">OverseerSignal::Conclude</span>) =&gt; <span class="kw">return</span> <span class="prelude-val">Ok</span>(()),
+			<span class="ident">FromOverseer::Communication</span> { .. } =&gt; {},
+		}
+	}
+}
+
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle_active_leaves_update</span><span class="op">&lt;</span><span class="ident">Sender</span><span class="op">&gt;</span>(
+	<span class="kw-2">mut</span> <span class="ident">sender</span>: <span class="ident">Sender</span>,
+	<span class="ident">leaf</span>: <span class="ident">ActivatedLeaf</span>,
+	<span class="ident">keystore</span>: <span class="ident">SyncCryptoStorePtr</span>,
+	<span class="ident">metrics</span>: <span class="ident">Metrics</span>,
+) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+	<span class="ident">Sender</span>: <span class="ident">overseer::BitfieldSigningSenderTrait</span>,
+{
+	<span class="kw">if</span> <span class="kw">let</span> <span class="ident">LeafStatus::Stale</span> <span class="op">=</span> <span class="ident">leaf</span>.<span class="ident">status</span> {
+		<span class="macro">gum::debug!</span>(
+			<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
+			<span class="ident">relay_parent</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">leaf</span>.<span class="ident">hash</span>,
+			<span class="ident">block_number</span> <span class="op">=</span>  <span class="question-mark">?</span><span class="ident">leaf</span>.<span class="ident">number</span>,
+			<span class="string">&quot;Skip bitfield signing for stale leaf&quot;</span>
+		);
+		<span class="kw">return</span> <span class="prelude-val">Ok</span>(())
+	}
+
+	<span class="kw">let</span> <span class="ident">span</span> <span class="op">=</span> <span class="ident">PerLeafSpan::new</span>(<span class="ident">leaf</span>.<span class="ident">span</span>, <span class="string">&quot;bitfield-signing&quot;</span>);
+	<span class="kw">let</span> <span class="ident">span_delay</span> <span class="op">=</span> <span class="ident">span</span>.<span class="ident">child</span>(<span class="string">&quot;delay&quot;</span>);
+	<span class="kw">let</span> <span class="ident">wait_until</span> <span class="op">=</span> <span class="ident">Instant::now</span>() <span class="op">+</span> <span class="ident">SPAWNED_TASK_DELAY</span>;
+
+	<span class="comment">// now do all the work we can before we need to wait for the availability store</span>
+	<span class="comment">// if we&#39;re not a validator, we can just succeed effortlessly</span>
+	<span class="kw">let</span> <span class="ident">validator</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">Validator::new</span>(<span class="ident">leaf</span>.<span class="ident">hash</span>, <span class="ident">keystore</span>.<span class="ident">clone</span>(), <span class="kw-2">&amp;mut</span> <span class="ident">sender</span>).<span class="kw">await</span> {
+		<span class="prelude-val">Ok</span>(<span class="ident">validator</span>) =&gt; <span class="ident">validator</span>,
+		<span class="prelude-val">Err</span>(<span class="ident">util::Error::NotAValidator</span>) =&gt; <span class="kw">return</span> <span class="prelude-val">Ok</span>(()),
+		<span class="prelude-val">Err</span>(<span class="ident">err</span>) =&gt; <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">Error::Util</span>(<span class="ident">err</span>)),
+	};
+
+	<span class="comment">// wait a bit before doing anything else</span>
+	<span class="ident">Delay::new_at</span>(<span class="ident">wait_until</span>).<span class="kw">await</span><span class="question-mark">?</span>;
+
+	<span class="comment">// this timer does not appear at the head of the function because we don&#39;t want to include</span>
+	<span class="comment">// SPAWNED_TASK_DELAY each time.</span>
+	<span class="kw">let</span> <span class="ident">_timer</span> <span class="op">=</span> <span class="ident">metrics</span>.<span class="ident">time_run</span>();
+
+	<span class="ident">drop</span>(<span class="ident">span_delay</span>);
+	<span class="kw">let</span> <span class="ident">span_availability</span> <span class="op">=</span> <span class="ident">span</span>.<span class="ident">child</span>(<span class="string">&quot;availability&quot;</span>);
+
+	<span class="kw">let</span> <span class="ident">bitfield</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">construct_availability_bitfield</span>(
+		<span class="ident">leaf</span>.<span class="ident">hash</span>,
+		<span class="kw-2">&amp;</span><span class="ident">span_availability</span>,
+		<span class="ident">validator</span>.<span class="ident">index</span>(),
+		<span class="kw-2">&amp;mut</span> <span class="ident">sender</span>,
+	)
+	.<span class="kw">await</span>
+	{
+		<span class="prelude-val">Err</span>(<span class="ident">Error::Runtime</span>(<span class="ident">runtime_err</span>)) =&gt; {
+			<span class="comment">// Don&#39;t take down the node on runtime API errors.</span>
+			<span class="macro">gum::warn!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="ident">err</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">runtime_err</span>, <span class="string">&quot;Encountered a runtime API error&quot;</span>);
+			<span class="kw">return</span> <span class="prelude-val">Ok</span>(())
+		},
+		<span class="prelude-val">Err</span>(<span class="ident">err</span>) =&gt; <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>),
+		<span class="prelude-val">Ok</span>(<span class="ident">bitfield</span>) =&gt; <span class="ident">bitfield</span>,
+	};
+
+	<span class="ident">drop</span>(<span class="ident">span_availability</span>);
+	<span class="kw">let</span> <span class="ident">span_signing</span> <span class="op">=</span> <span class="ident">span</span>.<span class="ident">child</span>(<span class="string">&quot;signing&quot;</span>);
+
+	<span class="kw">let</span> <span class="ident">signed_bitfield</span> <span class="op">=</span>
+		<span class="kw">match</span> <span class="ident">validator</span>.<span class="ident">sign</span>(<span class="ident">keystore</span>, <span class="ident">bitfield</span>).<span class="kw">await</span>.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">Error::Keystore</span>(<span class="ident">e</span>))<span class="question-mark">?</span> {
+			<span class="prelude-val">Some</span>(<span class="ident">b</span>) =&gt; <span class="ident">b</span>,
+			<span class="prelude-val">None</span> =&gt; {
+				<span class="macro">gum::error!</span>(
+					<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
+					<span class="string">&quot;Key was found at construction, but while signing it could not be found.&quot;</span>,
+				);
+				<span class="kw">return</span> <span class="prelude-val">Ok</span>(())
+			},
+		};
+
+	<span class="ident">metrics</span>.<span class="ident">on_bitfield_signed</span>();
+
+	<span class="ident">drop</span>(<span class="ident">span_signing</span>);
+	<span class="kw">let</span> <span class="ident">_span_gossip</span> <span class="op">=</span> <span class="ident">span</span>.<span class="ident">child</span>(<span class="string">&quot;gossip&quot;</span>);
+
+	<span class="ident">sender</span>
+		.<span class="ident">send_message</span>(<span class="ident">BitfieldDistributionMessage::DistributeBitfield</span>(<span class="ident">leaf</span>.<span class="ident">hash</span>, <span class="ident">signed_bitfield</span>))
+		.<span class="kw">await</span>;
+
+	<span class="prelude-val">Ok</span>(())
+}
 </code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="polkadot_node_core_bitfield_signing" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.62.0-nightly (6dd68402c 2022-05-11)" ></div>
 </body></html>
