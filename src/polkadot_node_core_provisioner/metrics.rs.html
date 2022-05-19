@@ -143,6 +143,22 @@
 <span id="138">138</span>
 <span id="139">139</span>
 <span id="140">140</span>
+<span id="141">141</span>
+<span id="142">142</span>
+<span id="143">143</span>
+<span id="144">144</span>
+<span id="145">145</span>
+<span id="146">146</span>
+<span id="147">147</span>
+<span id="148">148</span>
+<span id="149">149</span>
+<span id="150">150</span>
+<span id="151">151</span>
+<span id="152">152</span>
+<span id="153">153</span>
+<span id="154">154</span>
+<span id="155">155</span>
+<span id="156">156</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -166,6 +182,7 @@
 	<span class="ident">inherent_data_requests</span>: <span class="ident">prometheus::CounterVec</span><span class="op">&lt;</span><span class="ident">prometheus::U64</span><span class="op">&gt;</span>,
 	<span class="ident">request_inherent_data</span>: <span class="ident">prometheus::Histogram</span>,
 	<span class="ident">provisionable_data</span>: <span class="ident">prometheus::Histogram</span>,
+	<span class="ident">inherent_data_response_bitfields</span>: <span class="ident">prometheus::Histogram</span>,
 
 	<span class="doccomment">/// The following metrics track how many disputes/votes the runtime will have to process. These will count</span>
 	<span class="doccomment">/// all recent statements meaning every dispute from last sessions: 10 min on Rococo, 60 min on Kusama and</span>
@@ -206,6 +223,12 @@
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 	) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">metrics::prometheus::prometheus::HistogramTimer</span><span class="op">&gt;</span> {
 		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">as_ref</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">metrics</span><span class="op">|</span> <span class="ident">metrics</span>.<span class="ident">provisionable_data</span>.<span class="ident">start_timer</span>())
+	}
+
+	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">observe_inherent_data_bitfields_count</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">bitfields_count</span>: <span class="ident">usize</span>) {
+		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">as_ref</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">metrics</span><span class="op">|</span> {
+			<span class="ident">metrics</span>.<span class="ident">inherent_data_response_bitfields</span>.<span class="ident">observe</span>(<span class="ident">bitfields_count</span> <span class="kw">as</span> <span class="ident">f64</span>)
+		});
 	}
 
 	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">inc_valid_statements_by</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">votes</span>: <span class="ident">usize</span>) {
@@ -276,6 +299,15 @@
 				<span class="ident">prometheus::Counter::new</span>(
 					<span class="string">&quot;polkadot_parachain_inherent_data_dispute_statement_sets&quot;</span>,
 					<span class="string">&quot;Number of dispute statements sets passed to `create_inherent()`.&quot;</span>,
+				)<span class="question-mark">?</span>,
+				<span class="ident">registry</span>,
+			)<span class="question-mark">?</span>,
+			<span class="ident">inherent_data_response_bitfields</span>: <span class="ident">prometheus::register</span>(
+				<span class="ident">prometheus::Histogram::with_opts</span>(
+					<span class="ident">prometheus::HistogramOpts::new</span>(
+						<span class="string">&quot;polkadot_parachain_provisioner_inherent_data_response_bitfields_sent&quot;</span>,
+						<span class="string">&quot;Number of inherent bitfields sent in response to `ProvisionerMessage::RequestInherentData`.&quot;</span>,
+					).<span class="ident">buckets</span>(<span class="macro">vec!</span>[<span class="number">0.0</span>, <span class="number">10.0</span>, <span class="number">25.0</span>, <span class="number">50.0</span>, <span class="number">75.0</span>, <span class="number">100.0</span>, <span class="number">150.0</span>, <span class="number">200.0</span>, <span class="number">250.0</span>, <span class="number">300.0</span>]),
 				)<span class="question-mark">?</span>,
 				<span class="ident">registry</span>,
 			)<span class="question-mark">?</span>,
