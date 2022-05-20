@@ -1745,6 +1745,10 @@
 <span id="1740">1740</span>
 <span id="1741">1741</span>
 <span id="1742">1742</span>
+<span id="1743">1743</span>
+<span id="1744">1744</span>
+<span id="1745">1745</span>
+<span id="1746">1746</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -2908,7 +2912,11 @@
 	<span class="ident">frame_system::ChainContext</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>,
 	<span class="ident">Runtime</span>,
 	<span class="ident">AllPalletsWithSystem</span>,
-	(<span class="ident">RenameBagsListToVoterList</span>, <span class="ident">pallet_bags_list::migrations::AddScore</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>),
+	(
+		<span class="ident">RenameBagsListToVoterList</span>,
+		<span class="ident">pallet_bags_list::migrations::AddScore</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>,
+		<span class="ident">pallet_nomination_pools::migration::v1::MigrateToV1</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>,
+	),
 <span class="op">&gt;</span>;
 <span class="doccomment">/// The payload being signed in transactions.</span>
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">SignedPayload</span> <span class="op">=</span> <span class="ident">generic::SignedPayload</span><span class="op">&lt;</span><span class="ident">Call</span>, <span class="ident">SignedExtra</span><span class="op">&gt;</span>;
