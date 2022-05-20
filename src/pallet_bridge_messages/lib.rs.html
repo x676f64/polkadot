@@ -2307,6 +2307,12 @@
 <span id="2302">2302</span>
 <span id="2303">2303</span>
 <span id="2304">2304</span>
+<span id="2305">2305</span>
+<span id="2306">2306</span>
+<span id="2307">2307</span>
+<span id="2308">2308</span>
+<span id="2309">2309</span>
+<span id="2310">2310</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2019-2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Parity Bridges Common.</span>
 
@@ -2575,7 +2581,7 @@
 		) -&gt; <span class="ident">DispatchResult</span> {
 			<span class="ident">ensure_owner_or_root</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>(<span class="ident">origin</span>)<span class="question-mark">?</span>;
 			<span class="ident">parameter</span>.<span class="ident">save</span>();
-			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event::ParameterUpdated</span>(<span class="ident">parameter</span>));
+			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event::ParameterUpdated</span> { <span class="ident">parameter</span> });
 			<span class="prelude-val">Ok</span>(())
 		}
 
@@ -2931,7 +2937,10 @@
 
 				<span class="comment">// emit &#39;delivered&#39; event</span>
 				<span class="kw">let</span> <span class="ident">received_range</span> <span class="op">=</span> <span class="ident">confirmed_messages</span>.<span class="ident">begin</span>..<span class="op">=</span><span class="ident">confirmed_messages</span>.<span class="ident">end</span>;
-				<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event::MessagesDelivered</span>(<span class="ident">lane_id</span>, <span class="ident">confirmed_messages</span>));
+				<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event::MessagesDelivered</span> {
+					<span class="ident">lane_id</span>,
+					<span class="ident">messages</span>: <span class="ident">confirmed_messages</span>,
+				});
 
 				<span class="comment">// if some new messages have been confirmed, reward relayers</span>
 				<span class="kw">let</span> <span class="ident">relayer_fund_account</span> <span class="op">=</span>
@@ -2960,11 +2969,11 @@
 	<span class="attribute">#[<span class="ident">pallet::generate_deposit</span>(<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">deposit_event</span>)]</span>
 	<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Event</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span> <span class="op">=</span> ()<span class="op">&gt;</span> {
 		<span class="doccomment">/// Pallet parameter has been updated.</span>
-		<span class="ident">ParameterUpdated</span>(<span class="ident">T::Parameter</span>),
+		<span class="ident">ParameterUpdated</span> { <span class="ident">parameter</span>: <span class="ident">T::Parameter</span> },
 		<span class="doccomment">/// Message has been accepted and is waiting to be delivered.</span>
-		<span class="ident">MessageAccepted</span>(<span class="ident">LaneId</span>, <span class="ident">MessageNonce</span>),
+		<span class="ident">MessageAccepted</span> { <span class="ident">lane_id</span>: <span class="ident">LaneId</span>, <span class="ident">nonce</span>: <span class="ident">MessageNonce</span> },
 		<span class="doccomment">/// Messages in the inclusive range have been delivered to the bridged chain.</span>
-		<span class="ident">MessagesDelivered</span>(<span class="ident">LaneId</span>, <span class="ident">DeliveredMessages</span>),
+		<span class="ident">MessagesDelivered</span> { <span class="ident">lane_id</span>: <span class="ident">LaneId</span>, <span class="ident">messages</span>: <span class="ident">DeliveredMessages</span> },
 	}
 
 	<span class="attribute">#[<span class="ident">pallet::error</span>]</span>
@@ -3225,7 +3234,7 @@
 		<span class="ident">encoded_payload_len</span>,
 	);
 
-	<span class="ident">Pallet</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::deposit_event</span>(<span class="ident">Event::MessageAccepted</span>(<span class="ident">lane_id</span>, <span class="ident">nonce</span>));
+	<span class="ident">Pallet</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span><span class="ident">::deposit_event</span>(<span class="ident">Event::MessageAccepted</span> { <span class="ident">lane_id</span>, <span class="ident">nonce</span> });
 
 	<span class="prelude-val">Ok</span>(<span class="ident">SendMessageArtifacts</span> { <span class="ident">nonce</span>, <span class="ident">weight</span>: <span class="ident">actual_weight</span> })
 }
@@ -3451,7 +3460,10 @@
 			<span class="ident">System</span>::<span class="op">&lt;</span><span class="ident">TestRuntime</span><span class="op">&gt;</span><span class="ident">::events</span>(),
 			<span class="macro">vec!</span>[<span class="ident">EventRecord</span> {
 				<span class="ident">phase</span>: <span class="ident">Phase::Initialization</span>,
-				<span class="ident">event</span>: <span class="ident">TestEvent::Messages</span>(<span class="ident">Event::MessageAccepted</span>(<span class="ident">TEST_LANE_ID</span>, <span class="ident">message_nonce</span>)),
+				<span class="ident">event</span>: <span class="ident">TestEvent::Messages</span>(<span class="ident">Event::MessageAccepted</span> {
+					<span class="ident">lane_id</span>: <span class="ident">TEST_LANE_ID</span>,
+					<span class="ident">nonce</span>: <span class="ident">message_nonce</span>,
+				}),
 				<span class="ident">topics</span>: <span class="macro">vec!</span>[],
 			}],
 		);
@@ -3494,10 +3506,10 @@
 			<span class="ident">System</span>::<span class="op">&lt;</span><span class="ident">TestRuntime</span><span class="op">&gt;</span><span class="ident">::events</span>(),
 			<span class="macro">vec!</span>[<span class="ident">EventRecord</span> {
 				<span class="ident">phase</span>: <span class="ident">Phase::Initialization</span>,
-				<span class="ident">event</span>: <span class="ident">TestEvent::Messages</span>(<span class="ident">Event::MessagesDelivered</span>(
-					<span class="ident">TEST_LANE_ID</span>,
-					<span class="ident">DeliveredMessages::new</span>(<span class="number">1</span>, <span class="bool-val">true</span>),
-				)),
+				<span class="ident">event</span>: <span class="ident">TestEvent::Messages</span>(<span class="ident">Event::MessagesDelivered</span> {
+					<span class="ident">lane_id</span>: <span class="ident">TEST_LANE_ID</span>,
+					<span class="ident">messages</span>: <span class="ident">DeliveredMessages::new</span>(<span class="number">1</span>, <span class="bool-val">true</span>),
+				}),
 				<span class="ident">topics</span>: <span class="macro">vec!</span>[],
 			}],
 		);
@@ -3598,7 +3610,7 @@
 				<span class="ident">System</span>::<span class="op">&lt;</span><span class="ident">TestRuntime</span><span class="op">&gt;</span><span class="ident">::events</span>(),
 				<span class="macro">vec!</span>[<span class="ident">EventRecord</span> {
 					<span class="ident">phase</span>: <span class="ident">Phase::Initialization</span>,
-					<span class="ident">event</span>: <span class="ident">TestEvent::Messages</span>(<span class="ident">Event::ParameterUpdated</span>(<span class="ident">parameter</span>)),
+					<span class="ident">event</span>: <span class="ident">TestEvent::Messages</span>(<span class="ident">Event::ParameterUpdated</span> { <span class="ident">parameter</span> }),
 					<span class="ident">topics</span>: <span class="macro">vec!</span>[],
 				}],
 			);
@@ -3622,7 +3634,7 @@
 				<span class="ident">System</span>::<span class="op">&lt;</span><span class="ident">TestRuntime</span><span class="op">&gt;</span><span class="ident">::events</span>(),
 				<span class="macro">vec!</span>[<span class="ident">EventRecord</span> {
 					<span class="ident">phase</span>: <span class="ident">Phase::Initialization</span>,
-					<span class="ident">event</span>: <span class="ident">TestEvent::Messages</span>(<span class="ident">Event::ParameterUpdated</span>(<span class="ident">parameter</span>)),
+					<span class="ident">event</span>: <span class="ident">TestEvent::Messages</span>(<span class="ident">Event::ParameterUpdated</span> { <span class="ident">parameter</span> }),
 					<span class="ident">topics</span>: <span class="macro">vec!</span>[],
 				}],
 			);

@@ -1087,6 +1087,30 @@
 <span id="1082">1082</span>
 <span id="1083">1083</span>
 <span id="1084">1084</span>
+<span id="1085">1085</span>
+<span id="1086">1086</span>
+<span id="1087">1087</span>
+<span id="1088">1088</span>
+<span id="1089">1089</span>
+<span id="1090">1090</span>
+<span id="1091">1091</span>
+<span id="1092">1092</span>
+<span id="1093">1093</span>
+<span id="1094">1094</span>
+<span id="1095">1095</span>
+<span id="1096">1096</span>
+<span id="1097">1097</span>
+<span id="1098">1098</span>
+<span id="1099">1099</span>
+<span id="1100">1100</span>
+<span id="1101">1101</span>
+<span id="1102">1102</span>
+<span id="1103">1103</span>
+<span id="1104">1104</span>
+<span id="1105">1105</span>
+<span id="1106">1106</span>
+<span id="1107">1107</span>
+<span id="1108">1108</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2019-2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Parity Bridges Common.</span>
 
@@ -1200,30 +1224,42 @@
 	<span class="attribute">#[<span class="ident">pallet::generate_deposit</span>(<span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">deposit_event</span>)]</span>
 	<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Event</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">I</span>: <span class="lifetime">&#39;static</span> <span class="op">=</span> ()<span class="op">&gt;</span> {
 		<span class="doccomment">/// Message has been rejected before reaching dispatch.</span>
-		<span class="ident">MessageRejected</span>(<span class="ident">ChainId</span>, <span class="ident">BridgeMessageIdOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>),
+		<span class="ident">MessageRejected</span> { <span class="ident">source_chain</span>: <span class="ident">ChainId</span>, <span class="ident">id</span>: <span class="ident">BridgeMessageIdOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span> },
 		<span class="doccomment">/// Message has been rejected by dispatcher because of spec version mismatch.</span>
-		<span class="doccomment">/// Last two arguments are: expected and passed spec version.</span>
-		<span class="ident">MessageVersionSpecMismatch</span>(<span class="ident">ChainId</span>, <span class="ident">BridgeMessageIdOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">SpecVersion</span>, <span class="ident">SpecVersion</span>),
+		<span class="ident">MessageVersionSpecMismatch</span> {
+			<span class="ident">source_chain</span>: <span class="ident">ChainId</span>,
+			<span class="ident">id</span>: <span class="ident">BridgeMessageIdOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>,
+			<span class="ident">expected_version</span>: <span class="ident">SpecVersion</span>,
+			<span class="ident">passed_version</span>: <span class="ident">SpecVersion</span>,
+		},
 		<span class="doccomment">/// Message has been rejected by dispatcher because of weight mismatch.</span>
-		<span class="doccomment">/// Last two arguments are: expected and passed call weight.</span>
-		<span class="ident">MessageWeightMismatch</span>(<span class="ident">ChainId</span>, <span class="ident">BridgeMessageIdOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">Weight</span>, <span class="ident">Weight</span>),
+		<span class="ident">MessageWeightMismatch</span> {
+			<span class="ident">source_chain</span>: <span class="ident">ChainId</span>,
+			<span class="ident">id</span>: <span class="ident">BridgeMessageIdOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>,
+			<span class="ident">expected_weight</span>: <span class="ident">Weight</span>,
+			<span class="ident">passed_weight</span>: <span class="ident">Weight</span>,
+		},
 		<span class="doccomment">/// Message signature mismatch.</span>
-		<span class="ident">MessageSignatureMismatch</span>(<span class="ident">ChainId</span>, <span class="ident">BridgeMessageIdOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>),
+		<span class="ident">MessageSignatureMismatch</span> { <span class="ident">source_chain</span>: <span class="ident">ChainId</span>, <span class="ident">id</span>: <span class="ident">BridgeMessageIdOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span> },
 		<span class="doccomment">/// We have failed to decode Call from the message.</span>
-		<span class="ident">MessageCallDecodeFailed</span>(<span class="ident">ChainId</span>, <span class="ident">BridgeMessageIdOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>),
+		<span class="ident">MessageCallDecodeFailed</span> { <span class="ident">source_chain</span>: <span class="ident">ChainId</span>, <span class="ident">id</span>: <span class="ident">BridgeMessageIdOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span> },
 		<span class="doccomment">/// The call from the message has been rejected by the call filter.</span>
-		<span class="ident">MessageCallRejected</span>(<span class="ident">ChainId</span>, <span class="ident">BridgeMessageIdOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>),
+		<span class="ident">MessageCallRejected</span> { <span class="ident">source_chain</span>: <span class="ident">ChainId</span>, <span class="ident">id</span>: <span class="ident">BridgeMessageIdOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span> },
 		<span class="doccomment">/// The origin account has failed to pay fee for dispatching the message.</span>
-		<span class="ident">MessageDispatchPaymentFailed</span>(
-			<span class="ident">ChainId</span>,
-			<span class="ident">BridgeMessageIdOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>,
-			<span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">frame_system::Config</span><span class="op">&gt;</span><span class="ident">::AccountId</span>,
-			<span class="ident">Weight</span>,
-		),
+		<span class="ident">MessageDispatchPaymentFailed</span> {
+			<span class="ident">source_chain</span>: <span class="ident">ChainId</span>,
+			<span class="ident">id</span>: <span class="ident">BridgeMessageIdOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>,
+			<span class="ident">origin_account</span>: <span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">frame_system::Config</span><span class="op">&gt;</span><span class="ident">::AccountId</span>,
+			<span class="ident">weight</span>: <span class="ident">Weight</span>,
+		},
 		<span class="doccomment">/// Message has been dispatched with given result.</span>
-		<span class="ident">MessageDispatched</span>(<span class="ident">ChainId</span>, <span class="ident">BridgeMessageIdOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>, <span class="ident">DispatchResult</span>),
+		<span class="ident">MessageDispatched</span> {
+			<span class="ident">source_chain</span>: <span class="ident">ChainId</span>,
+			<span class="ident">id</span>: <span class="ident">BridgeMessageIdOf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">I</span><span class="op">&gt;</span>,
+			<span class="ident">result</span>: <span class="ident">DispatchResult</span>,
+		},
 		<span class="doccomment">/// Phantom member, never used. Needed to handle multiple pallet instances.</span>
-		<span class="ident">_Dummy</span>(<span class="ident">PhantomData</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>),
+		<span class="ident">_Dummy</span> { <span class="ident">phantom_member</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span> },
 	}
 }
 
@@ -1256,7 +1292,7 @@
 					<span class="ident">source_chain</span>,
 					<span class="ident">id</span>,
 				);
-				<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event::MessageRejected</span>(<span class="ident">source_chain</span>, <span class="ident">id</span>));
+				<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event::MessageRejected</span> { <span class="ident">source_chain</span>, <span class="ident">id</span> });
 				<span class="kw">return</span> <span class="ident">MessageDispatchResult</span> {
 					<span class="ident">dispatch_result</span>: <span class="bool-val">false</span>,
 					<span class="ident">unspent_weight</span>: <span class="number">0</span>,
@@ -1281,12 +1317,12 @@
 				<span class="ident">expected_version</span>,
 				<span class="ident">message</span>.<span class="ident">spec_version</span>,
 			);
-			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event::MessageVersionSpecMismatch</span>(
+			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event::MessageVersionSpecMismatch</span> {
 				<span class="ident">source_chain</span>,
 				<span class="ident">id</span>,
 				<span class="ident">expected_version</span>,
-				<span class="ident">message</span>.<span class="ident">spec_version</span>,
-			));
+				<span class="ident">passed_version</span>: <span class="ident">message</span>.<span class="ident">spec_version</span>,
+			});
 			<span class="kw">return</span> <span class="ident">dispatch_result</span>
 		}
 
@@ -1300,7 +1336,7 @@
 					<span class="ident">source_chain</span>,
 					<span class="ident">id</span>,
 				);
-				<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event::MessageCallDecodeFailed</span>(<span class="ident">source_chain</span>, <span class="ident">id</span>));
+				<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event::MessageCallDecodeFailed</span> { <span class="ident">source_chain</span>, <span class="ident">id</span> });
 				<span class="kw">return</span> <span class="ident">dispatch_result</span>
 			},
 		};
@@ -1333,7 +1369,7 @@
 						<span class="ident">target_account</span>,
 						<span class="ident">target_signature</span>,
 					);
-					<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event::MessageSignatureMismatch</span>(<span class="ident">source_chain</span>, <span class="ident">id</span>));
+					<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event::MessageSignatureMismatch</span> { <span class="ident">source_chain</span>, <span class="ident">id</span> });
 					<span class="kw">return</span> <span class="ident">dispatch_result</span>
 				}
 
@@ -1358,7 +1394,7 @@
 				<span class="ident">id</span>,
 				<span class="ident">call</span>,
 			);
-			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event::MessageCallRejected</span>(<span class="ident">source_chain</span>, <span class="ident">id</span>));
+			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event::MessageCallRejected</span> { <span class="ident">source_chain</span>, <span class="ident">id</span> });
 			<span class="kw">return</span> <span class="ident">dispatch_result</span>
 		}
 
@@ -1376,12 +1412,12 @@
 				<span class="ident">expected_weight</span>,
 				<span class="ident">message</span>.<span class="ident">weight</span>,
 			);
-			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event::MessageWeightMismatch</span>(
+			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event::MessageWeightMismatch</span> {
 				<span class="ident">source_chain</span>,
 				<span class="ident">id</span>,
 				<span class="ident">expected_weight</span>,
-				<span class="ident">message</span>.<span class="ident">weight</span>,
-			));
+				<span class="ident">passed_weight</span>: <span class="ident">message</span>.<span class="ident">weight</span>,
+			});
 			<span class="kw">return</span> <span class="ident">dispatch_result</span>
 		}
 
@@ -1398,12 +1434,12 @@
 				<span class="ident">id</span>,
 				<span class="ident">message</span>.<span class="ident">weight</span>,
 			);
-			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event::MessageDispatchPaymentFailed</span>(
+			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event::MessageDispatchPaymentFailed</span> {
 				<span class="ident">source_chain</span>,
 				<span class="ident">id</span>,
 				<span class="ident">origin_account</span>,
-				<span class="ident">message</span>.<span class="ident">weight</span>,
-			));
+				<span class="ident">weight</span>: <span class="ident">message</span>.<span class="ident">weight</span>,
+			});
 			<span class="kw">return</span> <span class="ident">dispatch_result</span>
 		}
 		<span class="ident">dispatch_result</span>.<span class="ident">dispatch_fee_paid_during_dispatch</span> <span class="op">=</span> <span class="ident">pay_dispatch_fee_at_target_chain</span>;
@@ -1428,11 +1464,11 @@
 			<span class="ident">result</span>,
 		);
 
-		<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event::MessageDispatched</span>(
+		<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event::MessageDispatched</span> {
 			<span class="ident">source_chain</span>,
 			<span class="ident">id</span>,
-			<span class="ident">result</span>.<span class="ident">map</span>(<span class="ident">drop</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">e</span>.<span class="ident">error</span>),
-		));
+			<span class="ident">result</span>: <span class="ident">result</span>.<span class="ident">map</span>(<span class="ident">drop</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">e</span>.<span class="ident">error</span>),
+		});
 
 		<span class="ident">dispatch_result</span>
 	}
@@ -1721,12 +1757,12 @@
 				<span class="macro">vec!</span>[<span class="ident">EventRecord</span> {
 					<span class="ident">phase</span>: <span class="ident">Phase::Initialization</span>,
 					<span class="ident">event</span>: <span class="ident">Event::Dispatch</span>(
-						<span class="ident">call_dispatch::Event</span>::<span class="op">&lt;</span><span class="ident">TestRuntime</span><span class="op">&gt;</span><span class="ident">::MessageVersionSpecMismatch</span>(
-							<span class="ident">SOURCE_CHAIN_ID</span>,
+						<span class="ident">call_dispatch::Event</span>::<span class="op">&lt;</span><span class="ident">TestRuntime</span><span class="op">&gt;</span><span class="ident">::MessageVersionSpecMismatch</span> {
+							<span class="ident">source_chain</span>: <span class="ident">SOURCE_CHAIN_ID</span>,
 							<span class="ident">id</span>,
-							<span class="ident">TEST_SPEC_VERSION</span>,
-							<span class="ident">BAD_SPEC_VERSION</span>
-						)
+							<span class="ident">expected_version</span>: <span class="ident">TEST_SPEC_VERSION</span>,
+							<span class="ident">passed_version</span>: <span class="ident">BAD_SPEC_VERSION</span>
+						}
 					),
 					<span class="ident">topics</span>: <span class="macro">vec!</span>[],
 				}],
@@ -1760,12 +1796,12 @@
 				<span class="macro">vec!</span>[<span class="ident">EventRecord</span> {
 					<span class="ident">phase</span>: <span class="ident">Phase::Initialization</span>,
 					<span class="ident">event</span>: <span class="ident">Event::Dispatch</span>(
-						<span class="ident">call_dispatch::Event</span>::<span class="op">&lt;</span><span class="ident">TestRuntime</span><span class="op">&gt;</span><span class="ident">::MessageWeightMismatch</span>(
-							<span class="ident">SOURCE_CHAIN_ID</span>,
+						<span class="ident">call_dispatch::Event</span>::<span class="op">&lt;</span><span class="ident">TestRuntime</span><span class="op">&gt;</span><span class="ident">::MessageWeightMismatch</span> {
+							<span class="ident">source_chain</span>: <span class="ident">SOURCE_CHAIN_ID</span>,
 							<span class="ident">id</span>,
-							<span class="ident">call_weight</span>,
-							<span class="number">7</span>,
-						)
+							<span class="ident">expected_weight</span>: <span class="ident">call_weight</span>,
+							<span class="ident">passed_weight</span>: <span class="number">7</span>,
+						}
 					),
 					<span class="ident">topics</span>: <span class="macro">vec!</span>[],
 				}],
@@ -1801,10 +1837,10 @@
 				<span class="macro">vec!</span>[<span class="ident">EventRecord</span> {
 					<span class="ident">phase</span>: <span class="ident">Phase::Initialization</span>,
 					<span class="ident">event</span>: <span class="ident">Event::Dispatch</span>(
-						<span class="ident">call_dispatch::Event</span>::<span class="op">&lt;</span><span class="ident">TestRuntime</span><span class="op">&gt;</span><span class="ident">::MessageSignatureMismatch</span>(
-							<span class="ident">SOURCE_CHAIN_ID</span>,
+						<span class="ident">call_dispatch::Event</span>::<span class="op">&lt;</span><span class="ident">TestRuntime</span><span class="op">&gt;</span><span class="ident">::MessageSignatureMismatch</span> {
+							<span class="ident">source_chain</span>: <span class="ident">SOURCE_CHAIN_ID</span>,
 							<span class="ident">id</span>
-						)
+						}
 					),
 					<span class="ident">topics</span>: <span class="macro">vec!</span>[],
 				}],
@@ -1830,10 +1866,10 @@
 				<span class="ident">System::events</span>(),
 				<span class="macro">vec!</span>[<span class="ident">EventRecord</span> {
 					<span class="ident">phase</span>: <span class="ident">Phase::Initialization</span>,
-					<span class="ident">event</span>: <span class="ident">Event::Dispatch</span>(<span class="ident">call_dispatch::Event</span>::<span class="op">&lt;</span><span class="ident">TestRuntime</span><span class="op">&gt;</span><span class="ident">::MessageRejected</span>(
-						<span class="ident">SOURCE_CHAIN_ID</span>,
+					<span class="ident">event</span>: <span class="ident">Event::Dispatch</span>(<span class="ident">call_dispatch::Event</span>::<span class="op">&lt;</span><span class="ident">TestRuntime</span><span class="op">&gt;</span><span class="ident">::MessageRejected</span> {
+						<span class="ident">source_chain</span>: <span class="ident">SOURCE_CHAIN_ID</span>,
 						<span class="ident">id</span>
-					)),
+					}),
 					<span class="ident">topics</span>: <span class="macro">vec!</span>[],
 				}],
 			);
@@ -1867,10 +1903,10 @@
 				<span class="macro">vec!</span>[<span class="ident">EventRecord</span> {
 					<span class="ident">phase</span>: <span class="ident">Phase::Initialization</span>,
 					<span class="ident">event</span>: <span class="ident">Event::Dispatch</span>(
-						<span class="ident">call_dispatch::Event</span>::<span class="op">&lt;</span><span class="ident">TestRuntime</span><span class="op">&gt;</span><span class="ident">::MessageCallDecodeFailed</span>(
-							<span class="ident">SOURCE_CHAIN_ID</span>,
+						<span class="ident">call_dispatch::Event</span>::<span class="op">&lt;</span><span class="ident">TestRuntime</span><span class="op">&gt;</span><span class="ident">::MessageCallDecodeFailed</span> {
+							<span class="ident">source_chain</span>: <span class="ident">SOURCE_CHAIN_ID</span>,
 							<span class="ident">id</span>
-						)
+						}
 					),
 					<span class="ident">topics</span>: <span class="macro">vec!</span>[],
 				}],
@@ -1905,10 +1941,10 @@
 				<span class="macro">vec!</span>[<span class="ident">EventRecord</span> {
 					<span class="ident">phase</span>: <span class="ident">Phase::Initialization</span>,
 					<span class="ident">event</span>: <span class="ident">Event::Dispatch</span>(
-						<span class="ident">call_dispatch::Event</span>::<span class="op">&lt;</span><span class="ident">TestRuntime</span><span class="op">&gt;</span><span class="ident">::MessageCallRejected</span>(
-							<span class="ident">SOURCE_CHAIN_ID</span>,
+						<span class="ident">call_dispatch::Event</span>::<span class="op">&lt;</span><span class="ident">TestRuntime</span><span class="op">&gt;</span><span class="ident">::MessageCallRejected</span> {
+							<span class="ident">source_chain</span>: <span class="ident">SOURCE_CHAIN_ID</span>,
 							<span class="ident">id</span>
-						)
+						}
 					),
 					<span class="ident">topics</span>: <span class="macro">vec!</span>[],
 				}],
@@ -1940,15 +1976,17 @@
 				<span class="macro">vec!</span>[<span class="ident">EventRecord</span> {
 					<span class="ident">phase</span>: <span class="ident">Phase::Initialization</span>,
 					<span class="ident">event</span>: <span class="ident">Event::Dispatch</span>(
-						<span class="ident">call_dispatch::Event</span>::<span class="op">&lt;</span><span class="ident">TestRuntime</span><span class="op">&gt;</span><span class="ident">::MessageDispatchPaymentFailed</span>(
-							<span class="ident">SOURCE_CHAIN_ID</span>,
+						<span class="ident">call_dispatch::Event</span>::<span class="op">&lt;</span><span class="ident">TestRuntime</span><span class="op">&gt;</span><span class="ident">::MessageDispatchPaymentFailed</span> {
+							<span class="ident">source_chain</span>: <span class="ident">SOURCE_CHAIN_ID</span>,
 							<span class="ident">id</span>,
-							<span class="ident">AccountIdConverter::convert</span>(<span class="ident">derive_account_id</span>::<span class="op">&lt;</span><span class="ident">AccountId</span><span class="op">&gt;</span>(
+							<span class="ident">origin_account</span>: <span class="ident">AccountIdConverter::convert</span>(<span class="ident">derive_account_id</span>::<span class="op">&lt;</span>
+								<span class="ident">AccountId</span>,
+							<span class="op">&gt;</span>(
 								<span class="ident">SOURCE_CHAIN_ID</span>,
 								<span class="ident">SourceAccount::Root</span>
 							)),
-							<span class="ident">TEST_WEIGHT</span>,
-						)
+							<span class="ident">weight</span>: <span class="ident">TEST_WEIGHT</span>,
+						}
 					),
 					<span class="ident">topics</span>: <span class="macro">vec!</span>[],
 				}],
@@ -1981,11 +2019,13 @@
 				<span class="ident">System::events</span>(),
 				<span class="macro">vec!</span>[<span class="ident">EventRecord</span> {
 					<span class="ident">phase</span>: <span class="ident">Phase::Initialization</span>,
-					<span class="ident">event</span>: <span class="ident">Event::Dispatch</span>(<span class="ident">call_dispatch::Event</span>::<span class="op">&lt;</span><span class="ident">TestRuntime</span><span class="op">&gt;</span><span class="ident">::MessageDispatched</span>(
-						<span class="ident">SOURCE_CHAIN_ID</span>,
-						<span class="ident">id</span>,
-						<span class="prelude-val">Ok</span>(())
-					)),
+					<span class="ident">event</span>: <span class="ident">Event::Dispatch</span>(
+						<span class="ident">call_dispatch::Event</span>::<span class="op">&lt;</span><span class="ident">TestRuntime</span><span class="op">&gt;</span><span class="ident">::MessageDispatched</span> {
+							<span class="ident">source_chain</span>: <span class="ident">SOURCE_CHAIN_ID</span>,
+							<span class="ident">id</span>,
+							<span class="ident">result</span>: <span class="prelude-val">Ok</span>(())
+						}
+					),
 					<span class="ident">topics</span>: <span class="macro">vec!</span>[],
 				}],
 			);
@@ -2015,11 +2055,13 @@
 				<span class="ident">System::events</span>(),
 				<span class="macro">vec!</span>[<span class="ident">EventRecord</span> {
 					<span class="ident">phase</span>: <span class="ident">Phase::Initialization</span>,
-					<span class="ident">event</span>: <span class="ident">Event::Dispatch</span>(<span class="ident">call_dispatch::Event</span>::<span class="op">&lt;</span><span class="ident">TestRuntime</span><span class="op">&gt;</span><span class="ident">::MessageDispatched</span>(
-						<span class="ident">SOURCE_CHAIN_ID</span>,
-						<span class="ident">id</span>,
-						<span class="prelude-val">Err</span>(<span class="ident">sp_runtime::DispatchError::BadOrigin</span>)
-					)),
+					<span class="ident">event</span>: <span class="ident">Event::Dispatch</span>(
+						<span class="ident">call_dispatch::Event</span>::<span class="op">&lt;</span><span class="ident">TestRuntime</span><span class="op">&gt;</span><span class="ident">::MessageDispatched</span> {
+							<span class="ident">source_chain</span>: <span class="ident">SOURCE_CHAIN_ID</span>,
+							<span class="ident">id</span>,
+							<span class="ident">result</span>: <span class="prelude-val">Err</span>(<span class="ident">sp_runtime::DispatchError::BadOrigin</span>)
+						}
+					),
 					<span class="ident">topics</span>: <span class="macro">vec!</span>[],
 				}],
 			);
@@ -2049,11 +2091,13 @@
 				<span class="ident">System::events</span>(),
 				<span class="macro">vec!</span>[<span class="ident">EventRecord</span> {
 					<span class="ident">phase</span>: <span class="ident">Phase::Initialization</span>,
-					<span class="ident">event</span>: <span class="ident">Event::Dispatch</span>(<span class="ident">call_dispatch::Event</span>::<span class="op">&lt;</span><span class="ident">TestRuntime</span><span class="op">&gt;</span><span class="ident">::MessageDispatched</span>(
-						<span class="ident">SOURCE_CHAIN_ID</span>,
-						<span class="ident">id</span>,
-						<span class="prelude-val">Ok</span>(())
-					)),
+					<span class="ident">event</span>: <span class="ident">Event::Dispatch</span>(
+						<span class="ident">call_dispatch::Event</span>::<span class="op">&lt;</span><span class="ident">TestRuntime</span><span class="op">&gt;</span><span class="ident">::MessageDispatched</span> {
+							<span class="ident">source_chain</span>: <span class="ident">SOURCE_CHAIN_ID</span>,
+							<span class="ident">id</span>,
+							<span class="ident">result</span>: <span class="prelude-val">Ok</span>(())
+						}
+					),
 					<span class="ident">topics</span>: <span class="macro">vec!</span>[],
 				}],
 			);
@@ -2083,11 +2127,13 @@
 				<span class="ident">System::events</span>(),
 				<span class="macro">vec!</span>[<span class="ident">EventRecord</span> {
 					<span class="ident">phase</span>: <span class="ident">Phase::Initialization</span>,
-					<span class="ident">event</span>: <span class="ident">Event::Dispatch</span>(<span class="ident">call_dispatch::Event</span>::<span class="op">&lt;</span><span class="ident">TestRuntime</span><span class="op">&gt;</span><span class="ident">::MessageDispatched</span>(
-						<span class="ident">SOURCE_CHAIN_ID</span>,
-						<span class="ident">id</span>,
-						<span class="prelude-val">Ok</span>(())
-					)),
+					<span class="ident">event</span>: <span class="ident">Event::Dispatch</span>(
+						<span class="ident">call_dispatch::Event</span>::<span class="op">&lt;</span><span class="ident">TestRuntime</span><span class="op">&gt;</span><span class="ident">::MessageDispatched</span> {
+							<span class="ident">source_chain</span>: <span class="ident">SOURCE_CHAIN_ID</span>,
+							<span class="ident">id</span>,
+							<span class="ident">result</span>: <span class="prelude-val">Ok</span>(())
+						}
+					),
 					<span class="ident">topics</span>: <span class="macro">vec!</span>[],
 				}],
 			);
@@ -2117,11 +2163,13 @@
 				<span class="ident">System::events</span>(),
 				<span class="macro">vec!</span>[<span class="ident">EventRecord</span> {
 					<span class="ident">phase</span>: <span class="ident">Phase::Initialization</span>,
-					<span class="ident">event</span>: <span class="ident">Event::Dispatch</span>(<span class="ident">call_dispatch::Event</span>::<span class="op">&lt;</span><span class="ident">TestRuntime</span><span class="op">&gt;</span><span class="ident">::MessageDispatched</span>(
-						<span class="ident">SOURCE_CHAIN_ID</span>,
-						<span class="ident">id</span>,
-						<span class="prelude-val">Ok</span>(())
-					)),
+					<span class="ident">event</span>: <span class="ident">Event::Dispatch</span>(
+						<span class="ident">call_dispatch::Event</span>::<span class="op">&lt;</span><span class="ident">TestRuntime</span><span class="op">&gt;</span><span class="ident">::MessageDispatched</span> {
+							<span class="ident">source_chain</span>: <span class="ident">SOURCE_CHAIN_ID</span>,
+							<span class="ident">id</span>,
+							<span class="ident">result</span>: <span class="prelude-val">Ok</span>(())
+						}
+					),
 					<span class="ident">topics</span>: <span class="macro">vec!</span>[],
 				}],
 			);
