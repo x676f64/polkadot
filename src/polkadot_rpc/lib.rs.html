@@ -181,10 +181,6 @@
 <span id="176">176</span>
 <span id="177">177</span>
 <span id="178">178</span>
-<span id="179">179</span>
-<span id="180">180</span>
-<span id="181">181</span>
-<span id="182">182</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2019-2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -302,14 +298,14 @@
 	<span class="ident">B</span>: <span class="ident">sc_client_api::Backend</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 	<span class="ident">B::State</span>: <span class="ident">sc_client_api::StateBackend</span><span class="op">&lt;</span><span class="ident">sp_runtime::traits::HashFor</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 {
-	<span class="kw">use</span> <span class="ident">beefy_gadget_rpc</span>::{<span class="ident">BeefyApiServer</span>, <span class="ident">BeefyRpcHandler</span>};
-	<span class="kw">use</span> <span class="ident">frame_rpc_system</span>::{<span class="ident">SystemApiServer</span>, <span class="ident">SystemRpc</span>};
-	<span class="kw">use</span> <span class="ident">pallet_mmr_rpc</span>::{<span class="ident">MmrApiServer</span>, <span class="ident">MmrRpc</span>};
-	<span class="kw">use</span> <span class="ident">pallet_transaction_payment_rpc</span>::{<span class="ident">TransactionPaymentApiServer</span>, <span class="ident">TransactionPaymentRpc</span>};
-	<span class="kw">use</span> <span class="ident">sc_consensus_babe_rpc</span>::{<span class="ident">BabeApiServer</span>, <span class="ident">BabeRpc</span>};
-	<span class="kw">use</span> <span class="ident">sc_finality_grandpa_rpc</span>::{<span class="ident">GrandpaApiServer</span>, <span class="ident">GrandpaRpc</span>};
-	<span class="kw">use</span> <span class="ident">sc_sync_state_rpc</span>::{<span class="ident">SyncStateRpc</span>, <span class="ident">SyncStateRpcApiServer</span>};
-	<span class="kw">use</span> <span class="ident">substrate_state_trie_migration_rpc::StateMigrationApiServer</span>;
+	<span class="kw">use</span> <span class="ident">beefy_gadget_rpc</span>::{<span class="ident">Beefy</span>, <span class="ident">BeefyApiServer</span>};
+	<span class="kw">use</span> <span class="ident">frame_rpc_system</span>::{<span class="ident">System</span>, <span class="ident">SystemApiServer</span>};
+	<span class="kw">use</span> <span class="ident">pallet_mmr_rpc</span>::{<span class="ident">Mmr</span>, <span class="ident">MmrApiServer</span>};
+	<span class="kw">use</span> <span class="ident">pallet_transaction_payment_rpc</span>::{<span class="ident">TransactionPayment</span>, <span class="ident">TransactionPaymentApiServer</span>};
+	<span class="kw">use</span> <span class="ident">sc_consensus_babe_rpc</span>::{<span class="ident">Babe</span>, <span class="ident">BabeApiServer</span>};
+	<span class="kw">use</span> <span class="ident">sc_finality_grandpa_rpc</span>::{<span class="ident">Grandpa</span>, <span class="ident">GrandpaApiServer</span>};
+	<span class="kw">use</span> <span class="ident">sc_sync_state_rpc</span>::{<span class="ident">SyncState</span>, <span class="ident">SyncStateApiServer</span>};
+	<span class="kw">use</span> <span class="ident">substrate_state_trie_migration_rpc</span>::{<span class="ident">StateMigration</span>, <span class="ident">StateMigrationApiServer</span>};
 
 	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">io</span> <span class="op">=</span> <span class="ident">RpcModule::new</span>(());
 	<span class="kw">let</span> <span class="ident">FullDeps</span> { <span class="ident">client</span>, <span class="ident">pool</span>, <span class="ident">select_chain</span>, <span class="ident">chain_spec</span>, <span class="ident">deny_unsafe</span>, <span class="ident">babe</span>, <span class="ident">grandpa</span>, <span class="ident">beefy</span> } <span class="op">=</span>
@@ -323,15 +319,12 @@
 		<span class="ident">finality_provider</span>,
 	} <span class="op">=</span> <span class="ident">grandpa</span>;
 
+	<span class="ident">io</span>.<span class="ident">merge</span>(<span class="ident">StateMigration::new</span>(<span class="ident">client</span>.<span class="ident">clone</span>(), <span class="ident">backend</span>, <span class="ident">deny_unsafe</span>).<span class="ident">into_rpc</span>())<span class="question-mark">?</span>;
+	<span class="ident">io</span>.<span class="ident">merge</span>(<span class="ident">System::new</span>(<span class="ident">client</span>.<span class="ident">clone</span>(), <span class="ident">pool</span>.<span class="ident">clone</span>(), <span class="ident">deny_unsafe</span>).<span class="ident">into_rpc</span>())<span class="question-mark">?</span>;
+	<span class="ident">io</span>.<span class="ident">merge</span>(<span class="ident">TransactionPayment::new</span>(<span class="ident">client</span>.<span class="ident">clone</span>()).<span class="ident">into_rpc</span>())<span class="question-mark">?</span>;
+	<span class="ident">io</span>.<span class="ident">merge</span>(<span class="ident">Mmr::new</span>(<span class="ident">client</span>.<span class="ident">clone</span>()).<span class="ident">into_rpc</span>())<span class="question-mark">?</span>;
 	<span class="ident">io</span>.<span class="ident">merge</span>(
-		<span class="ident">substrate_state_trie_migration_rpc::MigrationRpc::new</span>(<span class="ident">client</span>.<span class="ident">clone</span>(), <span class="ident">backend</span>, <span class="ident">deny_unsafe</span>)
-			.<span class="ident">into_rpc</span>(),
-	)<span class="question-mark">?</span>;
-	<span class="ident">io</span>.<span class="ident">merge</span>(<span class="ident">SystemRpc::new</span>(<span class="ident">client</span>.<span class="ident">clone</span>(), <span class="ident">pool</span>.<span class="ident">clone</span>(), <span class="ident">deny_unsafe</span>).<span class="ident">into_rpc</span>())<span class="question-mark">?</span>;
-	<span class="ident">io</span>.<span class="ident">merge</span>(<span class="ident">TransactionPaymentRpc::new</span>(<span class="ident">client</span>.<span class="ident">clone</span>()).<span class="ident">into_rpc</span>())<span class="question-mark">?</span>;
-	<span class="ident">io</span>.<span class="ident">merge</span>(<span class="ident">MmrRpc::new</span>(<span class="ident">client</span>.<span class="ident">clone</span>()).<span class="ident">into_rpc</span>())<span class="question-mark">?</span>;
-	<span class="ident">io</span>.<span class="ident">merge</span>(
-		<span class="ident">BabeRpc::new</span>(
+		<span class="ident">Babe::new</span>(
 			<span class="ident">client</span>.<span class="ident">clone</span>(),
 			<span class="ident">shared_epoch_changes</span>.<span class="ident">clone</span>(),
 			<span class="ident">keystore</span>,
@@ -342,7 +335,7 @@
 		.<span class="ident">into_rpc</span>(),
 	)<span class="question-mark">?</span>;
 	<span class="ident">io</span>.<span class="ident">merge</span>(
-		<span class="ident">GrandpaRpc::new</span>(
+		<span class="ident">Grandpa::new</span>(
 			<span class="ident">subscription_executor</span>,
 			<span class="ident">shared_authority_set</span>.<span class="ident">clone</span>(),
 			<span class="ident">shared_voter_state</span>,
@@ -352,12 +345,11 @@
 		.<span class="ident">into_rpc</span>(),
 	)<span class="question-mark">?</span>;
 	<span class="ident">io</span>.<span class="ident">merge</span>(
-		<span class="ident">SyncStateRpc::new</span>(<span class="ident">chain_spec</span>, <span class="ident">client</span>, <span class="ident">shared_authority_set</span>, <span class="ident">shared_epoch_changes</span>)<span class="question-mark">?</span>
-			.<span class="ident">into_rpc</span>(),
+		<span class="ident">SyncState::new</span>(<span class="ident">chain_spec</span>, <span class="ident">client</span>, <span class="ident">shared_authority_set</span>, <span class="ident">shared_epoch_changes</span>)<span class="question-mark">?</span>.<span class="ident">into_rpc</span>(),
 	)<span class="question-mark">?</span>;
 
 	<span class="ident">io</span>.<span class="ident">merge</span>(
-		<span class="ident">BeefyRpcHandler</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="ident">::new</span>(
+		<span class="ident">Beefy</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="ident">::new</span>(
 			<span class="ident">beefy</span>.<span class="ident">beefy_commitment_stream</span>,
 			<span class="ident">beefy</span>.<span class="ident">beefy_best_block_stream</span>,
 			<span class="ident">beefy</span>.<span class="ident">subscription_executor</span>,
