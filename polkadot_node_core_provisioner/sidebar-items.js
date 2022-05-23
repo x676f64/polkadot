@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["Metrics","Provisioner metrics."],["ProvisionerConfig","Provisioner run arguments."],["ProvisionerJob","A per-relay-parent job for the provisioning subsystem."]],"type":[["ProvisionerSubsystem","The provisioner subsystem."]]});
+initSidebarItems({"struct":[["Metrics","Provisioner metrics."],["PerRelayParent","A per-relay-parent state for the provisioning subsystem."],["ProvisionerSubsystem","The provisioner subsystem."]]});

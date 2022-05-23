@@ -815,6 +815,30 @@
 <span id="810">810</span>
 <span id="811">811</span>
 <span id="812">812</span>
+<span id="813">813</span>
+<span id="814">814</span>
+<span id="815">815</span>
+<span id="816">816</span>
+<span id="817">817</span>
+<span id="818">818</span>
+<span id="819">819</span>
+<span id="820">820</span>
+<span id="821">821</span>
+<span id="822">822</span>
+<span id="823">823</span>
+<span id="824">824</span>
+<span id="825">825</span>
+<span id="826">826</span>
+<span id="827">827</span>
+<span id="828">828</span>
+<span id="829">829</span>
+<span id="830">830</span>
+<span id="831">831</span>
+<span id="832">832</span>
+<span id="833">833</span>
+<span id="834">834</span>
+<span id="835">835</span>
+<span id="836">836</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -838,10 +862,10 @@
 
 <span class="kw">use</span> <span class="ident">bitvec::vec::BitVec</span>;
 <span class="kw">use</span> <span class="ident">futures</span>::{
-	<span class="ident">channel</span>::{<span class="ident">mpsc</span>, <span class="ident">oneshot</span>},
-	<span class="ident">prelude</span>::<span class="kw-2">*</span>,
+	<span class="ident">channel::oneshot</span>, <span class="ident">future::BoxFuture</span>, <span class="ident">prelude</span>::<span class="kw-2">*</span>, <span class="ident">stream::FuturesUnordered</span>, <span class="ident">FutureExt</span>,
 };
 <span class="kw">use</span> <span class="ident">futures_timer::Delay</span>;
+
 <span class="kw">use</span> <span class="ident">polkadot_node_primitives::CandidateVotes</span>;
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem</span>::{
 	<span class="ident">jaeger</span>,
@@ -849,28 +873,23 @@
 		<span class="ident">CandidateBackingMessage</span>, <span class="ident">ChainApiMessage</span>, <span class="ident">DisputeCoordinatorMessage</span>, <span class="ident">ProvisionableData</span>,
 		<span class="ident">ProvisionerInherentData</span>, <span class="ident">ProvisionerMessage</span>,
 	},
-	<span class="ident">overseer</span>, <span class="ident">ActivatedLeaf</span>, <span class="ident">LeafStatus</span>, <span class="ident">PerLeafSpan</span>,
+	<span class="ident">overseer</span>, <span class="ident">ActivatedLeaf</span>, <span class="ident">ActiveLeavesUpdate</span>, <span class="ident">FromOrchestra</span>, <span class="ident">LeafStatus</span>, <span class="ident">OverseerSignal</span>,
+	<span class="ident">PerLeafSpan</span>, <span class="ident">SpawnedSubsystem</span>, <span class="ident">SubsystemError</span>,
 };
-<span class="kw">use</span> <span class="ident">polkadot_node_subsystem_util</span>::{
-	<span class="ident">request_availability_cores</span>, <span class="ident">request_persisted_validation_data</span>, <span class="ident">JobSender</span>, <span class="ident">JobSubsystem</span>,
-	<span class="ident">JobTrait</span>,
-};
+<span class="kw">use</span> <span class="ident">polkadot_node_subsystem_util</span>::{<span class="ident">request_availability_cores</span>, <span class="ident">request_persisted_validation_data</span>};
 <span class="kw">use</span> <span class="ident">polkadot_primitives::v2</span>::{
 	<span class="ident">BackedCandidate</span>, <span class="ident">BlockNumber</span>, <span class="ident">CandidateHash</span>, <span class="ident">CandidateReceipt</span>, <span class="ident">CoreState</span>, <span class="ident">DisputeState</span>,
 	<span class="ident">DisputeStatement</span>, <span class="ident">DisputeStatementSet</span>, <span class="ident">Hash</span>, <span class="ident">MultiDisputeStatementSet</span>, <span class="ident">OccupiedCoreAssumption</span>,
 	<span class="ident">SessionIndex</span>, <span class="ident">SignedAvailabilityBitfield</span>, <span class="ident">ValidatorIndex</span>,
 };
-<span class="kw">use</span> <span class="ident">std</span>::{
-	<span class="ident">collections</span>::{<span class="ident">BTreeMap</span>, <span class="ident">HashMap</span>, <span class="ident">HashSet</span>},
-	<span class="ident">pin::Pin</span>,
-};
+<span class="kw">use</span> <span class="ident">std::collections</span>::{<span class="ident">BTreeMap</span>, <span class="ident">HashMap</span>, <span class="ident">HashSet</span>};
 
 <span class="kw">mod</span> <span class="ident">error</span>;
 <span class="kw">mod</span> <span class="ident">metrics</span>;
 <span class="kw">mod</span> <span class="ident">onchain_disputes</span>;
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::metrics</span>::<span class="kw-2">*</span>;
-<span class="kw">use</span> <span class="ident">error::Error</span>;
+<span class="kw">use</span> <span class="ident">error</span>::{<span class="ident">Error</span>, <span class="ident">FatalResult</span>};
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">tests</span>;
@@ -880,198 +899,230 @@
 
 <span class="kw">const</span> <span class="ident">LOG_TARGET</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;parachain::provisioner&quot;</span>;
 
-<span class="kw">enum</span> <span class="ident">InherentAfter</span> {
-	<span class="ident">Ready</span>,
-	<span class="ident">Wait</span>(<span class="ident">Delay</span>),
+<span class="doccomment">/// The provisioner subsystem.</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ProvisionerSubsystem</span> {
+	<span class="ident">metrics</span>: <span class="ident">Metrics</span>,
 }
 
-<span class="kw">impl</span> <span class="ident">InherentAfter</span> {
-	<span class="kw">fn</span> <span class="ident">new_from_now</span>() -&gt; <span class="self">Self</span> {
-		<span class="ident">InherentAfter::Wait</span>(<span class="ident">Delay::new</span>(<span class="ident">PRE_PROPOSE_TIMEOUT</span>))
-	}
-
-	<span class="kw">fn</span> <span class="ident">is_ready</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
-		<span class="kw">match</span> <span class="kw-2">*</span><span class="self">self</span> {
-			<span class="ident">InherentAfter::Ready</span> =&gt; <span class="bool-val">true</span>,
-			<span class="ident">InherentAfter::Wait</span>(<span class="kw">_</span>) =&gt; <span class="bool-val">false</span>,
-		}
-	}
-
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">ready</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) {
-		<span class="kw">match</span> <span class="kw-2">*</span><span class="self">self</span> {
-			<span class="ident">InherentAfter::Ready</span> =&gt; {
-				<span class="comment">// Make sure we never end the returned future.</span>
-				<span class="comment">// This is required because the `select!` that calls this future will end in a busy loop.</span>
-				<span class="macro">futures::pending!</span>()
-			},
-			<span class="ident">InherentAfter::Wait</span>(<span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">d</span>) =&gt; {
-				<span class="ident">d</span>.<span class="kw">await</span>;
-				<span class="kw-2">*</span><span class="self">self</span> <span class="op">=</span> <span class="ident">InherentAfter::Ready</span>;
-			},
-		}
+<span class="kw">impl</span> <span class="ident">ProvisionerSubsystem</span> {
+	<span class="doccomment">/// Create a new instance of the `ProvisionerSubsystem`.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">metrics</span>: <span class="ident">Metrics</span>) -&gt; <span class="self">Self</span> {
+		<span class="self">Self</span> { <span class="ident">metrics</span> }
 	}
 }
 
-<span class="doccomment">/// Provisioner run arguments.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Copy</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ProvisionerConfig</span>;
-
-<span class="doccomment">/// A per-relay-parent job for the provisioning subsystem.</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ProvisionerJob</span><span class="op">&lt;</span><span class="ident">Sender</span><span class="op">&gt;</span> {
+<span class="doccomment">/// A per-relay-parent state for the provisioning subsystem.</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">PerRelayParent</span> {
 	<span class="ident">leaf</span>: <span class="ident">ActivatedLeaf</span>,
-	<span class="ident">receiver</span>: <span class="ident">mpsc::Receiver</span><span class="op">&lt;</span><span class="ident">ProvisionerMessage</span><span class="op">&gt;</span>,
 	<span class="ident">backed_candidates</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">CandidateReceipt</span><span class="op">&gt;</span>,
 	<span class="ident">signed_bitfields</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">SignedAvailabilityBitfield</span><span class="op">&gt;</span>,
-	<span class="ident">metrics</span>: <span class="ident">Metrics</span>,
-	<span class="ident">inherent_after</span>: <span class="ident">InherentAfter</span>,
+	<span class="ident">is_inherent_ready</span>: <span class="ident">bool</span>,
 	<span class="ident">awaiting_inherent</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">oneshot::Sender</span><span class="op">&lt;</span><span class="ident">ProvisionerInherentData</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-	<span class="ident">_phantom</span>: <span class="ident">std::marker::PhantomData</span><span class="op">&lt;</span><span class="ident">Sender</span><span class="op">&gt;</span>,
+	<span class="ident">span</span>: <span class="ident">PerLeafSpan</span>,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Sender</span><span class="op">&gt;</span> <span class="ident">JobTrait</span> <span class="kw">for</span> <span class="ident">ProvisionerJob</span><span class="op">&lt;</span><span class="ident">Sender</span><span class="op">&gt;</span>
-<span class="kw">where</span>
-	<span class="ident">Sender</span>: <span class="ident">overseer::ProvisionerSenderTrait</span> <span class="op">+</span> <span class="ident">std::marker::Unpin</span>,
-{
-	<span class="kw">type</span> <span class="ident">ToJob</span> <span class="op">=</span> <span class="ident">ProvisionerMessage</span>;
-	<span class="kw">type</span> <span class="ident">OutgoingMessages</span> <span class="op">=</span> <span class="ident">overseer::ProvisionerOutgoingMessages</span>;
-	<span class="kw">type</span> <span class="ident">Sender</span> <span class="op">=</span> <span class="ident">Sender</span>;
-	<span class="kw">type</span> <span class="ident">Error</span> <span class="op">=</span> <span class="ident">Error</span>;
-	<span class="kw">type</span> <span class="ident">RunArgs</span> <span class="op">=</span> <span class="ident">ProvisionerConfig</span>;
-	<span class="kw">type</span> <span class="ident">Metrics</span> <span class="op">=</span> <span class="ident">Metrics</span>;
+<span class="kw">impl</span> <span class="ident">PerRelayParent</span> {
+	<span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">leaf</span>: <span class="ident">ActivatedLeaf</span>) -&gt; <span class="self">Self</span> {
+		<span class="kw">let</span> <span class="ident">span</span> <span class="op">=</span> <span class="ident">PerLeafSpan::new</span>(<span class="ident">leaf</span>.<span class="ident">span</span>.<span class="ident">clone</span>(), <span class="string">&quot;provisioner&quot;</span>);
 
-	<span class="kw">const</span> <span class="ident">NAME</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;provisioner-job&quot;</span>;
-
-	<span class="doccomment">/// Run a job for the parent block indicated</span>
-	<span class="comment">//</span>
-	<span class="comment">// this function is in charge of creating and executing the job&#39;s main loop</span>
-	<span class="kw">fn</span> <span class="ident">run</span>(
-		<span class="ident">leaf</span>: <span class="ident">ActivatedLeaf</span>,
-		<span class="kw">_</span>: <span class="ident"><span class="self">Self</span>::RunArgs</span>,
-		<span class="ident">metrics</span>: <span class="ident"><span class="self">Self</span>::Metrics</span>,
-		<span class="ident">receiver</span>: <span class="ident">mpsc::Receiver</span><span class="op">&lt;</span><span class="ident">ProvisionerMessage</span><span class="op">&gt;</span>,
-		<span class="kw-2">mut</span> <span class="ident">sender</span>: <span class="ident">JobSender</span><span class="op">&lt;</span><span class="ident">Sender</span><span class="op">&gt;</span>,
-	) -&gt; <span class="ident">Pin</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Future</span><span class="op">&lt;</span><span class="ident">Output</span> <span class="op">=</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident"><span class="self">Self</span>::Error</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Send</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="ident">span</span> <span class="op">=</span> <span class="ident">leaf</span>.<span class="ident">span</span>.<span class="ident">clone</span>();
-		<span class="kw">async</span> <span class="kw">move</span> {
-			<span class="kw">let</span> <span class="ident">job</span> <span class="op">=</span> <span class="ident">ProvisionerJob::new</span>(<span class="ident">leaf</span>, <span class="ident">metrics</span>, <span class="ident">receiver</span>);
-
-			<span class="ident">job</span>.<span class="ident">run_loop</span>(<span class="ident">sender</span>.<span class="ident">subsystem_sender</span>(), <span class="ident">PerLeafSpan::new</span>(<span class="ident">span</span>, <span class="string">&quot;provisioner&quot;</span>))
-				.<span class="kw">await</span>
-		}
-		.<span class="ident">boxed</span>()
-	}
-}
-
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Sender</span><span class="op">&gt;</span> <span class="ident">ProvisionerJob</span><span class="op">&lt;</span><span class="ident">Sender</span><span class="op">&gt;</span>
-<span class="kw">where</span>
-	<span class="ident">Sender</span>: <span class="ident">overseer::ProvisionerSenderTrait</span>,
-{
-	<span class="kw">fn</span> <span class="ident">new</span>(
-		<span class="ident">leaf</span>: <span class="ident">ActivatedLeaf</span>,
-		<span class="ident">metrics</span>: <span class="ident">Metrics</span>,
-		<span class="ident">receiver</span>: <span class="ident">mpsc::Receiver</span><span class="op">&lt;</span><span class="ident">ProvisionerMessage</span><span class="op">&gt;</span>,
-	) -&gt; <span class="self">Self</span> {
 		<span class="self">Self</span> {
 			<span class="ident">leaf</span>,
-			<span class="ident">receiver</span>,
 			<span class="ident">backed_candidates</span>: <span class="ident">Vec::new</span>(),
 			<span class="ident">signed_bitfields</span>: <span class="ident">Vec::new</span>(),
-			<span class="ident">metrics</span>,
-			<span class="ident">inherent_after</span>: <span class="ident">InherentAfter::new_from_now</span>(),
+			<span class="ident">is_inherent_ready</span>: <span class="bool-val">false</span>,
 			<span class="ident">awaiting_inherent</span>: <span class="ident">Vec::new</span>(),
-			<span class="ident">_phantom</span>: <span class="ident">std::marker::PhantomData</span>::<span class="op">&lt;</span><span class="ident">Sender</span><span class="op">&gt;</span><span class="ident">::default</span>(),
+			<span class="ident">span</span>,
+		}
+	}
+}
+
+<span class="kw">type</span> <span class="ident">InherentDelays</span> <span class="op">=</span> <span class="ident">FuturesUnordered</span><span class="op">&lt;</span><span class="ident">BoxFuture</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span>, <span class="ident">Hash</span><span class="op">&gt;</span><span class="op">&gt;</span>;
+
+<span class="attribute">#[<span class="ident">overseer::subsystem</span>(<span class="ident">Provisioner</span>, <span class="ident">error</span><span class="op">=</span><span class="ident">SubsystemError</span>, <span class="ident">prefix</span><span class="op">=</span><span class="ident"><span class="self">self</span>::overseer</span>)]</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span> <span class="ident">ProvisionerSubsystem</span> {
+	<span class="kw">fn</span> <span class="ident">start</span>(<span class="self">self</span>, <span class="ident">ctx</span>: <span class="ident">Context</span>) -&gt; <span class="ident">SpawnedSubsystem</span> {
+		<span class="kw">let</span> <span class="ident">future</span> <span class="op">=</span> <span class="kw">async</span> <span class="kw">move</span> {
+			<span class="ident">run</span>(<span class="ident">ctx</span>, <span class="self">self</span>.<span class="ident">metrics</span>)
+				.<span class="kw">await</span>
+				.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">SubsystemError::with_origin</span>(<span class="string">&quot;provisioner&quot;</span>, <span class="ident">e</span>))
+		}
+		.<span class="ident">boxed</span>();
+
+		<span class="ident">SpawnedSubsystem</span> { <span class="ident">name</span>: <span class="string">&quot;provisioner-subsystem&quot;</span>, <span class="ident">future</span> }
+	}
+}
+
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">Provisioner</span>, <span class="ident">prefix</span> <span class="op">=</span> <span class="ident"><span class="self">self</span>::overseer</span>)]</span>
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(<span class="kw-2">mut</span> <span class="ident">ctx</span>: <span class="ident">Context</span>, <span class="ident">metrics</span>: <span class="ident">Metrics</span>) -&gt; <span class="ident">FatalResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">inherent_delays</span> <span class="op">=</span> <span class="ident">InherentDelays::new</span>();
+	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">per_relay_parent</span> <span class="op">=</span> <span class="ident">HashMap::new</span>();
+
+	<span class="kw">loop</span> {
+		<span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span>
+			<span class="ident">run_iteration</span>(<span class="kw-2">&amp;mut</span> <span class="ident">ctx</span>, <span class="kw-2">&amp;mut</span> <span class="ident">per_relay_parent</span>, <span class="kw-2">&amp;mut</span> <span class="ident">inherent_delays</span>, <span class="kw-2">&amp;</span><span class="ident">metrics</span>).<span class="kw">await</span>;
+
+		<span class="kw">match</span> <span class="ident">result</span> {
+			<span class="prelude-val">Ok</span>(()) =&gt; <span class="kw">break</span>,
+			<span class="ident">err</span> =&gt; <span class="ident"><span class="kw">crate</span>::error::log_error</span>(<span class="ident">err</span>)<span class="question-mark">?</span>,
 		}
 	}
 
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run_loop</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Sender</span>, <span class="ident">span</span>: <span class="ident">PerLeafSpan</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
-		<span class="kw">loop</span> {
-			<span class="macro">futures::select!</span> {
-				<span class="ident">msg</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">receiver</span>.<span class="ident">next</span>() =&gt; <span class="kw">match</span> <span class="ident">msg</span> {
-					<span class="prelude-val">Some</span>(<span class="ident">ProvisionerMessage::RequestInherentData</span>(<span class="kw">_</span>, <span class="ident">return_sender</span>)) =&gt; {
-						<span class="kw">let</span> <span class="ident">_span</span> <span class="op">=</span> <span class="ident">span</span>.<span class="ident">child</span>(<span class="string">&quot;req-inherent-data&quot;</span>);
-						<span class="kw">let</span> <span class="ident">_timer</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">metrics</span>.<span class="ident">time_request_inherent_data</span>();
+	<span class="prelude-val">Ok</span>(())
+}
 
-						<span class="kw">if</span> <span class="self">self</span>.<span class="ident">inherent_after</span>.<span class="ident">is_ready</span>() {
-							<span class="self">self</span>.<span class="ident">send_inherent_data</span>(<span class="ident">sender</span>, <span class="macro">vec!</span>[<span class="ident">return_sender</span>]).<span class="kw">await</span>;
-						} <span class="kw">else</span> {
-							<span class="self">self</span>.<span class="ident">awaiting_inherent</span>.<span class="ident">push</span>(<span class="ident">return_sender</span>);
-						}
-					}
-					<span class="prelude-val">Some</span>(<span class="ident">ProvisionerMessage::ProvisionableData</span>(<span class="kw">_</span>, <span class="ident">data</span>)) =&gt; {
-						<span class="kw">let</span> <span class="ident">span</span> <span class="op">=</span> <span class="ident">span</span>.<span class="ident">child</span>(<span class="string">&quot;provisionable-data&quot;</span>);
-						<span class="kw">let</span> <span class="ident">_timer</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">metrics</span>.<span class="ident">time_provisionable_data</span>();
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">Provisioner</span>, <span class="ident">prefix</span> <span class="op">=</span> <span class="ident"><span class="self">self</span>::overseer</span>)]</span>
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">run_iteration</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
+	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
+	<span class="ident">per_relay_parent</span>: <span class="kw-2">&amp;mut</span> <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">Hash</span>, <span class="ident">PerRelayParent</span><span class="op">&gt;</span>,
+	<span class="ident">inherent_delays</span>: <span class="kw-2">&amp;mut</span> <span class="ident">InherentDelays</span>,
+	<span class="ident">metrics</span>: <span class="kw-2">&amp;</span><span class="ident">Metrics</span>,
+) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+	<span class="kw">loop</span> {
+		<span class="macro">futures::select!</span> {
+			<span class="ident">from_overseer</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">recv</span>().<span class="ident">fuse</span>() =&gt; {
+				<span class="kw">match</span> <span class="ident">from_overseer</span><span class="question-mark">?</span> {
+					<span class="ident">FromOrchestra::Signal</span>(<span class="ident">OverseerSignal::ActiveLeaves</span>(<span class="ident">update</span>)) =&gt;
+						<span class="ident">handle_active_leaves_update</span>(<span class="ident">update</span>, <span class="ident">per_relay_parent</span>, <span class="ident">inherent_delays</span>),
+					<span class="ident">FromOrchestra::Signal</span>(<span class="ident">OverseerSignal::BlockFinalized</span>(..)) =&gt; {},
+					<span class="ident">FromOrchestra::Signal</span>(<span class="ident">OverseerSignal::Conclude</span>) =&gt; <span class="kw">return</span> <span class="prelude-val">Ok</span>(()),
+					<span class="ident">FromOrchestra::Communication</span> { <span class="ident">msg</span> } =&gt; {
+						<span class="ident">handle_communication</span>(<span class="ident">ctx</span>, <span class="ident">per_relay_parent</span>, <span class="ident">msg</span>, <span class="ident">metrics</span>).<span class="kw">await</span><span class="question-mark">?</span>;
+					},
+				}
+			},
+			<span class="ident">hash</span> <span class="op">=</span> <span class="ident">inherent_delays</span>.<span class="ident">select_next_some</span>() =&gt; {
+				<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">state</span>) <span class="op">=</span> <span class="ident">per_relay_parent</span>.<span class="ident">get_mut</span>(<span class="kw-2">&amp;</span><span class="ident">hash</span>) {
+					<span class="ident">state</span>.<span class="ident">is_inherent_ready</span> <span class="op">=</span> <span class="bool-val">true</span>;
 
-						<span class="self">self</span>.<span class="ident">note_provisionable_data</span>(<span class="kw-2">&amp;</span><span class="ident">span</span>, <span class="ident">data</span>);
-					}
-					<span class="prelude-val">None</span> =&gt; <span class="kw">break</span>,
-				},
-				<span class="kw">_</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">inherent_after</span>.<span class="ident">ready</span>().<span class="ident">fuse</span>() =&gt; {
-					<span class="kw">let</span> <span class="ident">_span</span> <span class="op">=</span> <span class="ident">span</span>.<span class="ident">child</span>(<span class="string">&quot;send-inherent-data&quot;</span>);
-					<span class="kw">let</span> <span class="ident">return_senders</span> <span class="op">=</span> <span class="ident">std::mem::take</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">awaiting_inherent</span>);
+					<span class="kw">let</span> <span class="ident">return_senders</span> <span class="op">=</span> <span class="ident">std::mem::take</span>(<span class="kw-2">&amp;mut</span> <span class="ident">state</span>.<span class="ident">awaiting_inherent</span>);
 					<span class="kw">if</span> <span class="op">!</span><span class="ident">return_senders</span>.<span class="ident">is_empty</span>() {
-						<span class="self">self</span>.<span class="ident">send_inherent_data</span>(<span class="ident">sender</span>, <span class="ident">return_senders</span>).<span class="kw">await</span>;
+						<span class="ident">send_inherent_data_bg</span>(<span class="ident">ctx</span>, <span class="kw-2">&amp;</span><span class="ident">state</span>, <span class="ident">return_senders</span>, <span class="ident">metrics</span>.<span class="ident">clone</span>()).<span class="kw">await</span><span class="question-mark">?</span>;
 					}
 				}
 			}
 		}
+	}
+}
 
-		<span class="prelude-val">Ok</span>(())
+<span class="kw">fn</span> <span class="ident">handle_active_leaves_update</span>(
+	<span class="ident">update</span>: <span class="ident">ActiveLeavesUpdate</span>,
+	<span class="ident">per_relay_parent</span>: <span class="kw-2">&amp;mut</span> <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">Hash</span>, <span class="ident">PerRelayParent</span><span class="op">&gt;</span>,
+	<span class="ident">inherent_delays</span>: <span class="kw-2">&amp;mut</span> <span class="ident">InherentDelays</span>,
+) {
+	<span class="kw">for</span> <span class="ident">deactivated</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="ident">update</span>.<span class="ident">deactivated</span> {
+		<span class="ident">per_relay_parent</span>.<span class="ident">remove</span>(<span class="ident">deactivated</span>);
 	}
 
-	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">send_inherent_data</span>(
-		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
-		<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Sender</span>,
-		<span class="ident">return_senders</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">oneshot::Sender</span><span class="op">&lt;</span><span class="ident">ProvisionerInherentData</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-	) {
+	<span class="kw">for</span> <span class="ident">leaf</span> <span class="kw">in</span> <span class="ident">update</span>.<span class="ident">activated</span> {
+		<span class="kw">let</span> <span class="ident">delay_fut</span> <span class="op">=</span> <span class="ident">Delay::new</span>(<span class="ident">PRE_PROPOSE_TIMEOUT</span>).<span class="ident">map</span>(<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">leaf</span>.<span class="ident">hash</span>).<span class="ident">boxed</span>();
+		<span class="ident">per_relay_parent</span>.<span class="ident">insert</span>(<span class="ident">leaf</span>.<span class="ident">hash</span>, <span class="ident">PerRelayParent::new</span>(<span class="ident">leaf</span>));
+		<span class="ident">inherent_delays</span>.<span class="ident">push</span>(<span class="ident">delay_fut</span>);
+	}
+}
+
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">Provisioner</span>, <span class="ident">prefix</span> <span class="op">=</span> <span class="ident"><span class="self">self</span>::overseer</span>)]</span>
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">handle_communication</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
+	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
+	<span class="ident">per_relay_parent</span>: <span class="kw-2">&amp;mut</span> <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">Hash</span>, <span class="ident">PerRelayParent</span><span class="op">&gt;</span>,
+	<span class="ident">message</span>: <span class="ident">ProvisionerMessage</span>,
+	<span class="ident">metrics</span>: <span class="kw-2">&amp;</span><span class="ident">Metrics</span>,
+) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+	<span class="kw">match</span> <span class="ident">message</span> {
+		<span class="ident">ProvisionerMessage::RequestInherentData</span>(<span class="ident">relay_parent</span>, <span class="ident">return_sender</span>) =&gt; {
+			<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">state</span>) <span class="op">=</span> <span class="ident">per_relay_parent</span>.<span class="ident">get_mut</span>(<span class="kw-2">&amp;</span><span class="ident">relay_parent</span>) {
+				<span class="kw">if</span> <span class="ident">state</span>.<span class="ident">is_inherent_ready</span> {
+					<span class="ident">send_inherent_data_bg</span>(<span class="ident">ctx</span>, <span class="kw-2">&amp;</span><span class="ident">state</span>, <span class="macro">vec!</span>[<span class="ident">return_sender</span>], <span class="ident">metrics</span>.<span class="ident">clone</span>())
+						.<span class="kw">await</span><span class="question-mark">?</span>;
+				} <span class="kw">else</span> {
+					<span class="ident">state</span>.<span class="ident">awaiting_inherent</span>.<span class="ident">push</span>(<span class="ident">return_sender</span>);
+				}
+			}
+		},
+		<span class="ident">ProvisionerMessage::ProvisionableData</span>(<span class="ident">relay_parent</span>, <span class="ident">data</span>) =&gt; {
+			<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">state</span>) <span class="op">=</span> <span class="ident">per_relay_parent</span>.<span class="ident">get_mut</span>(<span class="kw-2">&amp;</span><span class="ident">relay_parent</span>) {
+				<span class="kw">let</span> <span class="ident">span</span> <span class="op">=</span> <span class="ident">state</span>.<span class="ident">span</span>.<span class="ident">child</span>(<span class="string">&quot;provisionable-data&quot;</span>);
+				<span class="kw">let</span> <span class="ident">_timer</span> <span class="op">=</span> <span class="ident">metrics</span>.<span class="ident">time_provisionable_data</span>();
+
+				<span class="ident">note_provisionable_data</span>(<span class="ident">state</span>, <span class="kw-2">&amp;</span><span class="ident">span</span>, <span class="ident">data</span>);
+			}
+		},
+	}
+
+	<span class="prelude-val">Ok</span>(())
+}
+
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">Provisioner</span>, <span class="ident">prefix</span> <span class="op">=</span> <span class="ident"><span class="self">self</span>::overseer</span>)]</span>
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">send_inherent_data_bg</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
+	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
+	<span class="ident">per_relay_parent</span>: <span class="kw-2">&amp;</span><span class="ident">PerRelayParent</span>,
+	<span class="ident">return_senders</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">oneshot::Sender</span><span class="op">&lt;</span><span class="ident">ProvisionerInherentData</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+	<span class="ident">metrics</span>: <span class="ident">Metrics</span>,
+) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+	<span class="kw">let</span> <span class="ident">leaf</span> <span class="op">=</span> <span class="ident">per_relay_parent</span>.<span class="ident">leaf</span>.<span class="ident">clone</span>();
+	<span class="kw">let</span> <span class="ident">signed_bitfields</span> <span class="op">=</span> <span class="ident">per_relay_parent</span>.<span class="ident">signed_bitfields</span>.<span class="ident">clone</span>();
+	<span class="kw">let</span> <span class="ident">backed_candidates</span> <span class="op">=</span> <span class="ident">per_relay_parent</span>.<span class="ident">backed_candidates</span>.<span class="ident">clone</span>();
+	<span class="kw">let</span> <span class="ident">span</span> <span class="op">=</span> <span class="ident">per_relay_parent</span>.<span class="ident">span</span>.<span class="ident">child</span>(<span class="string">&quot;req-inherent-data&quot;</span>);
+
+	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sender</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">sender</span>().<span class="ident">clone</span>();
+
+	<span class="kw">let</span> <span class="ident">bg</span> <span class="op">=</span> <span class="kw">async</span> <span class="kw">move</span> {
+		<span class="kw">let</span> <span class="ident">_span</span> <span class="op">=</span> <span class="ident">span</span>;
+		<span class="kw">let</span> <span class="ident">_timer</span> <span class="op">=</span> <span class="ident">metrics</span>.<span class="ident">time_request_inherent_data</span>();
+
 		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span> <span class="ident">send_inherent_data</span>(
-			<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">leaf</span>,
-			<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">signed_bitfields</span>,
-			<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">backed_candidates</span>,
+			<span class="kw-2">&amp;</span><span class="ident">leaf</span>,
+			<span class="kw-2">&amp;</span><span class="ident">signed_bitfields</span>,
+			<span class="kw-2">&amp;</span><span class="ident">backed_candidates</span>,
 			<span class="ident">return_senders</span>,
-			<span class="ident">sender</span>,
-			<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">metrics</span>,
+			<span class="kw-2">&amp;mut</span> <span class="ident">sender</span>,
+			<span class="kw-2">&amp;</span><span class="ident">metrics</span>,
 		)
 		.<span class="kw">await</span>
 		{
 			<span class="macro">gum::warn!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="ident">err</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">err</span>, <span class="string">&quot;failed to assemble or send inherent data&quot;</span>);
-			<span class="self">self</span>.<span class="ident">metrics</span>.<span class="ident">on_inherent_data_request</span>(<span class="prelude-val">Err</span>(()));
+			<span class="ident">metrics</span>.<span class="ident">on_inherent_data_request</span>(<span class="prelude-val">Err</span>(()));
 		} <span class="kw">else</span> {
-			<span class="self">self</span>.<span class="ident">metrics</span>.<span class="ident">on_inherent_data_request</span>(<span class="prelude-val">Ok</span>(()));
+			<span class="ident">metrics</span>.<span class="ident">on_inherent_data_request</span>(<span class="prelude-val">Ok</span>(()));
 			<span class="macro">gum::debug!</span>(
 				<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
-				<span class="ident">signed_bitfield_count</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">signed_bitfields</span>.<span class="ident">len</span>(),
-				<span class="ident">backed_candidates_count</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">backed_candidates</span>.<span class="ident">len</span>(),
-				<span class="ident">leaf_hash</span> <span class="op">=</span> <span class="question-mark">?</span><span class="self">self</span>.<span class="ident">leaf</span>.<span class="ident">hash</span>,
+				<span class="ident">signed_bitfield_count</span> <span class="op">=</span> <span class="ident">signed_bitfields</span>.<span class="ident">len</span>(),
+				<span class="ident">backed_candidates_count</span> <span class="op">=</span> <span class="ident">backed_candidates</span>.<span class="ident">len</span>(),
+				<span class="ident">leaf_hash</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">leaf</span>.<span class="ident">hash</span>,
 				<span class="string">&quot;inherent data sent successfully&quot;</span>
 			);
-			<span class="self">self</span>.<span class="ident">metrics</span>.<span class="ident">observe_inherent_data_bitfields_count</span>(<span class="self">self</span>.<span class="ident">signed_bitfields</span>.<span class="ident">len</span>());
+			<span class="ident">metrics</span>.<span class="ident">observe_inherent_data_bitfields_count</span>(<span class="ident">signed_bitfields</span>.<span class="ident">len</span>());
 		}
-	}
+	};
 
-	<span class="kw">fn</span> <span class="ident">note_provisionable_data</span>(
-		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
-		<span class="ident">span</span>: <span class="kw-2">&amp;</span><span class="ident">jaeger::Span</span>,
-		<span class="ident">provisionable_data</span>: <span class="ident">ProvisionableData</span>,
-	) {
-		<span class="kw">match</span> <span class="ident">provisionable_data</span> {
-			<span class="ident">ProvisionableData::Bitfield</span>(<span class="kw">_</span>, <span class="ident">signed_bitfield</span>) =&gt;
-				<span class="self">self</span>.<span class="ident">signed_bitfields</span>.<span class="ident">push</span>(<span class="ident">signed_bitfield</span>),
-			<span class="ident">ProvisionableData::BackedCandidate</span>(<span class="ident">backed_candidate</span>) =&gt; {
-				<span class="kw">let</span> <span class="ident">candidate_hash</span> <span class="op">=</span> <span class="ident">backed_candidate</span>.<span class="ident">hash</span>();
-				<span class="macro">gum::trace!</span>(
-					<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
-					<span class="question-mark">?</span><span class="ident">candidate_hash</span>,
-					<span class="ident">para</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">backed_candidate</span>.<span class="ident">descriptor</span>().<span class="ident">para_id</span>,
-					<span class="string">&quot;noted backed candidate&quot;</span>,
-				);
-				<span class="kw">let</span> <span class="ident">_span</span> <span class="op">=</span> <span class="ident">span</span>
-					.<span class="ident">child</span>(<span class="string">&quot;provisionable-backed&quot;</span>)
-					.<span class="ident">with_candidate</span>(<span class="ident">candidate_hash</span>)
-					.<span class="ident">with_para_id</span>(<span class="ident">backed_candidate</span>.<span class="ident">descriptor</span>().<span class="ident">para_id</span>);
-				<span class="self">self</span>.<span class="ident">backed_candidates</span>.<span class="ident">push</span>(<span class="ident">backed_candidate</span>)
-			},
-			<span class="kw">_</span> =&gt; {},
-		}
+	<span class="ident">ctx</span>.<span class="ident">spawn</span>(<span class="string">&quot;send-inherent-data&quot;</span>, <span class="ident">bg</span>.<span class="ident">boxed</span>())
+		.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">Error::FailedToSpawnBackgroundTask</span>)<span class="question-mark">?</span>;
+
+	<span class="prelude-val">Ok</span>(())
+}
+
+<span class="kw">fn</span> <span class="ident">note_provisionable_data</span>(
+	<span class="ident">per_relay_parent</span>: <span class="kw-2">&amp;mut</span> <span class="ident">PerRelayParent</span>,
+	<span class="ident">span</span>: <span class="kw-2">&amp;</span><span class="ident">jaeger::Span</span>,
+	<span class="ident">provisionable_data</span>: <span class="ident">ProvisionableData</span>,
+) {
+	<span class="kw">match</span> <span class="ident">provisionable_data</span> {
+		<span class="ident">ProvisionableData::Bitfield</span>(<span class="kw">_</span>, <span class="ident">signed_bitfield</span>) =&gt;
+			<span class="ident">per_relay_parent</span>.<span class="ident">signed_bitfields</span>.<span class="ident">push</span>(<span class="ident">signed_bitfield</span>),
+		<span class="ident">ProvisionableData::BackedCandidate</span>(<span class="ident">backed_candidate</span>) =&gt; {
+			<span class="kw">let</span> <span class="ident">candidate_hash</span> <span class="op">=</span> <span class="ident">backed_candidate</span>.<span class="ident">hash</span>();
+			<span class="macro">gum::trace!</span>(
+				<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
+				<span class="question-mark">?</span><span class="ident">candidate_hash</span>,
+				<span class="ident">para</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">backed_candidate</span>.<span class="ident">descriptor</span>().<span class="ident">para_id</span>,
+				<span class="string">&quot;noted backed candidate&quot;</span>,
+			);
+			<span class="kw">let</span> <span class="ident">_span</span> <span class="op">=</span> <span class="ident">span</span>
+				.<span class="ident">child</span>(<span class="string">&quot;provisionable-backed&quot;</span>)
+				.<span class="ident">with_candidate</span>(<span class="ident">candidate_hash</span>)
+				.<span class="ident">with_para_id</span>(<span class="ident">backed_candidate</span>.<span class="ident">descriptor</span>().<span class="ident">para_id</span>);
+			<span class="ident">per_relay_parent</span>.<span class="ident">backed_candidates</span>.<span class="ident">push</span>(<span class="ident">backed_candidate</span>)
+		},
+		<span class="kw">_</span> =&gt; {},
 	}
 }
 
@@ -1624,9 +1675,6 @@
 		})
 		.<span class="ident">collect</span>())
 }
-
-<span class="doccomment">/// The provisioner subsystem.</span>
-<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">ProvisionerSubsystem</span><span class="op">&lt;</span><span class="ident">Spawner</span>, <span class="ident">Sender</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">JobSubsystem</span><span class="op">&lt;</span><span class="ident">ProvisionerJob</span><span class="op">&lt;</span><span class="ident">Sender</span><span class="op">&gt;</span>, <span class="ident">Spawner</span><span class="op">&gt;</span>;
 </code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="polkadot_node_core_provisioner" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.62.0-nightly (6dd68402c 2022-05-11)" ></div>
 </body></html>
