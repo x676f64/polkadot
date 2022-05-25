@@ -566,7 +566,7 @@
 };
 <span class="kw">use</span> <span class="ident">frame_support</span>::{
 	<span class="ident">traits::Get</span>,
-	<span class="ident">weights</span>::{<span class="ident">Weight</span>, <span class="ident">WeightToFeePolynomial</span>},
+	<span class="ident">weights</span>::{<span class="ident">Weight</span>, <span class="ident">WeightToFee</span> <span class="kw">as</span> <span class="ident">WeightToFeeT</span>},
 	<span class="ident">RuntimeDebug</span>,
 };
 <span class="kw">use</span> <span class="ident">rococo_runtime_constants::fee::WeightToFee</span>;
@@ -673,7 +673,7 @@
 				.<span class="ident">base_extrinsic</span>,
 			<span class="ident"><span class="kw">crate</span>::TransactionByteFee::get</span>(),
 			<span class="ident">pallet_transaction_payment::Pallet</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span><span class="ident">::next_fee_multiplier</span>(),
-			<span class="op">|</span><span class="ident">weight</span><span class="op">|</span> <span class="ident">WeightToFee::calc</span>(<span class="kw-2">&amp;</span><span class="ident">weight</span>),
+			<span class="op">|</span><span class="ident">weight</span><span class="op">|</span> <span class="ident">WeightToFee::weight_to_fee</span>(<span class="kw-2">&amp;</span><span class="ident">weight</span>),
 			<span class="ident">transaction</span>,
 		)
 	}
@@ -731,7 +731,7 @@
 				.<span class="ident">base_extrinsic</span>,
 			<span class="ident"><span class="kw">crate</span>::TransactionByteFee::get</span>(),
 			<span class="ident">pallet_transaction_payment::Pallet</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span><span class="ident">::next_fee_multiplier</span>(),
-			<span class="op">|</span><span class="ident">weight</span><span class="op">|</span> <span class="ident">WeightToFee::calc</span>(<span class="kw-2">&amp;</span><span class="ident">weight</span>),
+			<span class="op">|</span><span class="ident">weight</span><span class="op">|</span> <span class="ident">WeightToFee::weight_to_fee</span>(<span class="kw-2">&amp;</span><span class="ident">weight</span>),
 			<span class="ident">transaction</span>,
 		)
 	}

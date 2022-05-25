@@ -4179,7 +4179,7 @@
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">test_fees</span> {
 	<span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
-	<span class="kw">use</span> <span class="ident">frame_support::weights</span>::{<span class="ident">GetDispatchInfo</span>, <span class="ident">WeightToFeePolynomial</span>};
+	<span class="kw">use</span> <span class="ident">frame_support::weights</span>::{<span class="ident">GetDispatchInfo</span>, <span class="ident">WeightToFee</span> <span class="kw">as</span> <span class="ident">WeightToFeeT</span>};
 	<span class="kw">use</span> <span class="ident">keyring::Sr25519Keyring::Charlie</span>;
 	<span class="kw">use</span> <span class="ident">pallet_transaction_payment::Multiplier</span>;
 	<span class="kw">use</span> <span class="ident">runtime_common::MinimumMultiplier</span>;
@@ -4208,7 +4208,7 @@
 	<span class="attribute">#[<span class="ident">ignore</span>]</span>
 	<span class="kw">fn</span> <span class="ident">block_cost</span>() {
 		<span class="kw">let</span> <span class="ident">max_block_weight</span> <span class="op">=</span> <span class="ident">BlockWeights::get</span>().<span class="ident">max_block</span>;
-		<span class="kw">let</span> <span class="ident">raw_fee</span> <span class="op">=</span> <span class="ident">WeightToFee::calc</span>(<span class="kw-2">&amp;</span><span class="ident">max_block_weight</span>);
+		<span class="kw">let</span> <span class="ident">raw_fee</span> <span class="op">=</span> <span class="ident">WeightToFee::weight_to_fee</span>(<span class="kw-2">&amp;</span><span class="ident">max_block_weight</span>);
 
 		<span class="macro">println!</span>(
 			<span class="string">&quot;Full Block weight == {} // WeightToFee(full_block) == {} plank&quot;</span>,

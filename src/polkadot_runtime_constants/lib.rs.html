@@ -233,14 +233,14 @@
 		<span class="ident">fee::WeightToFee</span>,
 	};
 	<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::weights::ExtrinsicBaseWeight</span>;
-	<span class="kw">use</span> <span class="ident">frame_support::weights::WeightToFeePolynomial</span>;
+	<span class="kw">use</span> <span class="ident">frame_support::weights::WeightToFee</span> <span class="kw">as</span> <span class="ident">WeightToFeeT</span>;
 	<span class="kw">use</span> <span class="ident">runtime_common::MAXIMUM_BLOCK_WEIGHT</span>;
 
 	<span class="attribute">#[<span class="ident">test</span>]</span>
 	<span class="comment">// Test that the fee for `MAXIMUM_BLOCK_WEIGHT` of weight has sane bounds.</span>
 	<span class="kw">fn</span> <span class="ident">full_block_fee_is_correct</span>() {
 		<span class="comment">// A full block should cost between 10 and 100 DOLLARS.</span>
-		<span class="kw">let</span> <span class="ident">full_block</span> <span class="op">=</span> <span class="ident">WeightToFee::calc</span>(<span class="kw-2">&amp;</span><span class="ident">MAXIMUM_BLOCK_WEIGHT</span>);
+		<span class="kw">let</span> <span class="ident">full_block</span> <span class="op">=</span> <span class="ident">WeightToFee::weight_to_fee</span>(<span class="kw-2">&amp;</span><span class="ident">MAXIMUM_BLOCK_WEIGHT</span>);
 		<span class="macro">assert!</span>(<span class="ident">full_block</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">10</span> <span class="op">*</span> <span class="ident">DOLLARS</span>);
 		<span class="macro">assert!</span>(<span class="ident">full_block</span> <span class="op">&lt;</span><span class="op">=</span> <span class="number">100</span> <span class="op">*</span> <span class="ident">DOLLARS</span>);
 	}
@@ -250,7 +250,7 @@
 	<span class="kw">fn</span> <span class="ident">extrinsic_base_fee_is_correct</span>() {
 		<span class="comment">// `ExtrinsicBaseWeight` should cost 1/10 of a CENT</span>
 		<span class="macro">println!</span>(<span class="string">&quot;Base: {}&quot;</span>, <span class="ident">ExtrinsicBaseWeight::get</span>());
-		<span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="ident">WeightToFee::calc</span>(<span class="kw-2">&amp;</span><span class="ident">ExtrinsicBaseWeight::get</span>());
+		<span class="kw">let</span> <span class="ident">x</span> <span class="op">=</span> <span class="ident">WeightToFee::weight_to_fee</span>(<span class="kw-2">&amp;</span><span class="ident">ExtrinsicBaseWeight::get</span>());
 		<span class="kw">let</span> <span class="ident">y</span> <span class="op">=</span> <span class="ident">CENTS</span> <span class="op">/</span> <span class="number">10</span>;
 		<span class="macro">assert!</span>(<span class="ident">x</span>.<span class="ident">max</span>(<span class="ident">y</span>) <span class="op">-</span> <span class="ident">x</span>.<span class="ident">min</span>(<span class="ident">y</span>) <span class="op">&lt;</span> <span class="ident">MILLICENTS</span>);
 	}
