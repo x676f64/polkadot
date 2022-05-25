@@ -2171,24 +2171,24 @@
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">polkadot_config</span>() -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">PolkadotChainSpec</span>, <span class="ident">String</span><span class="op">&gt;</span> {
-	<span class="ident">PolkadotChainSpec::from_json_bytes</span>(<span class="kw-2">&amp;</span><span class="macro">include_bytes!</span>(<span class="string">&quot;../res/polkadot.json&quot;</span>)[..])
+	<span class="ident">PolkadotChainSpec::from_json_bytes</span>(<span class="kw-2">&amp;</span><span class="macro">include_bytes!</span>(<span class="string">&quot;../chain-specs/polkadot.json&quot;</span>)[..])
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">kusama_config</span>() -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">KusamaChainSpec</span>, <span class="ident">String</span><span class="op">&gt;</span> {
-	<span class="ident">KusamaChainSpec::from_json_bytes</span>(<span class="kw-2">&amp;</span><span class="macro">include_bytes!</span>(<span class="string">&quot;../res/kusama.json&quot;</span>)[..])
+	<span class="ident">KusamaChainSpec::from_json_bytes</span>(<span class="kw-2">&amp;</span><span class="macro">include_bytes!</span>(<span class="string">&quot;../chain-specs/kusama.json&quot;</span>)[..])
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">westend_config</span>() -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">WestendChainSpec</span>, <span class="ident">String</span><span class="op">&gt;</span> {
-	<span class="ident">WestendChainSpec::from_json_bytes</span>(<span class="kw-2">&amp;</span><span class="macro">include_bytes!</span>(<span class="string">&quot;../res/westend.json&quot;</span>)[..])
+	<span class="ident">WestendChainSpec::from_json_bytes</span>(<span class="kw-2">&amp;</span><span class="macro">include_bytes!</span>(<span class="string">&quot;../chain-specs/westend.json&quot;</span>)[..])
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">rococo_config</span>() -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">RococoChainSpec</span>, <span class="ident">String</span><span class="op">&gt;</span> {
-	<span class="ident">RococoChainSpec::from_json_bytes</span>(<span class="kw-2">&amp;</span><span class="macro">include_bytes!</span>(<span class="string">&quot;../res/rococo.json&quot;</span>)[..])
+	<span class="ident">RococoChainSpec::from_json_bytes</span>(<span class="kw-2">&amp;</span><span class="macro">include_bytes!</span>(<span class="string">&quot;../chain-specs/rococo.json&quot;</span>)[..])
 }
 
 <span class="doccomment">/// This is a temporary testnet that uses the same runtime as rococo.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">wococo_config</span>() -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">RococoChainSpec</span>, <span class="ident">String</span><span class="op">&gt;</span> {
-	<span class="ident">RococoChainSpec::from_json_bytes</span>(<span class="kw-2">&amp;</span><span class="macro">include_bytes!</span>(<span class="string">&quot;../res/wococo.json&quot;</span>)[..])
+	<span class="ident">RococoChainSpec::from_json_bytes</span>(<span class="kw-2">&amp;</span><span class="macro">include_bytes!</span>(<span class="string">&quot;../chain-specs/wococo.json&quot;</span>)[..])
 }
 
 <span class="doccomment">/// The default parachains host configuration.</span>
