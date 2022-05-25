@@ -370,7 +370,6 @@ sourcesIndex["pallet_membership"] = {"name":"","dirs":[{"name":"migrations","fil
 sourcesIndex["pallet_mmr"] = {"name":"","dirs":[{"name":"mmr","files":["mmr.rs","mod.rs","storage.rs","utils.rs"]}],"files":["default_weights.rs","lib.rs"]};
 sourcesIndex["pallet_mmr_rpc"] = {"name":"","files":["lib.rs"]};
 sourcesIndex["pallet_multisig"] = {"name":"","files":["lib.rs","weights.rs"]};
-sourcesIndex["pallet_nicks"] = {"name":"","files":["lib.rs"]};
 sourcesIndex["pallet_nomination_pools"] = {"name":"","files":["lib.rs","migration.rs","weights.rs"]};
 sourcesIndex["pallet_offences"] = {"name":"","files":["lib.rs","migration.rs"]};
 sourcesIndex["pallet_preimage"] = {"name":"","files":["lib.rs","weights.rs"]};
