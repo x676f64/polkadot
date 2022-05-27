@@ -1353,6 +1353,12 @@
 <span id="1348">1348</span>
 <span id="1349">1349</span>
 <span id="1350">1350</span>
+<span id="1351">1351</span>
+<span id="1352">1352</span>
+<span id="1353">1353</span>
+<span id="1354">1354</span>
+<span id="1355">1355</span>
+<span id="1356">1356</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -1915,9 +1921,15 @@
 		<span class="comment">// ancestors. this can only be done after writing the block entry above.</span>
 		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">up_to</span>) <span class="op">=</span> <span class="ident">force_approve</span> {
 			<span class="macro">gum::debug!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="question-mark">?</span><span class="ident">block_hash</span>, <span class="ident">up_to</span>, <span class="string">&quot;Enacting force-approve&quot;</span>);
-
 			<span class="kw">let</span> <span class="ident">approved_hashes</span> <span class="op">=</span> <span class="ident"><span class="kw">crate</span>::ops::force_approve</span>(<span class="ident">db</span>, <span class="ident">block_hash</span>, <span class="ident">up_to</span>)
 				.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">SubsystemError::with_origin</span>(<span class="string">&quot;approval-voting&quot;</span>, <span class="ident">e</span>))<span class="question-mark">?</span>;
+			<span class="macro">gum::debug!</span>(
+				<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
+				<span class="question-mark">?</span><span class="ident">block_hash</span>,
+				<span class="ident">up_to</span>,
+				<span class="string">&quot;Force-approving {} blocks&quot;</span>,
+				<span class="ident">approved_hashes</span>.<span class="ident">len</span>()
+			);
 
 			<span class="comment">// Notify chain-selection of all approved hashes.</span>
 			<span class="kw">for</span> <span class="ident">hash</span> <span class="kw">in</span> <span class="ident">approved_hashes</span> {
