@@ -2164,6 +2164,7 @@
 <span id="2159">2159</span>
 <span id="2160">2160</span>
 <span id="2161">2161</span>
+<span id="2162">2162</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -2857,6 +2858,7 @@
 	}
 
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">crowdloan_kill</span>(<span class="ident">index</span>: <span class="ident">FundIndex</span>) -&gt; <span class="ident">child::KillStorageResult</span> {
+		<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">deprecated</span>)]</span>
 		<span class="ident">child::kill_storage</span>(<span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::id_from_index</span>(<span class="ident">index</span>), <span class="prelude-val">Some</span>(<span class="ident">T::RemoveKeysLimit::get</span>()))
 	}
 

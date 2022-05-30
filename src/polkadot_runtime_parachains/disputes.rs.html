@@ -1314,6 +1314,8 @@
 <span id="1309">1309</span>
 <span id="1310">1310</span>
 <span id="1311">1311</span>
+<span id="1312">1312</span>
+<span id="1313">1313</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -2168,10 +2170,12 @@
 
 			<span class="kw">for</span> <span class="ident">to_prune</span> <span class="kw">in</span> <span class="ident">to_prune</span> {
 				<span class="comment">// This should be small, as disputes are rare, so `None` is fine.</span>
+				<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">deprecated</span>)]</span>
 				<span class="op">&lt;</span><span class="ident">Disputes</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::remove_prefix</span>(<span class="ident">to_prune</span>, <span class="prelude-val">None</span>);
 
 				<span class="comment">// This is larger, and will be extracted to the `shared` pallet for more proper pruning.</span>
 				<span class="comment">// TODO: https://github.com/paritytech/polkadot/issues/3469</span>
+				<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">deprecated</span>)]</span>
 				<span class="op">&lt;</span><span class="ident">Included</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::remove_prefix</span>(<span class="ident">to_prune</span>, <span class="prelude-val">None</span>);
 				<span class="ident">SpamSlots</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::remove</span>(<span class="ident">to_prune</span>);
 			}

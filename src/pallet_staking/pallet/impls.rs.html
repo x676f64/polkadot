@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/git/checkouts/substrate-7e08433d4c370a21/ef66142/frame/staking/src/pallet/impls.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>impls.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><script defer src="../../../main.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/git/checkouts/substrate-7e08433d4c370a21/c865344/frame/staking/src/pallet/impls.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>impls.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><script defer src="../../../main.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script>
     <noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../../pallet_staking/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div>
         </a><h2 class="location"></h2>
     </nav>
@@ -1442,6 +1442,15 @@
 <span id="1437">1437</span>
 <span id="1438">1438</span>
 <span id="1439">1439</span>
+<span id="1440">1440</span>
+<span id="1441">1441</span>
+<span id="1442">1442</span>
+<span id="1443">1443</span>
+<span id="1444">1444</span>
+<span id="1445">1445</span>
+<span id="1446">1446</span>
+<span id="1447">1447</span>
+<span id="1448">1448</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -2029,8 +2038,11 @@
 
 	<span class="doccomment">/// Clear all era information for given era.</span>
 	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">clear_era_information</span>(<span class="ident">era_index</span>: <span class="ident">EraIndex</span>) {
+		<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">deprecated</span>)]</span>
 		<span class="op">&lt;</span><span class="ident">ErasStakers</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::remove_prefix</span>(<span class="ident">era_index</span>, <span class="prelude-val">None</span>);
+		<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">deprecated</span>)]</span>
 		<span class="op">&lt;</span><span class="ident">ErasStakersClipped</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::remove_prefix</span>(<span class="ident">era_index</span>, <span class="prelude-val">None</span>);
+		<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">deprecated</span>)]</span>
 		<span class="op">&lt;</span><span class="ident">ErasValidatorPrefs</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::remove_prefix</span>(<span class="ident">era_index</span>, <span class="prelude-val">None</span>);
 		<span class="op">&lt;</span><span class="ident">ErasValidatorReward</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::remove</span>(<span class="ident">era_index</span>);
 		<span class="op">&lt;</span><span class="ident">ErasRewardPoints</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::remove</span>(<span class="ident">era_index</span>);
@@ -2428,9 +2440,13 @@
 
 	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;runtime-benchmarks&quot;</span>)]</span>
 	<span class="kw">fn</span> <span class="ident">clear</span>() {
+		<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">deprecated</span>)]</span>
 		<span class="op">&lt;</span><span class="ident">Bonded</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::remove_all</span>(<span class="prelude-val">None</span>);
+		<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">deprecated</span>)]</span>
 		<span class="op">&lt;</span><span class="ident">Ledger</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::remove_all</span>(<span class="prelude-val">None</span>);
+		<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">deprecated</span>)]</span>
 		<span class="op">&lt;</span><span class="ident">Validators</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::remove_all</span>();
+		<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">deprecated</span>)]</span>
 		<span class="op">&lt;</span><span class="ident">Nominators</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::remove_all</span>();
 
 		<span class="ident">T::VoterList::unsafe_clear</span>();
@@ -2812,7 +2828,9 @@
 	<span class="kw">fn</span> <span class="ident">unsafe_clear</span>() {
 		<span class="comment">// NOTE: Caller must ensure this doesn&#39;t lead to too many storage accesses. This is a</span>
 		<span class="comment">// condition of SortedListProvider::unsafe_clear.</span>
+		<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">deprecated</span>)]</span>
 		<span class="ident">Nominators</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::remove_all</span>();
+		<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">deprecated</span>)]</span>
 		<span class="ident">Validators</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::remove_all</span>();
 	}
 }
