@@ -77,6 +77,7 @@
 <span id="72">72</span>
 <span id="73">73</span>
 <span id="74">74</span>
+<span id="75">75</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2022 Parity Technologies (UK) Ltd.</span>
@@ -95,7 +96,7 @@
 <span class="comment">// limitations under the License.</span>
 
 <span class="doccomment">//! THIS FILE WAS AUTO-GENERATED USING THE SUBSTRATE BENCHMARK CLI VERSION 4.0.0-dev</span>
-<span class="doccomment">//! DATE: 2022-04-03 (Y/M/D)</span>
+<span class="doccomment">//! DATE: 2022-05-25 (Y/M/D)</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! SHORT-NAME: `extrinsic`, LONG-NAME: `ExtrinsicBase`, RUNTIME: `Development`</span>
 <span class="doccomment">//! WARMUPS: `10`, REPEAT: `100`</span>
@@ -104,7 +105,8 @@
 
 <span class="comment">// Executed Command:</span>
 <span class="comment">//   ./target/production/polkadot</span>
-<span class="comment">//   benchmark-overhead</span>
+<span class="comment">//   benchmark</span>
+<span class="comment">//   overhead</span>
 <span class="comment">//   --chain=rococo-dev</span>
 <span class="comment">//   --execution=wasm</span>
 <span class="comment">//   --wasm-execution=compiled</span>
@@ -121,17 +123,17 @@
 	<span class="doccomment">/// Time to execute a NO-OP extrinsic, for example `System::remark`.</span>
 	<span class="doccomment">/// Calculated by multiplying the *Average* with `1` and adding `0`.</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// Stats [NS]:</span>
-	<span class="doccomment">///   Min, Max: 78_951, 81_171</span>
-	<span class="doccomment">///   Average:  79_545</span>
-	<span class="doccomment">///   Median:   79_348</span>
-	<span class="doccomment">///   Std-Dev:  523.95</span>
+	<span class="doccomment">/// Stats nanoseconds:</span>
+	<span class="doccomment">///   Min, Max: 77_945, 79_607</span>
+	<span class="doccomment">///   Average:  78_269</span>
+	<span class="doccomment">///   Median:   78_211</span>
+	<span class="doccomment">///   Std-Dev:  259.27</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// Percentiles [NS]:</span>
-	<span class="doccomment">///   99th: 81_101</span>
-	<span class="doccomment">///   95th: 80_797</span>
-	<span class="doccomment">///   75th: 79_810</span>
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">ExtrinsicBaseWeight</span>: <span class="ident">Weight</span> <span class="op">=</span> <span class="number">79_545</span> <span class="op">*</span> <span class="ident">WEIGHT_PER_NANOS</span>;
+	<span class="doccomment">/// Percentiles nanoseconds:</span>
+	<span class="doccomment">///   99th: 79_591</span>
+	<span class="doccomment">///   95th: 78_730</span>
+	<span class="doccomment">///   75th: 78_272</span>
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">ExtrinsicBaseWeight</span>: <span class="ident">Weight</span> <span class="op">=</span> <span class="number">78_269</span> <span class="op">*</span> <span class="ident">WEIGHT_PER_NANOS</span>;
 }
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>

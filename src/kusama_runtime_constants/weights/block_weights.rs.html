@@ -96,7 +96,7 @@
 <span class="comment">// limitations under the License.</span>
 
 <span class="doccomment">//! THIS FILE WAS AUTO-GENERATED USING THE SUBSTRATE BENCHMARK CLI VERSION 4.0.0-dev</span>
-<span class="doccomment">//! DATE: 2022-05-11 (Y/M/D)</span>
+<span class="doccomment">//! DATE: 2022-05-25 (Y/M/D)</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! SHORT-NAME: `block`, LONG-NAME: `BlockExecution`, RUNTIME: `Development`</span>
 <span class="doccomment">//! WARMUPS: `10`, REPEAT: `100`</span>
@@ -123,17 +123,17 @@
 	<span class="doccomment">/// Time to execute an empty block.</span>
 	<span class="doccomment">/// Calculated by multiplying the *Average* with `1` and adding `0`.</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// Stats [NS]:</span>
-	<span class="doccomment">///   Min, Max: 5_730_330, 5_985_274</span>
-	<span class="doccomment">///   Average:  5_821_327</span>
-	<span class="doccomment">///   Median:   5_803_676</span>
-	<span class="doccomment">///   Std-Dev:  55670.15</span>
+	<span class="doccomment">/// Stats nanoseconds:</span>
+	<span class="doccomment">///   Min, Max: 5_624_778, 6_071_601</span>
+	<span class="doccomment">///   Average:  5_698_986</span>
+	<span class="doccomment">///   Median:   5_683_573</span>
+	<span class="doccomment">///   Std-Dev:  70239.9</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// Percentiles [NS]:</span>
-	<span class="doccomment">///   99th: 5_982_855</span>
-	<span class="doccomment">///   95th: 5_928_728</span>
-	<span class="doccomment">///   75th: 5_857_429</span>
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">BlockExecutionWeight</span>: <span class="ident">Weight</span> <span class="op">=</span> <span class="number">5_821_327</span> <span class="op">*</span> <span class="ident">WEIGHT_PER_NANOS</span>;
+	<span class="doccomment">/// Percentiles nanoseconds:</span>
+	<span class="doccomment">///   99th: 5_951_678</span>
+	<span class="doccomment">///   95th: 5_800_966</span>
+	<span class="doccomment">///   75th: 5_721_742</span>
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">BlockExecutionWeight</span>: <span class="ident">Weight</span> <span class="op">=</span> <span class="number">5_698_986</span> <span class="op">*</span> <span class="ident">WEIGHT_PER_NANOS</span>;
 }
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
