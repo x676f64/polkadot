@@ -761,6 +761,7 @@
 <span id="756">756</span>
 <span id="757">757</span>
 <span id="758">758</span>
+<span id="759">759</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright (C) 2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// SPDX-License-Identifier: Apache-2.0</span>
 
@@ -1368,9 +1369,10 @@
 					};
 
 					<span class="kw">let</span> <span class="ident">unbounded_meter</span> <span class="op">=</span> #<span class="ident">channel_name_unbounded_rx</span>.<span class="ident">meter</span>().<span class="ident">clone</span>();
-
-					<span class="kw">let</span> <span class="ident">message_rx</span>: <span class="ident">SubsystemIncomingMessages</span><span class="op">&lt;</span> #<span class="ident">consumes</span> <span class="op">&gt;</span> <span class="op">=</span> #<span class="ident">support_crate</span> <span class="ident">::select</span>(
-						#<span class="ident">channel_name_rx</span>, #<span class="ident">channel_name_unbounded_rx</span>
+					<span class="comment">// Prefer unbounded channel when selecting</span>
+					<span class="kw">let</span> <span class="ident">message_rx</span>: <span class="ident">SubsystemIncomingMessages</span><span class="op">&lt;</span> #<span class="ident">consumes</span> <span class="op">&gt;</span> <span class="op">=</span> #<span class="ident">support_crate</span> <span class="ident">::select_with_strategy</span>(
+						#<span class="ident">channel_name_rx</span>, #<span class="ident">channel_name_unbounded_rx</span>,
+						#<span class="ident">support_crate</span> <span class="ident">::select_message_channel_strategy</span>
 					);
 					<span class="kw">let</span> (<span class="ident">signal_tx</span>, <span class="ident">signal_rx</span>) <span class="op">=</span> #<span class="ident">support_crate</span> <span class="ident">::metered::channel</span>(
 						<span class="self">self</span>.<span class="ident">signal_capacity</span>.<span class="ident">unwrap_or</span>(<span class="ident">SIGNAL_CHANNEL_CAPACITY</span>)
