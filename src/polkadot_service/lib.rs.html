@@ -1531,6 +1531,8 @@
 <span id="1526">1526</span>
 <span id="1527">1527</span>
 <span id="1528">1528</span>
+<span id="1529">1529</span>
+<span id="1530">1530</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -2525,6 +2527,8 @@
 		<span class="kw">let</span> (<span class="ident">worker</span>, <span class="ident">service</span>) <span class="op">=</span> <span class="ident">sc_authority_discovery::new_worker_and_service_with_config</span>(
 			<span class="ident">sc_authority_discovery::WorkerConfig</span> {
 				<span class="ident">publish_non_global_ips</span>: <span class="ident">auth_disc_publish_non_global_ips</span>,
+				<span class="comment">// Require that authority discovery records are signed.</span>
+				<span class="ident">strict_record_validation</span>: <span class="bool-val">true</span>,
 				..<span class="ident">Default::default</span>()
 			},
 			<span class="ident">client</span>.<span class="ident">clone</span>(),
