@@ -806,6 +806,91 @@
 <span id="801">801</span>
 <span id="802">802</span>
 <span id="803">803</span>
+<span id="804">804</span>
+<span id="805">805</span>
+<span id="806">806</span>
+<span id="807">807</span>
+<span id="808">808</span>
+<span id="809">809</span>
+<span id="810">810</span>
+<span id="811">811</span>
+<span id="812">812</span>
+<span id="813">813</span>
+<span id="814">814</span>
+<span id="815">815</span>
+<span id="816">816</span>
+<span id="817">817</span>
+<span id="818">818</span>
+<span id="819">819</span>
+<span id="820">820</span>
+<span id="821">821</span>
+<span id="822">822</span>
+<span id="823">823</span>
+<span id="824">824</span>
+<span id="825">825</span>
+<span id="826">826</span>
+<span id="827">827</span>
+<span id="828">828</span>
+<span id="829">829</span>
+<span id="830">830</span>
+<span id="831">831</span>
+<span id="832">832</span>
+<span id="833">833</span>
+<span id="834">834</span>
+<span id="835">835</span>
+<span id="836">836</span>
+<span id="837">837</span>
+<span id="838">838</span>
+<span id="839">839</span>
+<span id="840">840</span>
+<span id="841">841</span>
+<span id="842">842</span>
+<span id="843">843</span>
+<span id="844">844</span>
+<span id="845">845</span>
+<span id="846">846</span>
+<span id="847">847</span>
+<span id="848">848</span>
+<span id="849">849</span>
+<span id="850">850</span>
+<span id="851">851</span>
+<span id="852">852</span>
+<span id="853">853</span>
+<span id="854">854</span>
+<span id="855">855</span>
+<span id="856">856</span>
+<span id="857">857</span>
+<span id="858">858</span>
+<span id="859">859</span>
+<span id="860">860</span>
+<span id="861">861</span>
+<span id="862">862</span>
+<span id="863">863</span>
+<span id="864">864</span>
+<span id="865">865</span>
+<span id="866">866</span>
+<span id="867">867</span>
+<span id="868">868</span>
+<span id="869">869</span>
+<span id="870">870</span>
+<span id="871">871</span>
+<span id="872">872</span>
+<span id="873">873</span>
+<span id="874">874</span>
+<span id="875">875</span>
+<span id="876">876</span>
+<span id="877">877</span>
+<span id="878">878</span>
+<span id="879">879</span>
+<span id="880">880</span>
+<span id="881">881</span>
+<span id="882">882</span>
+<span id="883">883</span>
+<span id="884">884</span>
+<span id="885">885</span>
+<span id="886">886</span>
+<span id="887">887</span>
+<span id="888">888</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -836,7 +921,7 @@
 <span class="kw">use</span> <span class="ident">sp_api</span>::{<span class="ident">CallApiAt</span>, <span class="ident">Encode</span>, <span class="ident">NumberFor</span>, <span class="ident">ProvideRuntimeApi</span>};
 <span class="kw">use</span> <span class="ident">sp_blockchain</span>::{<span class="ident">HeaderBackend</span>, <span class="ident">HeaderMetadata</span>};
 <span class="kw">use</span> <span class="ident">sp_consensus::BlockStatus</span>;
-<span class="kw">use</span> <span class="ident">sp_core::Pair</span>;
+<span class="kw">use</span> <span class="ident">sp_core</span>::{<span class="ident">Pair</span>, <span class="ident">H256</span>};
 <span class="kw">use</span> <span class="ident">sp_keyring::Sr25519Keyring</span>;
 <span class="kw">use</span> <span class="ident">sp_runtime</span>::{
 	<span class="ident">generic</span>::{<span class="ident">BlockId</span>, <span class="ident">SignedBlock</span>},
@@ -1047,23 +1132,44 @@
 	<span class="kw">fn</span> <span class="ident">execute_with</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">ExecuteWithClient</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">t</span>: <span class="ident">T</span>) -&gt; <span class="ident">T::Output</span>;
 }
 
+<span class="doccomment">/// Unwraps a [`Client`] into the concrete client type and</span>
+<span class="doccomment">/// provides the concrete runtime as `runtime`.</span>
 <span class="macro">macro_rules!</span> <span class="ident">with_client</span> {
 	{
 		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">self</span>:<span class="ident">ident</span>,
 		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">client</span>:<span class="ident">ident</span>,
-		{
-			$( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">code</span>:<span class="ident">tt</span> )<span class="op">*</span>
-		}
+		<span class="comment">// NOTE: Using an expression here is fine since blocks are also expressions.</span>
+		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">code</span>:<span class="ident">expr</span>
 	} =&gt; {
 		<span class="kw">match</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">self</span> {
 			<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;polkadot&quot;</span>)]</span>
-			<span class="ident"><span class="self">Self</span>::Polkadot</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">client</span>) =&gt; { $( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">code</span> )<span class="op">*</span> },
+			<span class="ident"><span class="self">Self</span>::Polkadot</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">client</span>) =&gt; {
+				<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">unused_imports</span>)]</span>
+				<span class="kw">use</span> <span class="ident">polkadot_runtime</span> <span class="kw">as</span> <span class="ident">runtime</span>;
+
+				<span class="macro-nonterminal">$</span><span class="macro-nonterminal">code</span>
+			},
 			<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;westend&quot;</span>)]</span>
-			<span class="ident"><span class="self">Self</span>::Westend</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">client</span>) =&gt; { $( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">code</span> )<span class="op">*</span> },
+			<span class="ident"><span class="self">Self</span>::Westend</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">client</span>) =&gt; {
+				<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">unused_imports</span>)]</span>
+				<span class="kw">use</span> <span class="ident">westend_runtime</span> <span class="kw">as</span> <span class="ident">runtime</span>;
+
+				<span class="macro-nonterminal">$</span><span class="macro-nonterminal">code</span>
+			},
 			<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;kusama&quot;</span>)]</span>
-			<span class="ident"><span class="self">Self</span>::Kusama</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">client</span>) =&gt; { $( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">code</span> )<span class="op">*</span> },
+			<span class="ident"><span class="self">Self</span>::Kusama</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">client</span>) =&gt; {
+				<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">unused_imports</span>)]</span>
+				<span class="kw">use</span> <span class="ident">kusama_runtime</span> <span class="kw">as</span> <span class="ident">runtime</span>;
+
+				<span class="macro-nonterminal">$</span><span class="macro-nonterminal">code</span>
+			},
 			<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;rococo&quot;</span>)]</span>
-			<span class="ident"><span class="self">Self</span>::Rococo</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">client</span>) =&gt; { $( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">code</span> )<span class="op">*</span> },
+			<span class="ident"><span class="self">Self</span>::Rococo</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">client</span>) =&gt; {
+				<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">unused_imports</span>)]</span>
+				<span class="kw">use</span> <span class="ident">rococo_runtime</span> <span class="kw">as</span> <span class="ident">runtime</span>;
+
+				<span class="macro-nonterminal">$</span><span class="macro-nonterminal">code</span>
+			},
 		}
 	}
 }
@@ -1391,195 +1497,259 @@
 	}
 }
 
-<span class="doccomment">/// Provides a `SignedPayload` for any runtime.</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// Should only be used for benchmarking as it is not tested for regular usage.</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// The first code block should set up all variables that are needed to create the</span>
-<span class="doccomment">/// `SignedPayload`. The second block can make use of the `SignedPayload`.</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// This is not done as a trait function since the return type depends on the runtime.</span>
-<span class="doccomment">/// This macro therefore uses the same approach as [`with_client!`].</span>
-<span class="macro">macro_rules!</span> <span class="ident">with_signed_payload</span> {
-	{
-		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">self</span>:<span class="ident">ident</span>,
-		{
-			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">extra</span>:<span class="ident">ident</span>,
-			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">client</span>:<span class="ident">ident</span>,
-			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">raw_payload</span>:<span class="ident">ident</span>
-		},
-		{
-			$( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">setup</span>:<span class="ident">tt</span> )<span class="op">*</span>
-		},
-		(
-			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">period</span>:<span class="ident">expr</span>,
-			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">current_block</span>:<span class="ident">expr</span>,
-			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">nonce</span>:<span class="ident">expr</span>,
-			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">tip</span>:<span class="ident">expr</span>,
-			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">call</span>:<span class="ident">expr</span>,
-			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">genesis</span>:<span class="ident">expr</span>
-		),
-		{
-			$( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">usage</span>:<span class="ident">tt</span> )<span class="op">*</span>
-		}
-	} =&gt; {
-		<span class="kw">match</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">self</span> {
-			<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;polkadot&quot;</span>)]</span>
-			<span class="ident"><span class="self">Self</span>::Polkadot</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">client</span>) =&gt; {
-				<span class="kw">use</span> <span class="ident">polkadot_runtime</span> <span class="kw">as</span> <span class="ident">runtime</span>;
+<span class="kw">impl</span> <span class="ident">frame_benchmarking_cli::ExtrinsicBuilder</span> <span class="kw">for</span> <span class="ident">Client</span> {
+	<span class="kw">fn</span> <span class="ident">remark</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">nonce</span>: <span class="ident">u32</span>) -&gt; <span class="ident">std::result::Result</span><span class="op">&lt;</span><span class="ident">OpaqueExtrinsic</span>, <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span><span class="op">&gt;</span> {
+		<span class="macro">with_client!</span> {
+			<span class="self">self</span>, <span class="ident">client</span>, {
+				<span class="kw">use</span> <span class="ident">runtime</span>::{<span class="ident">Call</span>, <span class="ident">SystemCall</span>};
 
-				$( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">setup</span> )<span class="op">*</span>
+				<span class="kw">let</span> <span class="ident">call</span> <span class="op">=</span> <span class="ident">Call::System</span>(<span class="ident">SystemCall::remark</span> { <span class="ident">remark</span>: <span class="macro">vec!</span>[] });
+				<span class="kw">let</span> <span class="ident">signer</span> <span class="op">=</span> <span class="ident">Sr25519Keyring::Bob</span>.<span class="ident">pair</span>();
 
-				<span class="kw">let</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">extra</span>: <span class="ident">runtime::SignedExtra</span> <span class="op">=</span> (
-					<span class="ident">frame_system::CheckNonZeroSender</span>::<span class="op">&lt;</span><span class="ident">runtime::Runtime</span><span class="op">&gt;</span><span class="ident">::new</span>(),
-					<span class="ident">frame_system::CheckSpecVersion</span>::<span class="op">&lt;</span><span class="ident">runtime::Runtime</span><span class="op">&gt;</span><span class="ident">::new</span>(),
-					<span class="ident">frame_system::CheckTxVersion</span>::<span class="op">&lt;</span><span class="ident">runtime::Runtime</span><span class="op">&gt;</span><span class="ident">::new</span>(),
-					<span class="ident">frame_system::CheckGenesis</span>::<span class="op">&lt;</span><span class="ident">runtime::Runtime</span><span class="op">&gt;</span><span class="ident">::new</span>(),
-					<span class="ident">frame_system::CheckMortality</span>::<span class="op">&lt;</span><span class="ident">runtime::Runtime</span><span class="op">&gt;</span><span class="ident">::from</span>(<span class="ident">sp_runtime::generic::Era::mortal</span>(
-						<span class="macro-nonterminal">$</span><span class="macro-nonterminal">period</span>,
-						<span class="macro-nonterminal">$</span><span class="macro-nonterminal">current_block</span>,
-					)),
-					<span class="ident">frame_system::CheckNonce</span>::<span class="op">&lt;</span><span class="ident">runtime::Runtime</span><span class="op">&gt;</span><span class="ident">::from</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">nonce</span>),
-					<span class="ident">frame_system::CheckWeight</span>::<span class="op">&lt;</span><span class="ident">runtime::Runtime</span><span class="op">&gt;</span><span class="ident">::new</span>(),
-					<span class="ident">pallet_transaction_payment::ChargeTransactionPayment</span>::<span class="op">&lt;</span><span class="ident">runtime::Runtime</span><span class="op">&gt;</span><span class="ident">::from</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">tip</span>),
-					<span class="ident">polkadot_runtime_common::claims::PrevalidateAttests</span>::<span class="op">&lt;</span><span class="ident">runtime::Runtime</span><span class="op">&gt;</span><span class="ident">::new</span>(),
-				);
+				<span class="kw">let</span> <span class="ident">period</span> <span class="op">=</span> <span class="ident">polkadot_runtime_common::BlockHashCount::get</span>().<span class="ident">checked_next_power_of_two</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">c</span><span class="op">|</span> <span class="ident">c</span> <span class="op">/</span> <span class="number">2</span>).<span class="ident">unwrap_or</span>(<span class="number">2</span>) <span class="kw">as</span> <span class="ident">u64</span>;
+				<span class="kw">let</span> <span class="ident">genesis</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">usage_info</span>().<span class="ident">chain</span>.<span class="ident">best_hash</span>;
 
-				<span class="kw">let</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">raw_payload</span> <span class="op">=</span> <span class="ident">runtime::SignedPayload::from_raw</span>(
-					<span class="macro-nonterminal">$</span><span class="macro-nonterminal">call</span>.<span class="ident">clone</span>(),
-					<span class="macro-nonterminal">$</span><span class="macro-nonterminal">extra</span>.<span class="ident">clone</span>(),
-					(
-						(),
-						<span class="ident">runtime::VERSION</span>.<span class="ident">spec_version</span>,
-						<span class="ident">runtime::VERSION</span>.<span class="ident">transaction_version</span>,
-						<span class="macro-nonterminal">$</span><span class="macro-nonterminal">genesis</span>.<span class="ident">clone</span>(),
-						<span class="macro-nonterminal">$</span><span class="macro-nonterminal">genesis</span>,
-						(),
-						(),
-						(),
-						(),
-					),
-				);
-
-				$( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">usage</span> )<span class="op">*</span>
-			},
-			<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;westend&quot;</span>)]</span>
-			<span class="ident"><span class="self">Self</span>::Westend</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">client</span>) =&gt; {
-				<span class="kw">use</span> <span class="ident">westend_runtime</span> <span class="kw">as</span> <span class="ident">runtime</span>;
-
-				$( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">setup</span> )<span class="op">*</span>
-
-				<span class="macro">signed_payload!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">extra</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">raw_payload</span>,
-					(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">period</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">current_block</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">nonce</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">tip</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">call</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">genesis</span>));
-
-				$( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">usage</span> )<span class="op">*</span>
-			},
-			<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;kusama&quot;</span>)]</span>
-			<span class="ident"><span class="self">Self</span>::Kusama</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">client</span>) =&gt; {
-				<span class="kw">use</span> <span class="ident">kusama_runtime</span> <span class="kw">as</span> <span class="ident">runtime</span>;
-
-				$( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">setup</span> )<span class="op">*</span>
-
-				<span class="macro">signed_payload!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">extra</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">raw_payload</span>,
-					(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">period</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">current_block</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">nonce</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">tip</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">call</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">genesis</span>));
-
-				$( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">usage</span> )<span class="op">*</span>
-			},
-			<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;rococo&quot;</span>)]</span>
-			<span class="ident"><span class="self">Self</span>::Rococo</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">client</span>) =&gt; {
-				<span class="kw">use</span> <span class="ident">rococo_runtime</span> <span class="kw">as</span> <span class="ident">runtime</span>;
-
-				$( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">setup</span> )<span class="op">*</span>
-
-				<span class="macro">signed_payload!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">extra</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">raw_payload</span>,
-					(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">period</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">current_block</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">nonce</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">tip</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">call</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">genesis</span>));
-
-				$( <span class="macro-nonterminal">$</span><span class="macro-nonterminal">usage</span> )<span class="op">*</span>
-			},
+				<span class="prelude-val">Ok</span>(<span class="ident">client</span>.<span class="ident">sign_call</span>(<span class="ident">call</span>, <span class="ident">nonce</span>, <span class="number">0</span>, <span class="ident">period</span>, <span class="ident">genesis</span>, <span class="ident">signer</span>))
+			}
 		}
 	}
 }
 
-<span class="doccomment">/// Generates a `SignedPayload` for the Kusama, Westend and Rococo runtime.</span>
+<span class="doccomment">/// Helper trait to implement [`frame_benchmarking_cli::ExtrinsicBuilder`].</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// Should only be used for benchmarking as it is not tested for regular usage.</span>
-<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">unused_macros</span>)]</span>
-<span class="macro">macro_rules!</span> <span class="ident">signed_payload</span> {
-	(
-	<span class="macro-nonterminal">$</span><span class="macro-nonterminal">extra</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">raw_payload</span>:<span class="ident">ident</span>,
-	(
-		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">period</span>:<span class="ident">expr</span>,
-		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">current_block</span>:<span class="ident">expr</span>,
-		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">nonce</span>:<span class="ident">expr</span>,
-		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">tip</span>:<span class="ident">expr</span>,
-		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">call</span>:<span class="ident">expr</span>,
-		<span class="macro-nonterminal">$</span><span class="macro-nonterminal">genesis</span>:<span class="ident">expr</span>
-	)
-	) =&gt; {
-		<span class="kw">let</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">extra</span>: <span class="ident">runtime::SignedExtra</span> <span class="op">=</span> (
+<span class="doccomment">/// Should only be used for benchmarking since it makes strong assumptions</span>
+<span class="doccomment">/// about the chain state that these calls will be valid for.</span>
+<span class="kw">trait</span> <span class="ident">BenchmarkCallSigner</span><span class="op">&lt;</span><span class="ident">Call</span>: <span class="ident">Encode</span> <span class="op">+</span> <span class="ident">Clone</span>, <span class="ident">Signer</span>: <span class="ident">Pair</span><span class="op">&gt;</span> {
+	<span class="doccomment">/// Signs a call together with the signed extensions of the specific runtime.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Only works if the current block is the genesis block since the</span>
+	<span class="doccomment">/// `CheckMortality` check is mocked by using the genesis block.</span>
+	<span class="kw">fn</span> <span class="ident">sign_call</span>(
+		<span class="kw-2">&amp;</span><span class="self">self</span>,
+		<span class="ident">call</span>: <span class="ident">Call</span>,
+		<span class="ident">nonce</span>: <span class="ident">u32</span>,
+		<span class="ident">current_block</span>: <span class="ident">u64</span>,
+		<span class="ident">period</span>: <span class="ident">u64</span>,
+		<span class="ident">genesis</span>: <span class="ident">H256</span>,
+		<span class="ident">acc</span>: <span class="ident">Signer</span>,
+	) -&gt; <span class="ident">OpaqueExtrinsic</span>;
+}
+
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;polkadot&quot;</span>)]</span>
+<span class="kw">impl</span> <span class="ident">BenchmarkCallSigner</span><span class="op">&lt;</span><span class="ident">polkadot_runtime::Call</span>, <span class="ident">sp_core::sr25519::Pair</span><span class="op">&gt;</span>
+	<span class="kw">for</span> <span class="ident">FullClient</span><span class="op">&lt;</span><span class="ident">polkadot_runtime::RuntimeApi</span>, <span class="ident">PolkadotExecutorDispatch</span><span class="op">&gt;</span>
+{
+	<span class="kw">fn</span> <span class="ident">sign_call</span>(
+		<span class="kw-2">&amp;</span><span class="self">self</span>,
+		<span class="ident">call</span>: <span class="ident">polkadot_runtime::Call</span>,
+		<span class="ident">nonce</span>: <span class="ident">u32</span>,
+		<span class="ident">current_block</span>: <span class="ident">u64</span>,
+		<span class="ident">period</span>: <span class="ident">u64</span>,
+		<span class="ident">genesis</span>: <span class="ident">H256</span>,
+		<span class="ident">acc</span>: <span class="ident">sp_core::sr25519::Pair</span>,
+	) -&gt; <span class="ident">OpaqueExtrinsic</span> {
+		<span class="kw">use</span> <span class="ident">polkadot_runtime</span> <span class="kw">as</span> <span class="ident">runtime</span>;
+
+		<span class="kw">let</span> <span class="ident">extra</span>: <span class="ident">runtime::SignedExtra</span> <span class="op">=</span> (
 			<span class="ident">frame_system::CheckNonZeroSender</span>::<span class="op">&lt;</span><span class="ident">runtime::Runtime</span><span class="op">&gt;</span><span class="ident">::new</span>(),
 			<span class="ident">frame_system::CheckSpecVersion</span>::<span class="op">&lt;</span><span class="ident">runtime::Runtime</span><span class="op">&gt;</span><span class="ident">::new</span>(),
 			<span class="ident">frame_system::CheckTxVersion</span>::<span class="op">&lt;</span><span class="ident">runtime::Runtime</span><span class="op">&gt;</span><span class="ident">::new</span>(),
 			<span class="ident">frame_system::CheckGenesis</span>::<span class="op">&lt;</span><span class="ident">runtime::Runtime</span><span class="op">&gt;</span><span class="ident">::new</span>(),
 			<span class="ident">frame_system::CheckMortality</span>::<span class="op">&lt;</span><span class="ident">runtime::Runtime</span><span class="op">&gt;</span><span class="ident">::from</span>(
-				<span class="ident">sp_runtime::generic::Era::mortal</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">period</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">current_block</span>),
+				<span class="ident">sp_runtime::generic::Era::mortal</span>(<span class="ident">period</span>, <span class="ident">current_block</span>),
 			),
-			<span class="ident">frame_system::CheckNonce</span>::<span class="op">&lt;</span><span class="ident">runtime::Runtime</span><span class="op">&gt;</span><span class="ident">::from</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">nonce</span>),
+			<span class="ident">frame_system::CheckNonce</span>::<span class="op">&lt;</span><span class="ident">runtime::Runtime</span><span class="op">&gt;</span><span class="ident">::from</span>(<span class="ident">nonce</span>),
 			<span class="ident">frame_system::CheckWeight</span>::<span class="op">&lt;</span><span class="ident">runtime::Runtime</span><span class="op">&gt;</span><span class="ident">::new</span>(),
-			<span class="ident">pallet_transaction_payment::ChargeTransactionPayment</span>::<span class="op">&lt;</span><span class="ident">runtime::Runtime</span><span class="op">&gt;</span><span class="ident">::from</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">tip</span>),
+			<span class="ident">pallet_transaction_payment::ChargeTransactionPayment</span>::<span class="op">&lt;</span><span class="ident">runtime::Runtime</span><span class="op">&gt;</span><span class="ident">::from</span>(<span class="number">0</span>),
+			<span class="ident">polkadot_runtime_common::claims::PrevalidateAttests</span>::<span class="op">&lt;</span><span class="ident">runtime::Runtime</span><span class="op">&gt;</span><span class="ident">::new</span>(),
 		);
 
-		<span class="kw">let</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">raw_payload</span> <span class="op">=</span> <span class="ident">runtime::SignedPayload::from_raw</span>(
-			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">call</span>.<span class="ident">clone</span>(),
-			<span class="macro-nonterminal">$</span><span class="macro-nonterminal">extra</span>.<span class="ident">clone</span>(),
+		<span class="kw">let</span> <span class="ident">payload</span> <span class="op">=</span> <span class="ident">runtime::SignedPayload::from_raw</span>(
+			<span class="ident">call</span>.<span class="ident">clone</span>(),
+			<span class="ident">extra</span>.<span class="ident">clone</span>(),
 			(
 				(),
 				<span class="ident">runtime::VERSION</span>.<span class="ident">spec_version</span>,
 				<span class="ident">runtime::VERSION</span>.<span class="ident">transaction_version</span>,
-				<span class="macro-nonterminal">$</span><span class="macro-nonterminal">genesis</span>.<span class="ident">clone</span>(),
-				<span class="macro-nonterminal">$</span><span class="macro-nonterminal">genesis</span>,
+				<span class="ident">genesis</span>.<span class="ident">clone</span>(),
+				<span class="ident">genesis</span>,
+				(),
 				(),
 				(),
 				(),
 			),
 		);
-	};
+
+		<span class="kw">let</span> <span class="ident">signature</span> <span class="op">=</span> <span class="ident">payload</span>.<span class="ident">using_encoded</span>(<span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="ident">acc</span>.<span class="ident">sign</span>(<span class="ident">p</span>));
+		<span class="ident">runtime::UncheckedExtrinsic::new_signed</span>(
+			<span class="ident">call</span>,
+			<span class="ident">sp_runtime::AccountId32::from</span>(<span class="ident">acc</span>.<span class="ident">public</span>()).<span class="ident">into</span>(),
+			<span class="ident">polkadot_core_primitives::Signature::Sr25519</span>(<span class="ident">signature</span>.<span class="ident">clone</span>()),
+			<span class="ident">extra</span>,
+		)
+		.<span class="ident">into</span>()
+	}
 }
 
-<span class="kw">impl</span> <span class="ident">frame_benchmarking_cli::ExtrinsicBuilder</span> <span class="kw">for</span> <span class="ident">Client</span> {
-	<span class="kw">fn</span> <span class="ident">remark</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">nonce</span>: <span class="ident">u32</span>) -&gt; <span class="ident">std::result::Result</span><span class="op">&lt;</span><span class="ident">OpaqueExtrinsic</span>, <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span><span class="op">&gt;</span> {
-		<span class="macro">with_signed_payload!</span> {
-			<span class="self">self</span>,
-			{<span class="ident">extra</span>, <span class="ident">client</span>, <span class="ident">raw_payload</span>},
-			{
-				<span class="comment">// First the setup code to init all the variables that are needed</span>
-				<span class="comment">// to build the signed extras.</span>
-				<span class="kw">use</span> <span class="ident">runtime</span>::{<span class="ident">Call</span>, <span class="ident">SystemCall</span>};
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;westend&quot;</span>)]</span>
+<span class="kw">impl</span> <span class="ident">BenchmarkCallSigner</span><span class="op">&lt;</span><span class="ident">westend_runtime::Call</span>, <span class="ident">sp_core::sr25519::Pair</span><span class="op">&gt;</span>
+	<span class="kw">for</span> <span class="ident">FullClient</span><span class="op">&lt;</span><span class="ident">westend_runtime::RuntimeApi</span>, <span class="ident">WestendExecutorDispatch</span><span class="op">&gt;</span>
+{
+	<span class="kw">fn</span> <span class="ident">sign_call</span>(
+		<span class="kw-2">&amp;</span><span class="self">self</span>,
+		<span class="ident">call</span>: <span class="ident">westend_runtime::Call</span>,
+		<span class="ident">nonce</span>: <span class="ident">u32</span>,
+		<span class="ident">current_block</span>: <span class="ident">u64</span>,
+		<span class="ident">period</span>: <span class="ident">u64</span>,
+		<span class="ident">genesis</span>: <span class="ident">H256</span>,
+		<span class="ident">acc</span>: <span class="ident">sp_core::sr25519::Pair</span>,
+	) -&gt; <span class="ident">OpaqueExtrinsic</span> {
+		<span class="kw">use</span> <span class="ident">westend_runtime</span> <span class="kw">as</span> <span class="ident">runtime</span>;
 
-				<span class="kw">let</span> <span class="ident">call</span> <span class="op">=</span> <span class="ident">Call::System</span>(<span class="ident">SystemCall::remark</span> { <span class="ident">remark</span>: <span class="macro">vec!</span>[] });
-				<span class="kw">let</span> <span class="ident">bob</span> <span class="op">=</span> <span class="ident">Sr25519Keyring::Bob</span>.<span class="ident">pair</span>();
+		<span class="kw">let</span> <span class="ident">extra</span>: <span class="ident">runtime::SignedExtra</span> <span class="op">=</span> (
+			<span class="ident">frame_system::CheckNonZeroSender</span>::<span class="op">&lt;</span><span class="ident">runtime::Runtime</span><span class="op">&gt;</span><span class="ident">::new</span>(),
+			<span class="ident">frame_system::CheckSpecVersion</span>::<span class="op">&lt;</span><span class="ident">runtime::Runtime</span><span class="op">&gt;</span><span class="ident">::new</span>(),
+			<span class="ident">frame_system::CheckTxVersion</span>::<span class="op">&lt;</span><span class="ident">runtime::Runtime</span><span class="op">&gt;</span><span class="ident">::new</span>(),
+			<span class="ident">frame_system::CheckGenesis</span>::<span class="op">&lt;</span><span class="ident">runtime::Runtime</span><span class="op">&gt;</span><span class="ident">::new</span>(),
+			<span class="ident">frame_system::CheckMortality</span>::<span class="op">&lt;</span><span class="ident">runtime::Runtime</span><span class="op">&gt;</span><span class="ident">::from</span>(
+				<span class="ident">sp_runtime::generic::Era::mortal</span>(<span class="ident">period</span>, <span class="ident">current_block</span>),
+			),
+			<span class="ident">frame_system::CheckNonce</span>::<span class="op">&lt;</span><span class="ident">runtime::Runtime</span><span class="op">&gt;</span><span class="ident">::from</span>(<span class="ident">nonce</span>),
+			<span class="ident">frame_system::CheckWeight</span>::<span class="op">&lt;</span><span class="ident">runtime::Runtime</span><span class="op">&gt;</span><span class="ident">::new</span>(),
+			<span class="ident">pallet_transaction_payment::ChargeTransactionPayment</span>::<span class="op">&lt;</span><span class="ident">runtime::Runtime</span><span class="op">&gt;</span><span class="ident">::from</span>(<span class="number">0</span>),
+		);
 
-				<span class="kw">let</span> <span class="ident">period</span> <span class="op">=</span> <span class="ident">polkadot_runtime_common::BlockHashCount::get</span>().<span class="ident">checked_next_power_of_two</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">c</span><span class="op">|</span> <span class="ident">c</span> <span class="op">/</span> <span class="number">2</span>).<span class="ident">unwrap_or</span>(<span class="number">2</span>) <span class="kw">as</span> <span class="ident">u64</span>;
+		<span class="kw">let</span> <span class="ident">payload</span> <span class="op">=</span> <span class="ident">runtime::SignedPayload::from_raw</span>(
+			<span class="ident">call</span>.<span class="ident">clone</span>(),
+			<span class="ident">extra</span>.<span class="ident">clone</span>(),
+			(
+				(),
+				<span class="ident">runtime::VERSION</span>.<span class="ident">spec_version</span>,
+				<span class="ident">runtime::VERSION</span>.<span class="ident">transaction_version</span>,
+				<span class="ident">genesis</span>.<span class="ident">clone</span>(),
+				<span class="ident">genesis</span>,
+				(),
+				(),
+				(),
+			),
+		);
 
-				<span class="kw">let</span> <span class="ident">current_block</span> <span class="op">=</span> <span class="number">0</span>;
-				<span class="kw">let</span> <span class="ident">tip</span> <span class="op">=</span> <span class="number">0</span>;
-				<span class="kw">let</span> <span class="ident">genesis</span> <span class="op">=</span> <span class="ident">client</span>.<span class="ident">usage_info</span>().<span class="ident">chain</span>.<span class="ident">best_hash</span>;
-			},
-			(<span class="ident">period</span>, <span class="ident">current_block</span>, <span class="ident">nonce</span>, <span class="ident">tip</span>, <span class="ident">call</span>, <span class="ident">genesis</span>),
-			<span class="comment">/* The SignedPayload is generated here */</span>
-			{
-				<span class="comment">// Use the payload to generate a signature.</span>
-				<span class="kw">let</span> <span class="ident">signature</span> <span class="op">=</span> <span class="ident">raw_payload</span>.<span class="ident">using_encoded</span>(<span class="op">|</span><span class="ident">payload</span><span class="op">|</span> <span class="ident">bob</span>.<span class="ident">sign</span>(<span class="ident">payload</span>));
+		<span class="kw">let</span> <span class="ident">signature</span> <span class="op">=</span> <span class="ident">payload</span>.<span class="ident">using_encoded</span>(<span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="ident">acc</span>.<span class="ident">sign</span>(<span class="ident">p</span>));
+		<span class="ident">runtime::UncheckedExtrinsic::new_signed</span>(
+			<span class="ident">call</span>,
+			<span class="ident">sp_runtime::AccountId32::from</span>(<span class="ident">acc</span>.<span class="ident">public</span>()).<span class="ident">into</span>(),
+			<span class="ident">polkadot_core_primitives::Signature::Sr25519</span>(<span class="ident">signature</span>.<span class="ident">clone</span>()),
+			<span class="ident">extra</span>,
+		)
+		.<span class="ident">into</span>()
+	}
+}
 
-				<span class="kw">let</span> <span class="ident">ext</span> <span class="op">=</span> <span class="ident">runtime::UncheckedExtrinsic::new_signed</span>(
-					<span class="ident">call</span>,
-					<span class="ident">sp_runtime::AccountId32::from</span>(<span class="ident">bob</span>.<span class="ident">public</span>()).<span class="ident">into</span>(),
-					<span class="ident">polkadot_core_primitives::Signature::Sr25519</span>(<span class="ident">signature</span>.<span class="ident">clone</span>()),
-					<span class="ident">extra</span>,
-				);
-				<span class="prelude-val">Ok</span>(<span class="ident">ext</span>.<span class="ident">into</span>())
-			}
-		}
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;kusama&quot;</span>)]</span>
+<span class="kw">impl</span> <span class="ident">BenchmarkCallSigner</span><span class="op">&lt;</span><span class="ident">kusama_runtime::Call</span>, <span class="ident">sp_core::sr25519::Pair</span><span class="op">&gt;</span>
+	<span class="kw">for</span> <span class="ident">FullClient</span><span class="op">&lt;</span><span class="ident">kusama_runtime::RuntimeApi</span>, <span class="ident">KusamaExecutorDispatch</span><span class="op">&gt;</span>
+{
+	<span class="kw">fn</span> <span class="ident">sign_call</span>(
+		<span class="kw-2">&amp;</span><span class="self">self</span>,
+		<span class="ident">call</span>: <span class="ident">kusama_runtime::Call</span>,
+		<span class="ident">nonce</span>: <span class="ident">u32</span>,
+		<span class="ident">current_block</span>: <span class="ident">u64</span>,
+		<span class="ident">period</span>: <span class="ident">u64</span>,
+		<span class="ident">genesis</span>: <span class="ident">H256</span>,
+		<span class="ident">acc</span>: <span class="ident">sp_core::sr25519::Pair</span>,
+	) -&gt; <span class="ident">OpaqueExtrinsic</span> {
+		<span class="kw">use</span> <span class="ident">kusama_runtime</span> <span class="kw">as</span> <span class="ident">runtime</span>;
+
+		<span class="kw">let</span> <span class="ident">extra</span>: <span class="ident">runtime::SignedExtra</span> <span class="op">=</span> (
+			<span class="ident">frame_system::CheckNonZeroSender</span>::<span class="op">&lt;</span><span class="ident">runtime::Runtime</span><span class="op">&gt;</span><span class="ident">::new</span>(),
+			<span class="ident">frame_system::CheckSpecVersion</span>::<span class="op">&lt;</span><span class="ident">runtime::Runtime</span><span class="op">&gt;</span><span class="ident">::new</span>(),
+			<span class="ident">frame_system::CheckTxVersion</span>::<span class="op">&lt;</span><span class="ident">runtime::Runtime</span><span class="op">&gt;</span><span class="ident">::new</span>(),
+			<span class="ident">frame_system::CheckGenesis</span>::<span class="op">&lt;</span><span class="ident">runtime::Runtime</span><span class="op">&gt;</span><span class="ident">::new</span>(),
+			<span class="ident">frame_system::CheckMortality</span>::<span class="op">&lt;</span><span class="ident">runtime::Runtime</span><span class="op">&gt;</span><span class="ident">::from</span>(
+				<span class="ident">sp_runtime::generic::Era::mortal</span>(<span class="ident">period</span>, <span class="ident">current_block</span>),
+			),
+			<span class="ident">frame_system::CheckNonce</span>::<span class="op">&lt;</span><span class="ident">runtime::Runtime</span><span class="op">&gt;</span><span class="ident">::from</span>(<span class="ident">nonce</span>),
+			<span class="ident">frame_system::CheckWeight</span>::<span class="op">&lt;</span><span class="ident">runtime::Runtime</span><span class="op">&gt;</span><span class="ident">::new</span>(),
+			<span class="ident">pallet_transaction_payment::ChargeTransactionPayment</span>::<span class="op">&lt;</span><span class="ident">runtime::Runtime</span><span class="op">&gt;</span><span class="ident">::from</span>(<span class="number">0</span>),
+		);
+
+		<span class="kw">let</span> <span class="ident">payload</span> <span class="op">=</span> <span class="ident">runtime::SignedPayload::from_raw</span>(
+			<span class="ident">call</span>.<span class="ident">clone</span>(),
+			<span class="ident">extra</span>.<span class="ident">clone</span>(),
+			(
+				(),
+				<span class="ident">runtime::VERSION</span>.<span class="ident">spec_version</span>,
+				<span class="ident">runtime::VERSION</span>.<span class="ident">transaction_version</span>,
+				<span class="ident">genesis</span>.<span class="ident">clone</span>(),
+				<span class="ident">genesis</span>,
+				(),
+				(),
+				(),
+			),
+		);
+
+		<span class="kw">let</span> <span class="ident">signature</span> <span class="op">=</span> <span class="ident">payload</span>.<span class="ident">using_encoded</span>(<span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="ident">acc</span>.<span class="ident">sign</span>(<span class="ident">p</span>));
+		<span class="ident">runtime::UncheckedExtrinsic::new_signed</span>(
+			<span class="ident">call</span>,
+			<span class="ident">sp_runtime::AccountId32::from</span>(<span class="ident">acc</span>.<span class="ident">public</span>()).<span class="ident">into</span>(),
+			<span class="ident">polkadot_core_primitives::Signature::Sr25519</span>(<span class="ident">signature</span>.<span class="ident">clone</span>()),
+			<span class="ident">extra</span>,
+		)
+		.<span class="ident">into</span>()
+	}
+}
+
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;rococo&quot;</span>)]</span>
+<span class="kw">impl</span> <span class="ident">BenchmarkCallSigner</span><span class="op">&lt;</span><span class="ident">rococo_runtime::Call</span>, <span class="ident">sp_core::sr25519::Pair</span><span class="op">&gt;</span>
+	<span class="kw">for</span> <span class="ident">FullClient</span><span class="op">&lt;</span><span class="ident">rococo_runtime::RuntimeApi</span>, <span class="ident">RococoExecutorDispatch</span><span class="op">&gt;</span>
+{
+	<span class="kw">fn</span> <span class="ident">sign_call</span>(
+		<span class="kw-2">&amp;</span><span class="self">self</span>,
+		<span class="ident">call</span>: <span class="ident">rococo_runtime::Call</span>,
+		<span class="ident">nonce</span>: <span class="ident">u32</span>,
+		<span class="ident">current_block</span>: <span class="ident">u64</span>,
+		<span class="ident">period</span>: <span class="ident">u64</span>,
+		<span class="ident">genesis</span>: <span class="ident">H256</span>,
+		<span class="ident">acc</span>: <span class="ident">sp_core::sr25519::Pair</span>,
+	) -&gt; <span class="ident">OpaqueExtrinsic</span> {
+		<span class="kw">use</span> <span class="ident">rococo_runtime</span> <span class="kw">as</span> <span class="ident">runtime</span>;
+
+		<span class="kw">let</span> <span class="ident">extra</span>: <span class="ident">runtime::SignedExtra</span> <span class="op">=</span> (
+			<span class="ident">frame_system::CheckNonZeroSender</span>::<span class="op">&lt;</span><span class="ident">runtime::Runtime</span><span class="op">&gt;</span><span class="ident">::new</span>(),
+			<span class="ident">frame_system::CheckSpecVersion</span>::<span class="op">&lt;</span><span class="ident">runtime::Runtime</span><span class="op">&gt;</span><span class="ident">::new</span>(),
+			<span class="ident">frame_system::CheckTxVersion</span>::<span class="op">&lt;</span><span class="ident">runtime::Runtime</span><span class="op">&gt;</span><span class="ident">::new</span>(),
+			<span class="ident">frame_system::CheckGenesis</span>::<span class="op">&lt;</span><span class="ident">runtime::Runtime</span><span class="op">&gt;</span><span class="ident">::new</span>(),
+			<span class="ident">frame_system::CheckMortality</span>::<span class="op">&lt;</span><span class="ident">runtime::Runtime</span><span class="op">&gt;</span><span class="ident">::from</span>(
+				<span class="ident">sp_runtime::generic::Era::mortal</span>(<span class="ident">period</span>, <span class="ident">current_block</span>),
+			),
+			<span class="ident">frame_system::CheckNonce</span>::<span class="op">&lt;</span><span class="ident">runtime::Runtime</span><span class="op">&gt;</span><span class="ident">::from</span>(<span class="ident">nonce</span>),
+			<span class="ident">frame_system::CheckWeight</span>::<span class="op">&lt;</span><span class="ident">runtime::Runtime</span><span class="op">&gt;</span><span class="ident">::new</span>(),
+			<span class="ident">pallet_transaction_payment::ChargeTransactionPayment</span>::<span class="op">&lt;</span><span class="ident">runtime::Runtime</span><span class="op">&gt;</span><span class="ident">::from</span>(<span class="number">0</span>),
+		);
+
+		<span class="kw">let</span> <span class="ident">payload</span> <span class="op">=</span> <span class="ident">runtime::SignedPayload::from_raw</span>(
+			<span class="ident">call</span>.<span class="ident">clone</span>(),
+			<span class="ident">extra</span>.<span class="ident">clone</span>(),
+			(
+				(),
+				<span class="ident">runtime::VERSION</span>.<span class="ident">spec_version</span>,
+				<span class="ident">runtime::VERSION</span>.<span class="ident">transaction_version</span>,
+				<span class="ident">genesis</span>.<span class="ident">clone</span>(),
+				<span class="ident">genesis</span>,
+				(),
+				(),
+				(),
+			),
+		);
+
+		<span class="kw">let</span> <span class="ident">signature</span> <span class="op">=</span> <span class="ident">payload</span>.<span class="ident">using_encoded</span>(<span class="op">|</span><span class="ident">p</span><span class="op">|</span> <span class="ident">acc</span>.<span class="ident">sign</span>(<span class="ident">p</span>));
+		<span class="ident">runtime::UncheckedExtrinsic::new_signed</span>(
+			<span class="ident">call</span>,
+			<span class="ident">sp_runtime::AccountId32::from</span>(<span class="ident">acc</span>.<span class="ident">public</span>()).<span class="ident">into</span>(),
+			<span class="ident">polkadot_core_primitives::Signature::Sr25519</span>(<span class="ident">signature</span>.<span class="ident">clone</span>()),
+			<span class="ident">extra</span>,
+		)
+		.<span class="ident">into</span>()
 	}
 }
 

@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/git/checkouts/substrate-7e08433d4c370a21/54d6f2c/frame/support/src/storage/types/double_map.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>double_map.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../../storage.js"></script><script src="../../../../crates.js"></script><script defer src="../../../../main.js"></script><script defer src="../../../../source-script.js"></script><script defer src="../../../../source-files.js"></script>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/git/checkouts/substrate-7e08433d4c370a21/4aec7b4/frame/support/src/storage/types/double_map.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>double_map.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../../storage.js"></script><script src="../../../../crates.js"></script><script defer src="../../../../main.js"></script><script defer src="../../../../source-script.js"></script><script defer src="../../../../source-files.js"></script>
     <noscript><link rel="stylesheet" href="../../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../../../frame_support/index.html"><div class="logo-container"><img class="rust-logo" src="../../../../rust-logo.svg" alt="logo"></div>
         </a><h2 class="location"></h2>
     </nav>
@@ -927,6 +927,35 @@
 <span id="922">922</span>
 <span id="923">923</span>
 <span id="924">924</span>
+<span id="925">925</span>
+<span id="926">926</span>
+<span id="927">927</span>
+<span id="928">928</span>
+<span id="929">929</span>
+<span id="930">930</span>
+<span id="931">931</span>
+<span id="932">932</span>
+<span id="933">933</span>
+<span id="934">934</span>
+<span id="935">935</span>
+<span id="936">936</span>
+<span id="937">937</span>
+<span id="938">938</span>
+<span id="939">939</span>
+<span id="940">940</span>
+<span id="941">941</span>
+<span id="942">942</span>
+<span id="943">943</span>
+<span id="944">944</span>
+<span id="945">945</span>
+<span id="946">946</span>
+<span id="947">947</span>
+<span id="948">948</span>
+<span id="949">949</span>
+<span id="950">950</span>
+<span id="951">951</span>
+<span id="952">952</span>
+<span id="953">953</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -951,7 +980,7 @@
 	<span class="ident">metadata</span>::{<span class="ident">StorageEntryMetadata</span>, <span class="ident">StorageEntryType</span>},
 	<span class="ident">storage</span>::{
 		<span class="ident">types</span>::{<span class="ident">OptionQuery</span>, <span class="ident">QueryKindTrait</span>, <span class="ident">StorageEntryMetadataBuilder</span>},
-		<span class="ident">StorageAppend</span>, <span class="ident">StorageDecodeLength</span>, <span class="ident">StoragePrefixedMap</span>, <span class="ident">StorageTryAppend</span>,
+		<span class="ident">KeyLenOf</span>, <span class="ident">StorageAppend</span>, <span class="ident">StorageDecodeLength</span>, <span class="ident">StoragePrefixedMap</span>, <span class="ident">StorageTryAppend</span>,
 	},
 	<span class="ident">traits</span>::{<span class="ident">Get</span>, <span class="ident">GetDefault</span>, <span class="ident">StorageInfo</span>, <span class="ident">StorageInstance</span>},
 };
@@ -998,6 +1027,35 @@
 		<span class="ident">MaxValues</span>,
 	)<span class="op">&gt;</span>,
 );
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Prefix</span>, <span class="ident">Hasher1</span>, <span class="ident">Key1</span>, <span class="ident">Hasher2</span>, <span class="ident">Key2</span>, <span class="ident">Value</span>, <span class="ident">QueryKind</span>, <span class="ident">OnEmpty</span>, <span class="ident">MaxValues</span><span class="op">&gt;</span> <span class="ident">Get</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>
+	<span class="kw">for</span> <span class="ident">KeyLenOf</span><span class="op">&lt;</span>
+		<span class="ident">StorageDoubleMap</span><span class="op">&lt;</span>
+			<span class="ident">Prefix</span>,
+			<span class="ident">Hasher1</span>,
+			<span class="ident">Key1</span>,
+			<span class="ident">Hasher2</span>,
+			<span class="ident">Key2</span>,
+			<span class="ident">Value</span>,
+			<span class="ident">QueryKind</span>,
+			<span class="ident">OnEmpty</span>,
+			<span class="ident">MaxValues</span>,
+		<span class="op">&gt;</span>,
+	<span class="op">&gt;</span> <span class="kw">where</span>
+	<span class="ident">Prefix</span>: <span class="ident">StorageInstance</span>,
+	<span class="ident">Hasher1</span>: <span class="ident"><span class="kw">crate</span>::hash::StorageHasher</span>,
+	<span class="ident">Hasher2</span>: <span class="ident"><span class="kw">crate</span>::hash::StorageHasher</span>,
+	<span class="ident">Key1</span>: <span class="ident">MaxEncodedLen</span>,
+	<span class="ident">Key2</span>: <span class="ident">MaxEncodedLen</span>,
+{
+	<span class="kw">fn</span> <span class="ident">get</span>() -&gt; <span class="ident">u32</span> {
+		<span class="kw">let</span> <span class="ident">z</span> <span class="op">=</span> <span class="ident">Hasher1::max_len</span>::<span class="op">&lt;</span><span class="ident">Key1</span><span class="op">&gt;</span>() <span class="op">+</span>
+			<span class="ident">Hasher2::max_len</span>::<span class="op">&lt;</span><span class="ident">Key2</span><span class="op">&gt;</span>() <span class="op">+</span>
+			<span class="ident">Prefix::pallet_prefix</span>().<span class="ident">len</span>() <span class="op">+</span>
+			<span class="ident">Prefix::STORAGE_PREFIX</span>.<span class="ident">len</span>();
+		<span class="ident">z</span> <span class="kw">as</span> <span class="ident">u32</span>
+	}
+}
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Prefix</span>, <span class="ident">Hasher1</span>, <span class="ident">Key1</span>, <span class="ident">Hasher2</span>, <span class="ident">Key2</span>, <span class="ident">Value</span>, <span class="ident">QueryKind</span>, <span class="ident">OnEmpty</span>, <span class="ident">MaxValues</span><span class="op">&gt;</span>
 	<span class="ident"><span class="kw">crate</span>::storage::generator::StorageDoubleMap</span><span class="op">&lt;</span><span class="ident">Key1</span>, <span class="ident">Key2</span>, <span class="ident">Value</span><span class="op">&gt;</span>
