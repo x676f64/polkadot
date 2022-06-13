@@ -175,13 +175,6 @@
 <span id="170">170</span>
 <span id="171">171</span>
 <span id="172">172</span>
-<span id="173">173</span>
-<span id="174">174</span>
-<span id="175">175</span>
-<span id="176">176</span>
-<span id="177">177</span>
-<span id="178">178</span>
-<span id="179">179</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -331,13 +324,6 @@
 		<span class="ident">votes</span>: <span class="ident">CandidateVotes</span>,
 	) {
 		<span class="self">self</span>.<span class="ident">candidate_votes</span>.<span class="ident">insert</span>((<span class="ident">session</span>, <span class="ident">candidate_hash</span>), <span class="prelude-val">Some</span>(<span class="ident">votes</span>));
-	}
-
-	<span class="doccomment">/// Prepare a deletion of the candidate votes under the indicated candidate.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// Later calls to this function for the same candidate will override earlier ones.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">delete_candidate_votes</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">session</span>: <span class="ident">SessionIndex</span>, <span class="ident">candidate_hash</span>: <span class="ident">CandidateHash</span>) {
-		<span class="self">self</span>.<span class="ident">candidate_votes</span>.<span class="ident">insert</span>((<span class="ident">session</span>, <span class="ident">candidate_hash</span>), <span class="prelude-val">None</span>);
 	}
 
 	<span class="doccomment">/// Transform this backend into a set of write-ops to be written to the inner backend.</span>
