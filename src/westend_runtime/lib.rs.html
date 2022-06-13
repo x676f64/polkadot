@@ -2270,7 +2270,7 @@
 	<span class="kw">type</span> <span class="ident">VoterList</span> <span class="op">=</span> <span class="ident">VoterList</span>;
 	<span class="kw">type</span> <span class="ident">MaxUnlockingChunks</span> <span class="op">=</span> <span class="ident">frame_support::traits::ConstU32</span><span class="op">&lt;</span><span class="number">32</span><span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">BenchmarkingConfig</span> <span class="op">=</span> <span class="ident">runtime_common::StakingBenchmarkingConfig</span>;
-	<span class="kw">type</span> <span class="ident">OnStakerSlash</span> <span class="op">=</span> ();
+	<span class="kw">type</span> <span class="ident">OnStakerSlash</span> <span class="op">=</span> <span class="ident">NominationPools</span>;
 	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> <span class="ident">weights::pallet_staking::WeightInfo</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>;
 }
 
