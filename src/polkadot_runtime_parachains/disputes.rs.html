@@ -1316,6 +1316,67 @@
 <span id="1311">1311</span>
 <span id="1312">1312</span>
 <span id="1313">1313</span>
+<span id="1314">1314</span>
+<span id="1315">1315</span>
+<span id="1316">1316</span>
+<span id="1317">1317</span>
+<span id="1318">1318</span>
+<span id="1319">1319</span>
+<span id="1320">1320</span>
+<span id="1321">1321</span>
+<span id="1322">1322</span>
+<span id="1323">1323</span>
+<span id="1324">1324</span>
+<span id="1325">1325</span>
+<span id="1326">1326</span>
+<span id="1327">1327</span>
+<span id="1328">1328</span>
+<span id="1329">1329</span>
+<span id="1330">1330</span>
+<span id="1331">1331</span>
+<span id="1332">1332</span>
+<span id="1333">1333</span>
+<span id="1334">1334</span>
+<span id="1335">1335</span>
+<span id="1336">1336</span>
+<span id="1337">1337</span>
+<span id="1338">1338</span>
+<span id="1339">1339</span>
+<span id="1340">1340</span>
+<span id="1341">1341</span>
+<span id="1342">1342</span>
+<span id="1343">1343</span>
+<span id="1344">1344</span>
+<span id="1345">1345</span>
+<span id="1346">1346</span>
+<span id="1347">1347</span>
+<span id="1348">1348</span>
+<span id="1349">1349</span>
+<span id="1350">1350</span>
+<span id="1351">1351</span>
+<span id="1352">1352</span>
+<span id="1353">1353</span>
+<span id="1354">1354</span>
+<span id="1355">1355</span>
+<span id="1356">1356</span>
+<span id="1357">1357</span>
+<span id="1358">1358</span>
+<span id="1359">1359</span>
+<span id="1360">1360</span>
+<span id="1361">1361</span>
+<span id="1362">1362</span>
+<span id="1363">1363</span>
+<span id="1364">1364</span>
+<span id="1365">1365</span>
+<span id="1366">1366</span>
+<span id="1367">1367</span>
+<span id="1368">1368</span>
+<span id="1369">1369</span>
+<span id="1370">1370</span>
+<span id="1371">1371</span>
+<span id="1372">1372</span>
+<span id="1373">1373</span>
+<span id="1374">1374</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -1834,14 +1895,19 @@
 <span class="macro">bitflags::bitflags!</span> {
 	<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Default</span>)]</span>
 	<span class="kw">struct</span> <span class="ident">DisputeStateFlags</span>: <span class="ident">u8</span> {
+		<span class="doccomment">/// The byzantine threshold of `f + 1` votes (and hence participating validators) was reached.</span>
 		<span class="kw">const</span> <span class="ident">CONFIRMED</span> <span class="op">=</span> <span class="number">0b0001</span>;
+		<span class="doccomment">/// Is the supermajority for validity of the dispute reached.</span>
 		<span class="kw">const</span> <span class="ident">FOR_SUPERMAJORITY</span> <span class="op">=</span> <span class="number">0b0010</span>;
+		<span class="doccomment">/// Is the supermajority against the validity of the block reached.</span>
 		<span class="kw">const</span> <span class="ident">AGAINST_SUPERMAJORITY</span> <span class="op">=</span> <span class="number">0b0100</span>;
 	}
 }
 
 <span class="kw">impl</span> <span class="ident">DisputeStateFlags</span> {
 	<span class="kw">fn</span> <span class="ident">from_state</span><span class="op">&lt;</span><span class="ident">BlockNumber</span><span class="op">&gt;</span>(<span class="ident">state</span>: <span class="kw-2">&amp;</span><span class="ident">DisputeState</span><span class="op">&lt;</span><span class="ident">BlockNumber</span><span class="op">&gt;</span>) -&gt; <span class="self">Self</span> {
+		<span class="comment">// Only correct since `DisputeState` is _always_ initialized</span>
+		<span class="comment">// with the validator set based on the session.</span>
 		<span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="ident">state</span>.<span class="ident">validators_for</span>.<span class="ident">len</span>();
 
 		<span class="kw">let</span> <span class="ident">byzantine_threshold</span> <span class="op">=</span> <span class="ident">byzantine_threshold</span>(<span class="ident">n</span>);
@@ -1867,18 +1933,20 @@
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">PartialEq</span>, <span class="ident">RuntimeDebug</span>)]</span>
 <span class="kw">enum</span> <span class="ident">SpamSlotChange</span> {
+	<span class="doccomment">/// Add a `+1` to the spam slot for a particular validator index in this session.</span>
 	<span class="ident">Inc</span>,
+	<span class="doccomment">/// Subtract `-1` ...</span>
 	<span class="ident">Dec</span>,
 }
 
 <span class="kw">struct</span> <span class="ident">ImportSummary</span><span class="op">&lt;</span><span class="ident">BlockNumber</span><span class="op">&gt;</span> {
-	<span class="comment">// The new state, with all votes imported.</span>
+	<span class="doccomment">/// The new state, with all votes imported.</span>
 	<span class="ident">state</span>: <span class="ident">DisputeState</span><span class="op">&lt;</span><span class="ident">BlockNumber</span><span class="op">&gt;</span>,
-	<span class="comment">// Changes to spam slots. Validator index paired with directional change.</span>
+	<span class="doccomment">/// Changes to spam slots. Validator index paired with directional change.</span>
 	<span class="ident">spam_slot_changes</span>: <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">ValidatorIndex</span>, <span class="ident">SpamSlotChange</span>)<span class="op">&gt;</span>,
-	<span class="comment">// Validators to slash for being (wrongly) on the AGAINST side.</span>
+	<span class="doccomment">/// Validators to slash for being (wrongly) on the AGAINST side.</span>
 	<span class="ident">slash_against</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ValidatorIndex</span><span class="op">&gt;</span>,
-	<span class="comment">// Validators to slash for being (wrongly) on the FOR side.</span>
+	<span class="doccomment">/// Validators to slash for being (wrongly) on the FOR side.</span>
 	<span class="ident">slash_for</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ValidatorIndex</span><span class="op">&gt;</span>,
 	<span class="comment">// New participants in the dispute.</span>
 	<span class="ident">new_participants</span>: <span class="ident">bitvec::vec::BitVec</span><span class="op">&lt;</span><span class="ident">u8</span>, <span class="ident">BitOrderLsb0</span><span class="op">&gt;</span>,
@@ -1888,7 +1956,9 @@
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">RuntimeDebug</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>
 <span class="kw">enum</span> <span class="ident">VoteImportError</span> {
+	<span class="doccomment">/// Validator index was outside the range of valid validator indices in the given session.</span>
 	<span class="ident">ValidatorIndexOutOfBounds</span>,
+	<span class="doccomment">/// Found a duplicate statement in the dispute statement set.</span>
 	<span class="ident">DuplicateStatement</span>,
 }
 
@@ -1901,10 +1971,15 @@
 	}
 }
 
+<span class="doccomment">/// A transport statement bit change for a single validator.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">RuntimeDebug</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>
 <span class="kw">struct</span> <span class="ident">ImportUndo</span> {
+	<span class="doccomment">/// The validator index to which to associate the statement import.</span>
 	<span class="ident">validator_index</span>: <span class="ident">ValidatorIndex</span>,
+	<span class="doccomment">/// The direction of the vote, for block validity (`true`) or invalidity (`false`).</span>
 	<span class="ident">valid</span>: <span class="ident">bool</span>,
+	<span class="doccomment">/// Has the validator participated before, i.e. in backing or</span>
+	<span class="doccomment">/// with an oposing vote.</span>
 	<span class="ident">new_participant</span>: <span class="ident">bool</span>,
 }
 
@@ -1950,9 +2025,9 @@
 
 		<span class="ident">bits</span>.<span class="ident">set</span>(<span class="ident">validator</span>.<span class="number">0</span> <span class="kw">as</span> <span class="ident">usize</span>, <span class="bool-val">true</span>);
 
-		<span class="comment">// New participants tracks those which didn&#39;t appear on either</span>
-		<span class="comment">// side of the dispute until now. So we check the other side</span>
-		<span class="comment">// and checked the first side before.</span>
+		<span class="comment">// New participants tracks those validators by index, which didn&#39;t appear on either</span>
+		<span class="comment">// side of the dispute until now (so they make a first appearance).</span>
+		<span class="comment">// To verify this we need to assure they also were not part of the opposing side before.</span>
 		<span class="kw">if</span> <span class="ident">other_bits</span>.<span class="ident">get</span>(<span class="ident">validator</span>.<span class="number">0</span> <span class="kw">as</span> <span class="ident">usize</span>).<span class="ident">map_or</span>(<span class="bool-val">false</span>, <span class="op">|</span><span class="ident">b</span><span class="op">|</span> <span class="op">!</span><span class="kw-2">*</span><span class="ident">b</span>) {
 			<span class="ident">undo</span>.<span class="ident">new_participant</span> <span class="op">=</span> <span class="bool-val">true</span>;
 			<span class="self">self</span>.<span class="ident">new_participants</span>.<span class="ident">set</span>(<span class="ident">validator</span>.<span class="number">0</span> <span class="kw">as</span> <span class="ident">usize</span>, <span class="bool-val">true</span>);
@@ -1961,6 +2036,7 @@
 		<span class="prelude-val">Ok</span>(<span class="ident">undo</span>)
 	}
 
+	<span class="doccomment">/// Revert a done transaction.</span>
 	<span class="kw">fn</span> <span class="ident">undo</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">undo</span>: <span class="ident">ImportUndo</span>) {
 		<span class="kw">if</span> <span class="ident">undo</span>.<span class="ident">valid</span> {
 			<span class="self">self</span>.<span class="ident">state</span>.<span class="ident">validators_for</span>.<span class="ident">set</span>(<span class="ident">undo</span>.<span class="ident">validator_index</span>.<span class="number">0</span> <span class="kw">as</span> <span class="ident">usize</span>, <span class="bool-val">false</span>);
@@ -1973,6 +2049,7 @@
 		}
 	}
 
+	<span class="doccomment">/// Collect all dispute votes.</span>
 	<span class="kw">fn</span> <span class="ident">finish</span>(<span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="ident">ImportSummary</span><span class="op">&lt;</span><span class="ident">BlockNumber</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">pre_flags</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">pre_flags</span>;
 		<span class="kw">let</span> <span class="ident">post_flags</span> <span class="op">=</span> <span class="ident">DisputeStateFlags::from_state</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">state</span>);
@@ -1999,8 +2076,12 @@
 					.<span class="ident">map</span>(<span class="op">|</span><span class="ident">i</span><span class="op">|</span> (<span class="ident">ValidatorIndex</span>(<span class="ident">i</span> <span class="kw">as</span> <span class="kw">_</span>), <span class="ident">SpamSlotChange::Dec</span>))
 					.<span class="ident">collect</span>()
 			},
-			(<span class="bool-val">true</span>, <span class="bool-val">true</span>) <span class="op">|</span> (<span class="bool-val">true</span>, <span class="bool-val">false</span>) =&gt; {
-				<span class="comment">// nothing to do. (true, false) is also impossible.</span>
+			(<span class="bool-val">true</span>, <span class="bool-val">false</span>) =&gt; {
+				<span class="macro">log::error!</span>(<span class="string">&quot;Dispute statements are never removed. This is a bug&quot;</span>);
+				<span class="ident">Vec::new</span>()
+			},
+			(<span class="bool-val">true</span>, <span class="bool-val">true</span>) =&gt; {
+				<span class="comment">// No change, nothing to do.</span>
 				<span class="ident">Vec::new</span>()
 			},
 		};
@@ -2243,27 +2324,32 @@
 		<span class="kw">let</span> <span class="ident">n_validators</span> <span class="op">=</span> <span class="ident">session_info</span>.<span class="ident">validators</span>.<span class="ident">len</span>();
 
 		<span class="comment">// Check for ancient.</span>
-		<span class="kw">let</span> <span class="ident">dispute_state</span> <span class="op">=</span> {
+		<span class="kw">let</span> (<span class="ident">first_votes</span>, <span class="ident">dispute_state</span>) <span class="op">=</span> {
 			<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">dispute_state</span>) <span class="op">=</span> <span class="op">&lt;</span><span class="ident">Disputes</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">set</span>.<span class="ident">session</span>, <span class="kw-2">&amp;</span><span class="ident">set</span>.<span class="ident">candidate_hash</span>) {
 				<span class="kw">if</span> <span class="ident">dispute_state</span>.<span class="ident">concluded_at</span>.<span class="ident">as_ref</span>().<span class="ident">map_or</span>(<span class="bool-val">false</span>, <span class="op">|</span><span class="ident">c</span><span class="op">|</span> <span class="ident">c</span> <span class="op">&lt;</span> <span class="kw-2">&amp;</span><span class="ident">oldest_accepted</span>) {
 					<span class="kw">return</span> <span class="ident">StatementSetFilter::RemoveAll</span>
 				}
 
-				<span class="ident">dispute_state</span>
+				(<span class="bool-val">false</span>, <span class="ident">dispute_state</span>)
 			} <span class="kw">else</span> {
-				<span class="ident">DisputeState</span> {
-					<span class="ident">validators_for</span>: <span class="macro">bitvec!</span>[<span class="ident">u8</span>, <span class="ident">BitOrderLsb0</span>; <span class="number">0</span>; <span class="ident">n_validators</span>],
-					<span class="ident">validators_against</span>: <span class="macro">bitvec!</span>[<span class="ident">u8</span>, <span class="ident">BitOrderLsb0</span>; <span class="number">0</span>; <span class="ident">n_validators</span>],
-					<span class="ident">start</span>: <span class="ident">now</span>,
-					<span class="ident">concluded_at</span>: <span class="prelude-val">None</span>,
-				}
+				<span class="comment">// No state in storage, this indicates it&#39;s the first dispute statement set as well.</span>
+				(
+					<span class="bool-val">true</span>,
+					<span class="ident">DisputeState</span> {
+						<span class="ident">validators_for</span>: <span class="macro">bitvec!</span>[<span class="ident">u8</span>, <span class="ident">BitOrderLsb0</span>; <span class="number">0</span>; <span class="ident">n_validators</span>],
+						<span class="ident">validators_against</span>: <span class="macro">bitvec!</span>[<span class="ident">u8</span>, <span class="ident">BitOrderLsb0</span>; <span class="number">0</span>; <span class="ident">n_validators</span>],
+						<span class="ident">start</span>: <span class="ident">now</span>,
+						<span class="ident">concluded_at</span>: <span class="prelude-val">None</span>,
+					},
+				)
 			}
 		};
 
 		<span class="comment">// Check and import all votes.</span>
-		<span class="kw">let</span> <span class="ident">summary</span> <span class="op">=</span> {
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">summary</span> <span class="op">=</span> {
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">importer</span> <span class="op">=</span> <span class="ident">DisputeStateImporter::new</span>(<span class="ident">dispute_state</span>, <span class="ident">now</span>);
 			<span class="kw">for</span> (<span class="ident">i</span>, (<span class="ident">statement</span>, <span class="ident">validator_index</span>, <span class="ident">signature</span>)) <span class="kw">in</span> <span class="ident">set</span>.<span class="ident">statements</span>.<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
+				<span class="comment">// assure the validator index and is present in the session info</span>
 				<span class="kw">let</span> <span class="ident">validator_public</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">session_info</span>.<span class="ident">validators</span>.<span class="ident">get</span>(<span class="ident">validator_index</span>.<span class="number">0</span> <span class="kw">as</span> <span class="ident">usize</span>)
 				{
 					<span class="prelude-val">None</span> =&gt; {
@@ -2323,7 +2409,7 @@
 		<span class="kw">if</span> <span class="op">!</span><span class="ident">is_local</span> {
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">spam_slots</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> <span class="op">=</span>
 				<span class="ident">SpamSlots</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="kw-2">&amp;</span><span class="ident">set</span>.<span class="ident">session</span>).<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="macro">vec!</span>[<span class="number">0</span>; <span class="ident">n_validators</span>]);
-
+			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">spam_filter_struck</span> <span class="op">=</span> <span class="bool-val">false</span>;
 			<span class="kw">for</span> (<span class="ident">validator_index</span>, <span class="ident">spam_slot_change</span>) <span class="kw">in</span> <span class="ident">summary</span>.<span class="ident">spam_slot_changes</span> {
 				<span class="kw">let</span> <span class="ident">spam_slot</span> <span class="op">=</span> <span class="ident">spam_slots</span>
 					.<span class="ident">get_mut</span>(<span class="ident">validator_index</span>.<span class="number">0</span> <span class="kw">as</span> <span class="ident">usize</span>)
@@ -2331,11 +2417,13 @@
 
 				<span class="kw">if</span> <span class="kw">let</span> <span class="ident">SpamSlotChange::Inc</span> <span class="op">=</span> <span class="ident">spam_slot_change</span> {
 					<span class="kw">if</span> <span class="kw-2">*</span><span class="ident">spam_slot</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">max_spam_slots</span> {
+						<span class="ident">spam_filter_struck</span> <span class="op">=</span> <span class="bool-val">true</span>;
+
 						<span class="comment">// Find the vote by this validator and filter it out.</span>
 						<span class="kw">let</span> <span class="ident">first_index_in_set</span> <span class="op">=</span> <span class="ident">set</span>
 							.<span class="ident">statements</span>
 							.<span class="ident">iter</span>()
-							.<span class="ident">position</span>(<span class="op">|</span>(<span class="kw">_</span>, <span class="ident">v_i</span>, <span class="kw">_</span>)<span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">validator_index</span> <span class="op">==</span> <span class="ident">v_i</span>)
+							.<span class="ident">position</span>(<span class="op">|</span>(<span class="ident">_statement</span>, <span class="ident">v_i</span>, <span class="ident">_signature</span>)<span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">validator_index</span> <span class="op">==</span> <span class="ident">v_i</span>)
 							.<span class="ident">expect</span>(
 								<span class="string">&quot;spam slots are only incremented when a new statement \
 									from a validator is included; qed&quot;</span>,
@@ -2350,6 +2438,10 @@
 						<span class="comment">// by the duplicate checks above. It&#39;s only the first one which</span>
 						<span class="comment">// may not already have been filtered out.</span>
 						<span class="ident">filter</span>.<span class="ident">remove_index</span>(<span class="ident">first_index_in_set</span>);
+
+						<span class="comment">// Removing individual statments can cause the dispute to become onesided.</span>
+						<span class="comment">// Checking that (again) is done after the loop. Remove the bit indices.</span>
+						<span class="ident">summary</span>.<span class="ident">new_participants</span>.<span class="ident">set</span>(<span class="ident">validator_index</span>.<span class="number">0</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="bool-val">false</span>);
 					}
 
 					<span class="comment">// It&#39;s also worth noting that the `DisputeStateImporter`</span>
@@ -2375,6 +2467,36 @@
 			<span class="comment">// However, 3 sequential calls, where the first increments,</span>
 			<span class="comment">// the second decrements, and the third increments would be allowed.</span>
 			<span class="ident">SpamSlots</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="kw-2">&amp;</span><span class="ident">set</span>.<span class="ident">session</span>, <span class="ident">spam_slots</span>);
+
+			<span class="comment">// This is only relevant in cases where it&#39;s the first vote and the state</span>
+			<span class="comment">// would hence hold a onesided dispute. If a onesided dispute can never be</span>
+			<span class="comment">// started, by induction, we can never enter a state of a one sided dispute.</span>
+			<span class="kw">if</span> <span class="ident">spam_filter_struck</span> <span class="op">&amp;&amp;</span> <span class="ident">first_votes</span> {
+				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">vote_for_count</span> <span class="op">=</span> <span class="number">0_u64</span>;
+				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">vote_against_count</span> <span class="op">=</span> <span class="number">0_u64</span>;
+				<span class="comment">// Since this is the first set of statements for the dispute,</span>
+				<span class="comment">// it&#39;s sufficient to count the votes in the statement set after they</span>
+				<span class="ident">set</span>.<span class="ident">statements</span>.<span class="ident">iter</span>().<span class="ident">for_each</span>(<span class="op">|</span>(<span class="ident">statement</span>, <span class="ident">v_i</span>, <span class="ident">_signature</span>)<span class="op">|</span> {
+					<span class="kw">if</span> <span class="prelude-val">Some</span>(<span class="bool-val">true</span>) <span class="op">==</span>
+						<span class="ident">summary</span>.<span class="ident">new_participants</span>.<span class="ident">get</span>(<span class="ident">v_i</span>.<span class="number">0</span> <span class="kw">as</span> <span class="ident">usize</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">b</span><span class="op">|</span> <span class="ident">b</span>.<span class="ident">as_ref</span>().<span class="ident">clone</span>())
+					{
+						<span class="kw">match</span> <span class="ident">statement</span> {
+							<span class="comment">// `summary.new_flags` contains the spam free votes.</span>
+							<span class="comment">// Note that this does not distinguish between pro or con votes,</span>
+							<span class="comment">// since allowing both of them, even if the spam threshold would be reached</span>
+							<span class="comment">// is a good thing.</span>
+							<span class="comment">// Overflow of the counters is no concern, disputes are limited by weight.</span>
+							<span class="ident">DisputeStatement::Valid</span>(<span class="kw">_</span>) =&gt; <span class="ident">vote_for_count</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>,
+							<span class="ident">DisputeStatement::Invalid</span>(<span class="kw">_</span>) =&gt; <span class="ident">vote_against_count</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>,
+						}
+					}
+				});
+				<span class="kw">if</span> <span class="ident">vote_for_count</span>.<span class="ident">is_zero</span>() <span class="op">|</span><span class="op">|</span> <span class="ident">vote_against_count</span>.<span class="ident">is_zero</span>() {
+					<span class="comment">// It wasn&#39;t one-sided before the spam filters, but now it is,</span>
+					<span class="comment">// so we need to be thorough and not import that dispute.</span>
+					<span class="kw">return</span> <span class="ident">StatementSetFilter::RemoveAll</span>
+				}
+			}
 		}
 
 		<span class="ident">filter</span>
