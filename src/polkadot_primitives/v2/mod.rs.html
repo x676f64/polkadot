@@ -3115,7 +3115,7 @@
 }
 
 <span class="doccomment">/// Different kinds of statements of validity on  a candidate.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">RuntimeDebug</span>, <span class="ident">TypeInfo</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">RuntimeDebug</span>, <span class="ident">TypeInfo</span>)]</span>
 <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>, <span class="ident">derive</span>(<span class="ident">MallocSizeOf</span>))]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">ValidDisputeStatementKind</span> {
 	<span class="doccomment">/// An explicit statement issued as part of a dispute.</span>
@@ -3133,7 +3133,7 @@
 }
 
 <span class="doccomment">/// Different kinds of statements of invalidity on a candidate.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">RuntimeDebug</span>, <span class="ident">TypeInfo</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">RuntimeDebug</span>, <span class="ident">TypeInfo</span>)]</span>
 <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>, <span class="ident">derive</span>(<span class="ident">MallocSizeOf</span>))]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">InvalidDisputeStatementKind</span> {
 	<span class="doccomment">/// An explicit statement issued as part of a dispute.</span>
