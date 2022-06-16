@@ -848,7 +848,7 @@
 <span class="kw">use</span> <span class="ident">jsonrpsee::ws_client</span>::{<span class="ident">WsClient</span>, <span class="ident">WsClientBuilder</span>};
 <span class="kw">use</span> <span class="ident">remote_externalities</span>::{<span class="ident">Builder</span>, <span class="ident">Mode</span>, <span class="ident">OnlineConfig</span>};
 <span class="kw">use</span> <span class="ident">rpc</span>::{<span class="ident">RpcApiClient</span>, <span class="ident">SharedRpcClient</span>};
-<span class="kw">use</span> <span class="ident">sp_npos_elections::ExtendedBalance</span>;
+<span class="kw">use</span> <span class="ident">sp_npos_elections::BalancingConfig</span>;
 <span class="kw">use</span> <span class="ident">sp_runtime</span>::{<span class="ident">traits::Block</span> <span class="kw">as</span> <span class="ident">BlockT</span>, <span class="ident">DeserializeOwned</span>, <span class="ident">Perbill</span>};
 <span class="kw">use</span> <span class="ident">tracing_subscriber</span>::{<span class="ident">fmt</span>, <span class="ident">EnvFilter</span>};
 
@@ -1148,7 +1148,7 @@
 	<span class="doccomment">/// Number of balancing iterations for a solution algorithm. Set based on the [`Solvers`] CLI</span>
 	<span class="doccomment">/// config.</span>
 	<span class="kw">pub</span> <span class="kw">static</span> <span class="ident">BalanceIterations</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">10</span>;
-	<span class="kw">pub</span> <span class="kw">static</span> <span class="ident">Balancing</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">usize</span>, <span class="ident">ExtendedBalance</span>)<span class="op">&gt;</span> <span class="op">=</span> <span class="prelude-val">Some</span>((<span class="ident">BalanceIterations::get</span>(), <span class="number">0</span>));
+	<span class="kw">pub</span> <span class="kw">static</span> <span class="ident">Balancing</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">BalancingConfig</span><span class="op">&gt;</span> <span class="op">=</span> <span class="prelude-val">Some</span>( <span class="ident">BalancingConfig</span> { <span class="ident">iterations</span>: <span class="ident">BalanceIterations::get</span>(), <span class="ident">tolerance</span>: <span class="number">0</span> } );
 }
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Parser</span>)]</span>

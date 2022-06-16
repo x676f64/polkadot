@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/git/checkouts/substrate-7e08433d4c370a21/4037345/frame/election-provider-support/src/lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/git/checkouts/substrate-7e08433d4c370a21/5ab1a27/frame/election-provider-support/src/lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
     <noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../frame_election_provider_support/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
         </a><h2 class="location"></h2>
     </nav>
@@ -623,12 +623,6 @@
 <span id="618">618</span>
 <span id="619">619</span>
 <span id="620">620</span>
-<span id="621">621</span>
-<span id="622">622</span>
-<span id="623">623</span>
-<span id="624">624</span>
-<span id="625">625</span>
-<span id="626">626</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -808,8 +802,8 @@
 <span class="doccomment">/// Re-export some type as they are used in the interface.</span>
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sp_arithmetic::PerThing</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">sp_npos_elections</span>::{
-	<span class="ident">Assignment</span>, <span class="ident">ElectionResult</span>, <span class="ident">Error</span>, <span class="ident">ExtendedBalance</span>, <span class="ident">IdentifierT</span>, <span class="ident">PerThing128</span>, <span class="ident">Support</span>,
-	<span class="ident">Supports</span>, <span class="ident">VoteWeight</span>,
+	<span class="ident">Assignment</span>, <span class="ident">BalancingConfig</span>, <span class="ident">ElectionResult</span>, <span class="ident">Error</span>, <span class="ident">ExtendedBalance</span>, <span class="ident">IdentifierT</span>, <span class="ident">PerThing128</span>,
+	<span class="ident">Support</span>, <span class="ident">Supports</span>, <span class="ident">VoteWeight</span>,
 };
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">traits::NposSolution</span>;
 
@@ -1199,11 +1193,8 @@
 	<span class="ident">sp_std::marker::PhantomData</span><span class="op">&lt;</span>(<span class="ident">AccountId</span>, <span class="ident">Accuracy</span>, <span class="ident">Balancing</span>)<span class="op">&gt;</span>,
 );
 
-<span class="kw">impl</span><span class="op">&lt;</span>
-		<span class="ident">AccountId</span>: <span class="ident">IdentifierT</span>,
-		<span class="ident">Accuracy</span>: <span class="ident">PerThing128</span>,
-		<span class="ident">Balancing</span>: <span class="ident">Get</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">usize</span>, <span class="ident">ExtendedBalance</span>)<span class="op">&gt;</span><span class="op">&gt;</span>,
-	<span class="op">&gt;</span> <span class="ident">NposSolver</span> <span class="kw">for</span> <span class="ident">SequentialPhragmen</span><span class="op">&lt;</span><span class="ident">AccountId</span>, <span class="ident">Accuracy</span>, <span class="ident">Balancing</span><span class="op">&gt;</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">AccountId</span>: <span class="ident">IdentifierT</span>, <span class="ident">Accuracy</span>: <span class="ident">PerThing128</span>, <span class="ident">Balancing</span>: <span class="ident">Get</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">BalancingConfig</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>
+	<span class="ident">NposSolver</span> <span class="kw">for</span> <span class="ident">SequentialPhragmen</span><span class="op">&lt;</span><span class="ident">AccountId</span>, <span class="ident">Accuracy</span>, <span class="ident">Balancing</span><span class="op">&gt;</span>
 {
 	<span class="kw">type</span> <span class="ident">AccountId</span> <span class="op">=</span> <span class="ident">AccountId</span>;
 	<span class="kw">type</span> <span class="ident">Accuracy</span> <span class="op">=</span> <span class="ident">Accuracy</span>;
@@ -1227,11 +1218,8 @@
 	<span class="ident">sp_std::marker::PhantomData</span><span class="op">&lt;</span>(<span class="ident">AccountId</span>, <span class="ident">Accuracy</span>, <span class="ident">Balancing</span>)<span class="op">&gt;</span>,
 );
 
-<span class="kw">impl</span><span class="op">&lt;</span>
-		<span class="ident">AccountId</span>: <span class="ident">IdentifierT</span>,
-		<span class="ident">Accuracy</span>: <span class="ident">PerThing128</span>,
-		<span class="ident">Balancing</span>: <span class="ident">Get</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">usize</span>, <span class="ident">ExtendedBalance</span>)<span class="op">&gt;</span><span class="op">&gt;</span>,
-	<span class="op">&gt;</span> <span class="ident">NposSolver</span> <span class="kw">for</span> <span class="ident">PhragMMS</span><span class="op">&lt;</span><span class="ident">AccountId</span>, <span class="ident">Accuracy</span>, <span class="ident">Balancing</span><span class="op">&gt;</span>
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">AccountId</span>: <span class="ident">IdentifierT</span>, <span class="ident">Accuracy</span>: <span class="ident">PerThing128</span>, <span class="ident">Balancing</span>: <span class="ident">Get</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">BalancingConfig</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>
+	<span class="ident">NposSolver</span> <span class="kw">for</span> <span class="ident">PhragMMS</span><span class="op">&lt;</span><span class="ident">AccountId</span>, <span class="ident">Accuracy</span>, <span class="ident">Balancing</span><span class="op">&gt;</span>
 {
 	<span class="kw">type</span> <span class="ident">AccountId</span> <span class="op">=</span> <span class="ident">AccountId</span>;
 	<span class="kw">type</span> <span class="ident">Accuracy</span> <span class="op">=</span> <span class="ident">Accuracy</span>;
