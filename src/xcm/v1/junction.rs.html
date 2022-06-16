@@ -137,14 +137,14 @@
 
 <span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">BodyId</span>, <span class="ident">BodyPart</span>, <span class="ident">Junctions</span>, <span class="ident">MultiLocation</span>, <span class="ident">NetworkId</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::v0::Junction</span> <span class="kw">as</span> <span class="ident">Junction0</span>;
-<span class="kw">use</span> <span class="ident">alloc::vec::Vec</span>;
-<span class="kw">use</span> <span class="ident">parity_scale_codec</span>::{<span class="self">self</span>, <span class="ident">Decode</span>, <span class="ident">Encode</span>};
+<span class="kw">use</span> <span class="ident">parity_scale_codec</span>::{<span class="ident">Decode</span>, <span class="ident">Encode</span>, <span class="ident">MaxEncodedLen</span>};
 <span class="kw">use</span> <span class="ident">scale_info::TypeInfo</span>;
+<span class="kw">use</span> <span class="ident">sp_runtime</span>::{<span class="ident">traits::ConstU32</span>, <span class="ident">WeakBoundedVec</span>};
 
 <span class="doccomment">/// A single item in a path to describe the relative location of a consensus system.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// Each item assumes a pre-existing location as its context and is defined in terms of it.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Ord</span>, <span class="ident">PartialOrd</span>, <span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">Debug</span>, <span class="ident">TypeInfo</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Ord</span>, <span class="ident">PartialOrd</span>, <span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">Debug</span>, <span class="ident">TypeInfo</span>, <span class="ident">MaxEncodedLen</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Junction</span> {
 	<span class="doccomment">/// An indexed parachain belonging to and operated by the context.</span>
 	<span class="doccomment">///</span>
@@ -184,7 +184,7 @@
 	<span class="doccomment">/// Usage will vary widely owing to its generality.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// NOTE: Try to avoid using this and instead use a more specific item.</span>
-	<span class="ident">GeneralKey</span>(<span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>),
+	<span class="ident">GeneralKey</span>(<span class="ident">WeakBoundedVec</span><span class="op">&lt;</span><span class="ident">u8</span>, <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">32</span><span class="op">&gt;</span><span class="op">&gt;</span>),
 	<span class="doccomment">/// The unambiguous child.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Not currently used except as a fallback when deriving ancestry.</span>

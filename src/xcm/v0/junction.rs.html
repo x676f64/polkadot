@@ -226,17 +226,17 @@
 
 <span class="doccomment">//! Support data structures for `MultiLocation`, primarily the `Junction` datatype.</span>
 
-<span class="kw">use</span> <span class="ident">alloc::vec::Vec</span>;
-<span class="kw">use</span> <span class="ident">parity_scale_codec</span>::{<span class="ident">Decode</span>, <span class="ident">Encode</span>};
+<span class="kw">use</span> <span class="ident">parity_scale_codec</span>::{<span class="ident">Decode</span>, <span class="ident">Encode</span>, <span class="ident">MaxEncodedLen</span>};
 <span class="kw">use</span> <span class="ident">scale_info::TypeInfo</span>;
+<span class="kw">use</span> <span class="ident">sp_runtime</span>::{<span class="ident">traits::ConstU32</span>, <span class="ident">WeakBoundedVec</span>};
 
 <span class="doccomment">/// A global identifier of an account-bearing consensus system.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Ord</span>, <span class="ident">PartialOrd</span>, <span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">Debug</span>, <span class="ident">TypeInfo</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Ord</span>, <span class="ident">PartialOrd</span>, <span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">Debug</span>, <span class="ident">TypeInfo</span>, <span class="ident">MaxEncodedLen</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">NetworkId</span> {
 	<span class="doccomment">/// Unidentified/any.</span>
 	<span class="ident">Any</span>,
 	<span class="doccomment">/// Some named network.</span>
-	<span class="ident">Named</span>(<span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>),
+	<span class="ident">Named</span>(<span class="ident">WeakBoundedVec</span><span class="op">&lt;</span><span class="ident">u8</span>, <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">32</span><span class="op">&gt;</span><span class="op">&gt;</span>),
 	<span class="doccomment">/// The Polkadot Relay chain</span>
 	<span class="ident">Polkadot</span>,
 	<span class="doccomment">/// Kusama.</span>
@@ -244,12 +244,12 @@
 }
 
 <span class="doccomment">/// An identifier of a pluralistic body.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Ord</span>, <span class="ident">PartialOrd</span>, <span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">Debug</span>, <span class="ident">TypeInfo</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Ord</span>, <span class="ident">PartialOrd</span>, <span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">Debug</span>, <span class="ident">TypeInfo</span>, <span class="ident">MaxEncodedLen</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">BodyId</span> {
 	<span class="doccomment">/// The only body in its context.</span>
 	<span class="ident">Unit</span>,
 	<span class="doccomment">/// A named body.</span>
-	<span class="ident">Named</span>(<span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>),
+	<span class="ident">Named</span>(<span class="ident">WeakBoundedVec</span><span class="op">&lt;</span><span class="ident">u8</span>, <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">32</span><span class="op">&gt;</span><span class="op">&gt;</span>),
 	<span class="doccomment">/// An indexed body.</span>
 	<span class="ident">Index</span>(<span class="attribute">#[<span class="ident">codec</span>(<span class="ident">compact</span>)]</span> <span class="ident">u32</span>),
 	<span class="doccomment">/// The unambiguous executive body (for Polkadot, this would be the Polkadot council).</span>
@@ -265,7 +265,7 @@
 }
 
 <span class="doccomment">/// A part of a pluralistic body.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Ord</span>, <span class="ident">PartialOrd</span>, <span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">Debug</span>, <span class="ident">TypeInfo</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Ord</span>, <span class="ident">PartialOrd</span>, <span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">Debug</span>, <span class="ident">TypeInfo</span>, <span class="ident">MaxEncodedLen</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">BodyPart</span> {
 	<span class="doccomment">/// The body&#39;s declaration, under whatever means it decides.</span>
 	<span class="ident">Voice</span>,
@@ -312,7 +312,7 @@
 <span class="doccomment">/// A single item in a path to describe the relative location of a consensus system.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// Each item assumes a pre-existing location as its context and is defined in terms of it.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Ord</span>, <span class="ident">PartialOrd</span>, <span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">Debug</span>, <span class="ident">TypeInfo</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Ord</span>, <span class="ident">PartialOrd</span>, <span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">Debug</span>, <span class="ident">TypeInfo</span>, <span class="ident">MaxEncodedLen</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Junction</span> {
 	<span class="doccomment">/// The consensus system of which the context is a member and state-wise super-set.</span>
 	<span class="doccomment">///</span>
@@ -357,7 +357,7 @@
 	<span class="doccomment">/// Usage will vary widely owing to its generality.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// NOTE: Try to avoid using this and instead use a more specific item.</span>
-	<span class="ident">GeneralKey</span>(<span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>),
+	<span class="ident">GeneralKey</span>(<span class="ident">WeakBoundedVec</span><span class="op">&lt;</span><span class="ident">u8</span>, <span class="ident">ConstU32</span><span class="op">&lt;</span><span class="number">32</span><span class="op">&gt;</span><span class="op">&gt;</span>),
 	<span class="doccomment">/// The unambiguous child.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Not currently used except as a fallback when deriving ancestry.</span>

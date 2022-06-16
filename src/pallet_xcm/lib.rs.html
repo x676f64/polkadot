@@ -1596,7 +1596,7 @@
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">tests</span>;
 
-<span class="kw">use</span> <span class="ident">codec</span>::{<span class="ident">Decode</span>, <span class="ident">Encode</span>, <span class="ident">EncodeLike</span>};
+<span class="kw">use</span> <span class="ident">codec</span>::{<span class="ident">Decode</span>, <span class="ident">Encode</span>, <span class="ident">EncodeLike</span>, <span class="ident">MaxEncodedLen</span>};
 <span class="kw">use</span> <span class="ident">frame_support::traits</span>::{<span class="ident">Contains</span>, <span class="ident">EnsureOrigin</span>, <span class="ident">Get</span>, <span class="ident">OriginTrait</span>};
 <span class="kw">use</span> <span class="ident">scale_info::TypeInfo</span>;
 <span class="kw">use</span> <span class="ident">sp_runtime</span>::{
@@ -1785,7 +1785,7 @@
 	}
 
 	<span class="attribute">#[<span class="ident">pallet::origin</span>]</span>
-	<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Clone</span>, <span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">RuntimeDebug</span>, <span class="ident">TypeInfo</span>)]</span>
+	<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Clone</span>, <span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">RuntimeDebug</span>, <span class="ident">TypeInfo</span>, <span class="ident">MaxEncodedLen</span>)]</span>
 	<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Origin</span> {
 		<span class="doccomment">/// It comes from somewhere in the XCM space wanting to transact.</span>
 		<span class="ident">Xcm</span>(<span class="ident">MultiLocation</span>),
