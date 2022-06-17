@@ -2156,21 +2156,6 @@
 <span id="2151">2151</span>
 <span id="2152">2152</span>
 <span id="2153">2153</span>
-<span id="2154">2154</span>
-<span id="2155">2155</span>
-<span id="2156">2156</span>
-<span id="2157">2157</span>
-<span id="2158">2158</span>
-<span id="2159">2159</span>
-<span id="2160">2160</span>
-<span id="2161">2161</span>
-<span id="2162">2162</span>
-<span id="2163">2163</span>
-<span id="2164">2164</span>
-<span id="2165">2165</span>
-<span id="2166">2166</span>
-<span id="2167">2167</span>
-<span id="2168">2168</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -3688,25 +3673,10 @@
 	<span class="ident">frame_system::ChainContext</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>,
 	<span class="ident">Runtime</span>,
 	<span class="ident">AllPalletsWithSystem</span>,
-	(<span class="ident">RenameBagsListToVoterList</span>, <span class="ident">pallet_bags_list::migrations::AddScore</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>),
+	(),
 <span class="op">&gt;</span>;
 <span class="doccomment">/// The payload being signed in transactions.</span>
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">SignedPayload</span> <span class="op">=</span> <span class="ident">generic::SignedPayload</span><span class="op">&lt;</span><span class="ident">Call</span>, <span class="ident">SignedExtra</span><span class="op">&gt;</span>;
-
-<span class="doccomment">/// A migration which renames the pallet `BagsList` to `VoterList`</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">RenameBagsListToVoterList</span>;
-<span class="kw">impl</span> <span class="ident">frame_support::traits::OnRuntimeUpgrade</span> <span class="kw">for</span> <span class="ident">RenameBagsListToVoterList</span> {
-	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;try-runtime&quot;</span>)]</span>
-	<span class="kw">fn</span> <span class="ident">pre_upgrade</span>() -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span><span class="op">&gt;</span> {
-		<span class="comment">// For other pre-upgrade checks, we need the storage to already be migrated.</span>
-		<span class="ident">frame_support::storage::migration::move_pallet</span>(<span class="string">b&quot;BagsList&quot;</span>, <span class="string">b&quot;VoterList&quot;</span>);
-		<span class="prelude-val">Ok</span>(())
-	}
-	<span class="kw">fn</span> <span class="ident">on_runtime_upgrade</span>() -&gt; <span class="ident">frame_support::weights::Weight</span> {
-		<span class="ident">frame_support::storage::migration::move_pallet</span>(<span class="string">b&quot;BagsList&quot;</span>, <span class="string">b&quot;VoterList&quot;</span>);
-		<span class="ident">frame_support::weights::Weight::MAX</span>
-	}
-}
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;runtime-benchmarks&quot;</span>)]</span>
 <span class="attribute">#[<span class="ident">macro_use</span>]</span>
