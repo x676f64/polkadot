@@ -1600,6 +1600,17 @@
 <span id="1595">1595</span>
 <span id="1596">1596</span>
 <span id="1597">1597</span>
+<span id="1598">1598</span>
+<span id="1599">1599</span>
+<span id="1600">1600</span>
+<span id="1601">1601</span>
+<span id="1602">1602</span>
+<span id="1603">1603</span>
+<span id="1604">1604</span>
+<span id="1605">1605</span>
+<span id="1606">1606</span>
+<span id="1607">1607</span>
+<span id="1608">1608</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -2283,6 +2294,7 @@
 <span class="kw">impl</span> <span class="ident">pallet_beefy::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
 	<span class="kw">type</span> <span class="ident">BeefyId</span> <span class="op">=</span> <span class="ident">BeefyId</span>;
 	<span class="kw">type</span> <span class="ident">MaxAuthorities</span> <span class="op">=</span> <span class="ident">MaxAuthorities</span>;
+	<span class="kw">type</span> <span class="ident">OnNewValidatorSet</span> <span class="op">=</span> <span class="ident">MmrLeaf</span>;
 }
 
 <span class="kw">type</span> <span class="ident">MmrHash</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">Keccak256</span> <span class="kw">as</span> <span class="ident">sp_runtime::traits::Hash</span><span class="op">&gt;</span><span class="ident">::Output</span>;
@@ -3040,6 +3052,16 @@
 		) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">mmr::Error</span><span class="op">&gt;</span> {
 			<span class="kw">let</span> <span class="ident">nodes</span> <span class="op">=</span> <span class="ident">leaves</span>.<span class="ident">into_iter</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">leaf</span><span class="op">|</span><span class="ident">mmr::DataOrHash::Data</span>(<span class="ident">leaf</span>.<span class="ident">into_opaque_leaf</span>())).<span class="ident">collect</span>();
 			<span class="ident">pallet_mmr::verify_leaves_proof</span>::<span class="op">&lt;</span><span class="ident">MmrHashing</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="ident">root</span>, <span class="ident">nodes</span>, <span class="ident">proof</span>)
+		}
+	}
+
+	<span class="kw">impl</span> <span class="ident">beefy_merkle_tree::BeefyMmrApi</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">Hash</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">RuntimeApi</span> {
+		<span class="kw">fn</span> <span class="ident">authority_set_proof</span>() -&gt; <span class="ident">beefy_primitives::mmr::BeefyAuthoritySet</span><span class="op">&lt;</span><span class="ident">Hash</span><span class="op">&gt;</span> {
+			<span class="ident">MmrLeaf::authority_set_proof</span>()
+		}
+
+		<span class="kw">fn</span> <span class="ident">next_authority_set_proof</span>() -&gt; <span class="ident">beefy_primitives::mmr::BeefyNextAuthoritySet</span><span class="op">&lt;</span><span class="ident">Hash</span><span class="op">&gt;</span> {
+			<span class="ident">MmrLeaf::next_authority_set_proof</span>()
 		}
 	}
 
