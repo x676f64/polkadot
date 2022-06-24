@@ -250,7 +250,7 @@
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
 	<span class="ident">artifacts::ArtifactPathId</span>,
-	<span class="ident">executor_intf::TaskExecutor</span>,
+	<span class="ident">executor_intf::Executor</span>,
 	<span class="ident">worker_common</span>::{
 		<span class="ident">bytes_to_path</span>, <span class="ident">framed_recv</span>, <span class="ident">framed_send</span>, <span class="ident">path_to_bytes</span>, <span class="ident">spawn_with_program_path</span>,
 		<span class="ident">worker_event_loop</span>, <span class="ident">IdleWorker</span>, <span class="ident">SpawnErr</span>, <span class="ident">WorkerHandle</span>,
@@ -418,8 +418,8 @@
 <span class="doccomment">/// the path to the socket used to communicate with the host.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">worker_entrypoint</span>(<span class="ident">socket_path</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) {
 	<span class="ident">worker_event_loop</span>(<span class="string">&quot;execute&quot;</span>, <span class="ident">socket_path</span>, <span class="op">|</span><span class="kw-2">mut</span> <span class="ident">stream</span><span class="op">|</span> <span class="kw">async</span> <span class="kw">move</span> {
-		<span class="kw">let</span> <span class="ident">executor</span> <span class="op">=</span> <span class="ident">TaskExecutor::new</span>().<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> {
-			<span class="ident">io::Error::new</span>(<span class="ident">io::ErrorKind::Other</span>, <span class="macro">format!</span>(<span class="string">&quot;cannot create task executor: {}&quot;</span>, <span class="ident">e</span>))
+		<span class="kw">let</span> <span class="ident">executor</span> <span class="op">=</span> <span class="ident">Executor::new</span>().<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> {
+			<span class="ident">io::Error::new</span>(<span class="ident">io::ErrorKind::Other</span>, <span class="macro">format!</span>(<span class="string">&quot;cannot create executor: {}&quot;</span>, <span class="ident">e</span>))
 		})<span class="question-mark">?</span>;
 		<span class="kw">loop</span> {
 			<span class="kw">let</span> (<span class="ident">artifact_path</span>, <span class="ident">params</span>) <span class="op">=</span> <span class="ident">recv_request</span>(<span class="kw-2">&amp;mut</span> <span class="ident">stream</span>).<span class="kw">await</span><span class="question-mark">?</span>;
@@ -438,14 +438,14 @@
 <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">validate_using_artifact</span>(
 	<span class="ident">artifact_path</span>: <span class="kw-2">&amp;</span><span class="ident">Path</span>,
 	<span class="ident">params</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>],
-	<span class="ident">spawner</span>: <span class="kw-2">&amp;</span><span class="ident">TaskExecutor</span>,
+	<span class="ident">executor</span>: <span class="kw-2">&amp;</span><span class="ident">Executor</span>,
 ) -&gt; <span class="ident">Response</span> {
 	<span class="kw">let</span> <span class="ident">validation_started_at</span> <span class="op">=</span> <span class="ident">Instant::now</span>();
 	<span class="kw">let</span> <span class="ident">descriptor_bytes</span> <span class="op">=</span> <span class="kw">match</span> <span class="kw">unsafe</span> {
 		<span class="comment">// SAFETY: this should be safe since the compiled artifact passed here comes from the</span>
 		<span class="comment">//         file created by the prepare workers. These files are obtained by calling</span>
 		<span class="comment">//         [`executor_intf::prepare`].</span>
-		<span class="ident"><span class="kw">crate</span>::executor_intf::execute</span>(<span class="ident">artifact_path</span>.<span class="ident">as_ref</span>(), <span class="ident">params</span>, <span class="ident">spawner</span>.<span class="ident">clone</span>())
+		<span class="ident">executor</span>.<span class="ident">execute</span>(<span class="ident">artifact_path</span>.<span class="ident">as_ref</span>(), <span class="ident">params</span>)
 	} {
 		<span class="prelude-val">Err</span>(<span class="ident">err</span>) =&gt; <span class="kw">return</span> <span class="ident">Response::format_invalid</span>(<span class="string">&quot;execute&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">err</span>.<span class="ident">to_string</span>()),
 		<span class="prelude-val">Ok</span>(<span class="ident">d</span>) =&gt; <span class="ident">d</span>,

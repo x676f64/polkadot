@@ -351,6 +351,88 @@
 <span id="346">346</span>
 <span id="347">347</span>
 <span id="348">348</span>
+<span id="349">349</span>
+<span id="350">350</span>
+<span id="351">351</span>
+<span id="352">352</span>
+<span id="353">353</span>
+<span id="354">354</span>
+<span id="355">355</span>
+<span id="356">356</span>
+<span id="357">357</span>
+<span id="358">358</span>
+<span id="359">359</span>
+<span id="360">360</span>
+<span id="361">361</span>
+<span id="362">362</span>
+<span id="363">363</span>
+<span id="364">364</span>
+<span id="365">365</span>
+<span id="366">366</span>
+<span id="367">367</span>
+<span id="368">368</span>
+<span id="369">369</span>
+<span id="370">370</span>
+<span id="371">371</span>
+<span id="372">372</span>
+<span id="373">373</span>
+<span id="374">374</span>
+<span id="375">375</span>
+<span id="376">376</span>
+<span id="377">377</span>
+<span id="378">378</span>
+<span id="379">379</span>
+<span id="380">380</span>
+<span id="381">381</span>
+<span id="382">382</span>
+<span id="383">383</span>
+<span id="384">384</span>
+<span id="385">385</span>
+<span id="386">386</span>
+<span id="387">387</span>
+<span id="388">388</span>
+<span id="389">389</span>
+<span id="390">390</span>
+<span id="391">391</span>
+<span id="392">392</span>
+<span id="393">393</span>
+<span id="394">394</span>
+<span id="395">395</span>
+<span id="396">396</span>
+<span id="397">397</span>
+<span id="398">398</span>
+<span id="399">399</span>
+<span id="400">400</span>
+<span id="401">401</span>
+<span id="402">402</span>
+<span id="403">403</span>
+<span id="404">404</span>
+<span id="405">405</span>
+<span id="406">406</span>
+<span id="407">407</span>
+<span id="408">408</span>
+<span id="409">409</span>
+<span id="410">410</span>
+<span id="411">411</span>
+<span id="412">412</span>
+<span id="413">413</span>
+<span id="414">414</span>
+<span id="415">415</span>
+<span id="416">416</span>
+<span id="417">417</span>
+<span id="418">418</span>
+<span id="419">419</span>
+<span id="420">420</span>
+<span id="421">421</span>
+<span id="422">422</span>
+<span id="423">423</span>
+<span id="424">424</span>
+<span id="425">425</span>
+<span id="426">426</span>
+<span id="427">427</span>
+<span id="428">428</span>
+<span id="429">429</span>
+<span id="430">430</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -396,6 +478,9 @@
 <span class="kw">const</span> <span class="ident">DEFAULT_HEAP_PAGES_ESTIMATE</span>: <span class="ident">u64</span> <span class="op">=</span> <span class="number">32</span>;
 <span class="kw">const</span> <span class="ident">EXTRA_HEAP_PAGES</span>: <span class="ident">u64</span> <span class="op">=</span> <span class="number">2048</span>;
 
+<span class="doccomment">/// The number of bytes devoted for the stack during wasm execution of a PVF.</span>
+<span class="kw">const</span> <span class="ident">NATIVE_STACK_MAX</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">256</span> <span class="op">*</span> <span class="number">1024</span> <span class="op">*</span> <span class="number">1024</span>;
+
 <span class="kw">const</span> <span class="ident">CONFIG</span>: <span class="ident">Config</span> <span class="op">=</span> <span class="ident">Config</span> {
 	<span class="ident">allow_missing_func_imports</span>: <span class="bool-val">true</span>,
 	<span class="ident">cache_path</span>: <span class="prelude-val">None</span>,
@@ -422,7 +507,7 @@
 		<span class="comment">// the stack limit set by the wasmtime.</span>
 		<span class="ident">deterministic_stack_limit</span>: <span class="prelude-val">Some</span>(<span class="ident">DeterministicStackLimit</span> {
 			<span class="ident">logical_max</span>: <span class="number">65536</span>,
-			<span class="ident">native_stack_max</span>: <span class="number">256</span> <span class="op">*</span> <span class="number">1024</span> <span class="op">*</span> <span class="number">1024</span>,
+			<span class="ident">native_stack_max</span>: <span class="ident">NATIVE_STACK_MAX</span>,
 		}),
 		<span class="ident">canonicalize_nans</span>: <span class="bool-val">true</span>,
 		<span class="comment">// Rationale for turning the multi-threaded compilation off is to make the preparation time</span>
@@ -451,20 +536,99 @@
 	<span class="ident">sc_executor_wasmtime::prepare_runtime_artifact</span>(<span class="ident">blob</span>, <span class="kw-2">&amp;</span><span class="ident">CONFIG</span>.<span class="ident">semantics</span>)
 }
 
-<span class="doccomment">/// Executes the given PVF in the form of a compiled artifact and returns the result of execution</span>
-<span class="doccomment">/// upon success.</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// # Safety</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// The caller must ensure that the compiled artifact passed here was:</span>
-<span class="doccomment">///   1) produced by [`prepare`],</span>
-<span class="doccomment">///   2) written to the disk as a file,</span>
-<span class="doccomment">///   3) was not modified,</span>
-<span class="doccomment">///   4) will not be modified while any runtime using this artifact is alive, or is being</span>
-<span class="doccomment">///      instantiated.</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// Failure to adhere to these requirements might lead to crashes and arbitrary code execution.</span>
-<span class="kw">pub</span> <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">execute</span>(
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Executor</span> {
+	<span class="ident">thread_pool</span>: <span class="ident">rayon::ThreadPool</span>,
+	<span class="ident">spawner</span>: <span class="ident">TaskSpawner</span>,
+}
+
+<span class="kw">impl</span> <span class="ident">Executor</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">String</span><span class="op">&gt;</span> {
+		<span class="comment">// Wasmtime powers the Substrate Executor. It compiles the wasm bytecode into native code.</span>
+		<span class="comment">// That native code does not create any stacks and just reuses the stack of the thread that</span>
+		<span class="comment">// wasmtime was invoked from.</span>
+		<span class="comment">//</span>
+		<span class="comment">// Also, we configure the executor to provide the deterministic stack and that requires</span>
+		<span class="comment">// supplying the amount of the native stack space that wasm is allowed to use. This is</span>
+		<span class="comment">// realized by supplying the limit into `wasmtime::Config::max_wasm_stack`.</span>
+		<span class="comment">//</span>
+		<span class="comment">// There are quirks to that configuration knob:</span>
+		<span class="comment">//</span>
+		<span class="comment">// 1. It only limits the amount of stack space consumed by wasm but does not ensure nor check</span>
+		<span class="comment">//    that the stack space is actually available.</span>
+		<span class="comment">//</span>
+		<span class="comment">//    That means, if the calling thread has 1 MiB of stack space left and the wasm code consumes</span>
+		<span class="comment">//    more, then the wasmtime limit will **not** trigger. Instead, the wasm code will hit the</span>
+		<span class="comment">//    guard page and the Rust stack overflow handler will be triggered. That leads to an</span>
+		<span class="comment">//    **abort**.</span>
+		<span class="comment">//</span>
+		<span class="comment">// 2. It cannot and does not limit the stack space consumed by Rust code.</span>
+		<span class="comment">//</span>
+		<span class="comment">//    Meaning that if the wasm code leaves no stack space for Rust code, then the Rust code</span>
+		<span class="comment">//    and that will abort the process as well.</span>
+		<span class="comment">//</span>
+		<span class="comment">// Typically on Linux the main thread gets the stack size specified by the `ulimit` and</span>
+		<span class="comment">// typically it&#39;s configured to 8 MiB. Rust&#39;s spawned threads are 2 MiB. OTOH, the</span>
+		<span class="comment">// NATIVE_STACK_MAX is set to 256 MiB. Not nearly enough.</span>
+		<span class="comment">//</span>
+		<span class="comment">// Hence we need to increase it.</span>
+		<span class="comment">//</span>
+		<span class="comment">// The simplest way to fix that is to spawn a thread with the desired stack limit. In order</span>
+		<span class="comment">// to avoid costs of creating a thread, we use a thread pool. The execution is</span>
+		<span class="comment">// single-threaded hence the thread pool has only one thread.</span>
+		<span class="comment">//</span>
+		<span class="comment">// The reasoning why we pick this particular size is:</span>
+		<span class="comment">//</span>
+		<span class="comment">// The default Rust thread stack limit 2 MiB + 256 MiB wasm stack.</span>
+		<span class="kw">let</span> <span class="ident">thread_stack_size</span> <span class="op">=</span> <span class="number">2</span> <span class="op">*</span> <span class="number">1024</span> <span class="op">*</span> <span class="number">1024</span> <span class="op">+</span> <span class="ident">NATIVE_STACK_MAX</span> <span class="kw">as</span> <span class="ident">usize</span>;
+		<span class="kw">let</span> <span class="ident">thread_pool</span> <span class="op">=</span> <span class="ident">rayon::ThreadPoolBuilder::new</span>()
+			.<span class="ident">num_threads</span>(<span class="number">1</span>)
+			.<span class="ident">stack_size</span>(<span class="ident">thread_stack_size</span>)
+			.<span class="ident">build</span>()
+			.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="macro">format!</span>(<span class="string">&quot;Failed to create thread pool: {:?}&quot;</span>, <span class="ident">e</span>))<span class="question-mark">?</span>;
+
+		<span class="kw">let</span> <span class="ident">spawner</span> <span class="op">=</span>
+			<span class="ident">TaskSpawner::new</span>().<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="macro">format!</span>(<span class="string">&quot;cannot create task spawner: {}&quot;</span>, <span class="ident">e</span>))<span class="question-mark">?</span>;
+
+		<span class="prelude-val">Ok</span>(<span class="self">Self</span> { <span class="ident">thread_pool</span>, <span class="ident">spawner</span> })
+	}
+
+	<span class="doccomment">/// Executes the given PVF in the form of a compiled artifact and returns the result of execution</span>
+	<span class="doccomment">/// upon success.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// # Safety</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// The caller must ensure that the compiled artifact passed here was:</span>
+	<span class="doccomment">///   1) produced by [`prepare`],</span>
+	<span class="doccomment">///   2) written to the disk as a file,</span>
+	<span class="doccomment">///   3) was not modified,</span>
+	<span class="doccomment">///   4) will not be modified while any runtime using this artifact is alive, or is being</span>
+	<span class="doccomment">///      instantiated.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Failure to adhere to these requirements might lead to crashes and arbitrary code execution.</span>
+	<span class="kw">pub</span> <span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">execute</span>(
+		<span class="kw-2">&amp;</span><span class="self">self</span>,
+		<span class="ident">compiled_artifact_path</span>: <span class="kw-2">&amp;</span><span class="ident">Path</span>,
+		<span class="ident">params</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>],
+	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>, <span class="ident">String</span><span class="op">&gt;</span> {
+		<span class="kw">let</span> <span class="ident">spawner</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">spawner</span>.<span class="ident">clone</span>();
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="prelude-val">None</span>;
+		<span class="self">self</span>.<span class="ident">thread_pool</span>.<span class="ident">scope</span>({
+			<span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="kw-2">&amp;mut</span> <span class="ident">result</span>;
+			<span class="kw">move</span> <span class="op">|</span><span class="ident">s</span><span class="op">|</span> {
+				<span class="ident">s</span>.<span class="ident">spawn</span>(<span class="kw">move</span> <span class="op">|</span><span class="kw">_</span><span class="op">|</span> {
+					<span class="comment">// spawn does not return a value, so we need to use a variable to pass the result.</span>
+					<span class="kw-2">*</span><span class="ident">result</span> <span class="op">=</span> <span class="prelude-val">Some</span>(
+						<span class="ident">do_execute</span>(<span class="ident">compiled_artifact_path</span>, <span class="ident">params</span>, <span class="ident">spawner</span>)
+							.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> <span class="macro">format!</span>(<span class="string">&quot;execute error: {:?}&quot;</span>, <span class="ident">err</span>)),
+					);
+				});
+			}
+		});
+		<span class="ident">result</span>.<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="prelude-val">Err</span>(<span class="string">&quot;rayon thread pool spawn failed&quot;</span>.<span class="ident">to_string</span>()))
+	}
+}
+
+<span class="kw">unsafe</span> <span class="kw">fn</span> <span class="ident">do_execute</span>(
 	<span class="ident">compiled_artifact_path</span>: <span class="kw-2">&amp;</span><span class="ident">Path</span>,
 	<span class="ident">params</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>],
 	<span class="ident">spawner</span>: <span class="kw">impl</span> <span class="ident">sp_core::traits::SpawnNamed</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
@@ -644,9 +808,9 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// This is a light handle meaning it will only clone the handle not create a new thread pool.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct</span> <span class="ident">TaskExecutor</span>(<span class="ident">futures::executor::ThreadPool</span>);
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct</span> <span class="ident">TaskSpawner</span>(<span class="ident">futures::executor::ThreadPool</span>);
 
-<span class="kw">impl</span> <span class="ident">TaskExecutor</span> {
+<span class="kw">impl</span> <span class="ident">TaskSpawner</span> {
 	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">new</span>() -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">String</span><span class="op">&gt;</span> {
 		<span class="ident">futures::executor::ThreadPoolBuilder::new</span>()
 			.<span class="ident">pool_size</span>(<span class="number">4</span>)
@@ -657,7 +821,7 @@
 	}
 }
 
-<span class="kw">impl</span> <span class="ident">sp_core::traits::SpawnNamed</span> <span class="kw">for</span> <span class="ident">TaskExecutor</span> {
+<span class="kw">impl</span> <span class="ident">sp_core::traits::SpawnNamed</span> <span class="kw">for</span> <span class="ident">TaskSpawner</span> {
 	<span class="kw">fn</span> <span class="ident">spawn_blocking</span>(
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 		<span class="ident">_task_name</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>,
