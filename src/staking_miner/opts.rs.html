@@ -301,6 +301,20 @@
 <span id="296">296</span>
 <span id="297">297</span>
 <span id="298">298</span>
+<span id="299">299</span>
+<span id="300">300</span>
+<span id="301">301</span>
+<span id="302">302</span>
+<span id="303">303</span>
+<span id="304">304</span>
+<span id="305">305</span>
+<span id="306">306</span>
+<span id="307">307</span>
+<span id="308">308</span>
+<span id="309">309</span>
+<span id="310">310</span>
+<span id="311">311</span>
+<span id="312">312</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -386,6 +400,17 @@
 	<span class="doccomment">/// `--submission-strategy &quot;percent-better &lt;percent&gt;&quot;`: submit if the submission is `n` percent better.</span>
 	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>, <span class="ident">parse</span>(<span class="ident">try_from_str</span>), <span class="ident">default_value</span> <span class="op">=</span> <span class="string">&quot;if-leading&quot;</span>)]</span>
 	<span class="kw">pub</span> <span class="ident">submission_strategy</span>: <span class="ident">SubmissionStrategy</span>,
+
+	<span class="doccomment">/// Delay in number seconds to wait until starting mining a solution.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// At every block when a solution is attempted</span>
+	<span class="doccomment">/// a delay can be enforced to avoid submitting at</span>
+	<span class="doccomment">/// &quot;same time&quot; and risk potential races with other miners.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// When this is enabled and there are competing solutions, your solution might not be submitted</span>
+	<span class="doccomment">/// if the scores are equal.</span>
+	<span class="attribute">#[<span class="ident">clap</span>(<span class="ident">long</span>, <span class="ident">parse</span>(<span class="ident">try_from_str</span>), <span class="ident">default_value_t</span> <span class="op">=</span> <span class="number">0</span>)]</span>
+	<span class="kw">pub</span> <span class="ident">delay</span>: <span class="ident">usize</span>,
 }
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Parser</span>)]</span>
@@ -505,6 +530,8 @@
 			<span class="string">&quot;//Alice&quot;</span>,
 			<span class="string">&quot;--listen&quot;</span>,
 			<span class="string">&quot;head&quot;</span>,
+			<span class="string">&quot;--delay&quot;</span>,
+			<span class="string">&quot;12&quot;</span>,
 			<span class="string">&quot;seq-phragmen&quot;</span>,
 		])
 		.<span class="ident">unwrap</span>();
@@ -518,6 +545,7 @@
 					<span class="ident">listen</span>: <span class="string">&quot;head&quot;</span>.<span class="ident">to_string</span>(),
 					<span class="ident">solver</span>: <span class="ident">Solver::SeqPhragmen</span> { <span class="ident">iterations</span>: <span class="number">10</span> },
 					<span class="ident">submission_strategy</span>: <span class="ident">SubmissionStrategy::IfLeading</span>,
+					<span class="ident">delay</span>: <span class="number">12</span>,
 				}),
 			}
 		);
