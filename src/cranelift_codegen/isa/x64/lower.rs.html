@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/registry/src/github.com-1ecc6299db9ec823/cranelift-codegen-0.85.0/src/isa/x64/lower.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lower.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../../storage.js"></script><script src="../../../../crates.js"></script><script defer src="../../../../main.js"></script><script defer src="../../../../source-script.js"></script><script defer src="../../../../source-files.js"></script>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/registry/src/github.com-1ecc6299db9ec823/cranelift-codegen-0.85.1/src/isa/x64/lower.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lower.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../../storage.js"></script><script src="../../../../crates.js"></script><script defer src="../../../../main.js"></script><script defer src="../../../../source-script.js"></script><script defer src="../../../../source-files.js"></script>
     <noscript><link rel="stylesheet" href="../../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../../../cranelift_codegen/index.html"><div class="logo-container"><img class="rust-logo" src="../../../../rust-logo.svg" alt="logo"></div>
         </a><h2 class="location"></h2>
     </nav>
@@ -3447,9 +3447,6 @@
 <span id="3442">3442</span>
 <span id="3443">3443</span>
 <span id="3444">3444</span>
-<span id="3445">3445</span>
-<span id="3446">3446</span>
-<span id="3447">3447</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Lowering rules for X64.</span>
 
 <span class="comment">// ISLE integration glue.</span>
@@ -5767,11 +5764,7 @@
                 <span class="macro">debug_assert!</span>(<span class="ident">ty</span> <span class="op">==</span> <span class="ident">types::F32</span> <span class="op">|</span><span class="op">|</span> <span class="ident">ty</span> <span class="op">==</span> <span class="ident">types::F64</span>);
                 <span class="ident">emit_moves</span>(<span class="ident">ctx</span>, <span class="ident">dst</span>, <span class="ident">rhs</span>, <span class="ident">ty</span>);
                 <span class="ident">ctx</span>.<span class="ident">emit</span>(<span class="ident">Inst::xmm_cmove</span>(
-                    <span class="kw">if</span> <span class="ident">ty</span> <span class="op">==</span> <span class="ident">types::F64</span> {
-                        <span class="ident">OperandSize::Size64</span>
-                    } <span class="kw">else</span> {
-                        <span class="ident">OperandSize::Size32</span>
-                    },
+                    <span class="ident">ty</span>,
                     <span class="ident">cc</span>,
                     <span class="ident">RegMem::reg</span>(<span class="ident">lhs</span>.<span class="ident">only_reg</span>().<span class="ident">unwrap</span>()),
                     <span class="ident">dst</span>.<span class="ident">only_reg</span>().<span class="ident">unwrap</span>(),
@@ -6054,17 +6047,18 @@
             <span class="ident">ctx</span>.<span class="ident">emit</span>(<span class="ident">Inst::xmm_load_const</span>(<span class="ident">constant</span>, <span class="ident">zero_mask</span>, <span class="ident">ty</span>));
 
             <span class="comment">// Use the `zero_mask` on a writable `swizzle_mask`.</span>
-            <span class="kw">let</span> <span class="ident">swizzle_mask</span> <span class="op">=</span> <span class="ident">Writable::from_reg</span>(<span class="ident">swizzle_mask</span>);
+            <span class="kw">let</span> <span class="ident">swizzle_mask_tmp</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">alloc_tmp</span>(<span class="ident">types::I8X16</span>).<span class="ident">only_reg</span>().<span class="ident">unwrap</span>();
+            <span class="ident">ctx</span>.<span class="ident">emit</span>(<span class="ident">Inst::gen_move</span>(<span class="ident">swizzle_mask_tmp</span>, <span class="ident">swizzle_mask</span>, <span class="ident">ty</span>));
             <span class="ident">ctx</span>.<span class="ident">emit</span>(<span class="ident">Inst::xmm_rm_r</span>(
                 <span class="ident">SseOpcode::Paddusb</span>,
                 <span class="ident">RegMem::from</span>(<span class="ident">zero_mask</span>),
-                <span class="ident">swizzle_mask</span>,
+                <span class="ident">swizzle_mask_tmp</span>,
             ));
 
             <span class="comment">// Shuffle `dst` using the fixed-up `swizzle_mask`.</span>
             <span class="ident">ctx</span>.<span class="ident">emit</span>(<span class="ident">Inst::xmm_rm_r</span>(
                 <span class="ident">SseOpcode::Pshufb</span>,
-                <span class="ident">RegMem::from</span>(<span class="ident">swizzle_mask</span>),
+                <span class="ident">RegMem::from</span>(<span class="ident">swizzle_mask_tmp</span>),
                 <span class="ident">dst</span>,
             ));
         }
