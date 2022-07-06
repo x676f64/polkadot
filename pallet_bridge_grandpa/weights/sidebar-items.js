@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["MillauWeight","Weights for `pallet_bridge_grandpa` using the Millau node and recommended hardware."]],"trait":[["WeightInfo","Weight functions needed for `pallet_bridge_grandpa`."]]});

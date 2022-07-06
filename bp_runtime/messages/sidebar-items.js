@@ -1,1 +1,0 @@
-initSidebarItems({"enum":[["DispatchFeePayment","Where message dispatch fee is paid?"]],"struct":[["MessageDispatchResult","Message dispatch result."]]});

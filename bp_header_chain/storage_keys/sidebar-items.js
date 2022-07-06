@@ -1,1 +1,0 @@
-initSidebarItems({"constant":[["BEST_FINALIZED_VALUE_NAME","Name of the `BestFinalized` storage value."],["IS_HALTED_VALUE_NAME","Name of the `IsHalted` storage value."]],"fn":[["best_finalized_hash_key","Storage key of the best finalized header hash value in the runtime storage."],["is_halted_key","Storage key of the `IsHalted` flag in the runtime storage."]]});
