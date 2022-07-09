@@ -1533,6 +1533,8 @@
 <span id="1528">1528</span>
 <span id="1529">1529</span>
 <span id="1530">1530</span>
+<span id="1531">1531</span>
+<span id="1532">1532</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -2465,7 +2467,8 @@
 
 	<span class="kw">let</span> <span class="ident">chain_selection_config</span> <span class="op">=</span> <span class="ident">ChainSelectionConfig</span> {
 		<span class="ident">col_data</span>: <span class="ident">parachains_db::REAL_COLUMNS</span>.<span class="ident">col_chain_selection_data</span>,
-		<span class="ident">stagnant_check_interval</span>: <span class="ident">chain_selection_subsystem::StagnantCheckInterval::never</span>(),
+		<span class="ident">stagnant_check_interval</span>: <span class="ident">Default::default</span>(),
+		<span class="ident">stagnant_check_mode</span>: <span class="ident">chain_selection_subsystem::StagnantCheckMode::PruneOnly</span>,
 	};
 
 	<span class="kw">let</span> <span class="ident">dispute_coordinator_config</span> <span class="op">=</span> <span class="ident">DisputeCoordinatorConfig</span> {
@@ -3012,6 +3015,7 @@
 	<span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span> <span class="ident">chain_selection_subsystem::Config</span> {
 		<span class="ident">col_data</span>: <span class="ident">parachains_db::REAL_COLUMNS</span>.<span class="ident">col_chain_selection_data</span>,
 		<span class="ident">stagnant_check_interval</span>: <span class="ident">chain_selection_subsystem::StagnantCheckInterval::never</span>(),
+		<span class="ident">stagnant_check_mode</span>: <span class="ident">chain_selection_subsystem::StagnantCheckMode::PruneOnly</span>,
 	};
 
 	<span class="kw">let</span> <span class="ident">chain_selection</span> <span class="op">=</span> <span class="ident">chain_selection_subsystem::ChainSelectionSubsystem::new</span>(<span class="ident">config</span>, <span class="ident">db</span>);
