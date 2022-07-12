@@ -462,6 +462,9 @@
 <span id="457">457</span>
 <span id="458">458</span>
 <span id="459">459</span>
+<span id="460">460</span>
+<span id="461">461</span>
+<span id="462">462</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -494,7 +497,7 @@
 <span class="kw">use</span> <span class="ident">polkadot_node_primitives::ErasureChunk</span>;
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem</span>::{
 	<span class="ident">jaeger</span>,
-	<span class="ident">messages</span>::{<span class="ident">AvailabilityStoreMessage</span>, <span class="ident">IfDisconnected</span>, <span class="ident">NetworkBridgeMessage</span>},
+	<span class="ident">messages</span>::{<span class="ident">AvailabilityStoreMessage</span>, <span class="ident">IfDisconnected</span>, <span class="ident">NetworkBridgeTxMessage</span>},
 	<span class="ident">overseer</span>,
 };
 <span class="kw">use</span> <span class="ident">polkadot_primitives::v2</span>::{
@@ -796,8 +799,11 @@
 
 		<span class="self">self</span>.<span class="ident">sender</span>
 			.<span class="ident">send</span>(<span class="ident">FromFetchTask::Message</span>(
-				<span class="ident">NetworkBridgeMessage::SendRequests</span>(<span class="macro">vec!</span>[<span class="ident">requests</span>], <span class="ident">IfDisconnected::ImmediateError</span>)
-					.<span class="ident">into</span>(),
+				<span class="ident">NetworkBridgeTxMessage::SendRequests</span>(
+					<span class="macro">vec!</span>[<span class="ident">requests</span>],
+					<span class="ident">IfDisconnected::ImmediateError</span>,
+				)
+				.<span class="ident">into</span>(),
 			))
 			.<span class="kw">await</span>
 			.<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">TaskError::ShuttingDown</span>)<span class="question-mark">?</span>;

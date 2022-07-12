@@ -1118,7 +1118,7 @@
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem</span>::{
 	<span class="ident">errors::RecoveryError</span>,
 	<span class="ident">jaeger</span>,
-	<span class="ident">messages</span>::{<span class="ident">AvailabilityRecoveryMessage</span>, <span class="ident">AvailabilityStoreMessage</span>, <span class="ident">NetworkBridgeMessage</span>},
+	<span class="ident">messages</span>::{<span class="ident">AvailabilityRecoveryMessage</span>, <span class="ident">AvailabilityStoreMessage</span>, <span class="ident">NetworkBridgeTxMessage</span>},
 	<span class="ident">overseer</span>, <span class="ident">ActiveLeavesUpdate</span>, <span class="ident">FromOrchestra</span>, <span class="ident">OverseerSignal</span>, <span class="ident">SpawnedSubsystem</span>, <span class="ident">SubsystemError</span>,
 	<span class="ident">SubsystemResult</span>,
 };
@@ -1266,7 +1266,7 @@
 			);
 
 			<span class="ident">sender</span>
-				.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeMessage::SendRequests</span>(
+				.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeTxMessage::SendRequests</span>(
 					<span class="macro">vec!</span>[<span class="ident">Requests::AvailableDataFetchingV1</span>(<span class="ident">req</span>)],
 					<span class="ident">IfDisconnected::ImmediateError</span>,
 				))
@@ -1424,7 +1424,7 @@
 		}
 
 		<span class="ident">sender</span>
-			.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeMessage::SendRequests</span>(
+			.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeTxMessage::SendRequests</span>(
 				<span class="ident">requests</span>,
 				<span class="ident">IfDisconnected::ImmediateError</span>,
 			))

@@ -211,7 +211,7 @@
 
 <span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">v1</span>, <span class="ident">IsRequest</span>, <span class="ident">Protocol</span>};
 
-<span class="doccomment">/// All requests that can be sent to the network bridge via `NetworkBridgeMessage::SendRequest`.</span>
+<span class="doccomment">/// All requests that can be sent to the network bridge via `NetworkBridgeTxMessage::SendRequest`.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Requests</span> {
 	<span class="doccomment">/// Request an availability chunk from a node.</span>

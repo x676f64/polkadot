@@ -608,8 +608,6 @@
 <span id="603">603</span>
 <span id="604">604</span>
 <span id="605">605</span>
-<span id="606">606</span>
-<span id="607">607</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -640,16 +638,18 @@
 	<span class="ident">messages</span>::{<span class="ident">RuntimeApiMessage</span>, <span class="ident">RuntimeApiRequest</span>},
 	<span class="ident">overseer</span>,
 };
-<span class="kw">use</span> <span class="ident">thiserror::Error</span>;
 
 <span class="doccomment">/// Sessions unavailable in state to cache.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">thiserror::Error</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">SessionsUnavailableReason</span> {
 	<span class="doccomment">/// Runtime API subsystem was unavailable.</span>
-	<span class="ident">RuntimeApiUnavailable</span>(<span class="ident">oneshot::Canceled</span>),
+	<span class="attribute">#[<span class="ident">error</span>(<span class="ident">transparent</span>)]</span>
+	<span class="ident">RuntimeApiUnavailable</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">oneshot::Canceled</span>),
 	<span class="doccomment">/// The runtime API itself returned an error.</span>
-	<span class="ident">RuntimeApi</span>(<span class="ident">RuntimeApiError</span>),
+	<span class="attribute">#[<span class="ident">error</span>(<span class="ident">transparent</span>)]</span>
+	<span class="ident">RuntimeApi</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">RuntimeApiError</span>),
 	<span class="doccomment">/// Missing session info from runtime API for given `SessionIndex`.</span>
+	<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Missing session index {0:?}&quot;</span>)]</span>
 	<span class="ident">Missing</span>(<span class="ident">SessionIndex</span>),
 }
 
@@ -665,18 +665,14 @@
 }
 
 <span class="doccomment">/// Sessions were unavailable to fetch from the state for some reason.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Error</span>, <span class="ident">Clone</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">thiserror::Error</span>, <span class="ident">Clone</span>)]</span>
+<span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Sessions unavailable: {kind:?}, info: {info:?}&quot;</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SessionsUnavailable</span> {
 	<span class="doccomment">/// The error kind.</span>
+	<span class="attribute">#[<span class="ident">source</span>]</span>
 	<span class="ident">kind</span>: <span class="ident">SessionsUnavailableReason</span>,
 	<span class="doccomment">/// The info about the session window, if any.</span>
 	<span class="ident">info</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">SessionsUnavailableInfo</span><span class="op">&gt;</span>,
-}
-
-<span class="kw">impl</span> <span class="ident">core::fmt::Display</span> <span class="kw">for</span> <span class="ident">SessionsUnavailable</span> {
-	<span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">core::fmt::Formatter</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">core::fmt::Error</span><span class="op">&gt;</span> {
-		<span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;Sessions unavailable: {:?}, info: {:?}&quot;</span>, <span class="self">self</span>.<span class="ident">kind</span>, <span class="self">self</span>.<span class="ident">info</span>)
-	}
 }
 
 <span class="doccomment">/// An indicated update of the rolling session window.</span>

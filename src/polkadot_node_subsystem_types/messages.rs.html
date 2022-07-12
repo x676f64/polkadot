@@ -938,6 +938,14 @@
 <span id="933">933</span>
 <span id="934">934</span>
 <span id="935">935</span>
+<span id="936">936</span>
+<span id="937">937</span>
+<span id="938">938</span>
+<span id="939">939</span>
+<span id="940">940</span>
+<span id="941">941</span>
+<span id="942">942</span>
+<span id="943">943</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -1258,9 +1266,36 @@
 	<span class="ident">SendDispute</span>(<span class="ident">DisputeMessage</span>),
 }
 
-<span class="doccomment">/// Messages received by the network bridge subsystem.</span>
+<span class="doccomment">/// Messages received from other subsystems.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">NetworkBridgeMessage</span> {
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">NetworkBridgeRxMessage</span> {
+	<span class="doccomment">/// Inform the distribution subsystems about the new</span>
+	<span class="doccomment">/// gossip network topology formed.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// The only reason to have this here, is the availability of the</span>
+	<span class="doccomment">/// authority discovery service, otherwise, the `GossipSupport`</span>
+	<span class="doccomment">/// subsystem would make more sense.</span>
+	<span class="ident">NewGossipTopology</span> {
+		<span class="doccomment">/// The session info this gossip topology is concerned with.</span>
+		<span class="ident">session</span>: <span class="ident">SessionIndex</span>,
+		<span class="doccomment">/// Ids of our neighbors in the X dimensions of the new gossip topology,</span>
+		<span class="doccomment">/// along with their validator indices within the session.</span>
+		<span class="doccomment">///</span>
+		<span class="doccomment">/// We&#39;re not necessarily connected to all of them, but we should</span>
+		<span class="doccomment">/// try to be.</span>
+		<span class="ident">our_neighbors_x</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">AuthorityDiscoveryId</span>, <span class="ident">ValidatorIndex</span><span class="op">&gt;</span>,
+		<span class="doccomment">/// Ids of our neighbors in the X dimensions of the new gossip topology,</span>
+		<span class="doccomment">/// along with their validator indices within the session.</span>
+		<span class="doccomment">///</span>
+		<span class="doccomment">/// We&#39;re not necessarily connected to all of them, but we should</span>
+		<span class="doccomment">/// try to be.</span>
+		<span class="ident">our_neighbors_y</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">AuthorityDiscoveryId</span>, <span class="ident">ValidatorIndex</span><span class="op">&gt;</span>,
+	},
+}
+
+<span class="doccomment">/// Messages received from other subsystems by the network bridge subsystem.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">NetworkBridgeTxMessage</span> {
 	<span class="doccomment">/// Report a peer for their actions.</span>
 	<span class="ident">ReportPeer</span>(<span class="ident">PeerId</span>, <span class="ident">UnifiedReputationChange</span>),
 
@@ -1315,27 +1350,9 @@
 		<span class="doccomment">/// The peer set we want the connection on.</span>
 		<span class="ident">peer_set</span>: <span class="ident">PeerSet</span>,
 	},
-	<span class="doccomment">/// Inform the distribution subsystems about the new</span>
-	<span class="doccomment">/// gossip network topology formed.</span>
-	<span class="ident">NewGossipTopology</span> {
-		<span class="doccomment">/// The session info this gossip topology is concerned with.</span>
-		<span class="ident">session</span>: <span class="ident">SessionIndex</span>,
-		<span class="doccomment">/// Ids of our neighbors in the X dimensions of the new gossip topology,</span>
-		<span class="doccomment">/// along with their validator indices within the session.</span>
-		<span class="doccomment">///</span>
-		<span class="doccomment">/// We&#39;re not necessarily connected to all of them, but we should</span>
-		<span class="doccomment">/// try to be.</span>
-		<span class="ident">our_neighbors_x</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">AuthorityDiscoveryId</span>, <span class="ident">ValidatorIndex</span><span class="op">&gt;</span>,
-		<span class="doccomment">/// Ids of our neighbors in the X dimensions of the new gossip topology,</span>
-		<span class="doccomment">/// along with their validator indices within the session.</span>
-		<span class="doccomment">///</span>
-		<span class="doccomment">/// We&#39;re not necessarily connected to all of them, but we should</span>
-		<span class="doccomment">/// try to be.</span>
-		<span class="ident">our_neighbors_y</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">AuthorityDiscoveryId</span>, <span class="ident">ValidatorIndex</span><span class="op">&gt;</span>,
-	},
 }
 
-<span class="kw">impl</span> <span class="ident">NetworkBridgeMessage</span> {
+<span class="kw">impl</span> <span class="ident">NetworkBridgeTxMessage</span> {
 	<span class="doccomment">/// If the current variant contains the relay parent hash, return it.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">relay_parent</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Hash</span><span class="op">&gt;</span> {
 		<span class="kw">match</span> <span class="self">self</span> {
@@ -1348,7 +1365,6 @@
 			<span class="ident"><span class="self">Self</span>::ConnectToValidators</span> { .. } =&gt; <span class="prelude-val">None</span>,
 			<span class="ident"><span class="self">Self</span>::ConnectToResolvedValidators</span> { .. } =&gt; <span class="prelude-val">None</span>,
 			<span class="ident"><span class="self">Self</span>::SendRequests</span> { .. } =&gt; <span class="prelude-val">None</span>,
-			<span class="ident"><span class="self">Self</span>::NewGossipTopology</span> { .. } =&gt; <span class="prelude-val">None</span>,
 		}
 	}
 }

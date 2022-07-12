@@ -351,6 +351,19 @@
 <span id="346">346</span>
 <span id="347">347</span>
 <span id="348">348</span>
+<span id="349">349</span>
+<span id="350">350</span>
+<span id="351">351</span>
+<span id="352">352</span>
+<span id="353">353</span>
+<span id="354">354</span>
+<span id="355">355</span>
+<span id="356">356</span>
+<span id="357">357</span>
+<span id="358">358</span>
+<span id="359">359</span>
+<span id="360">360</span>
+<span id="361">361</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -404,7 +417,10 @@
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">polkadot_collator_protocol</span>::{<span class="ident">CollatorProtocolSubsystem</span>, <span class="ident">ProtocolSide</span>};
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">polkadot_dispute_distribution::DisputeDistributionSubsystem</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">polkadot_gossip_support::GossipSupport</span> <span class="kw">as</span> <span class="ident">GossipSupportSubsystem</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">polkadot_network_bridge::NetworkBridge</span> <span class="kw">as</span> <span class="ident">NetworkBridgeSubsystem</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">polkadot_network_bridge</span>::{
+	<span class="ident">Metrics</span> <span class="kw">as</span> <span class="ident">NetworkBridgeMetrics</span>, <span class="ident">NetworkBridgeRx</span> <span class="kw">as</span> <span class="ident">NetworkBridgeRxSubsystem</span>,
+	<span class="ident">NetworkBridgeTx</span> <span class="kw">as</span> <span class="ident">NetworkBridgeTxSubsystem</span>,
+};
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">polkadot_node_collation_generation::CollationGenerationSubsystem</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">polkadot_node_core_approval_voting::ApprovalVotingSubsystem</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">polkadot_node_core_av_store::AvailabilityStoreSubsystem</span>;
@@ -511,7 +527,11 @@
 		<span class="ident">ProvisionerSubsystem</span>,
 		<span class="ident">RuntimeApiSubsystem</span><span class="op">&lt;</span><span class="ident">RuntimeClient</span><span class="op">&gt;</span>,
 		<span class="ident">AvailabilityStoreSubsystem</span>,
-		<span class="ident">NetworkBridgeSubsystem</span><span class="op">&lt;</span>
+		<span class="ident">NetworkBridgeRxSubsystem</span><span class="op">&lt;</span>
+			<span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">sc_network::NetworkService</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">Hash</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+			<span class="ident">AuthorityDiscoveryService</span>,
+		<span class="op">&gt;</span>,
+		<span class="ident">NetworkBridgeTxSubsystem</span><span class="op">&lt;</span>
 			<span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">sc_network::NetworkService</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">Hash</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 			<span class="ident">AuthorityDiscoveryService</span>,
 		<span class="op">&gt;</span>,
@@ -538,7 +558,19 @@
 
 	<span class="kw">let</span> <span class="ident">spawner</span> <span class="op">=</span> <span class="ident">SpawnGlue</span>(<span class="ident">spawner</span>);
 
+	<span class="kw">let</span> <span class="ident">network_bridge_metrics</span>: <span class="ident">NetworkBridgeMetrics</span> <span class="op">=</span> <span class="ident">Metrics::register</span>(<span class="ident">registry</span>)<span class="question-mark">?</span>;
 	<span class="kw">let</span> <span class="ident">builder</span> <span class="op">=</span> <span class="ident">Overseer::builder</span>()
+		.<span class="ident">network_bridge_tx</span>(<span class="ident">NetworkBridgeTxSubsystem::new</span>(
+			<span class="ident">network_service</span>.<span class="ident">clone</span>(),
+			<span class="ident">authority_discovery_service</span>.<span class="ident">clone</span>(),
+			<span class="ident">network_bridge_metrics</span>.<span class="ident">clone</span>(),
+		))
+		.<span class="ident">network_bridge_rx</span>(<span class="ident">NetworkBridgeRxSubsystem::new</span>(
+			<span class="ident">network_service</span>.<span class="ident">clone</span>(),
+			<span class="ident">authority_discovery_service</span>.<span class="ident">clone</span>(),
+			<span class="ident">Box::new</span>(<span class="ident">network_service</span>.<span class="ident">clone</span>()),
+			<span class="ident">network_bridge_metrics</span>,
+		))
 		.<span class="ident">availability_distribution</span>(<span class="ident">AvailabilityDistributionSubsystem::new</span>(
 			<span class="ident">keystore</span>.<span class="ident">clone</span>(),
 			<span class="ident">IncomingRequestReceivers</span> { <span class="ident">pov_req_receiver</span>, <span class="ident">chunk_req_receiver</span> },
@@ -590,12 +622,6 @@
 			};
 			<span class="ident">CollatorProtocolSubsystem::new</span>(<span class="ident">side</span>)
 		})
-		.<span class="ident">network_bridge</span>(<span class="ident">NetworkBridgeSubsystem::new</span>(
-			<span class="ident">network_service</span>.<span class="ident">clone</span>(),
-			<span class="ident">authority_discovery_service</span>.<span class="ident">clone</span>(),
-			<span class="ident">Box::new</span>(<span class="ident">network_service</span>.<span class="ident">clone</span>()),
-			<span class="ident">Metrics::register</span>(<span class="ident">registry</span>)<span class="question-mark">?</span>,
-		))
 		.<span class="ident">provisioner</span>(<span class="ident">ProvisionerSubsystem::new</span>(<span class="ident">Metrics::register</span>(<span class="ident">registry</span>)<span class="question-mark">?</span>))
 		.<span class="ident">runtime_api</span>(<span class="ident">RuntimeApiSubsystem::new</span>(
 			<span class="ident">runtime_client</span>.<span class="ident">clone</span>(),

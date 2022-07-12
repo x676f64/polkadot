@@ -925,6 +925,10 @@
 <span id="920">920</span>
 <span id="921">921</span>
 <span id="922">922</span>
+<span id="923">923</span>
+<span id="924">924</span>
+<span id="925">925</span>
+<span id="926">926</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -1010,8 +1014,8 @@
 	<span class="ident">BitfieldSigningMessage</span>, <span class="ident">CandidateBackingMessage</span>, <span class="ident">CandidateValidationMessage</span>, <span class="ident">ChainApiMessage</span>,
 	<span class="ident">ChainSelectionMessage</span>, <span class="ident">CollationGenerationMessage</span>, <span class="ident">CollatorProtocolMessage</span>,
 	<span class="ident">DisputeCoordinatorMessage</span>, <span class="ident">DisputeDistributionMessage</span>, <span class="ident">GossipSupportMessage</span>,
-	<span class="ident">NetworkBridgeMessage</span>, <span class="ident">ProvisionerMessage</span>, <span class="ident">PvfCheckerMessage</span>, <span class="ident">RuntimeApiMessage</span>,
-	<span class="ident">StatementDistributionMessage</span>,
+	<span class="ident">NetworkBridgeRxMessage</span>, <span class="ident">NetworkBridgeTxMessage</span>, <span class="ident">ProvisionerMessage</span>, <span class="ident">PvfCheckerMessage</span>,
+	<span class="ident">RuntimeApiMessage</span>, <span class="ident">StatementDistributionMessage</span>,
 };
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">polkadot_node_subsystem_types</span>::{
 	<span class="ident">errors</span>::{<span class="ident">SubsystemError</span>, <span class="ident">SubsystemResult</span>},
@@ -1035,9 +1039,9 @@
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">orchestra</span> <span class="kw">as</span> <span class="ident">gen</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">orchestra</span>::{
 	<span class="ident">contextbounds</span>, <span class="ident">orchestra</span>, <span class="ident">subsystem</span>, <span class="ident">FromOrchestra</span>, <span class="ident">MapSubsystem</span>, <span class="ident">MessagePacket</span>,
-	<span class="ident">SignalsReceived</span>, <span class="ident">Spawner</span>, <span class="ident">Subsystem</span>, <span class="ident">SubsystemContext</span>, <span class="ident">SubsystemIncomingMessages</span>,
-	<span class="ident">SubsystemInstance</span>, <span class="ident">SubsystemMeterReadouts</span>, <span class="ident">SubsystemMeters</span>, <span class="ident">SubsystemSender</span>, <span class="ident">TimeoutExt</span>,
-	<span class="ident">ToOrchestra</span>,
+	<span class="ident">OrchestraError</span> <span class="kw">as</span> <span class="ident">OverseerError</span>, <span class="ident">SignalsReceived</span>, <span class="ident">Spawner</span>, <span class="ident">Subsystem</span>, <span class="ident">SubsystemContext</span>,
+	<span class="ident">SubsystemIncomingMessages</span>, <span class="ident">SubsystemInstance</span>, <span class="ident">SubsystemMeterReadouts</span>, <span class="ident">SubsystemMeters</span>,
+	<span class="ident">SubsystemSender</span>, <span class="ident">TimeoutExt</span>, <span class="ident">ToOrchestra</span>,
 };
 
 <span class="doccomment">/// Store 2 days worth of blocks, not accounting for forks,</span>
@@ -1316,7 +1320,7 @@
 <span class="doccomment">/// # };</span>
 <span class="doccomment">/// # use polkadot_node_subsystem_types::messages::{</span>
 <span class="doccomment">/// # 	CandidateValidationMessage, CandidateBackingMessage,</span>
-<span class="doccomment">/// # 	NetworkBridgeMessage,</span>
+<span class="doccomment">/// # 	NetworkBridgeTxMessage,</span>
 <span class="doccomment">/// # };</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// struct ValidationSubsystem;</span>
@@ -1404,7 +1408,7 @@
 	<span class="ident">candidate_backing</span>: <span class="ident">CandidateBacking</span>,
 
 	<span class="attribute">#[<span class="ident">subsystem</span>(<span class="ident">StatementDistributionMessage</span>, <span class="ident">sends</span>: [
-		<span class="ident">NetworkBridgeMessage</span>,
+		<span class="ident">NetworkBridgeTxMessage</span>,
 		<span class="ident">CandidateBackingMessage</span>,
 		<span class="ident">RuntimeApiMessage</span>,
 	]</span>)]
@@ -1415,12 +1419,12 @@
 		<span class="ident">AvailabilityRecoveryMessage</span>,
 		<span class="ident">ChainApiMessage</span>,
 		<span class="ident">RuntimeApiMessage</span>,
-		<span class="ident">NetworkBridgeMessage</span>,
+		<span class="ident">NetworkBridgeTxMessage</span>,
 	]</span>)]
 	<span class="ident">availability_distribution</span>: <span class="ident">AvailabilityDistribution</span>,
 
 	<span class="attribute">#[<span class="ident">subsystem</span>(<span class="ident">AvailabilityRecoveryMessage</span>, <span class="ident">sends</span>: [
-		<span class="ident">NetworkBridgeMessage</span>,
+		<span class="ident">NetworkBridgeTxMessage</span>,
 		<span class="ident">RuntimeApiMessage</span>,
 		<span class="ident">AvailabilityStoreMessage</span>,
 	]</span>)]
@@ -1435,7 +1439,7 @@
 
 	<span class="attribute">#[<span class="ident">subsystem</span>(<span class="ident">BitfieldDistributionMessage</span>, <span class="ident">sends</span>: [
 		<span class="ident">RuntimeApiMessage</span>,
-		<span class="ident">NetworkBridgeMessage</span>,
+		<span class="ident">NetworkBridgeTxMessage</span>,
 		<span class="ident">ProvisionerMessage</span>,
 	]</span>)]
 	<span class="ident">bitfield_distribution</span>: <span class="ident">BitfieldDistribution</span>,
@@ -1457,7 +1461,7 @@
 	]</span>)]
 	<span class="ident">availability_store</span>: <span class="ident">AvailabilityStore</span>,
 
-	<span class="attribute">#[<span class="ident">subsystem</span>(<span class="ident">NetworkBridgeMessage</span>, <span class="ident">sends</span>: [
+	<span class="attribute">#[<span class="ident">subsystem</span>(<span class="ident">NetworkBridgeRxMessage</span>, <span class="ident">sends</span>: [
 		<span class="ident">BitfieldDistributionMessage</span>,
 		<span class="ident">StatementDistributionMessage</span>,
 		<span class="ident">ApprovalDistributionMessage</span>,
@@ -1466,7 +1470,10 @@
 		<span class="ident">CollationGenerationMessage</span>,
 		<span class="ident">CollatorProtocolMessage</span>,
 	]</span>)]
-	<span class="ident">network_bridge</span>: <span class="ident">NetworkBridge</span>,
+	<span class="ident">network_bridge_rx</span>: <span class="ident">NetworkBridgeRx</span>,
+
+	<span class="attribute">#[<span class="ident">subsystem</span>(<span class="ident">NetworkBridgeTxMessage</span>, <span class="ident">sends</span>: []</span>)]
+	<span class="ident">network_bridge_tx</span>: <span class="ident">NetworkBridgeTx</span>,
 
 	<span class="attribute">#[<span class="ident">subsystem</span>(<span class="ident">blocking</span>, <span class="ident">ChainApiMessage</span>, <span class="ident">sends</span>: []</span>)]
 	<span class="ident">chain_api</span>: <span class="ident">ChainApi</span>,
@@ -1478,14 +1485,14 @@
 	<span class="ident">collation_generation</span>: <span class="ident">CollationGeneration</span>,
 
 	<span class="attribute">#[<span class="ident">subsystem</span>(<span class="ident">CollatorProtocolMessage</span>, <span class="ident">sends</span>: [
-		<span class="ident">NetworkBridgeMessage</span>,
+		<span class="ident">NetworkBridgeTxMessage</span>,
 		<span class="ident">RuntimeApiMessage</span>,
 		<span class="ident">CandidateBackingMessage</span>,
 	]</span>)]
 	<span class="ident">collator_protocol</span>: <span class="ident">CollatorProtocol</span>,
 
 	<span class="attribute">#[<span class="ident">subsystem</span>(<span class="ident">ApprovalDistributionMessage</span>, <span class="ident">sends</span>: [
-		<span class="ident">NetworkBridgeMessage</span>,
+		<span class="ident">NetworkBridgeTxMessage</span>,
 		<span class="ident">ApprovalVotingMessage</span>,
 	]</span>)]
 	<span class="ident">approval_distribution</span>: <span class="ident">ApprovalDistribution</span>,
@@ -1502,7 +1509,8 @@
 	<span class="ident">approval_voting</span>: <span class="ident">ApprovalVoting</span>,
 
 	<span class="attribute">#[<span class="ident">subsystem</span>(<span class="ident">GossipSupportMessage</span>, <span class="ident">sends</span>: [
-		<span class="ident">NetworkBridgeMessage</span>,
+		<span class="ident">NetworkBridgeTxMessage</span>,
+		<span class="ident">NetworkBridgeRxMessage</span>, <span class="comment">// TODO &lt;https://github.com/paritytech/polkadot/issues/5626&gt;</span>
 		<span class="ident">RuntimeApiMessage</span>,
 		<span class="ident">ChainSelectionMessage</span>,
 	]</span>)]
@@ -1521,7 +1529,7 @@
 	<span class="attribute">#[<span class="ident">subsystem</span>(<span class="ident">DisputeDistributionMessage</span>, <span class="ident">sends</span>: [
 		<span class="ident">RuntimeApiMessage</span>,
 		<span class="ident">DisputeCoordinatorMessage</span>,
-		<span class="ident">NetworkBridgeMessage</span>,
+		<span class="ident">NetworkBridgeTxMessage</span>,
 	]</span>)]
 	<span class="ident">dispute_distribution</span>: <span class="ident">DisputeDistribution</span>,
 

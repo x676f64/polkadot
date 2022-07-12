@@ -224,6 +224,7 @@
 <span id="219">219</span>
 <span id="220">220</span>
 <span id="221">221</span>
+<span id="222">222</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020-2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -261,7 +262,8 @@
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::validator_discovery::AuthorityDiscovery</span>;
 
-<span class="kw">use</span> <span class="ident"><span class="kw">super</span>::LOG_TARGET</span>;
+<span class="comment">// network bridge network abstraction log target</span>
+<span class="kw">const</span> <span class="ident">LOG_TARGET</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;parachain::network-bridge-net&quot;</span>;
 
 <span class="doccomment">/// Send a message to the network.</span>
 <span class="doccomment">///</span>

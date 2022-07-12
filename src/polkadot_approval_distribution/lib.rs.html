@@ -1732,7 +1732,7 @@
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem</span>::{
 	<span class="ident">messages</span>::{
 		<span class="ident">ApprovalCheckResult</span>, <span class="ident">ApprovalDistributionMessage</span>, <span class="ident">ApprovalVotingMessage</span>,
-		<span class="ident">AssignmentCheckResult</span>, <span class="ident">NetworkBridgeEvent</span>, <span class="ident">NetworkBridgeMessage</span>,
+		<span class="ident">AssignmentCheckResult</span>, <span class="ident">NetworkBridgeEvent</span>, <span class="ident">NetworkBridgeTxMessage</span>,
 	},
 	<span class="ident">overseer</span>, <span class="ident">ActiveLeavesUpdate</span>, <span class="ident">FromOrchestra</span>, <span class="ident">OverseerSignal</span>, <span class="ident">SpawnedSubsystem</span>, <span class="ident">SubsystemError</span>,
 };
@@ -2638,7 +2638,7 @@
 				<span class="string">&quot;Sending an assignment to peers&quot;</span>,
 			);
 
-			<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeMessage::SendValidationMessage</span>(
+			<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeTxMessage::SendValidationMessage</span>(
 				<span class="ident">peers</span>,
 				<span class="ident">Versioned::V1</span>(<span class="ident">protocol_v1::ValidationProtocol::ApprovalDistribution</span>(
 					<span class="ident">protocol_v1::ApprovalDistributionMessage::Assignments</span>(<span class="ident">assignments</span>),
@@ -2900,7 +2900,7 @@
 				<span class="string">&quot;Sending an approval to peers&quot;</span>,
 			);
 
-			<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeMessage::SendValidationMessage</span>(
+			<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeTxMessage::SendValidationMessage</span>(
 				<span class="ident">peers</span>,
 				<span class="ident">Versioned::V1</span>(<span class="ident">protocol_v1::ValidationProtocol::ApprovalDistribution</span>(
 					<span class="ident">protocol_v1::ApprovalDistributionMessage::Approvals</span>(<span class="ident">approvals</span>),
@@ -3028,7 +3028,7 @@
 			);
 
 			<span class="ident">sender</span>
-				.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeMessage::SendValidationMessage</span>(
+				.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeTxMessage::SendValidationMessage</span>(
 					<span class="macro">vec!</span>[<span class="ident">peer_id</span>.<span class="ident">clone</span>()],
 					<span class="ident">Versioned::V1</span>(<span class="ident">protocol_v1::ValidationProtocol::ApprovalDistribution</span>(
 						<span class="ident">protocol_v1::ApprovalDistributionMessage::Assignments</span>(<span class="ident">assignments_to_send</span>),
@@ -3046,7 +3046,7 @@
 			);
 
 			<span class="ident">sender</span>
-				.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeMessage::SendValidationMessage</span>(
+				.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeTxMessage::SendValidationMessage</span>(
 					<span class="macro">vec!</span>[<span class="ident">peer_id</span>],
 					<span class="ident">Versioned::V1</span>(<span class="ident">protocol_v1::ValidationProtocol::ApprovalDistribution</span>(
 						<span class="ident">protocol_v1::ApprovalDistributionMessage::Approvals</span>(<span class="ident">approvals_to_send</span>),
@@ -3249,7 +3249,7 @@
 	<span class="comment">// Send messages in accumulated packets, assignments preceding approvals.</span>
 
 	<span class="kw">for</span> (<span class="ident">peer</span>, <span class="ident">assignments_packet</span>) <span class="kw">in</span> <span class="ident">peer_assignments</span> {
-		<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeMessage::SendValidationMessage</span>(
+		<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeTxMessage::SendValidationMessage</span>(
 			<span class="macro">vec!</span>[<span class="ident">peer</span>],
 			<span class="ident">Versioned::V1</span>(<span class="ident">protocol_v1::ValidationProtocol::ApprovalDistribution</span>(
 				<span class="ident">protocol_v1::ApprovalDistributionMessage::Assignments</span>(<span class="ident">assignments_packet</span>),
@@ -3259,7 +3259,7 @@
 	}
 
 	<span class="kw">for</span> (<span class="ident">peer</span>, <span class="ident">approvals_packet</span>) <span class="kw">in</span> <span class="ident">peer_approvals</span> {
-		<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeMessage::SendValidationMessage</span>(
+		<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeTxMessage::SendValidationMessage</span>(
 			<span class="macro">vec!</span>[<span class="ident">peer</span>],
 			<span class="ident">Versioned::V1</span>(<span class="ident">protocol_v1::ValidationProtocol::ApprovalDistribution</span>(
 				<span class="ident">protocol_v1::ApprovalDistributionMessage::Approvals</span>(<span class="ident">approvals_packet</span>),
@@ -3282,7 +3282,7 @@
 		<span class="string">&quot;Reputation change for peer&quot;</span>,
 	);
 
-	<span class="ident">sender</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeMessage::ReportPeer</span>(<span class="ident">peer_id</span>, <span class="ident">rep</span>)).<span class="kw">await</span>;
+	<span class="ident">sender</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeTxMessage::ReportPeer</span>(<span class="ident">peer_id</span>, <span class="ident">rep</span>)).<span class="kw">await</span>;
 }
 
 <span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">ApprovalDistribution</span>, <span class="ident">prefix</span> <span class="op">=</span> <span class="ident"><span class="self">self</span>::overseer</span>)]</span>

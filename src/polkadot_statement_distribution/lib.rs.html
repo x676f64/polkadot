@@ -2130,6 +2130,12 @@
 <span id="2125">2125</span>
 <span id="2126">2126</span>
 <span id="2127">2127</span>
+<span id="2128">2128</span>
+<span id="2129">2129</span>
+<span id="2130">2130</span>
+<span id="2131">2131</span>
+<span id="2132">2132</span>
+<span id="2133">2133</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -2171,7 +2177,7 @@
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem</span>::{
 	<span class="ident">jaeger</span>,
 	<span class="ident">messages</span>::{
-		<span class="ident">CandidateBackingMessage</span>, <span class="ident">NetworkBridgeEvent</span>, <span class="ident">NetworkBridgeMessage</span>,
+		<span class="ident">CandidateBackingMessage</span>, <span class="ident">NetworkBridgeEvent</span>, <span class="ident">NetworkBridgeTxMessage</span>,
 		<span class="ident">StatementDistributionMessage</span>,
 	},
 	<span class="ident">overseer</span>, <span class="ident">ActiveLeavesUpdate</span>, <span class="ident">FromOrchestra</span>, <span class="ident">OverseerSignal</span>, <span class="ident">PerLeafSpan</span>, <span class="ident">SpawnedSubsystem</span>,
@@ -3215,7 +3221,7 @@
 			<span class="ident">statement</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">stored</span>.<span class="ident">statement</span>,
 			<span class="string">&quot;Sending statement&quot;</span>,
 		);
-		<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeMessage::SendValidationMessage</span>(
+		<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeTxMessage::SendValidationMessage</span>(
 			<span class="ident">peers_to_send</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">p</span>, <span class="kw">_</span>)<span class="op">|</span> <span class="ident">p</span>.<span class="ident">clone</span>()).<span class="ident">collect</span>(),
 			<span class="ident">payload</span>,
 		))
@@ -3255,8 +3261,11 @@
 			<span class="ident">statement</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">statement</span>.<span class="ident">statement</span>,
 			<span class="string">&quot;Sending statement&quot;</span>,
 		);
-		<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeMessage::SendValidationMessage</span>(<span class="macro">vec!</span>[<span class="ident">peer</span>.<span class="ident">clone</span>()], <span class="ident">payload</span>))
-			.<span class="kw">await</span>;
+		<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeTxMessage::SendValidationMessage</span>(
+			<span class="macro">vec!</span>[<span class="ident">peer</span>.<span class="ident">clone</span>()],
+			<span class="ident">payload</span>,
+		))
+		.<span class="kw">await</span>;
 
 		<span class="ident">metrics</span>.<span class="ident">on_statement_distributed</span>();
 	}
@@ -3287,8 +3296,11 @@
 			<span class="ident">statement</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">statement</span>.<span class="ident">statement</span>,
 			<span class="string">&quot;Sending statement&quot;</span>
 		);
-		<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeMessage::SendValidationMessage</span>(<span class="macro">vec!</span>[<span class="ident">peer</span>.<span class="ident">clone</span>()], <span class="ident">payload</span>))
-			.<span class="kw">await</span>;
+		<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeTxMessage::SendValidationMessage</span>(
+			<span class="macro">vec!</span>[<span class="ident">peer</span>.<span class="ident">clone</span>()],
+			<span class="ident">payload</span>,
+		))
+		.<span class="kw">await</span>;
 
 		<span class="ident">metrics</span>.<span class="ident">on_statement_distributed</span>();
 	}
@@ -3299,7 +3311,7 @@
 	<span class="ident">peer</span>: <span class="ident">PeerId</span>,
 	<span class="ident">rep</span>: <span class="ident">Rep</span>,
 ) {
-	<span class="ident">sender</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeMessage::ReportPeer</span>(<span class="ident">peer</span>, <span class="ident">rep</span>)).<span class="kw">await</span>
+	<span class="ident">sender</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeTxMessage::ReportPeer</span>(<span class="ident">peer</span>, <span class="ident">rep</span>)).<span class="kw">await</span>
 }
 
 <span class="doccomment">/// If message contains a statement, then retrieve it, otherwise fork task to fetch it.</span>
@@ -4058,7 +4070,7 @@
 				}
 			},
 			<span class="ident">RequesterMessage::SendRequest</span>(<span class="ident">req</span>) =&gt; {
-				<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeMessage::SendRequests</span>(
+				<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeTxMessage::SendRequests</span>(
 					<span class="macro">vec!</span>[<span class="ident">req</span>],
 					<span class="ident">IfDisconnected::ImmediateError</span>,
 				))

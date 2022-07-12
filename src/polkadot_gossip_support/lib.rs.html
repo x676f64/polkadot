@@ -653,7 +653,7 @@
 <span class="doccomment">//! which limits the amount of messages sent and received</span>
 <span class="doccomment">//! to be an order of sqrt of the validators. Our neighbors</span>
 <span class="doccomment">//! in this graph will be forwarded to the network bridge with</span>
-<span class="doccomment">//! the `NetworkBridgeMessage::NewGossipTopology` message.</span>
+<span class="doccomment">//! the `NetworkBridgeRxMessage::NewGossipTopology` message.</span>
 
 <span class="kw">use</span> <span class="ident">std</span>::{
 	<span class="ident">collections</span>::{<span class="ident">HashMap</span>, <span class="ident">HashSet</span>},
@@ -676,8 +676,8 @@
 };
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem</span>::{
 	<span class="ident">messages</span>::{
-		<span class="ident">GossipSupportMessage</span>, <span class="ident">NetworkBridgeEvent</span>, <span class="ident">NetworkBridgeMessage</span>, <span class="ident">RuntimeApiMessage</span>,
-		<span class="ident">RuntimeApiRequest</span>,
+		<span class="ident">GossipSupportMessage</span>, <span class="ident">NetworkBridgeEvent</span>, <span class="ident">NetworkBridgeRxMessage</span>, <span class="ident">NetworkBridgeTxMessage</span>,
+		<span class="ident">RuntimeApiMessage</span>, <span class="ident">RuntimeApiRequest</span>,
 	},
 	<span class="ident">overseer</span>, <span class="ident">ActiveLeavesUpdate</span>, <span class="ident">FromOrchestra</span>, <span class="ident">OverseerSignal</span>, <span class="ident">SpawnedSubsystem</span>, <span class="ident">SubsystemError</span>,
 };
@@ -976,7 +976,7 @@
 		<span class="macro">gum::debug!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="op">%</span><span class="ident">num</span>, <span class="string">&quot;Issuing a connection request&quot;</span>);
 
 		<span class="ident">sender</span>
-			.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeMessage::ConnectToResolvedValidators</span> {
+			.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeTxMessage::ConnectToResolvedValidators</span> {
 				<span class="ident">validator_addrs</span>,
 				<span class="ident">peer_set</span>: <span class="ident">PeerSet::Validation</span>,
 			})
@@ -1176,7 +1176,7 @@
 		.<span class="ident">collect</span>();
 
 	<span class="ident">sender</span>
-		.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeMessage::NewGossipTopology</span> {
+		.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeRxMessage::NewGossipTopology</span> {
 			<span class="ident">session</span>: <span class="ident">session_index</span>,
 			<span class="ident">our_neighbors_x</span>: <span class="ident">row_neighbors</span>,
 			<span class="ident">our_neighbors_y</span>: <span class="ident">column_neighbors</span>,

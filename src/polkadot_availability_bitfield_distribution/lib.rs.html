@@ -1063,7 +1063,7 @@
 ) {
 	<span class="macro">gum::trace!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="question-mark">?</span><span class="ident">relay_parent</span>, <span class="question-mark">?</span><span class="ident">rep</span>, <span class="op">%</span><span class="ident">peer</span>, <span class="string">&quot;reputation change&quot;</span>);
 
-	<span class="ident">sender</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeMessage::ReportPeer</span>(<span class="ident">peer</span>, <span class="ident">rep</span>)).<span class="kw">await</span>
+	<span class="ident">sender</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeTxMessage::ReportPeer</span>(<span class="ident">peer</span>, <span class="ident">rep</span>)).<span class="kw">await</span>
 }
 <span class="doccomment">/// Distribute a given valid and signature checked bitfield message.</span>
 <span class="doccomment">///</span>
@@ -1209,7 +1209,7 @@
 		);
 	} <span class="kw">else</span> {
 		<span class="kw">let</span> <span class="ident">_span</span> <span class="op">=</span> <span class="ident">span</span>.<span class="ident">child</span>(<span class="string">&quot;gossip&quot;</span>);
-		<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeMessage::SendValidationMessage</span>(
+		<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeTxMessage::SendValidationMessage</span>(
 			<span class="ident">interested_peers</span>,
 			<span class="ident">message</span>.<span class="ident">into_validation_protocol</span>(),
 		))
@@ -1504,7 +1504,7 @@
 		.<span class="ident">or_default</span>()
 		.<span class="ident">insert</span>(<span class="ident">validator</span>.<span class="ident">clone</span>());
 
-	<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeMessage::SendValidationMessage</span>(
+	<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeTxMessage::SendValidationMessage</span>(
 		<span class="macro">vec!</span>[<span class="ident">dest</span>],
 		<span class="ident">message</span>.<span class="ident">into_validation_protocol</span>(),
 	))

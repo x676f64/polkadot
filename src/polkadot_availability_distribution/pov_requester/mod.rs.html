@@ -224,6 +224,9 @@
 <span id="219">219</span>
 <span id="220">220</span>
 <span id="221">221</span>
+<span id="222">222</span>
+<span id="223">223</span>
+<span id="224">224</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -252,7 +255,7 @@
 <span class="kw">use</span> <span class="ident">polkadot_node_primitives::PoV</span>;
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem</span>::{
 	<span class="ident">jaeger</span>,
-	<span class="ident">messages</span>::{<span class="ident">IfDisconnected</span>, <span class="ident">NetworkBridgeMessage</span>},
+	<span class="ident">messages</span>::{<span class="ident">IfDisconnected</span>, <span class="ident">NetworkBridgeTxMessage</span>},
 	<span class="ident">overseer</span>,
 };
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem_util::runtime::RuntimeInfo</span>;
@@ -288,7 +291,7 @@
 	);
 	<span class="kw">let</span> <span class="ident">full_req</span> <span class="op">=</span> <span class="ident">Requests::PoVFetchingV1</span>(<span class="ident">req</span>);
 
-	<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeMessage::SendRequests</span>(
+	<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeTxMessage::SendRequests</span>(
 		<span class="macro">vec!</span>[<span class="ident">full_req</span>],
 		<span class="ident">IfDisconnected::ImmediateError</span>,
 	))
@@ -421,7 +424,10 @@
 					)) =&gt; {
 						<span class="ident">tx</span>.<span class="ident">send</span>(<span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">make_session_info</span>()))).<span class="ident">unwrap</span>();
 					},
-					<span class="ident">AllMessages::NetworkBridge</span>(<span class="ident">NetworkBridgeMessage::SendRequests</span>(<span class="kw-2">mut</span> <span class="ident">reqs</span>, <span class="kw">_</span>)) =&gt; {
+					<span class="ident">AllMessages::NetworkBridgeTx</span>(<span class="ident">NetworkBridgeTxMessage::SendRequests</span>(
+						<span class="kw-2">mut</span> <span class="ident">reqs</span>,
+						<span class="kw">_</span>,
+					)) =&gt; {
 						<span class="kw">let</span> <span class="ident">req</span> <span class="op">=</span> <span class="macro">assert_matches!</span>(
 							<span class="ident">reqs</span>.<span class="ident">pop</span>(),
 							<span class="prelude-val">Some</span>(<span class="ident">Requests::PoVFetchingV1</span>(<span class="ident">outgoing</span>)) =&gt; {<span class="ident">outgoing</span>}

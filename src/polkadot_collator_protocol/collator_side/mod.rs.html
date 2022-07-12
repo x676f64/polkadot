@@ -1111,7 +1111,7 @@
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem</span>::{
 	<span class="ident">jaeger</span>,
 	<span class="ident">messages</span>::{
-		<span class="ident">CollatorProtocolMessage</span>, <span class="ident">NetworkBridgeEvent</span>, <span class="ident">NetworkBridgeMessage</span>, <span class="ident">RuntimeApiMessage</span>,
+		<span class="ident">CollatorProtocolMessage</span>, <span class="ident">NetworkBridgeEvent</span>, <span class="ident">NetworkBridgeTxMessage</span>, <span class="ident">RuntimeApiMessage</span>,
 	},
 	<span class="ident">overseer</span>, <span class="ident">FromOrchestra</span>, <span class="ident">OverseerSignal</span>, <span class="ident">PerLeafSpan</span>,
 };
@@ -1605,7 +1605,7 @@
 			<span class="ident">state</span>.<span class="ident">collator_pair</span>.<span class="ident">sign</span>(<span class="kw-2">&amp;</span><span class="ident">declare_signature_payload</span>),
 		);
 
-		<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeMessage::SendCollationMessage</span>(
+		<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeTxMessage::SendCollationMessage</span>(
 			<span class="macro">vec!</span>[<span class="ident">peer</span>],
 			<span class="ident">Versioned::V1</span>(<span class="ident">protocol_v1::CollationProtocol::CollatorProtocol</span>(<span class="ident">wire_message</span>)),
 		))
@@ -1623,7 +1623,7 @@
 	<span class="comment">// ignore address resolution failure</span>
 	<span class="comment">// will reissue a new request on new collation</span>
 	<span class="kw">let</span> (<span class="ident">failed</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
-	<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeMessage::ConnectToValidators</span> {
+	<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeTxMessage::ConnectToValidators</span> {
 		<span class="ident">validator_ids</span>,
 		<span class="ident">peer_set</span>: <span class="ident">PeerSet::Collation</span>,
 		<span class="ident">failed</span>,
@@ -1680,7 +1680,7 @@
 
 	<span class="kw">let</span> <span class="ident">wire_message</span> <span class="op">=</span> <span class="ident">protocol_v1::CollatorProtocolMessage::AdvertiseCollation</span>(<span class="ident">relay_parent</span>);
 
-	<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeMessage::SendCollationMessage</span>(
+	<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeTxMessage::SendCollationMessage</span>(
 		<span class="macro">vec!</span>[<span class="ident">peer</span>.<span class="ident">clone</span>()],
 		<span class="ident">Versioned::V1</span>(<span class="ident">protocol_v1::CollationProtocol::CollatorProtocol</span>(<span class="ident">wire_message</span>)),
 	))
@@ -1823,7 +1823,7 @@
 			);
 
 			<span class="comment">// If we are declared to, this is another collator, and we should disconnect.</span>
-			<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeMessage::DisconnectPeer</span>(<span class="ident">origin</span>, <span class="ident">PeerSet::Collation</span>))
+			<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeTxMessage::DisconnectPeer</span>(<span class="ident">origin</span>, <span class="ident">PeerSet::Collation</span>))
 				.<span class="kw">await</span>;
 		},
 		<span class="ident">AdvertiseCollation</span>(<span class="kw">_</span>) =&gt; {
@@ -1833,14 +1833,14 @@
 				<span class="string">&quot;AdvertiseCollation message is not expected on the collator side of the protocol&quot;</span>,
 			);
 
-			<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeMessage::ReportPeer</span>(
+			<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeTxMessage::ReportPeer</span>(
 				<span class="ident">origin</span>.<span class="ident">clone</span>(),
 				<span class="ident">COST_UNEXPECTED_MESSAGE</span>,
 			))
 			.<span class="kw">await</span>;
 
 			<span class="comment">// If we are advertised to, this is another collator, and we should disconnect.</span>
-			<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeMessage::DisconnectPeer</span>(<span class="ident">origin</span>, <span class="ident">PeerSet::Collation</span>))
+			<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeTxMessage::DisconnectPeer</span>(<span class="ident">origin</span>, <span class="ident">PeerSet::Collation</span>))
 				.<span class="kw">await</span>;
 		},
 		<span class="ident">CollationSeconded</span>(<span class="ident">relay_parent</span>, <span class="ident">statement</span>) =&gt; {
@@ -1923,7 +1923,7 @@
 					<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
 					<span class="string">&quot;Dropping incoming request as peer has a request in flight already.&quot;</span>
 				);
-				<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeMessage::ReportPeer</span>(<span class="ident">req</span>.<span class="ident">peer</span>, <span class="ident">COST_APPARENT_FLOOD</span>))
+				<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">NetworkBridgeTxMessage::ReportPeer</span>(<span class="ident">req</span>.<span class="ident">peer</span>, <span class="ident">COST_APPARENT_FLOOD</span>))
 					.<span class="kw">await</span>;
 				<span class="kw">return</span> <span class="prelude-val">Ok</span>(())
 			}
