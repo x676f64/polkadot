@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/git/checkouts/substrate-7e08433d4c370a21/ee3eb8f/frame/staking/src/lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/git/checkouts/substrate-7e08433d4c370a21/367dab0/frame/staking/src/lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
     <noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../pallet_staking/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
         </a><h2 class="location"></h2>
     </nav>
@@ -922,6 +922,49 @@
 <span id="917">917</span>
 <span id="918">918</span>
 <span id="919">919</span>
+<span id="920">920</span>
+<span id="921">921</span>
+<span id="922">922</span>
+<span id="923">923</span>
+<span id="924">924</span>
+<span id="925">925</span>
+<span id="926">926</span>
+<span id="927">927</span>
+<span id="928">928</span>
+<span id="929">929</span>
+<span id="930">930</span>
+<span id="931">931</span>
+<span id="932">932</span>
+<span id="933">933</span>
+<span id="934">934</span>
+<span id="935">935</span>
+<span id="936">936</span>
+<span id="937">937</span>
+<span id="938">938</span>
+<span id="939">939</span>
+<span id="940">940</span>
+<span id="941">941</span>
+<span id="942">942</span>
+<span id="943">943</span>
+<span id="944">944</span>
+<span id="945">945</span>
+<span id="946">946</span>
+<span id="947">947</span>
+<span id="948">948</span>
+<span id="949">949</span>
+<span id="950">950</span>
+<span id="951">951</span>
+<span id="952">952</span>
+<span id="953">953</span>
+<span id="954">954</span>
+<span id="955">955</span>
+<span id="956">956</span>
+<span id="957">957</span>
+<span id="958">958</span>
+<span id="959">959</span>
+<span id="960">960</span>
+<span id="961">961</span>
+<span id="962">962</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -1453,13 +1496,26 @@
 		(<span class="self">self</span>, <span class="ident">unlocking_balance</span>)
 	}
 
-	<span class="doccomment">/// Slash the staker for a given amount of balance. This can grow the value of the slash in the</span>
-	<span class="doccomment">/// case that either the active bonded or some unlocking chunks become dust after slashing.</span>
-	<span class="doccomment">/// Returns the amount of funds actually slashed.</span>
+	<span class="doccomment">/// Slash the staker for a given amount of balance.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// This implements a proportional slashing system, whereby we set our preference to slash as</span>
+	<span class="doccomment">/// such:</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// - If any unlocking chunks exist that are scheduled to be unlocked at `slash_era +</span>
+	<span class="doccomment">///   bonding_duration` and onwards, the slash is divided equally between the active ledger and</span>
+	<span class="doccomment">///   the unlocking chunks.</span>
+	<span class="doccomment">/// - If no such chunks exist, then only the active balance is slashed.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Note that the above is only a *preference*. If for any reason the active ledger, with or</span>
+	<span class="doccomment">/// without some portion of the unlocking chunks that are more justified to be slashed are not</span>
+	<span class="doccomment">/// enough, then the slashing will continue and will consume as much of the active and unlocking</span>
+	<span class="doccomment">/// chunks as needed.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// This will never slash more than the given amount. If any of the chunks become dusted, the</span>
+	<span class="doccomment">/// last chunk is slashed slightly less to compensate. Returns the amount of funds actually</span>
+	<span class="doccomment">/// slashed.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// `slash_era` is the era in which the slash (which is being enacted now) actually happened.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// # Note</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// This calls `Config::OnStakerSlash::on_slash` with information as to how the slash was</span>
 	<span class="doccomment">/// applied.</span>
@@ -1469,54 +1525,81 @@
 		<span class="ident">minimum_balance</span>: <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 		<span class="ident">slash_era</span>: <span class="ident">EraIndex</span>,
 	) -&gt; <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-		<span class="kw">use</span> <span class="ident">sp_staking::OnStakerSlash</span> <span class="kw">as</span> <span class="kw">_</span>;
-
 		<span class="kw">if</span> <span class="ident">slash_amount</span>.<span class="ident">is_zero</span>() {
 			<span class="kw">return</span> <span class="ident">Zero::zero</span>()
 		}
 
+		<span class="kw">use</span> <span class="ident">sp_staking::OnStakerSlash</span> <span class="kw">as</span> <span class="kw">_</span>;
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">remaining_slash</span> <span class="op">=</span> <span class="ident">slash_amount</span>;
 		<span class="kw">let</span> <span class="ident">pre_slash_total</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">total</span>;
 
-		<span class="kw">let</span> <span class="ident">era_after_slash</span> <span class="op">=</span> <span class="ident">slash_era</span> <span class="op">+</span> <span class="number">1</span>;
-		<span class="kw">let</span> <span class="ident">chunk_unlock_era_after_slash</span> <span class="op">=</span> <span class="ident">era_after_slash</span> <span class="op">+</span> <span class="ident">T::BondingDuration::get</span>();
+		<span class="comment">// for a `slash_era = x`, any chunk that is scheduled to be unlocked at era `x + 28`</span>
+		<span class="comment">// (assuming 28 is the bonding duration) onwards should be slashed.</span>
+		<span class="kw">let</span> <span class="ident">slashable_chunks_start</span> <span class="op">=</span> <span class="ident">slash_era</span> <span class="op">+</span> <span class="ident">T::BondingDuration::get</span>();
 
-		<span class="comment">// Calculate the total balance of active funds and unlocking funds in the affected range.</span>
-		<span class="kw">let</span> (<span class="ident">affected_balance</span>, <span class="ident">slash_chunks_priority</span>): (<span class="kw">_</span>, <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">usize</span><span class="op">&gt;</span><span class="op">&gt;</span>) <span class="op">=</span> {
-			<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">start_index</span>) <span class="op">=</span>
-				<span class="self">self</span>.<span class="ident">unlocking</span>.<span class="ident">iter</span>().<span class="ident">position</span>(<span class="op">|</span><span class="ident">c</span><span class="op">|</span> <span class="ident">c</span>.<span class="ident">era</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">chunk_unlock_era_after_slash</span>)
+		<span class="comment">// `Some(ratio)` if this is proportional, with `ratio`, `None` otherwise. In both cases, we</span>
+		<span class="comment">// slash first the active chunk, and then `slash_chunks_priority`.</span>
+		<span class="kw">let</span> (<span class="ident">maybe_proportional</span>, <span class="ident">slash_chunks_priority</span>) <span class="op">=</span> {
+			<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">first_slashable_index</span>) <span class="op">=</span>
+				<span class="self">self</span>.<span class="ident">unlocking</span>.<span class="ident">iter</span>().<span class="ident">position</span>(<span class="op">|</span><span class="ident">c</span><span class="op">|</span> <span class="ident">c</span>.<span class="ident">era</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">slashable_chunks_start</span>)
 			{
+				<span class="comment">// If there exists a chunk who&#39;s after the first_slashable_start, then this is a</span>
+				<span class="comment">// proportional slash, because we want to slash active and these chunks</span>
+				<span class="comment">// proportionally.</span>
+
 				<span class="comment">// The indices of the first chunk after the slash up through the most recent chunk.</span>
 				<span class="comment">// (The most recent chunk is at greatest from this era)</span>
-				<span class="kw">let</span> <span class="ident">affected_indices</span> <span class="op">=</span> <span class="ident">start_index</span>..<span class="self">self</span>.<span class="ident">unlocking</span>.<span class="ident">len</span>();
+				<span class="kw">let</span> <span class="ident">affected_indices</span> <span class="op">=</span> <span class="ident">first_slashable_index</span>..<span class="self">self</span>.<span class="ident">unlocking</span>.<span class="ident">len</span>();
 				<span class="kw">let</span> <span class="ident">unbonding_affected_balance</span> <span class="op">=</span>
 					<span class="ident">affected_indices</span>.<span class="ident">clone</span>().<span class="ident">fold</span>(<span class="ident">BalanceOf</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::zero</span>(), <span class="op">|</span><span class="ident">sum</span>, <span class="ident">i</span><span class="op">|</span> {
-						<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">chunk</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">unlocking</span>.<span class="ident">get_mut</span>(<span class="ident">i</span>).<span class="ident">defensive</span>() {
+						<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">chunk</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">unlocking</span>.<span class="ident">get</span>(<span class="ident">i</span>).<span class="ident">defensive</span>() {
 							<span class="ident">sum</span>.<span class="ident">saturating_add</span>(<span class="ident">chunk</span>.<span class="ident">value</span>)
 						} <span class="kw">else</span> {
 							<span class="ident">sum</span>
 						}
 					});
+				<span class="kw">let</span> <span class="ident">affected_balance</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">active</span>.<span class="ident">saturating_add</span>(<span class="ident">unbonding_affected_balance</span>);
+				<span class="kw">let</span> <span class="ident">ratio</span> <span class="op">=</span> <span class="ident">Perquintill::from_rational</span>(<span class="ident">slash_amount</span>, <span class="ident">affected_balance</span>);
 				(
-					<span class="self">self</span>.<span class="ident">active</span>.<span class="ident">saturating_add</span>(<span class="ident">unbonding_affected_balance</span>),
-					<span class="ident">Box::new</span>(<span class="ident">affected_indices</span>.<span class="ident">chain</span>((<span class="number">0</span>..<span class="ident">start_index</span>).<span class="ident">rev</span>())),
+					<span class="prelude-val">Some</span>(<span class="ident">ratio</span>),
+					<span class="ident">affected_indices</span>.<span class="ident">chain</span>((<span class="number">0</span>..<span class="ident">first_slashable_index</span>).<span class="ident">rev</span>()).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>(),
 				)
 			} <span class="kw">else</span> {
-				(<span class="self">self</span>.<span class="ident">active</span>, <span class="ident">Box::new</span>((<span class="number">0</span>..<span class="self">self</span>.<span class="ident">unlocking</span>.<span class="ident">len</span>()).<span class="ident">rev</span>()))
+				<span class="comment">// We just slash from the last chunk to the most recent one, if need be.</span>
+				(<span class="prelude-val">None</span>, (<span class="number">0</span>..<span class="self">self</span>.<span class="ident">unlocking</span>.<span class="ident">len</span>()).<span class="ident">rev</span>().<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>())
 			}
 		};
 
 		<span class="comment">// Helper to update `target` and the ledgers total after accounting for slashing `target`.</span>
-		<span class="kw">let</span> <span class="ident">ratio</span> <span class="op">=</span> <span class="ident">Perquintill::from_rational</span>(<span class="ident">slash_amount</span>, <span class="ident">affected_balance</span>);
+		<span class="macro">log!</span>(
+			<span class="ident">debug</span>,
+			<span class="string">&quot;slashing {:?} for era {:?} out of {:?}, priority: {:?}, proportional = {:?}&quot;</span>,
+			<span class="ident">slash_amount</span>,
+			<span class="ident">slash_era</span>,
+			<span class="self">self</span>,
+			<span class="ident">slash_chunks_priority</span>,
+			<span class="ident">maybe_proportional</span>,
+		);
+
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">slash_out_of</span> <span class="op">=</span> <span class="op">|</span><span class="ident">target</span>: <span class="kw-2">&amp;mut</span> <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">slash_remaining</span>: <span class="kw-2">&amp;mut</span> <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">|</span> {
-			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">slash_from_target</span> <span class="op">=</span>
-				<span class="kw">if</span> <span class="ident">slash_amount</span> <span class="op">&lt;</span> <span class="ident">affected_balance</span> { <span class="ident">ratio</span> <span class="op">*</span> (<span class="kw-2">*</span><span class="ident">target</span>) } <span class="kw">else</span> { <span class="kw-2">*</span><span class="ident">slash_remaining</span> }
-					.<span class="ident">min</span>(<span class="kw-2">*</span><span class="ident">target</span>);
+			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">slash_from_target</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">ratio</span>) <span class="op">=</span> <span class="ident">maybe_proportional</span> {
+				<span class="ident">ratio</span> <span class="op">*</span> (<span class="kw-2">*</span><span class="ident">target</span>)
+			} <span class="kw">else</span> {
+				<span class="kw-2">*</span><span class="ident">slash_remaining</span>
+			}
+			<span class="comment">// this is the total that that the slash target has. We can&#39;t slash more than</span>
+			<span class="comment">// this anyhow!</span>
+			.<span class="ident">min</span>(<span class="kw-2">*</span><span class="ident">target</span>)
+			<span class="comment">// this is the total amount that we would have wanted to slash</span>
+			<span class="comment">// non-proportionally, a proportional slash should never exceed this either!</span>
+			.<span class="ident">min</span>(<span class="kw-2">*</span><span class="ident">slash_remaining</span>);
 
 			<span class="comment">// slash out from *target exactly `slash_from_target`.</span>
 			<span class="kw-2">*</span><span class="ident">target</span> <span class="op">=</span> <span class="kw-2">*</span><span class="ident">target</span> <span class="op">-</span> <span class="ident">slash_from_target</span>;
 			<span class="kw">if</span> <span class="kw-2">*</span><span class="ident">target</span> <span class="op">&lt;</span> <span class="ident">minimum_balance</span> {
-				<span class="comment">// Slash the rest of the target if its dust</span>
+				<span class="comment">// Slash the rest of the target if it&#39;s dust. This might cause the last chunk to be</span>
+				<span class="comment">// slightly under-slashed, by at most `MaxUnlockingChunks * ED`, which is not a big</span>
+				<span class="comment">// deal.</span>
 				<span class="ident">slash_from_target</span> <span class="op">=</span>
 					<span class="ident">sp_std::mem::replace</span>(<span class="ident">target</span>, <span class="ident">Zero::zero</span>()).<span class="ident">saturating_add</span>(<span class="ident">slash_from_target</span>)
 			}
@@ -1530,10 +1613,11 @@
 
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">slashed_unlocking</span> <span class="op">=</span> <span class="ident">BTreeMap</span>::<span class="op">&lt;</span><span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span><span class="ident">::new</span>();
 		<span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="ident">slash_chunks_priority</span> {
+			<span class="kw">if</span> <span class="ident">remaining_slash</span>.<span class="ident">is_zero</span>() {
+				<span class="kw">break</span>
+			}
+
 			<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">chunk</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">unlocking</span>.<span class="ident">get_mut</span>(<span class="ident">i</span>).<span class="ident">defensive</span>() {
-				<span class="kw">if</span> <span class="ident">remaining_slash</span>.<span class="ident">is_zero</span>() {
-					<span class="kw">break</span>
-				}
 				<span class="ident">slash_out_of</span>(<span class="kw-2">&amp;mut</span> <span class="ident">chunk</span>.<span class="ident">value</span>, <span class="kw-2">&amp;mut</span> <span class="ident">remaining_slash</span>);
 				<span class="comment">// write the new slashed value of this chunk to the map.</span>
 				<span class="ident">slashed_unlocking</span>.<span class="ident">insert</span>(<span class="ident">chunk</span>.<span class="ident">era</span>, <span class="ident">chunk</span>.<span class="ident">value</span>);
@@ -1542,7 +1626,9 @@
 			}
 		}
 
+		<span class="comment">// clean unlocking chunks that are set to zero.</span>
 		<span class="self">self</span>.<span class="ident">unlocking</span>.<span class="ident">retain</span>(<span class="op">|</span><span class="ident">c</span><span class="op">|</span> <span class="op">!</span><span class="ident">c</span>.<span class="ident">value</span>.<span class="ident">is_zero</span>());
+
 		<span class="ident">T::OnStakerSlash::on_slash</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">stash</span>, <span class="self">self</span>.<span class="ident">active</span>, <span class="kw-2">&amp;</span><span class="ident">slashed_unlocking</span>);
 		<span class="ident">pre_slash_total</span>.<span class="ident">saturating_sub</span>(<span class="self">self</span>.<span class="ident">total</span>)
 	}

@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/registry/src/github.com-1ecc6299db9ec823/libp2p-core-0.33.0/src/transport.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>transport.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/registry/src/github.com-1ecc6299db9ec823/libp2p-core-0.34.0/src/transport.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>transport.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
     <noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../libp2p_core/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
         </a><h2 class="location"></h2>
     </nav>
@@ -419,6 +419,138 @@
 <span id="414">414</span>
 <span id="415">415</span>
 <span id="416">416</span>
+<span id="417">417</span>
+<span id="418">418</span>
+<span id="419">419</span>
+<span id="420">420</span>
+<span id="421">421</span>
+<span id="422">422</span>
+<span id="423">423</span>
+<span id="424">424</span>
+<span id="425">425</span>
+<span id="426">426</span>
+<span id="427">427</span>
+<span id="428">428</span>
+<span id="429">429</span>
+<span id="430">430</span>
+<span id="431">431</span>
+<span id="432">432</span>
+<span id="433">433</span>
+<span id="434">434</span>
+<span id="435">435</span>
+<span id="436">436</span>
+<span id="437">437</span>
+<span id="438">438</span>
+<span id="439">439</span>
+<span id="440">440</span>
+<span id="441">441</span>
+<span id="442">442</span>
+<span id="443">443</span>
+<span id="444">444</span>
+<span id="445">445</span>
+<span id="446">446</span>
+<span id="447">447</span>
+<span id="448">448</span>
+<span id="449">449</span>
+<span id="450">450</span>
+<span id="451">451</span>
+<span id="452">452</span>
+<span id="453">453</span>
+<span id="454">454</span>
+<span id="455">455</span>
+<span id="456">456</span>
+<span id="457">457</span>
+<span id="458">458</span>
+<span id="459">459</span>
+<span id="460">460</span>
+<span id="461">461</span>
+<span id="462">462</span>
+<span id="463">463</span>
+<span id="464">464</span>
+<span id="465">465</span>
+<span id="466">466</span>
+<span id="467">467</span>
+<span id="468">468</span>
+<span id="469">469</span>
+<span id="470">470</span>
+<span id="471">471</span>
+<span id="472">472</span>
+<span id="473">473</span>
+<span id="474">474</span>
+<span id="475">475</span>
+<span id="476">476</span>
+<span id="477">477</span>
+<span id="478">478</span>
+<span id="479">479</span>
+<span id="480">480</span>
+<span id="481">481</span>
+<span id="482">482</span>
+<span id="483">483</span>
+<span id="484">484</span>
+<span id="485">485</span>
+<span id="486">486</span>
+<span id="487">487</span>
+<span id="488">488</span>
+<span id="489">489</span>
+<span id="490">490</span>
+<span id="491">491</span>
+<span id="492">492</span>
+<span id="493">493</span>
+<span id="494">494</span>
+<span id="495">495</span>
+<span id="496">496</span>
+<span id="497">497</span>
+<span id="498">498</span>
+<span id="499">499</span>
+<span id="500">500</span>
+<span id="501">501</span>
+<span id="502">502</span>
+<span id="503">503</span>
+<span id="504">504</span>
+<span id="505">505</span>
+<span id="506">506</span>
+<span id="507">507</span>
+<span id="508">508</span>
+<span id="509">509</span>
+<span id="510">510</span>
+<span id="511">511</span>
+<span id="512">512</span>
+<span id="513">513</span>
+<span id="514">514</span>
+<span id="515">515</span>
+<span id="516">516</span>
+<span id="517">517</span>
+<span id="518">518</span>
+<span id="519">519</span>
+<span id="520">520</span>
+<span id="521">521</span>
+<span id="522">522</span>
+<span id="523">523</span>
+<span id="524">524</span>
+<span id="525">525</span>
+<span id="526">526</span>
+<span id="527">527</span>
+<span id="528">528</span>
+<span id="529">529</span>
+<span id="530">530</span>
+<span id="531">531</span>
+<span id="532">532</span>
+<span id="533">533</span>
+<span id="534">534</span>
+<span id="535">535</span>
+<span id="536">536</span>
+<span id="537">537</span>
+<span id="538">538</span>
+<span id="539">539</span>
+<span id="540">540</span>
+<span id="541">541</span>
+<span id="542">542</span>
+<span id="543">543</span>
+<span id="544">544</span>
+<span id="545">545</span>
+<span id="546">546</span>
+<span id="547">547</span>
+<span id="548">548</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2018 Parity Technologies (UK) Ltd.</span>
 <span class="comment">//</span>
 <span class="comment">// Permission is hereby granted, free of charge, to any person obtaining a</span>
@@ -446,10 +578,14 @@
 <span class="doccomment">//! any desired protocols. The rest of the module defines combinators for</span>
 <span class="doccomment">//! modifying a transport through composition with other transports or protocol upgrades.</span>
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::connection::ConnectedPoint</span>;
 <span class="kw">use</span> <span class="ident">futures::prelude</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">multiaddr::Multiaddr</span>;
-<span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">error::Error</span>, <span class="ident">fmt</span>};
+<span class="kw">use</span> <span class="ident">std</span>::{
+    <span class="ident">error::Error</span>,
+    <span class="ident">fmt</span>,
+    <span class="ident">pin::Pin</span>,
+    <span class="ident">task</span>::{<span class="ident">Context</span>, <span class="ident">Poll</span>},
+};
 
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">and_then</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">choice</span>;
@@ -462,6 +598,8 @@
 
 <span class="kw">mod</span> <span class="ident">boxed</span>;
 <span class="kw">mod</span> <span class="ident">optional</span>;
+
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::ConnectedPoint</span>;
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::boxed::Boxed</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="self">self</span>::choice::OrTransport</span>;
@@ -508,21 +646,8 @@
     <span class="doccomment">/// An error that occurred during connection setup.</span>
     <span class="kw">type</span> <span class="ident">Error</span>: <span class="ident">Error</span>;
 
-    <span class="doccomment">/// A stream of [`Output`](Transport::Output)s for inbound connections.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// An item should be produced whenever a connection is received at the lowest level of the</span>
-    <span class="doccomment">/// transport stack. The item must be a [`ListenerUpgrade`](Transport::ListenerUpgrade) future</span>
-    <span class="doccomment">/// that resolves to an [`Output`](Transport::Output) value once all protocol upgrades</span>
-    <span class="doccomment">/// have been applied.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// If this stream produces an error, it is considered fatal and the listener is killed. It</span>
-    <span class="doccomment">/// is possible to report non-fatal errors by producing a [`ListenerEvent::Error`].</span>
-    <span class="kw">type</span> <span class="ident">Listener</span>: <span class="ident">Stream</span><span class="op">&lt;</span>
-        <span class="ident">Item</span> <span class="op">=</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">ListenerEvent</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::ListenerUpgrade</span>, <span class="ident"><span class="self">Self</span>::Error</span><span class="op">&gt;</span>, <span class="ident"><span class="self">Self</span>::Error</span><span class="op">&gt;</span>,
-    <span class="op">&gt;</span>;
-
     <span class="doccomment">/// A pending [`Output`](Transport::Output) for an inbound connection,</span>
-    <span class="doccomment">/// obtained from the [`Listener`](Transport::Listener) stream.</span>
+    <span class="doccomment">/// obtained from the [`Transport`] stream.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// After a connection has been accepted by the transport, it may need to go through</span>
     <span class="doccomment">/// asynchronous post-processing (i.e. protocol upgrade negotiations). Such</span>
@@ -536,22 +661,20 @@
     <span class="doccomment">/// obtained from [dialing](Transport::dial).</span>
     <span class="kw">type</span> <span class="ident">Dial</span>: <span class="ident">Future</span><span class="op">&lt;</span><span class="ident">Output</span> <span class="op">=</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Output</span>, <span class="ident"><span class="self">Self</span>::Error</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 
-    <span class="doccomment">/// Listens on the given [`Multiaddr`], producing a stream of pending, inbound connections</span>
-    <span class="doccomment">/// and addresses this transport is listening on (cf. [`ListenerEvent`]).</span>
+    <span class="doccomment">/// Listens on the given [`Multiaddr`] for inbound connections.</span>
+    <span class="kw">fn</span> <span class="ident">listen_on</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">addr</span>: <span class="ident">Multiaddr</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">ListenerId</span>, <span class="ident">TransportError</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Error</span><span class="op">&gt;</span><span class="op">&gt;</span>;
+
+    <span class="doccomment">/// Remove a listener.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// Returning an error from the stream is considered fatal. The listener can also report</span>
-    <span class="doccomment">/// non-fatal errors by producing a [`ListenerEvent::Error`].</span>
-    <span class="kw">fn</span> <span class="ident">listen_on</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">addr</span>: <span class="ident">Multiaddr</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Listener</span>, <span class="ident">TransportError</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Error</span><span class="op">&gt;</span><span class="op">&gt;</span>
-    <span class="kw">where</span>
-        <span class="self">Self</span>: <span class="ident">Sized</span>;
+    <span class="doccomment">/// Return `true` if there was a listener with this Id, `false`</span>
+    <span class="doccomment">/// otherwise.</span>
+    <span class="kw">fn</span> <span class="ident">remove_listener</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">id</span>: <span class="ident">ListenerId</span>) -&gt; <span class="ident">bool</span>;
 
     <span class="doccomment">/// Dials the given [`Multiaddr`], returning a future for a pending outbound connection.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// If [`TransportError::MultiaddrNotSupported`] is returned, it may be desirable to</span>
     <span class="doccomment">/// try an alternative [`Transport`], if available.</span>
-    <span class="kw">fn</span> <span class="ident">dial</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">addr</span>: <span class="ident">Multiaddr</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Dial</span>, <span class="ident">TransportError</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Error</span><span class="op">&gt;</span><span class="op">&gt;</span>
-    <span class="kw">where</span>
-        <span class="self">Self</span>: <span class="ident">Sized</span>;
+    <span class="kw">fn</span> <span class="ident">dial</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">addr</span>: <span class="ident">Multiaddr</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Dial</span>, <span class="ident">TransportError</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Error</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 
     <span class="doccomment">/// As [`Transport::dial`] but has the local node act as a listener on the outgoing connection.</span>
     <span class="doccomment">///</span>
@@ -561,9 +684,23 @@
     <span class="kw">fn</span> <span class="ident">dial_as_listener</span>(
         <span class="kw-2">&amp;mut</span> <span class="self">self</span>,
         <span class="ident">addr</span>: <span class="ident">Multiaddr</span>,
-    ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Dial</span>, <span class="ident">TransportError</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Error</span><span class="op">&gt;</span><span class="op">&gt;</span>
-    <span class="kw">where</span>
-        <span class="self">Self</span>: <span class="ident">Sized</span>;
+    ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Dial</span>, <span class="ident">TransportError</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Error</span><span class="op">&gt;</span><span class="op">&gt;</span>;
+
+    <span class="doccomment">/// Poll for [`TransportEvent`]s.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// A [`TransportEvent::Incoming`] should be produced whenever a connection is received at the lowest</span>
+    <span class="doccomment">/// level of the transport stack. The item must be a [`ListenerUpgrade`](Transport::ListenerUpgrade)</span>
+    <span class="doccomment">/// future that resolves to an [`Output`](Transport::Output) value once all protocol upgrades have</span>
+    <span class="doccomment">/// been applied.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// Transports are expected to produce [`TransportEvent::Incoming`] events only for</span>
+    <span class="doccomment">/// listen addresses which have previously been announced via</span>
+    <span class="doccomment">/// a [`TransportEvent::NewAddress`] event and which have not been invalidated by</span>
+    <span class="doccomment">/// an [`TransportEvent::AddressExpired`] event yet.</span>
+    <span class="kw">fn</span> <span class="ident">poll</span>(
+        <span class="self">self</span>: <span class="ident">Pin</span><span class="op">&lt;</span><span class="kw-2">&amp;mut</span> <span class="self">Self</span><span class="op">&gt;</span>,
+        <span class="ident">cx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>,
+    ) -&gt; <span class="ident">Poll</span><span class="op">&lt;</span><span class="ident">TransportEvent</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::ListenerUpgrade</span>, <span class="ident"><span class="self">Self</span>::Error</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 
     <span class="doccomment">/// Performs a transport-specific mapping of an address `observed` by</span>
     <span class="doccomment">/// a remote onto a local `listen` address to yield an address for</span>
@@ -573,9 +710,8 @@
     <span class="doccomment">/// Boxes the transport, including custom transport errors.</span>
     <span class="kw">fn</span> <span class="ident">boxed</span>(<span class="self">self</span>) -&gt; <span class="ident">boxed::Boxed</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Output</span><span class="op">&gt;</span>
     <span class="kw">where</span>
-        <span class="self">Self</span>: <span class="ident">Transport</span> <span class="op">+</span> <span class="ident">Sized</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+        <span class="self">Self</span>: <span class="ident">Sized</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Unpin</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
         <span class="ident"><span class="self">Self</span>::Dial</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
-        <span class="ident"><span class="self">Self</span>::Listener</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
         <span class="ident"><span class="self">Self</span>::ListenerUpgrade</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
         <span class="ident"><span class="self">Self</span>::Error</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span>,
     {
@@ -642,145 +778,273 @@
     }
 }
 
-<span class="doccomment">/// Event produced by [`Transport::Listener`]s.</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// Transports are expected to produce `Upgrade` events only for</span>
-<span class="doccomment">/// listen addresses which have previously been announced via</span>
-<span class="doccomment">/// a `NewAddress` event and which have not been invalidated by</span>
-<span class="doccomment">/// an `AddressExpired` event yet.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>, <span class="ident">PartialEq</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">ListenerEvent</span><span class="op">&lt;</span><span class="ident">TUpgr</span>, <span class="ident">TErr</span><span class="op">&gt;</span> {
-    <span class="doccomment">/// The transport is listening on a new additional [`Multiaddr`].</span>
-    <span class="ident">NewAddress</span>(<span class="ident">Multiaddr</span>),
-    <span class="doccomment">/// An upgrade, consisting of the upgrade future, the listener address and the remote address.</span>
-    <span class="ident">Upgrade</span> {
-        <span class="doccomment">/// The upgrade.</span>
-        <span class="ident">upgrade</span>: <span class="ident">TUpgr</span>,
-        <span class="doccomment">/// The local address which produced this upgrade.</span>
-        <span class="ident">local_addr</span>: <span class="ident">Multiaddr</span>,
-        <span class="doccomment">/// The remote address which produced this upgrade.</span>
-        <span class="ident">remote_addr</span>: <span class="ident">Multiaddr</span>,
-    },
-    <span class="doccomment">/// A [`Multiaddr`] is no longer used for listening.</span>
-    <span class="ident">AddressExpired</span>(<span class="ident">Multiaddr</span>),
-    <span class="doccomment">/// A non-fatal error has happened on the listener.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// This event should be generated in order to notify the user that something wrong has</span>
-    <span class="doccomment">/// happened. The listener, however, continues to run.</span>
-    <span class="ident">Error</span>(<span class="ident">TErr</span>),
+<span class="doccomment">/// The ID of a single listener.</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">Debug</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Hash</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ListenerId</span>(<span class="ident">u64</span>);
+
+<span class="kw">impl</span> <span class="ident">ListenerId</span> {
+    <span class="doccomment">/// Creates a new `ListenerId`.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() -&gt; <span class="self">Self</span> {
+        <span class="ident">ListenerId</span>(<span class="ident">rand::random</span>())
+    }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">TUpgr</span>, <span class="ident">TErr</span><span class="op">&gt;</span> <span class="ident">ListenerEvent</span><span class="op">&lt;</span><span class="ident">TUpgr</span>, <span class="ident">TErr</span><span class="op">&gt;</span> {
-    <span class="doccomment">/// In case this [`ListenerEvent`] is an upgrade, apply the given function</span>
-    <span class="doccomment">/// to the upgrade and multiaddress and produce another listener event</span>
-    <span class="doccomment">/// based the the function&#39;s result.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">map</span><span class="op">&lt;</span><span class="ident">U</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">f</span>: <span class="kw">impl</span> <span class="ident">FnOnce</span>(<span class="ident">TUpgr</span>) -&gt; <span class="ident">U</span>) -&gt; <span class="ident">ListenerEvent</span><span class="op">&lt;</span><span class="ident">U</span>, <span class="ident">TErr</span><span class="op">&gt;</span> {
-        <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">ListenerEvent::Upgrade</span> {
-                <span class="ident">upgrade</span>,
-                <span class="ident">local_addr</span>,
-                <span class="ident">remote_addr</span>,
-            } =&gt; <span class="ident">ListenerEvent::Upgrade</span> {
-                <span class="ident">upgrade</span>: <span class="ident">f</span>(<span class="ident">upgrade</span>),
-                <span class="ident">local_addr</span>,
-                <span class="ident">remote_addr</span>,
-            },
-            <span class="ident">ListenerEvent::NewAddress</span>(<span class="ident">a</span>) =&gt; <span class="ident">ListenerEvent::NewAddress</span>(<span class="ident">a</span>),
-            <span class="ident">ListenerEvent::AddressExpired</span>(<span class="ident">a</span>) =&gt; <span class="ident">ListenerEvent::AddressExpired</span>(<span class="ident">a</span>),
-            <span class="ident">ListenerEvent::Error</span>(<span class="ident">e</span>) =&gt; <span class="ident">ListenerEvent::Error</span>(<span class="ident">e</span>),
-        }
+<span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">ListenerId</span> {
+    <span class="kw">fn</span> <span class="ident">default</span>() -&gt; <span class="self">Self</span> {
+        <span class="ident"><span class="self">Self</span>::new</span>()
     }
+}
 
-    <span class="doccomment">/// In case this [`ListenerEvent`] is an [`Error`](ListenerEvent::Error),</span>
-    <span class="doccomment">/// apply the given function to the error and produce another listener event based on the</span>
-    <span class="doccomment">/// function&#39;s result.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">map_err</span><span class="op">&lt;</span><span class="ident">U</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">f</span>: <span class="kw">impl</span> <span class="ident">FnOnce</span>(<span class="ident">TErr</span>) -&gt; <span class="ident">U</span>) -&gt; <span class="ident">ListenerEvent</span><span class="op">&lt;</span><span class="ident">TUpgr</span>, <span class="ident">U</span><span class="op">&gt;</span> {
-        <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">ListenerEvent::Upgrade</span> {
-                <span class="ident">upgrade</span>,
-                <span class="ident">local_addr</span>,
-                <span class="ident">remote_addr</span>,
-            } =&gt; <span class="ident">ListenerEvent::Upgrade</span> {
-                <span class="ident">upgrade</span>,
-                <span class="ident">local_addr</span>,
-                <span class="ident">remote_addr</span>,
-            },
-            <span class="ident">ListenerEvent::NewAddress</span>(<span class="ident">a</span>) =&gt; <span class="ident">ListenerEvent::NewAddress</span>(<span class="ident">a</span>),
-            <span class="ident">ListenerEvent::AddressExpired</span>(<span class="ident">a</span>) =&gt; <span class="ident">ListenerEvent::AddressExpired</span>(<span class="ident">a</span>),
-            <span class="ident">ListenerEvent::Error</span>(<span class="ident">e</span>) =&gt; <span class="ident">ListenerEvent::Error</span>(<span class="ident">f</span>(<span class="ident">e</span>)),
-        }
-    }
-
-    <span class="doccomment">/// Returns `true` if this is an `Upgrade` listener event.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_upgrade</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
-        <span class="macro">matches!</span>(<span class="self">self</span>, <span class="ident">ListenerEvent::Upgrade</span> { .. })
-    }
-
-    <span class="doccomment">/// Try to turn this listener event into upgrade parts.</span>
+<span class="doccomment">/// Event produced by [`Transport`]s.</span>
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">TransportEvent</span><span class="op">&lt;</span><span class="ident">TUpgr</span>, <span class="ident">TErr</span><span class="op">&gt;</span> {
+    <span class="doccomment">/// A new address is being listened on.</span>
+    <span class="ident">NewAddress</span> {
+        <span class="doccomment">/// The listener that is listening on the new address.</span>
+        <span class="ident">listener_id</span>: <span class="ident">ListenerId</span>,
+        <span class="doccomment">/// The new address that is being listened on.</span>
+        <span class="ident">listen_addr</span>: <span class="ident">Multiaddr</span>,
+    },
+    <span class="doccomment">/// An address is no longer being listened on.</span>
+    <span class="ident">AddressExpired</span> {
+        <span class="doccomment">/// The listener that is no longer listening on the address.</span>
+        <span class="ident">listener_id</span>: <span class="ident">ListenerId</span>,
+        <span class="doccomment">/// The new address that is being listened on.</span>
+        <span class="ident">listen_addr</span>: <span class="ident">Multiaddr</span>,
+    },
+    <span class="doccomment">/// A connection is incoming on one of the listeners.</span>
+    <span class="ident">Incoming</span> {
+        <span class="doccomment">/// The listener that produced the upgrade.</span>
+        <span class="ident">listener_id</span>: <span class="ident">ListenerId</span>,
+        <span class="doccomment">/// The produced upgrade.</span>
+        <span class="ident">upgrade</span>: <span class="ident">TUpgr</span>,
+        <span class="doccomment">/// Local connection address.</span>
+        <span class="ident">local_addr</span>: <span class="ident">Multiaddr</span>,
+        <span class="doccomment">/// Address used to send back data to the incoming client.</span>
+        <span class="ident">send_back_addr</span>: <span class="ident">Multiaddr</span>,
+    },
+    <span class="doccomment">/// A listener closed.</span>
+    <span class="ident">ListenerClosed</span> {
+        <span class="doccomment">/// The ID of the listener that closed.</span>
+        <span class="ident">listener_id</span>: <span class="ident">ListenerId</span>,
+        <span class="doccomment">/// Reason for the closure. Contains `Ok(())` if the stream produced `None`, or `Err`</span>
+        <span class="doccomment">/// if the stream produced an error.</span>
+        <span class="ident">reason</span>: <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">TErr</span><span class="op">&gt;</span>,
+    },
+    <span class="doccomment">/// A listener errored.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// Returns `None` if the event is not actually an upgrade,</span>
+    <span class="doccomment">/// The listener will continue to be polled for new events and the event</span>
+    <span class="doccomment">/// is for informational purposes only.</span>
+    <span class="ident">ListenerError</span> {
+        <span class="doccomment">/// The ID of the listener that errored.</span>
+        <span class="ident">listener_id</span>: <span class="ident">ListenerId</span>,
+        <span class="doccomment">/// The error value.</span>
+        <span class="ident">error</span>: <span class="ident">TErr</span>,
+    },
+}
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">TUpgr</span>, <span class="ident">TErr</span><span class="op">&gt;</span> <span class="ident">TransportEvent</span><span class="op">&lt;</span><span class="ident">TUpgr</span>, <span class="ident">TErr</span><span class="op">&gt;</span> {
+    <span class="doccomment">/// In case this [`TransportEvent`] is an upgrade, apply the given function</span>
+    <span class="doccomment">/// to the upgrade and produce another transport event based the the function&#39;s result.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">map_upgrade</span><span class="op">&lt;</span><span class="ident">U</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">map</span>: <span class="kw">impl</span> <span class="ident">FnOnce</span>(<span class="ident">TUpgr</span>) -&gt; <span class="ident">U</span>) -&gt; <span class="ident">TransportEvent</span><span class="op">&lt;</span><span class="ident">U</span>, <span class="ident">TErr</span><span class="op">&gt;</span> {
+        <span class="kw">match</span> <span class="self">self</span> {
+            <span class="ident">TransportEvent::Incoming</span> {
+                <span class="ident">listener_id</span>,
+                <span class="ident">upgrade</span>,
+                <span class="ident">local_addr</span>,
+                <span class="ident">send_back_addr</span>,
+            } =&gt; <span class="ident">TransportEvent::Incoming</span> {
+                <span class="ident">listener_id</span>,
+                <span class="ident">upgrade</span>: <span class="ident">map</span>(<span class="ident">upgrade</span>),
+                <span class="ident">local_addr</span>,
+                <span class="ident">send_back_addr</span>,
+            },
+            <span class="ident">TransportEvent::NewAddress</span> {
+                <span class="ident">listen_addr</span>,
+                <span class="ident">listener_id</span>,
+            } =&gt; <span class="ident">TransportEvent::NewAddress</span> {
+                <span class="ident">listen_addr</span>,
+                <span class="ident">listener_id</span>,
+            },
+            <span class="ident">TransportEvent::AddressExpired</span> {
+                <span class="ident">listen_addr</span>,
+                <span class="ident">listener_id</span>,
+            } =&gt; <span class="ident">TransportEvent::AddressExpired</span> {
+                <span class="ident">listen_addr</span>,
+                <span class="ident">listener_id</span>,
+            },
+            <span class="ident">TransportEvent::ListenerError</span> { <span class="ident">listener_id</span>, <span class="ident">error</span> } =&gt; {
+                <span class="ident">TransportEvent::ListenerError</span> { <span class="ident">listener_id</span>, <span class="ident">error</span> }
+            }
+            <span class="ident">TransportEvent::ListenerClosed</span> {
+                <span class="ident">listener_id</span>,
+                <span class="ident">reason</span>,
+            } =&gt; <span class="ident">TransportEvent::ListenerClosed</span> {
+                <span class="ident">listener_id</span>,
+                <span class="ident">reason</span>,
+            },
+        }
+    }
+
+    <span class="doccomment">/// In case this [`TransportEvent`] is an [`ListenerError`](TransportEvent::ListenerError),</span>
+    <span class="doccomment">/// or [`ListenerClosed`](TransportEvent::ListenerClosed) apply the given function to the</span>
+    <span class="doccomment">/// error and produce another transport event based on the function&#39;s result.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">map_err</span><span class="op">&lt;</span><span class="ident">E</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">map_err</span>: <span class="kw">impl</span> <span class="ident">FnOnce</span>(<span class="ident">TErr</span>) -&gt; <span class="ident">E</span>) -&gt; <span class="ident">TransportEvent</span><span class="op">&lt;</span><span class="ident">TUpgr</span>, <span class="ident">E</span><span class="op">&gt;</span> {
+        <span class="kw">match</span> <span class="self">self</span> {
+            <span class="ident">TransportEvent::Incoming</span> {
+                <span class="ident">listener_id</span>,
+                <span class="ident">upgrade</span>,
+                <span class="ident">local_addr</span>,
+                <span class="ident">send_back_addr</span>,
+            } =&gt; <span class="ident">TransportEvent::Incoming</span> {
+                <span class="ident">listener_id</span>,
+                <span class="ident">upgrade</span>,
+                <span class="ident">local_addr</span>,
+                <span class="ident">send_back_addr</span>,
+            },
+            <span class="ident">TransportEvent::NewAddress</span> {
+                <span class="ident">listen_addr</span>,
+                <span class="ident">listener_id</span>,
+            } =&gt; <span class="ident">TransportEvent::NewAddress</span> {
+                <span class="ident">listen_addr</span>,
+                <span class="ident">listener_id</span>,
+            },
+            <span class="ident">TransportEvent::AddressExpired</span> {
+                <span class="ident">listen_addr</span>,
+                <span class="ident">listener_id</span>,
+            } =&gt; <span class="ident">TransportEvent::AddressExpired</span> {
+                <span class="ident">listen_addr</span>,
+                <span class="ident">listener_id</span>,
+            },
+            <span class="ident">TransportEvent::ListenerError</span> { <span class="ident">listener_id</span>, <span class="ident">error</span> } =&gt; <span class="ident">TransportEvent::ListenerError</span> {
+                <span class="ident">listener_id</span>,
+                <span class="ident">error</span>: <span class="ident">map_err</span>(<span class="ident">error</span>),
+            },
+            <span class="ident">TransportEvent::ListenerClosed</span> {
+                <span class="ident">listener_id</span>,
+                <span class="ident">reason</span>,
+            } =&gt; <span class="ident">TransportEvent::ListenerClosed</span> {
+                <span class="ident">listener_id</span>,
+                <span class="ident">reason</span>: <span class="ident">reason</span>.<span class="ident">map_err</span>(<span class="ident">map_err</span>),
+            },
+        }
+    }
+
+    <span class="doccomment">/// Returns `true` if this is an [`Incoming`](TransportEvent::Incoming) transport event.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_upgrade</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
+        <span class="macro">matches!</span>(<span class="self">self</span>, <span class="ident">TransportEvent::Incoming</span> { .. })
+    }
+
+    <span class="doccomment">/// Try to turn this transport event into the upgrade parts of the</span>
+    <span class="doccomment">/// incoming connection.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// Returns `None` if the event is not actually an incoming connection,</span>
     <span class="doccomment">/// otherwise the upgrade and the remote address.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">into_upgrade</span>(<span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">TUpgr</span>, <span class="ident">Multiaddr</span>)<span class="op">&gt;</span> {
-        <span class="kw">if</span> <span class="kw">let</span> <span class="ident">ListenerEvent::Upgrade</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">into_incoming</span>(<span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">TUpgr</span>, <span class="ident">Multiaddr</span>)<span class="op">&gt;</span> {
+        <span class="kw">if</span> <span class="kw">let</span> <span class="ident">TransportEvent::Incoming</span> {
             <span class="ident">upgrade</span>,
-            <span class="ident">remote_addr</span>,
+            <span class="ident">send_back_addr</span>,
             ..
         } <span class="op">=</span> <span class="self">self</span>
         {
-            <span class="prelude-val">Some</span>((<span class="ident">upgrade</span>, <span class="ident">remote_addr</span>))
+            <span class="prelude-val">Some</span>((<span class="ident">upgrade</span>, <span class="ident">send_back_addr</span>))
         } <span class="kw">else</span> {
             <span class="prelude-val">None</span>
         }
     }
 
-    <span class="doccomment">/// Returns `true` if this is a `NewAddress` listener event.</span>
+    <span class="doccomment">/// Returns `true` if this is a [`TransportEvent::NewAddress`].</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_new_address</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
-        <span class="macro">matches!</span>(<span class="self">self</span>, <span class="ident">ListenerEvent::NewAddress</span>(<span class="kw">_</span>))
+        <span class="macro">matches!</span>(<span class="self">self</span>, <span class="ident">TransportEvent::NewAddress</span> { .. })
     }
 
-    <span class="doccomment">/// Try to turn this listener event into the `NewAddress` part.</span>
+    <span class="doccomment">/// Try to turn this transport event into the new `Multiaddr`.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// Returns `None` if the event is not actually a `NewAddress`,</span>
+    <span class="doccomment">/// Returns `None` if the event is not actually a [`TransportEvent::NewAddress`],</span>
     <span class="doccomment">/// otherwise the address.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">into_new_address</span>(<span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Multiaddr</span><span class="op">&gt;</span> {
-        <span class="kw">if</span> <span class="kw">let</span> <span class="ident">ListenerEvent::NewAddress</span>(<span class="ident">a</span>) <span class="op">=</span> <span class="self">self</span> {
-            <span class="prelude-val">Some</span>(<span class="ident">a</span>)
+        <span class="kw">if</span> <span class="kw">let</span> <span class="ident">TransportEvent::NewAddress</span> { <span class="ident">listen_addr</span>, .. } <span class="op">=</span> <span class="self">self</span> {
+            <span class="prelude-val">Some</span>(<span class="ident">listen_addr</span>)
         } <span class="kw">else</span> {
             <span class="prelude-val">None</span>
         }
     }
 
-    <span class="doccomment">/// Returns `true` if this is an `AddressExpired` listener event.</span>
+    <span class="doccomment">/// Returns `true` if this is an [`TransportEvent::AddressExpired`].</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_address_expired</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
-        <span class="macro">matches!</span>(<span class="self">self</span>, <span class="ident">ListenerEvent::AddressExpired</span>(<span class="kw">_</span>))
+        <span class="macro">matches!</span>(<span class="self">self</span>, <span class="ident">TransportEvent::AddressExpired</span> { .. })
     }
 
-    <span class="doccomment">/// Try to turn this listener event into the `AddressExpired` part.</span>
+    <span class="doccomment">/// Try to turn this transport event into the expire `Multiaddr`.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// Returns `None` if the event is not actually a `AddressExpired`,</span>
+    <span class="doccomment">/// Returns `None` if the event is not actually a [`TransportEvent::AddressExpired`],</span>
     <span class="doccomment">/// otherwise the address.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">into_address_expired</span>(<span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Multiaddr</span><span class="op">&gt;</span> {
-        <span class="kw">if</span> <span class="kw">let</span> <span class="ident">ListenerEvent::AddressExpired</span>(<span class="ident">a</span>) <span class="op">=</span> <span class="self">self</span> {
-            <span class="prelude-val">Some</span>(<span class="ident">a</span>)
+        <span class="kw">if</span> <span class="kw">let</span> <span class="ident">TransportEvent::AddressExpired</span> { <span class="ident">listen_addr</span>, .. } <span class="op">=</span> <span class="self">self</span> {
+            <span class="prelude-val">Some</span>(<span class="ident">listen_addr</span>)
         } <span class="kw">else</span> {
             <span class="prelude-val">None</span>
         }
     }
 
-    <span class="doccomment">/// Returns `true` if this is an `Error` listener event.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_error</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
-        <span class="macro">matches!</span>(<span class="self">self</span>, <span class="ident">ListenerEvent::Error</span>(<span class="kw">_</span>))
+    <span class="doccomment">/// Returns `true` if this is an [`TransportEvent::ListenerError`] transport event.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_listener_error</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
+        <span class="macro">matches!</span>(<span class="self">self</span>, <span class="ident">TransportEvent::ListenerError</span> { .. })
     }
 
-    <span class="doccomment">/// Try to turn this listener event into the `Error` part.</span>
+    <span class="doccomment">/// Try to turn this transport event into the listener error.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// Returns `None` if the event is not actually a `Error`,</span>
+    <span class="doccomment">/// Returns `None` if the event is not actually a [`TransportEvent::ListenerError`]`,</span>
     <span class="doccomment">/// otherwise the error.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">into_error</span>(<span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">TErr</span><span class="op">&gt;</span> {
-        <span class="kw">if</span> <span class="kw">let</span> <span class="ident">ListenerEvent::Error</span>(<span class="ident">err</span>) <span class="op">=</span> <span class="self">self</span> {
-            <span class="prelude-val">Some</span>(<span class="ident">err</span>)
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">into_listener_error</span>(<span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">TErr</span><span class="op">&gt;</span> {
+        <span class="kw">if</span> <span class="kw">let</span> <span class="ident">TransportEvent::ListenerError</span> { <span class="ident">error</span>, .. } <span class="op">=</span> <span class="self">self</span> {
+            <span class="prelude-val">Some</span>(<span class="ident">error</span>)
         } <span class="kw">else</span> {
             <span class="prelude-val">None</span>
+        }
+    }
+}
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">TUpgr</span>, <span class="ident">TErr</span>: <span class="ident">fmt::Debug</span><span class="op">&gt;</span> <span class="ident">fmt::Debug</span> <span class="kw">for</span> <span class="ident">TransportEvent</span><span class="op">&lt;</span><span class="ident">TUpgr</span>, <span class="ident">TErr</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">fmt::Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">fmt::Error</span><span class="op">&gt;</span> {
+        <span class="kw">match</span> <span class="self">self</span> {
+            <span class="ident">TransportEvent::NewAddress</span> {
+                <span class="ident">listener_id</span>,
+                <span class="ident">listen_addr</span>,
+            } =&gt; <span class="ident">f</span>
+                .<span class="ident">debug_struct</span>(<span class="string">&quot;TransportEvent::NewAddress&quot;</span>)
+                .<span class="ident">field</span>(<span class="string">&quot;listener_id&quot;</span>, <span class="ident">listener_id</span>)
+                .<span class="ident">field</span>(<span class="string">&quot;listen_addr&quot;</span>, <span class="ident">listen_addr</span>)
+                .<span class="ident">finish</span>(),
+            <span class="ident">TransportEvent::AddressExpired</span> {
+                <span class="ident">listener_id</span>,
+                <span class="ident">listen_addr</span>,
+            } =&gt; <span class="ident">f</span>
+                .<span class="ident">debug_struct</span>(<span class="string">&quot;TransportEvent::AddressExpired&quot;</span>)
+                .<span class="ident">field</span>(<span class="string">&quot;listener_id&quot;</span>, <span class="ident">listener_id</span>)
+                .<span class="ident">field</span>(<span class="string">&quot;listen_addr&quot;</span>, <span class="ident">listen_addr</span>)
+                .<span class="ident">finish</span>(),
+            <span class="ident">TransportEvent::Incoming</span> {
+                <span class="ident">listener_id</span>,
+                <span class="ident">local_addr</span>,
+                ..
+            } =&gt; <span class="ident">f</span>
+                .<span class="ident">debug_struct</span>(<span class="string">&quot;TransportEvent::Incoming&quot;</span>)
+                .<span class="ident">field</span>(<span class="string">&quot;listener_id&quot;</span>, <span class="ident">listener_id</span>)
+                .<span class="ident">field</span>(<span class="string">&quot;local_addr&quot;</span>, <span class="ident">local_addr</span>)
+                .<span class="ident">finish</span>(),
+            <span class="ident">TransportEvent::ListenerClosed</span> {
+                <span class="ident">listener_id</span>,
+                <span class="ident">reason</span>,
+            } =&gt; <span class="ident">f</span>
+                .<span class="ident">debug_struct</span>(<span class="string">&quot;TransportEvent::Closed&quot;</span>)
+                .<span class="ident">field</span>(<span class="string">&quot;listener_id&quot;</span>, <span class="ident">listener_id</span>)
+                .<span class="ident">field</span>(<span class="string">&quot;reason&quot;</span>, <span class="ident">reason</span>)
+                .<span class="ident">finish</span>(),
+            <span class="ident">TransportEvent::ListenerError</span> { <span class="ident">listener_id</span>, <span class="ident">error</span> } =&gt; <span class="ident">f</span>
+                .<span class="ident">debug_struct</span>(<span class="string">&quot;TransportEvent::ListenerError&quot;</span>)
+                .<span class="ident">field</span>(<span class="string">&quot;listener_id&quot;</span>, <span class="ident">listener_id</span>)
+                .<span class="ident">field</span>(<span class="string">&quot;error&quot;</span>, <span class="ident">error</span>)
+                .<span class="ident">finish</span>(),
         }
     }
 }

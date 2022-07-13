@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/registry/src/github.com-1ecc6299db9ec823/libp2p-core-0.33.0/src/transport/upgrade.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>upgrade.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><script defer src="../../../main.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/registry/src/github.com-1ecc6299db9ec823/libp2p-core-0.34.0/src/transport/upgrade.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>upgrade.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><script defer src="../../../main.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script>
     <noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../../libp2p_core/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div>
         </a><h2 class="location"></h2>
     </nav>
@@ -613,28 +613,6 @@
 <span id="608">608</span>
 <span id="609">609</span>
 <span id="610">610</span>
-<span id="611">611</span>
-<span id="612">612</span>
-<span id="613">613</span>
-<span id="614">614</span>
-<span id="615">615</span>
-<span id="616">616</span>
-<span id="617">617</span>
-<span id="618">618</span>
-<span id="619">619</span>
-<span id="620">620</span>
-<span id="621">621</span>
-<span id="622">622</span>
-<span id="623">623</span>
-<span id="624">624</span>
-<span id="625">625</span>
-<span id="626">626</span>
-<span id="627">627</span>
-<span id="628">628</span>
-<span id="629">629</span>
-<span id="630">630</span>
-<span id="631">631</span>
-<span id="632">632</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2019 Parity Technologies (UK) Ltd.</span>
 <span class="comment">//</span>
 <span class="comment">// Permission is hereby granted, free of charge, to any person obtaining a</span>
@@ -663,8 +641,8 @@
     <span class="ident">connection::ConnectedPoint</span>,
     <span class="ident">muxing</span>::{<span class="ident">StreamMuxer</span>, <span class="ident">StreamMuxerBox</span>},
     <span class="ident">transport</span>::{
-        <span class="ident">and_then::AndThen</span>, <span class="ident">boxed::boxed</span>, <span class="ident">timeout::TransportTimeout</span>, <span class="ident">ListenerEvent</span>, <span class="ident">Transport</span>,
-        <span class="ident">TransportError</span>,
+        <span class="ident">and_then::AndThen</span>, <span class="ident">boxed::boxed</span>, <span class="ident">timeout::TransportTimeout</span>, <span class="ident">ListenerId</span>, <span class="ident">Transport</span>,
+        <span class="ident">TransportError</span>, <span class="ident">TransportEvent</span>,
     },
     <span class="ident">upgrade</span>::{
         <span class="self">self</span>, <span class="ident">apply_inbound</span>, <span class="ident">apply_outbound</span>, <span class="ident">InboundUpgrade</span>, <span class="ident">InboundUpgradeApply</span>, <span class="ident">OutboundUpgrade</span>,
@@ -924,21 +902,22 @@
 <span class="doccomment">/// A authenticated and multiplexed transport, obtained from</span>
 <span class="doccomment">/// [`Authenticated::multiplex`].</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Multiplexed</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">T</span>);
+<span class="attribute">#[<span class="ident">pin_project::pin_project</span>]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Multiplexed</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="attribute">#[<span class="ident">pin</span>]</span> <span class="ident">T</span>);
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">Multiplexed</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
     <span class="doccomment">/// Boxes the authenticated, multiplexed transport, including</span>
     <span class="doccomment">/// the [`StreamMuxer`] and custom transport errors.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">boxed</span><span class="op">&lt;</span><span class="ident">M</span><span class="op">&gt;</span>(<span class="self">self</span>) -&gt; <span class="ident"><span class="kw">super</span>::Boxed</span><span class="op">&lt;</span>(<span class="ident">PeerId</span>, <span class="ident">StreamMuxerBox</span>)<span class="op">&gt;</span>
     <span class="kw">where</span>
-        <span class="ident">T</span>: <span class="ident">Transport</span><span class="op">&lt;</span><span class="ident">Output</span> <span class="op">=</span> (<span class="ident">PeerId</span>, <span class="ident">M</span>)<span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Sized</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+        <span class="ident">T</span>: <span class="ident">Transport</span><span class="op">&lt;</span><span class="ident">Output</span> <span class="op">=</span> (<span class="ident">PeerId</span>, <span class="ident">M</span>)<span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Sized</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Unpin</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
         <span class="ident">T::Dial</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
-        <span class="ident">T::Listener</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
         <span class="ident">T::ListenerUpgrade</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
         <span class="ident">T::Error</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span>,
         <span class="ident">M</span>: <span class="ident">StreamMuxer</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
-        <span class="ident">M::Substream</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+        <span class="ident">M::Substream</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Unpin</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
         <span class="ident">M::OutboundSubstream</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
+        <span class="ident">M::Error</span>: <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
     {
         <span class="ident">boxed</span>(<span class="self">self</span>.<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">i</span>, <span class="ident">m</span>), <span class="kw">_</span><span class="op">|</span> (<span class="ident">i</span>, <span class="ident">StreamMuxerBox::new</span>(<span class="ident">m</span>))))
     }
@@ -968,12 +947,15 @@
 {
     <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="ident">T::Output</span>;
     <span class="kw">type</span> <span class="ident">Error</span> <span class="op">=</span> <span class="ident">T::Error</span>;
-    <span class="kw">type</span> <span class="ident">Listener</span> <span class="op">=</span> <span class="ident">T::Listener</span>;
     <span class="kw">type</span> <span class="ident">ListenerUpgrade</span> <span class="op">=</span> <span class="ident">T::ListenerUpgrade</span>;
     <span class="kw">type</span> <span class="ident">Dial</span> <span class="op">=</span> <span class="ident">T::Dial</span>;
 
     <span class="kw">fn</span> <span class="ident">dial</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">addr</span>: <span class="ident">Multiaddr</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Dial</span>, <span class="ident">TransportError</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Error</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="number">0</span>.<span class="ident">dial</span>(<span class="ident">addr</span>)
+    }
+
+    <span class="kw">fn</span> <span class="ident">remove_listener</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">id</span>: <span class="ident">ListenerId</span>) -&gt; <span class="ident">bool</span> {
+        <span class="self">self</span>.<span class="number">0</span>.<span class="ident">remove_listener</span>(<span class="ident">id</span>)
     }
 
     <span class="kw">fn</span> <span class="ident">dial_as_listener</span>(
@@ -983,15 +965,19 @@
         <span class="self">self</span>.<span class="number">0</span>.<span class="ident">dial_as_listener</span>(<span class="ident">addr</span>)
     }
 
-    <span class="kw">fn</span> <span class="ident">listen_on</span>(
-        <span class="kw-2">&amp;mut</span> <span class="self">self</span>,
-        <span class="ident">addr</span>: <span class="ident">Multiaddr</span>,
-    ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Listener</span>, <span class="ident">TransportError</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Error</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">listen_on</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">addr</span>: <span class="ident">Multiaddr</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">ListenerId</span>, <span class="ident">TransportError</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Error</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="number">0</span>.<span class="ident">listen_on</span>(<span class="ident">addr</span>)
     }
 
     <span class="kw">fn</span> <span class="ident">address_translation</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">server</span>: <span class="kw-2">&amp;</span><span class="ident">Multiaddr</span>, <span class="ident">observed</span>: <span class="kw-2">&amp;</span><span class="ident">Multiaddr</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Multiaddr</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="number">0</span>.<span class="ident">address_translation</span>(<span class="ident">server</span>, <span class="ident">observed</span>)
+    }
+
+    <span class="kw">fn</span> <span class="ident">poll</span>(
+        <span class="self">self</span>: <span class="ident">Pin</span><span class="op">&lt;</span><span class="kw-2">&amp;mut</span> <span class="self">Self</span><span class="op">&gt;</span>,
+        <span class="ident">cx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>,
+    ) -&gt; <span class="ident">Poll</span><span class="op">&lt;</span><span class="ident">TransportEvent</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::ListenerUpgrade</span>, <span class="ident"><span class="self">Self</span>::Error</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+        <span class="self">self</span>.<span class="ident">project</span>().<span class="number">0</span>.<span class="ident">poll</span>(<span class="ident">cx</span>)
     }
 }
 
@@ -1002,7 +988,9 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// See [`Transport::upgrade`]</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>)]</span>
+<span class="attribute">#[<span class="ident">pin_project::pin_project</span>]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Upgrade</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">U</span><span class="op">&gt;</span> {
+    <span class="attribute">#[<span class="ident">pin</span>]</span>
     <span class="ident">inner</span>: <span class="ident">T</span>,
     <span class="ident">upgrade</span>: <span class="ident">U</span>,
 }
@@ -1024,7 +1012,6 @@
 {
     <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> (<span class="ident">PeerId</span>, <span class="ident">D</span>);
     <span class="kw">type</span> <span class="ident">Error</span> <span class="op">=</span> <span class="ident">TransportUpgradeError</span><span class="op">&lt;</span><span class="ident">T::Error</span>, <span class="ident">E</span><span class="op">&gt;</span>;
-    <span class="kw">type</span> <span class="ident">Listener</span> <span class="op">=</span> <span class="ident">ListenerStream</span><span class="op">&lt;</span><span class="ident">T::Listener</span>, <span class="ident">U</span><span class="op">&gt;</span>;
     <span class="kw">type</span> <span class="ident">ListenerUpgrade</span> <span class="op">=</span> <span class="ident">ListenerUpgradeFuture</span><span class="op">&lt;</span><span class="ident">T::ListenerUpgrade</span>, <span class="ident">U</span>, <span class="ident">C</span><span class="op">&gt;</span>;
     <span class="kw">type</span> <span class="ident">Dial</span> <span class="op">=</span> <span class="ident">DialUpgradeFuture</span><span class="op">&lt;</span><span class="ident">T::Dial</span>, <span class="ident">U</span>, <span class="ident">C</span><span class="op">&gt;</span>;
 
@@ -1037,6 +1024,10 @@
             <span class="ident">future</span>: <span class="ident">Box::pin</span>(<span class="ident">future</span>),
             <span class="ident">upgrade</span>: <span class="ident">future::Either::Left</span>(<span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="ident">upgrade</span>.<span class="ident">clone</span>())),
         })
+    }
+
+    <span class="kw">fn</span> <span class="ident">remove_listener</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">id</span>: <span class="ident">ListenerId</span>) -&gt; <span class="ident">bool</span> {
+        <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">remove_listener</span>(<span class="ident">id</span>)
     }
 
     <span class="kw">fn</span> <span class="ident">dial_as_listener</span>(
@@ -1053,22 +1044,30 @@
         })
     }
 
-    <span class="kw">fn</span> <span class="ident">listen_on</span>(
-        <span class="kw-2">&amp;mut</span> <span class="self">self</span>,
-        <span class="ident">addr</span>: <span class="ident">Multiaddr</span>,
-    ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Listener</span>, <span class="ident">TransportError</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Error</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">stream</span> <span class="op">=</span> <span class="self">self</span>
-            .<span class="ident">inner</span>
+    <span class="kw">fn</span> <span class="ident">listen_on</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">addr</span>: <span class="ident">Multiaddr</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">ListenerId</span>, <span class="ident">TransportError</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Error</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+        <span class="self">self</span>.<span class="ident">inner</span>
             .<span class="ident">listen_on</span>(<span class="ident">addr</span>)
-            .<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> <span class="ident">err</span>.<span class="ident">map</span>(<span class="ident">TransportUpgradeError::Transport</span>))<span class="question-mark">?</span>;
-        <span class="prelude-val">Ok</span>(<span class="ident">ListenerStream</span> {
-            <span class="ident">stream</span>: <span class="ident">Box::pin</span>(<span class="ident">stream</span>),
-            <span class="ident">upgrade</span>: <span class="self">self</span>.<span class="ident">upgrade</span>.<span class="ident">clone</span>(),
-        })
+            .<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> <span class="ident">err</span>.<span class="ident">map</span>(<span class="ident">TransportUpgradeError::Transport</span>))
     }
 
     <span class="kw">fn</span> <span class="ident">address_translation</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">server</span>: <span class="kw-2">&amp;</span><span class="ident">Multiaddr</span>, <span class="ident">observed</span>: <span class="kw-2">&amp;</span><span class="ident">Multiaddr</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Multiaddr</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">address_translation</span>(<span class="ident">server</span>, <span class="ident">observed</span>)
+    }
+
+    <span class="kw">fn</span> <span class="ident">poll</span>(
+        <span class="self">self</span>: <span class="ident">Pin</span><span class="op">&lt;</span><span class="kw-2">&amp;mut</span> <span class="self">Self</span><span class="op">&gt;</span>,
+        <span class="ident">cx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>,
+    ) -&gt; <span class="ident">Poll</span><span class="op">&lt;</span><span class="ident">TransportEvent</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::ListenerUpgrade</span>, <span class="ident"><span class="self">Self</span>::Error</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">this</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">project</span>();
+        <span class="kw">let</span> <span class="ident">upgrade</span> <span class="op">=</span> <span class="ident">this</span>.<span class="ident">upgrade</span>.<span class="ident">clone</span>();
+        <span class="ident">this</span>.<span class="ident">inner</span>.<span class="ident">poll</span>(<span class="ident">cx</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">event</span><span class="op">|</span> {
+            <span class="ident">event</span>
+                .<span class="ident">map_upgrade</span>(<span class="kw">move</span> <span class="op">|</span><span class="ident">future</span><span class="op">|</span> <span class="ident">ListenerUpgradeFuture</span> {
+                    <span class="ident">future</span>: <span class="ident">Box::pin</span>(<span class="ident">future</span>),
+                    <span class="ident">upgrade</span>: <span class="ident">future::Either::Left</span>(<span class="prelude-val">Some</span>(<span class="ident">upgrade</span>)),
+                })
+                .<span class="ident">map_err</span>(<span class="ident">TransportUpgradeError::Transport</span>)
+        })
     }
 }
 
@@ -1114,7 +1113,7 @@
     <span class="ident">C</span>: <span class="ident">AsyncRead</span> <span class="op">+</span> <span class="ident">AsyncWrite</span> <span class="op">+</span> <span class="ident">Unpin</span>,
 {
     <span class="ident">future</span>: <span class="ident">Pin</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-    <span class="ident">upgrade</span>: <span class="ident">future::Either</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">U</span><span class="op">&gt;</span>, (<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PeerId</span><span class="op">&gt;</span>, <span class="ident">OutboundUpgradeApply</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">U</span><span class="op">&gt;</span>)<span class="op">&gt;</span>,
+    <span class="ident">upgrade</span>: <span class="ident">future::Either</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">U</span><span class="op">&gt;</span>, (<span class="ident">PeerId</span>, <span class="ident">OutboundUpgradeApply</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">U</span><span class="op">&gt;</span>)<span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">F</span>, <span class="ident">U</span>, <span class="ident">C</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="ident">Future</span> <span class="kw">for</span> <span class="ident">DialUpgradeFuture</span><span class="op">&lt;</span><span class="ident">F</span>, <span class="ident">U</span>, <span class="ident">C</span><span class="op">&gt;</span>
@@ -1143,18 +1142,15 @@
                     <span class="kw">let</span> <span class="ident">u</span> <span class="op">=</span> <span class="ident">up</span>
                         .<span class="ident">take</span>()
                         .<span class="ident">expect</span>(<span class="string">&quot;DialUpgradeFuture is constructed with Either::Left(Some).&quot;</span>);
-                    <span class="ident">future::Either::Right</span>((<span class="prelude-val">Some</span>(<span class="ident">i</span>), <span class="ident">apply_outbound</span>(<span class="ident">c</span>, <span class="ident">u</span>, <span class="ident">upgrade::Version::V1</span>)))
+                    <span class="ident">future::Either::Right</span>((<span class="ident">i</span>, <span class="ident">apply_outbound</span>(<span class="ident">c</span>, <span class="ident">u</span>, <span class="ident">upgrade::Version::V1</span>)))
                 }
-                <span class="ident">future::Either::Right</span>((<span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">i</span>, <span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">up</span>)) =&gt; {
+                <span class="ident">future::Either::Right</span>((<span class="ident">i</span>, <span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">up</span>)) =&gt; {
                     <span class="kw">let</span> <span class="ident">d</span> <span class="op">=</span> <span class="kw">match</span> <span class="macro">ready!</span>(
                         <span class="ident">Future::poll</span>(<span class="ident">Pin::new</span>(<span class="ident">up</span>), <span class="ident">cx</span>).<span class="ident">map_err</span>(<span class="ident">TransportUpgradeError::Upgrade</span>)
                     ) {
                         <span class="prelude-val">Ok</span>(<span class="ident">d</span>) =&gt; <span class="ident">d</span>,
                         <span class="prelude-val">Err</span>(<span class="ident">err</span>) =&gt; <span class="kw">return</span> <span class="ident">Poll::Ready</span>(<span class="prelude-val">Err</span>(<span class="ident">err</span>)),
                     };
-                    <span class="kw">let</span> <span class="ident">i</span> <span class="op">=</span> <span class="ident">i</span>
-                        .<span class="ident">take</span>()
-                        .<span class="ident">expect</span>(<span class="string">&quot;DialUpgradeFuture polled after completion.&quot;</span>);
                     <span class="kw">return</span> <span class="ident">Poll::Ready</span>(<span class="prelude-val">Ok</span>((<span class="ident">i</span>, <span class="ident">d</span>)));
                 }
             }
@@ -1169,43 +1165,6 @@
 {
 }
 
-<span class="doccomment">/// The [`Transport::Listener`] stream of an [`Upgrade`]d transport.</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ListenerStream</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">U</span><span class="op">&gt;</span> {
-    <span class="ident">stream</span>: <span class="ident">Pin</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-    <span class="ident">upgrade</span>: <span class="ident">U</span>,
-}
-
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">U</span>, <span class="ident">F</span>, <span class="ident">C</span>, <span class="ident">D</span>, <span class="ident">E</span><span class="op">&gt;</span> <span class="ident">Stream</span> <span class="kw">for</span> <span class="ident">ListenerStream</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">U</span><span class="op">&gt;</span>
-<span class="kw">where</span>
-    <span class="ident">S</span>: <span class="ident">TryStream</span><span class="op">&lt;</span><span class="prelude-val">Ok</span> <span class="op">=</span> <span class="ident">ListenerEvent</span><span class="op">&lt;</span><span class="ident">F</span>, <span class="ident">E</span><span class="op">&gt;</span>, <span class="ident">Error</span> <span class="op">=</span> <span class="ident">E</span><span class="op">&gt;</span>,
-    <span class="ident">F</span>: <span class="ident">TryFuture</span><span class="op">&lt;</span><span class="prelude-val">Ok</span> <span class="op">=</span> (<span class="ident">PeerId</span>, <span class="ident">C</span>)<span class="op">&gt;</span>,
-    <span class="ident">C</span>: <span class="ident">AsyncRead</span> <span class="op">+</span> <span class="ident">AsyncWrite</span> <span class="op">+</span> <span class="ident">Unpin</span>,
-    <span class="ident">U</span>: <span class="ident">InboundUpgrade</span><span class="op">&lt;</span><span class="ident">Negotiated</span><span class="op">&lt;</span><span class="ident">C</span><span class="op">&gt;</span>, <span class="ident">Output</span> <span class="op">=</span> <span class="ident">D</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Clone</span>,
-{
-    <span class="kw">type</span> <span class="ident">Item</span> <span class="op">=</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>
-        <span class="ident">ListenerEvent</span><span class="op">&lt;</span><span class="ident">ListenerUpgradeFuture</span><span class="op">&lt;</span><span class="ident">F</span>, <span class="ident">U</span>, <span class="ident">C</span><span class="op">&gt;</span>, <span class="ident">TransportUpgradeError</span><span class="op">&lt;</span><span class="ident">E</span>, <span class="ident">U::Error</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-        <span class="ident">TransportUpgradeError</span><span class="op">&lt;</span><span class="ident">E</span>, <span class="ident">U::Error</span><span class="op">&gt;</span>,
-    <span class="op">&gt;</span>;
-
-    <span class="kw">fn</span> <span class="ident">poll_next</span>(<span class="kw-2">mut</span> <span class="self">self</span>: <span class="ident">Pin</span><span class="op">&lt;</span><span class="kw-2">&amp;mut</span> <span class="self">Self</span><span class="op">&gt;</span>, <span class="ident">cx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="ident">Poll</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-        <span class="kw">match</span> <span class="macro">ready!</span>(<span class="ident">TryStream::try_poll_next</span>(<span class="self">self</span>.<span class="ident">stream</span>.<span class="ident">as_mut</span>(), <span class="ident">cx</span>)) {
-            <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(<span class="ident">event</span>)) =&gt; {
-                <span class="kw">let</span> <span class="ident">event</span> <span class="op">=</span> <span class="ident">event</span>
-                    .<span class="ident">map</span>(<span class="kw">move</span> <span class="op">|</span><span class="ident">future</span><span class="op">|</span> <span class="ident">ListenerUpgradeFuture</span> {
-                        <span class="ident">future</span>: <span class="ident">Box::pin</span>(<span class="ident">future</span>),
-                        <span class="ident">upgrade</span>: <span class="ident">future::Either::Left</span>(<span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="ident">upgrade</span>.<span class="ident">clone</span>())),
-                    })
-                    .<span class="ident">map_err</span>(<span class="ident">TransportUpgradeError::Transport</span>);
-                <span class="ident">Poll::Ready</span>(<span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(<span class="ident">event</span>)))
-            }
-            <span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(<span class="ident">err</span>)) =&gt; <span class="ident">Poll::Ready</span>(<span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(<span class="ident">TransportUpgradeError::Transport</span>(<span class="ident">err</span>)))),
-            <span class="prelude-val">None</span> =&gt; <span class="ident">Poll::Ready</span>(<span class="prelude-val">None</span>),
-        }
-    }
-}
-
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">U</span><span class="op">&gt;</span> <span class="ident">Unpin</span> <span class="kw">for</span> <span class="ident">ListenerStream</span><span class="op">&lt;</span><span class="ident">S</span>, <span class="ident">U</span><span class="op">&gt;</span> {}
-
 <span class="doccomment">/// The [`Transport::ListenerUpgrade`] future of an [`Upgrade`]d transport.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ListenerUpgradeFuture</span><span class="op">&lt;</span><span class="ident">F</span>, <span class="ident">U</span>, <span class="ident">C</span><span class="op">&gt;</span>
 <span class="kw">where</span>
@@ -1213,7 +1172,7 @@
     <span class="ident">U</span>: <span class="ident">InboundUpgrade</span><span class="op">&lt;</span><span class="ident">Negotiated</span><span class="op">&lt;</span><span class="ident">C</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 {
     <span class="ident">future</span>: <span class="ident">Pin</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-    <span class="ident">upgrade</span>: <span class="ident">future::Either</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">U</span><span class="op">&gt;</span>, (<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PeerId</span><span class="op">&gt;</span>, <span class="ident">InboundUpgradeApply</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">U</span><span class="op">&gt;</span>)<span class="op">&gt;</span>,
+    <span class="ident">upgrade</span>: <span class="ident">future::Either</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">U</span><span class="op">&gt;</span>, (<span class="ident">PeerId</span>, <span class="ident">InboundUpgradeApply</span><span class="op">&lt;</span><span class="ident">C</span>, <span class="ident">U</span><span class="op">&gt;</span>)<span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">F</span>, <span class="ident">U</span>, <span class="ident">C</span>, <span class="ident">D</span><span class="op">&gt;</span> <span class="ident">Future</span> <span class="kw">for</span> <span class="ident">ListenerUpgradeFuture</span><span class="op">&lt;</span><span class="ident">F</span>, <span class="ident">U</span>, <span class="ident">C</span><span class="op">&gt;</span>
@@ -1242,18 +1201,15 @@
                     <span class="kw">let</span> <span class="ident">u</span> <span class="op">=</span> <span class="ident">up</span>
                         .<span class="ident">take</span>()
                         .<span class="ident">expect</span>(<span class="string">&quot;ListenerUpgradeFuture is constructed with Either::Left(Some).&quot;</span>);
-                    <span class="ident">future::Either::Right</span>((<span class="prelude-val">Some</span>(<span class="ident">i</span>), <span class="ident">apply_inbound</span>(<span class="ident">c</span>, <span class="ident">u</span>)))
+                    <span class="ident">future::Either::Right</span>((<span class="ident">i</span>, <span class="ident">apply_inbound</span>(<span class="ident">c</span>, <span class="ident">u</span>)))
                 }
-                <span class="ident">future::Either::Right</span>((<span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">i</span>, <span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">up</span>)) =&gt; {
+                <span class="ident">future::Either::Right</span>((<span class="ident">i</span>, <span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">up</span>)) =&gt; {
                     <span class="kw">let</span> <span class="ident">d</span> <span class="op">=</span> <span class="kw">match</span> <span class="macro">ready!</span>(<span class="ident">TryFuture::try_poll</span>(<span class="ident">Pin::new</span>(<span class="ident">up</span>), <span class="ident">cx</span>)
                         .<span class="ident">map_err</span>(<span class="ident">TransportUpgradeError::Upgrade</span>))
                     {
                         <span class="prelude-val">Ok</span>(<span class="ident">v</span>) =&gt; <span class="ident">v</span>,
                         <span class="prelude-val">Err</span>(<span class="ident">err</span>) =&gt; <span class="kw">return</span> <span class="ident">Poll::Ready</span>(<span class="prelude-val">Err</span>(<span class="ident">err</span>)),
                     };
-                    <span class="kw">let</span> <span class="ident">i</span> <span class="op">=</span> <span class="ident">i</span>
-                        .<span class="ident">take</span>()
-                        .<span class="ident">expect</span>(<span class="string">&quot;ListenerUpgradeFuture polled after completion.&quot;</span>);
                     <span class="kw">return</span> <span class="ident">Poll::Ready</span>(<span class="prelude-val">Ok</span>((<span class="ident">i</span>, <span class="ident">d</span>)));
                 }
             }

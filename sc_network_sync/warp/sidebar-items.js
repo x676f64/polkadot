@@ -1,1 +1,1 @@
-initSidebarItems({"enum":[["WarpProofImportResult","Import warp proof result."],["WarpSyncPhase","Reported warp sync phase."]],"struct":[["WarpSync","Warp sync state machine. Accumulates warp proofs and state."],["WarpSyncProgress","Reported warp sync progress."]]});
+initSidebarItems({"enum":[["WarpProofImportResult","Import warp proof result."]],"struct":[["WarpSync","Warp sync state machine. Accumulates warp proofs and state."]]});

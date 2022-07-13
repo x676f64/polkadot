@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/git/checkouts/substrate-7e08433d4c370a21/ee3eb8f/client/network/src/protocol.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>protocol.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/git/checkouts/substrate-7e08433d4c370a21/367dab0/client/network/src/protocol.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>protocol.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
     <noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../sc_network/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
         </a><h2 class="location"></h2>
     </nav>
@@ -1772,97 +1772,6 @@
 <span id="1767">1767</span>
 <span id="1768">1768</span>
 <span id="1769">1769</span>
-<span id="1770">1770</span>
-<span id="1771">1771</span>
-<span id="1772">1772</span>
-<span id="1773">1773</span>
-<span id="1774">1774</span>
-<span id="1775">1775</span>
-<span id="1776">1776</span>
-<span id="1777">1777</span>
-<span id="1778">1778</span>
-<span id="1779">1779</span>
-<span id="1780">1780</span>
-<span id="1781">1781</span>
-<span id="1782">1782</span>
-<span id="1783">1783</span>
-<span id="1784">1784</span>
-<span id="1785">1785</span>
-<span id="1786">1786</span>
-<span id="1787">1787</span>
-<span id="1788">1788</span>
-<span id="1789">1789</span>
-<span id="1790">1790</span>
-<span id="1791">1791</span>
-<span id="1792">1792</span>
-<span id="1793">1793</span>
-<span id="1794">1794</span>
-<span id="1795">1795</span>
-<span id="1796">1796</span>
-<span id="1797">1797</span>
-<span id="1798">1798</span>
-<span id="1799">1799</span>
-<span id="1800">1800</span>
-<span id="1801">1801</span>
-<span id="1802">1802</span>
-<span id="1803">1803</span>
-<span id="1804">1804</span>
-<span id="1805">1805</span>
-<span id="1806">1806</span>
-<span id="1807">1807</span>
-<span id="1808">1808</span>
-<span id="1809">1809</span>
-<span id="1810">1810</span>
-<span id="1811">1811</span>
-<span id="1812">1812</span>
-<span id="1813">1813</span>
-<span id="1814">1814</span>
-<span id="1815">1815</span>
-<span id="1816">1816</span>
-<span id="1817">1817</span>
-<span id="1818">1818</span>
-<span id="1819">1819</span>
-<span id="1820">1820</span>
-<span id="1821">1821</span>
-<span id="1822">1822</span>
-<span id="1823">1823</span>
-<span id="1824">1824</span>
-<span id="1825">1825</span>
-<span id="1826">1826</span>
-<span id="1827">1827</span>
-<span id="1828">1828</span>
-<span id="1829">1829</span>
-<span id="1830">1830</span>
-<span id="1831">1831</span>
-<span id="1832">1832</span>
-<span id="1833">1833</span>
-<span id="1834">1834</span>
-<span id="1835">1835</span>
-<span id="1836">1836</span>
-<span id="1837">1837</span>
-<span id="1838">1838</span>
-<span id="1839">1839</span>
-<span id="1840">1840</span>
-<span id="1841">1841</span>
-<span id="1842">1842</span>
-<span id="1843">1843</span>
-<span id="1844">1844</span>
-<span id="1845">1845</span>
-<span id="1846">1846</span>
-<span id="1847">1847</span>
-<span id="1848">1848</span>
-<span id="1849">1849</span>
-<span id="1850">1850</span>
-<span id="1851">1851</span>
-<span id="1852">1852</span>
-<span id="1853">1853</span>
-<span id="1854">1854</span>
-<span id="1855">1855</span>
-<span id="1856">1856</span>
-<span id="1857">1857</span>
-<span id="1858">1858</span>
-<span id="1859">1859</span>
-<span id="1860">1860</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -1885,17 +1794,13 @@
 	<span class="ident">config</span>, <span class="ident">error</span>,
 	<span class="ident">request_responses::RequestFailure</span>,
 	<span class="ident">utils</span>::{<span class="ident">interval</span>, <span class="ident">LruHashSet</span>},
-	<span class="ident">warp_request_handler</span>::{<span class="ident">EncodedProof</span>, <span class="ident">WarpSyncProvider</span>},
 };
 
 <span class="kw">use</span> <span class="ident">bytes::Bytes</span>;
 <span class="kw">use</span> <span class="ident">codec</span>::{<span class="ident">Decode</span>, <span class="ident">DecodeAll</span>, <span class="ident">Encode</span>};
 <span class="kw">use</span> <span class="ident">futures</span>::{<span class="ident">channel::oneshot</span>, <span class="ident">prelude</span>::<span class="kw-2">*</span>};
 <span class="kw">use</span> <span class="ident">libp2p</span>::{
-	<span class="ident">core</span>::{
-		<span class="ident">connection</span>::{<span class="ident">ConnectionId</span>, <span class="ident">ListenerId</span>},
-		<span class="ident">ConnectedPoint</span>,
-	},
+	<span class="ident">core</span>::{<span class="ident">connection::ConnectionId</span>, <span class="ident">transport::ListenerId</span>, <span class="ident">ConnectedPoint</span>},
 	<span class="ident">request_response::OutboundFailure</span>,
 	<span class="ident">swarm</span>::{
 		<span class="ident">ConnectionHandler</span>, <span class="ident">IntoConnectionHandler</span>, <span class="ident">NetworkBehaviour</span>, <span class="ident">NetworkBehaviourAction</span>,
@@ -1910,21 +1815,23 @@
 };
 <span class="kw">use</span> <span class="ident">notifications</span>::{<span class="ident">Notifications</span>, <span class="ident">NotificationsOut</span>};
 <span class="kw">use</span> <span class="ident">prometheus_endpoint</span>::{<span class="ident">register</span>, <span class="ident">Gauge</span>, <span class="ident">GaugeVec</span>, <span class="ident">Opts</span>, <span class="ident">PrometheusError</span>, <span class="ident">Registry</span>, <span class="ident">U64</span>};
-<span class="kw">use</span> <span class="ident">prost::Message</span> <span class="kw">as</span> <span class="kw">_</span>;
 <span class="kw">use</span> <span class="ident">sc_client_api</span>::{<span class="ident">BlockBackend</span>, <span class="ident">HeaderBackend</span>, <span class="ident">ProofProvider</span>};
 <span class="kw">use</span> <span class="ident">sc_consensus::import_queue</span>::{<span class="ident">BlockImportError</span>, <span class="ident">BlockImportStatus</span>, <span class="ident">IncomingBlock</span>, <span class="ident">Origin</span>};
-<span class="kw">use</span> <span class="ident">sc_network_common::config::ProtocolId</span>;
-<span class="kw">use</span> <span class="ident">sc_network_sync</span>::{
-	<span class="ident">message</span>::{
-		<span class="ident">BlockAnnounce</span>, <span class="ident">BlockAttributes</span>, <span class="ident">BlockData</span>, <span class="ident">BlockRequest</span>, <span class="ident">BlockResponse</span>, <span class="ident">BlockState</span>,
-		<span class="ident">FromBlock</span>,
+<span class="kw">use</span> <span class="ident">sc_network_common</span>::{
+	<span class="ident">config::ProtocolId</span>,
+	<span class="ident">sync</span>::{
+		<span class="ident">message</span>::{
+			<span class="ident">BlockAnnounce</span>, <span class="ident">BlockAttributes</span>, <span class="ident">BlockData</span>, <span class="ident">BlockRequest</span>, <span class="ident">BlockResponse</span>, <span class="ident">BlockState</span>,
+		},
+		<span class="ident">warp</span>::{<span class="ident">EncodedProof</span>, <span class="ident">WarpProofRequest</span>},
+		<span class="ident">BadPeer</span>, <span class="ident">ChainSync</span>, <span class="ident">OnBlockData</span>, <span class="ident">OnBlockJustification</span>, <span class="ident">OnStateData</span>, <span class="ident">OpaqueBlockRequest</span>,
+		<span class="ident">OpaqueBlockResponse</span>, <span class="ident">OpaqueStateRequest</span>, <span class="ident">OpaqueStateResponse</span>, <span class="ident">PollBlockAnnounceValidation</span>,
+		<span class="ident">SyncStatus</span>,
 	},
-	<span class="ident">schema::v1::StateResponse</span>,
-	<span class="ident">BadPeer</span>, <span class="ident">ChainSync</span>, <span class="ident">OnBlockData</span>, <span class="ident">OnBlockJustification</span>, <span class="ident">OnStateData</span>,
-	<span class="ident">PollBlockAnnounceValidation</span>, <span class="ident">Status</span> <span class="kw">as</span> <span class="ident">SyncStatus</span>,
 };
 <span class="kw">use</span> <span class="ident">sp_arithmetic::traits::SaturatedConversion</span>;
-<span class="kw">use</span> <span class="ident">sp_consensus</span>::{<span class="ident">block_validation::BlockAnnounceValidator</span>, <span class="ident">BlockOrigin</span>};
+<span class="kw">use</span> <span class="ident">sp_blockchain::HeaderMetadata</span>;
+<span class="kw">use</span> <span class="ident">sp_consensus::BlockOrigin</span>;
 <span class="kw">use</span> <span class="ident">sp_runtime</span>::{
 	<span class="ident">generic::BlockId</span>,
 	<span class="ident">traits</span>::{<span class="ident">Block</span> <span class="kw">as</span> <span class="ident">BlockT</span>, <span class="ident">CheckedSub</span>, <span class="ident">Header</span> <span class="kw">as</span> <span class="ident">HeaderT</span>, <span class="ident">NumberFor</span>, <span class="ident">Zero</span>},
@@ -1947,7 +1854,6 @@
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">message</span>;
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">notifications</span>::{<span class="ident">NotificationsSink</span>, <span class="ident">NotifsHandlerError</span>, <span class="ident">Ready</span>};
-<span class="kw">use</span> <span class="ident">sp_blockchain::HeaderMetadata</span>;
 
 <span class="doccomment">/// Interval at which we perform time based maintenance</span>
 <span class="kw">const</span> <span class="ident">TICK_TIMEOUT</span>: <span class="ident">time::Duration</span> <span class="op">=</span> <span class="ident">time::Duration::from_millis</span>(<span class="number">1100</span>);
@@ -2035,11 +1941,12 @@
 	<span class="ident">tick_timeout</span>: <span class="ident">Pin</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">Stream</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> ()<span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Send</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	<span class="doccomment">/// Pending list of messages to return from `poll` as a priority.</span>
 	<span class="ident">pending_messages</span>: <span class="ident">VecDeque</span><span class="op">&lt;</span><span class="ident">CustomMessageOutcome</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-	<span class="ident">config</span>: <span class="ident">ProtocolConfig</span>,
+	<span class="doccomment">/// Assigned roles.</span>
+	<span class="ident">roles</span>: <span class="ident">Roles</span>,
 	<span class="ident">genesis_hash</span>: <span class="ident">B::Hash</span>,
 	<span class="doccomment">/// State machine that handles the list of in-progress requests. Only full node peers are</span>
 	<span class="doccomment">/// registered.</span>
-	<span class="ident">sync</span>: <span class="ident">ChainSync</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">Client</span><span class="op">&gt;</span>,
+	<span class="ident">chain_sync</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">ChainSync</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	<span class="comment">// All connected peers. Contains both full and light node peers.</span>
 	<span class="ident">peers</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">PeerId</span>, <span class="ident">Peer</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	<span class="ident">chain</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Client</span><span class="op">&gt;</span>,
@@ -2099,38 +2006,6 @@
 	<span class="kw">pub</span> <span class="ident">best_number</span>: <span class="op">&lt;</span><span class="ident">B::Header</span> <span class="kw">as</span> <span class="ident">HeaderT</span><span class="op">&gt;</span><span class="ident">::Number</span>,
 }
 
-<span class="doccomment">/// Configuration for the Substrate-specific part of the networking layer.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ProtocolConfig</span> {
-	<span class="doccomment">/// Assigned roles.</span>
-	<span class="kw">pub</span> <span class="ident">roles</span>: <span class="ident">Roles</span>,
-	<span class="doccomment">/// Maximum number of peers to ask the same blocks in parallel.</span>
-	<span class="kw">pub</span> <span class="ident">max_parallel_downloads</span>: <span class="ident">u32</span>,
-	<span class="doccomment">/// Enable state sync.</span>
-	<span class="kw">pub</span> <span class="ident">sync_mode</span>: <span class="ident">config::SyncMode</span>,
-}
-
-<span class="kw">impl</span> <span class="ident">ProtocolConfig</span> {
-	<span class="kw">fn</span> <span class="ident">sync_mode</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">sc_network_sync::SyncMode</span> {
-		<span class="kw">if</span> <span class="self">self</span>.<span class="ident">roles</span>.<span class="ident">is_light</span>() {
-			<span class="ident">sc_network_sync::SyncMode::Light</span>
-		} <span class="kw">else</span> {
-			<span class="kw">match</span> <span class="self">self</span>.<span class="ident">sync_mode</span> {
-				<span class="ident">config::SyncMode::Full</span> =&gt; <span class="ident">sc_network_sync::SyncMode::Full</span>,
-				<span class="ident">config::SyncMode::Fast</span> { <span class="ident">skip_proofs</span>, <span class="ident">storage_chain_mode</span> } =&gt;
-					<span class="ident">sc_network_sync::SyncMode::LightState</span> { <span class="ident">skip_proofs</span>, <span class="ident">storage_chain_mode</span> },
-				<span class="ident">config::SyncMode::Warp</span> =&gt; <span class="ident">sc_network_sync::SyncMode::Warp</span>,
-			}
-		}
-	}
-}
-
-<span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">ProtocolConfig</span> {
-	<span class="kw">fn</span> <span class="ident">default</span>() -&gt; <span class="ident">ProtocolConfig</span> {
-		<span class="self">Self</span> { <span class="ident">roles</span>: <span class="ident">Roles::FULL</span>, <span class="ident">max_parallel_downloads</span>: <span class="number">5</span>, <span class="ident">sync_mode</span>: <span class="ident">config::SyncMode::Full</span> }
-	}
-}
-
 <span class="doccomment">/// Handshake sent when we open a block announces substream.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Clone</span>, <span class="ident">Encode</span>, <span class="ident">Decode</span>)]</span>
 <span class="kw">struct</span> <span class="ident">BlockAnnouncesHandshake</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">BlockT</span><span class="op">&gt;</span> {
@@ -2146,12 +2021,12 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">BlockT</span><span class="op">&gt;</span> <span class="ident">BlockAnnouncesHandshake</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> {
 	<span class="kw">fn</span> <span class="ident">build</span>(
-		<span class="ident">protocol_config</span>: <span class="kw-2">&amp;</span><span class="ident">ProtocolConfig</span>,
+		<span class="ident">roles</span>: <span class="ident">Roles</span>,
 		<span class="ident">best_number</span>: <span class="ident">NumberFor</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
 		<span class="ident">best_hash</span>: <span class="ident">B::Hash</span>,
 		<span class="ident">genesis_hash</span>: <span class="ident">B::Hash</span>,
 	) -&gt; <span class="self">Self</span> {
-		<span class="self">Self</span> { <span class="ident">genesis_hash</span>, <span class="ident">roles</span>: <span class="ident">protocol_config</span>.<span class="ident">roles</span>, <span class="ident">best_number</span>, <span class="ident">best_hash</span> }
+		<span class="self">Self</span> { <span class="ident">genesis_hash</span>, <span class="ident">roles</span>, <span class="ident">best_number</span>, <span class="ident">best_hash</span> }
 	}
 }
 
@@ -2168,24 +2043,15 @@
 {
 	<span class="doccomment">/// Create a new instance.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(
-		<span class="ident">config</span>: <span class="ident">ProtocolConfig</span>,
+		<span class="ident">roles</span>: <span class="ident">Roles</span>,
 		<span class="ident">chain</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Client</span><span class="op">&gt;</span>,
 		<span class="ident">protocol_id</span>: <span class="ident">ProtocolId</span>,
 		<span class="ident">network_config</span>: <span class="kw-2">&amp;</span><span class="ident">config::NetworkConfiguration</span>,
 		<span class="ident">notifications_protocols_handshakes</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-		<span class="ident">block_announce_validator</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">BlockAnnounceValidator</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Send</span><span class="op">&gt;</span>,
 		<span class="ident">metrics_registry</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">Registry</span><span class="op">&gt;</span>,
-		<span class="ident">warp_sync_provider</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">WarpSyncProvider</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-	) -&gt; <span class="ident">error::Result</span><span class="op">&lt;</span>(<span class="ident">Protocol</span><span class="op">&lt;</span><span class="ident">B</span>, <span class="ident">Client</span><span class="op">&gt;</span>, <span class="ident">sc_peerset::PeersetHandle</span>, <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">PeerId</span>, <span class="ident">Multiaddr</span>)<span class="op">&gt;</span>)<span class="op">&gt;</span> {
+		<span class="ident">chain_sync</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">ChainSync</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+	) -&gt; <span class="ident">error::Result</span><span class="op">&lt;</span>(<span class="self">Self</span>, <span class="ident">sc_peerset::PeersetHandle</span>, <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">PeerId</span>, <span class="ident">Multiaddr</span>)<span class="op">&gt;</span>)<span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">info</span> <span class="op">=</span> <span class="ident">chain</span>.<span class="ident">info</span>();
-		<span class="kw">let</span> <span class="ident">sync</span> <span class="op">=</span> <span class="ident">ChainSync::new</span>(
-			<span class="ident">config</span>.<span class="ident">sync_mode</span>(),
-			<span class="ident">chain</span>.<span class="ident">clone</span>(),
-			<span class="ident">block_announce_validator</span>,
-			<span class="ident">config</span>.<span class="ident">max_parallel_downloads</span>,
-			<span class="ident">warp_sync_provider</span>,
-		)
-		.<span class="ident">map_err</span>(<span class="ident">Box::new</span>)<span class="question-mark">?</span>;
 
 		<span class="kw">let</span> <span class="ident">boot_node_ids</span> <span class="op">=</span> {
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">list</span> <span class="op">=</span> <span class="ident">HashSet::new</span>();
@@ -2273,7 +2139,7 @@
 			<span class="kw">let</span> <span class="ident">genesis_hash</span> <span class="op">=</span> <span class="ident">info</span>.<span class="ident">genesis_hash</span>;
 
 			<span class="kw">let</span> <span class="ident">block_announces_handshake</span> <span class="op">=</span>
-				<span class="ident">BlockAnnouncesHandshake</span>::<span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="ident">::build</span>(<span class="kw-2">&amp;</span><span class="ident">config</span>, <span class="ident">best_number</span>, <span class="ident">best_hash</span>, <span class="ident">genesis_hash</span>)
+				<span class="ident">BlockAnnouncesHandshake</span>::<span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="ident">::build</span>(<span class="ident">roles</span>, <span class="ident">best_number</span>, <span class="ident">best_hash</span>, <span class="ident">genesis_hash</span>)
 					.<span class="ident">encode</span>();
 
 			<span class="kw">let</span> <span class="ident">sync_protocol_config</span> <span class="op">=</span> <span class="ident">notifications::ProtocolConfig</span> {
@@ -2306,11 +2172,11 @@
 		<span class="kw">let</span> <span class="ident">protocol</span> <span class="op">=</span> <span class="self">Self</span> {
 			<span class="ident">tick_timeout</span>: <span class="ident">Box::pin</span>(<span class="ident">interval</span>(<span class="ident">TICK_TIMEOUT</span>)),
 			<span class="ident">pending_messages</span>: <span class="ident">VecDeque::new</span>(),
-			<span class="ident">config</span>,
+			<span class="ident">roles</span>,
 			<span class="ident">peers</span>: <span class="ident">HashMap::new</span>(),
 			<span class="ident">chain</span>,
 			<span class="ident">genesis_hash</span>: <span class="ident">info</span>.<span class="ident">genesis_hash</span>,
-			<span class="ident">sync</span>,
+			<span class="ident">chain_sync</span>,
 			<span class="ident">important_peers</span>,
 			<span class="ident">default_peers_set_num_full</span>: <span class="ident">network_config</span>.<span class="ident">default_peers_set_num_full</span> <span class="kw">as</span> <span class="ident">usize</span>,
 			<span class="ident">default_peers_set_num_light</span>: {
@@ -2378,49 +2244,49 @@
 
 	<span class="doccomment">/// Current global sync state.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">sync_state</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">SyncStatus</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> {
-		<span class="self">self</span>.<span class="ident">sync</span>.<span class="ident">status</span>()
+		<span class="self">self</span>.<span class="ident">chain_sync</span>.<span class="ident">status</span>()
 	}
 
 	<span class="doccomment">/// Target sync block number.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">best_seen_block</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">NumberFor</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-		<span class="self">self</span>.<span class="ident">sync</span>.<span class="ident">status</span>().<span class="ident">best_seen_block</span>
+		<span class="self">self</span>.<span class="ident">chain_sync</span>.<span class="ident">status</span>().<span class="ident">best_seen_block</span>
 	}
 
 	<span class="doccomment">/// Number of peers participating in syncing.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">num_sync_peers</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">u32</span> {
-		<span class="self">self</span>.<span class="ident">sync</span>.<span class="ident">status</span>().<span class="ident">num_peers</span>
+		<span class="self">self</span>.<span class="ident">chain_sync</span>.<span class="ident">status</span>().<span class="ident">num_peers</span>
 	}
 
 	<span class="doccomment">/// Number of blocks in the import queue.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">num_queued_blocks</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">u32</span> {
-		<span class="self">self</span>.<span class="ident">sync</span>.<span class="ident">status</span>().<span class="ident">queued_blocks</span>
+		<span class="self">self</span>.<span class="ident">chain_sync</span>.<span class="ident">status</span>().<span class="ident">queued_blocks</span>
 	}
 
 	<span class="doccomment">/// Number of downloaded blocks.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">num_downloaded_blocks</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">usize</span> {
-		<span class="self">self</span>.<span class="ident">sync</span>.<span class="ident">num_downloaded_blocks</span>()
+		<span class="self">self</span>.<span class="ident">chain_sync</span>.<span class="ident">num_downloaded_blocks</span>()
 	}
 
 	<span class="doccomment">/// Number of active sync requests.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">num_sync_requests</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">usize</span> {
-		<span class="self">self</span>.<span class="ident">sync</span>.<span class="ident">num_sync_requests</span>()
+		<span class="self">self</span>.<span class="ident">chain_sync</span>.<span class="ident">num_sync_requests</span>()
 	}
 
 	<span class="doccomment">/// Inform sync about new best imported block.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_best_block_imported</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">hash</span>: <span class="ident">B::Hash</span>, <span class="ident">number</span>: <span class="ident">NumberFor</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>) {
 		<span class="macro">debug!</span>(<span class="ident">target</span>: <span class="string">&quot;sync&quot;</span>, <span class="string">&quot;New best block imported {:?}/#{}&quot;</span>, <span class="ident">hash</span>, <span class="ident">number</span>);
 
-		<span class="self">self</span>.<span class="ident">sync</span>.<span class="ident">update_chain_info</span>(<span class="kw-2">&amp;</span><span class="ident">hash</span>, <span class="ident">number</span>);
+		<span class="self">self</span>.<span class="ident">chain_sync</span>.<span class="ident">update_chain_info</span>(<span class="kw-2">&amp;</span><span class="ident">hash</span>, <span class="ident">number</span>);
 
 		<span class="self">self</span>.<span class="ident">behaviour</span>.<span class="ident">set_notif_protocol_handshake</span>(
 			<span class="ident">HARDCODED_PEERSETS_SYNC</span>,
-			<span class="ident">BlockAnnouncesHandshake</span>::<span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="ident">::build</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">config</span>, <span class="ident">number</span>, <span class="ident">hash</span>, <span class="self">self</span>.<span class="ident">genesis_hash</span>)
+			<span class="ident">BlockAnnouncesHandshake</span>::<span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="ident">::build</span>(<span class="self">self</span>.<span class="ident">roles</span>, <span class="ident">number</span>, <span class="ident">hash</span>, <span class="self">self</span>.<span class="ident">genesis_hash</span>)
 				.<span class="ident">encode</span>(),
 		);
 	}
 
 	<span class="kw">fn</span> <span class="ident">update_peer_info</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">who</span>: <span class="kw-2">&amp;</span><span class="ident">PeerId</span>) {
-		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">info</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">sync</span>.<span class="ident">peer_info</span>(<span class="ident">who</span>) {
+		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">info</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">chain_sync</span>.<span class="ident">peer_info</span>(<span class="ident">who</span>) {
 			<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="kw-2">ref</span> <span class="kw-2">mut</span> <span class="ident">peer</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">peers</span>.<span class="ident">get_mut</span>(<span class="ident">who</span>) {
 				<span class="ident">peer</span>.<span class="ident">info</span>.<span class="ident">best_hash</span> <span class="op">=</span> <span class="ident">info</span>.<span class="ident">best_hash</span>;
 				<span class="ident">peer</span>.<span class="ident">info</span>.<span class="ident">best_number</span> <span class="op">=</span> <span class="ident">info</span>.<span class="ident">best_number</span>;
@@ -2431,14 +2297,6 @@
 	<span class="doccomment">/// Returns information about all the peers we are connected to after the handshake message.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">peers_info</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl</span> <span class="ident">Iterator</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> (<span class="kw-2">&amp;</span><span class="ident">PeerId</span>, <span class="kw-2">&amp;</span><span class="ident">PeerInfo</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>)<span class="op">&gt;</span> {
 		<span class="self">self</span>.<span class="ident">peers</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">id</span>, <span class="ident">peer</span>)<span class="op">|</span> (<span class="ident">id</span>, <span class="kw-2">&amp;</span><span class="ident">peer</span>.<span class="ident">info</span>))
-	}
-
-	<span class="kw">fn</span> <span class="ident">prepare_block_request</span>(
-		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
-		<span class="ident">who</span>: <span class="ident">PeerId</span>,
-		<span class="ident">request</span>: <span class="ident">BlockRequest</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
-	) -&gt; <span class="ident">CustomMessageOutcome</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> {
-		<span class="ident">prepare_block_request</span>::<span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">peers</span>, <span class="ident">who</span>, <span class="ident">request</span>)
 	}
 
 	<span class="doccomment">/// Called by peer when it is disconnecting.</span>
@@ -2452,7 +2310,9 @@
 		}
 
 		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">_peer_data</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">peers</span>.<span class="ident">remove</span>(<span class="kw-2">&amp;</span><span class="ident">peer</span>) {
-			<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">OnBlockData::Import</span>(<span class="ident">origin</span>, <span class="ident">blocks</span>)) <span class="op">=</span> <span class="self">self</span>.<span class="ident">sync</span>.<span class="ident">peer_disconnected</span>(<span class="kw-2">&amp;</span><span class="ident">peer</span>) {
+			<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">OnBlockData::Import</span>(<span class="ident">origin</span>, <span class="ident">blocks</span>)) <span class="op">=</span>
+				<span class="self">self</span>.<span class="ident">chain_sync</span>.<span class="ident">peer_disconnected</span>(<span class="kw-2">&amp;</span><span class="ident">peer</span>)
+			{
 				<span class="self">self</span>.<span class="ident">pending_messages</span>
 					.<span class="ident">push_back</span>(<span class="ident">CustomMessageOutcome::BlockImport</span>(<span class="ident">origin</span>, <span class="ident">blocks</span>));
 			}
@@ -2473,62 +2333,9 @@
 		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
 		<span class="ident">peer_id</span>: <span class="ident">PeerId</span>,
 		<span class="ident">request</span>: <span class="ident">BlockRequest</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
-		<span class="ident">response</span>: <span class="ident">sc_network_sync::schema::v1::BlockResponse</span>,
+		<span class="ident">response</span>: <span class="ident">OpaqueBlockResponse</span>,
 	) -&gt; <span class="ident">CustomMessageOutcome</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="ident">blocks</span> <span class="op">=</span> <span class="ident">response</span>
-			.<span class="ident">blocks</span>
-			.<span class="ident">into_iter</span>()
-			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">block_data</span><span class="op">|</span> {
-				<span class="prelude-val">Ok</span>(<span class="ident">BlockData</span>::<span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> {
-					<span class="ident">hash</span>: <span class="ident">Decode::decode</span>(<span class="kw-2">&amp;mut</span> <span class="ident">block_data</span>.<span class="ident">hash</span>.<span class="ident">as_ref</span>())<span class="question-mark">?</span>,
-					<span class="ident">header</span>: <span class="kw">if</span> <span class="op">!</span><span class="ident">block_data</span>.<span class="ident">header</span>.<span class="ident">is_empty</span>() {
-						<span class="prelude-val">Some</span>(<span class="ident">Decode::decode</span>(<span class="kw-2">&amp;mut</span> <span class="ident">block_data</span>.<span class="ident">header</span>.<span class="ident">as_ref</span>())<span class="question-mark">?</span>)
-					} <span class="kw">else</span> {
-						<span class="prelude-val">None</span>
-					},
-					<span class="ident">body</span>: <span class="kw">if</span> <span class="ident">request</span>.<span class="ident">fields</span>.<span class="ident">contains</span>(<span class="ident">BlockAttributes::BODY</span>) {
-						<span class="prelude-val">Some</span>(
-							<span class="ident">block_data</span>
-								.<span class="ident">body</span>
-								.<span class="ident">iter</span>()
-								.<span class="ident">map</span>(<span class="op">|</span><span class="ident">body</span><span class="op">|</span> <span class="ident">Decode::decode</span>(<span class="kw-2">&amp;mut</span> <span class="ident">body</span>.<span class="ident">as_ref</span>()))
-								.<span class="ident">collect</span>::<span class="op">&lt;</span><span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span>, <span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>,
-						)
-					} <span class="kw">else</span> {
-						<span class="prelude-val">None</span>
-					},
-					<span class="ident">indexed_body</span>: <span class="kw">if</span> <span class="ident">request</span>.<span class="ident">fields</span>.<span class="ident">contains</span>(<span class="ident">BlockAttributes::INDEXED_BODY</span>) {
-						<span class="prelude-val">Some</span>(<span class="ident">block_data</span>.<span class="ident">indexed_body</span>)
-					} <span class="kw">else</span> {
-						<span class="prelude-val">None</span>
-					},
-					<span class="ident">receipt</span>: <span class="kw">if</span> <span class="op">!</span><span class="ident">block_data</span>.<span class="ident">receipt</span>.<span class="ident">is_empty</span>() {
-						<span class="prelude-val">Some</span>(<span class="ident">block_data</span>.<span class="ident">receipt</span>)
-					} <span class="kw">else</span> {
-						<span class="prelude-val">None</span>
-					},
-					<span class="ident">message_queue</span>: <span class="kw">if</span> <span class="op">!</span><span class="ident">block_data</span>.<span class="ident">message_queue</span>.<span class="ident">is_empty</span>() {
-						<span class="prelude-val">Some</span>(<span class="ident">block_data</span>.<span class="ident">message_queue</span>)
-					} <span class="kw">else</span> {
-						<span class="prelude-val">None</span>
-					},
-					<span class="ident">justification</span>: <span class="kw">if</span> <span class="op">!</span><span class="ident">block_data</span>.<span class="ident">justification</span>.<span class="ident">is_empty</span>() {
-						<span class="prelude-val">Some</span>(<span class="ident">block_data</span>.<span class="ident">justification</span>)
-					} <span class="kw">else</span> <span class="kw">if</span> <span class="ident">block_data</span>.<span class="ident">is_empty_justification</span> {
-						<span class="prelude-val">Some</span>(<span class="ident">Vec::new</span>())
-					} <span class="kw">else</span> {
-						<span class="prelude-val">None</span>
-					},
-					<span class="ident">justifications</span>: <span class="kw">if</span> <span class="op">!</span><span class="ident">block_data</span>.<span class="ident">justifications</span>.<span class="ident">is_empty</span>() {
-						<span class="prelude-val">Some</span>(<span class="ident">DecodeAll::decode_all</span>(<span class="kw-2">&amp;mut</span> <span class="ident">block_data</span>.<span class="ident">justifications</span>.<span class="ident">as_ref</span>())<span class="question-mark">?</span>)
-					} <span class="kw">else</span> {
-						<span class="prelude-val">None</span>
-					},
-				})
-			})
-			.<span class="ident">collect</span>::<span class="op">&lt;</span><span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span>, <span class="ident">codec::Error</span><span class="op">&gt;</span><span class="op">&gt;</span>();
-
-		<span class="kw">let</span> <span class="ident">blocks</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">blocks</span> {
+		<span class="kw">let</span> <span class="ident">blocks</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">chain_sync</span>.<span class="ident">block_response_into_blocks</span>(<span class="kw-2">&amp;</span><span class="ident">request</span>, <span class="ident">response</span>) {
 			<span class="prelude-val">Ok</span>(<span class="ident">blocks</span>) =&gt; <span class="ident">blocks</span>,
 			<span class="prelude-val">Err</span>(<span class="ident">err</span>) =&gt; {
 				<span class="macro">debug!</span>(<span class="ident">target</span>: <span class="string">&quot;sync&quot;</span>, <span class="string">&quot;Failed to decode block response from {}: {}&quot;</span>, <span class="ident">peer_id</span>, <span class="ident">err</span>);
@@ -2558,7 +2365,7 @@
 		);
 
 		<span class="kw">if</span> <span class="ident">request</span>.<span class="ident">fields</span> <span class="op">==</span> <span class="ident">BlockAttributes::JUSTIFICATION</span> {
-			<span class="kw">match</span> <span class="self">self</span>.<span class="ident">sync</span>.<span class="ident">on_block_justification</span>(<span class="ident">peer_id</span>, <span class="ident">block_response</span>) {
+			<span class="kw">match</span> <span class="self">self</span>.<span class="ident">chain_sync</span>.<span class="ident">on_block_justification</span>(<span class="ident">peer_id</span>, <span class="ident">block_response</span>) {
 				<span class="prelude-val">Ok</span>(<span class="ident">OnBlockJustification::Nothing</span>) =&gt; <span class="ident">CustomMessageOutcome::None</span>,
 				<span class="prelude-val">Ok</span>(<span class="ident">OnBlockJustification::Import</span> { <span class="ident">peer</span>, <span class="ident">hash</span>, <span class="ident">number</span>, <span class="ident">justifications</span> }) =&gt;
 					<span class="ident">CustomMessageOutcome::JustificationImport</span>(<span class="ident">peer</span>, <span class="ident">hash</span>, <span class="ident">number</span>, <span class="ident">justifications</span>),
@@ -2569,10 +2376,11 @@
 				},
 			}
 		} <span class="kw">else</span> {
-			<span class="kw">match</span> <span class="self">self</span>.<span class="ident">sync</span>.<span class="ident">on_block_data</span>(<span class="kw-2">&amp;</span><span class="ident">peer_id</span>, <span class="prelude-val">Some</span>(<span class="ident">request</span>), <span class="ident">block_response</span>) {
+			<span class="kw">match</span> <span class="self">self</span>.<span class="ident">chain_sync</span>.<span class="ident">on_block_data</span>(<span class="kw-2">&amp;</span><span class="ident">peer_id</span>, <span class="prelude-val">Some</span>(<span class="ident">request</span>), <span class="ident">block_response</span>) {
 				<span class="prelude-val">Ok</span>(<span class="ident">OnBlockData::Import</span>(<span class="ident">origin</span>, <span class="ident">blocks</span>)) =&gt;
 					<span class="ident">CustomMessageOutcome::BlockImport</span>(<span class="ident">origin</span>, <span class="ident">blocks</span>),
-				<span class="prelude-val">Ok</span>(<span class="ident">OnBlockData::Request</span>(<span class="ident">peer</span>, <span class="ident">req</span>)) =&gt; <span class="self">self</span>.<span class="ident">prepare_block_request</span>(<span class="ident">peer</span>, <span class="ident">req</span>),
+				<span class="prelude-val">Ok</span>(<span class="ident">OnBlockData::Request</span>(<span class="ident">peer</span>, <span class="ident">req</span>)) =&gt;
+					<span class="ident">prepare_block_request</span>(<span class="self">self</span>.<span class="ident">chain_sync</span>.<span class="ident">as_ref</span>(), <span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">peers</span>, <span class="ident">peer</span>, <span class="ident">req</span>),
 				<span class="prelude-val">Err</span>(<span class="ident">BadPeer</span>(<span class="ident">id</span>, <span class="ident">repu</span>)) =&gt; {
 					<span class="self">self</span>.<span class="ident">behaviour</span>.<span class="ident">disconnect_peer</span>(<span class="kw-2">&amp;</span><span class="ident">id</span>, <span class="ident">HARDCODED_PEERSETS_SYNC</span>);
 					<span class="self">self</span>.<span class="ident">peerset_handle</span>.<span class="ident">report_peer</span>(<span class="ident">id</span>, <span class="ident">repu</span>);
@@ -2587,9 +2395,9 @@
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">on_state_response</span>(
 		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
 		<span class="ident">peer_id</span>: <span class="ident">PeerId</span>,
-		<span class="ident">response</span>: <span class="ident">StateResponse</span>,
+		<span class="ident">response</span>: <span class="ident">OpaqueStateResponse</span>,
 	) -&gt; <span class="ident">CustomMessageOutcome</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> {
-		<span class="kw">match</span> <span class="self">self</span>.<span class="ident">sync</span>.<span class="ident">on_state_data</span>(<span class="kw-2">&amp;</span><span class="ident">peer_id</span>, <span class="ident">response</span>) {
+		<span class="kw">match</span> <span class="self">self</span>.<span class="ident">chain_sync</span>.<span class="ident">on_state_data</span>(<span class="kw-2">&amp;</span><span class="ident">peer_id</span>, <span class="ident">response</span>) {
 			<span class="prelude-val">Ok</span>(<span class="ident">OnStateData::Import</span>(<span class="ident">origin</span>, <span class="ident">block</span>)) =&gt;
 				<span class="ident">CustomMessageOutcome::BlockImport</span>(<span class="ident">origin</span>, <span class="macro">vec!</span>[<span class="ident">block</span>]),
 			<span class="prelude-val">Ok</span>(<span class="ident">OnStateData::Continue</span>) =&gt; <span class="ident">CustomMessageOutcome::None</span>,
@@ -2606,9 +2414,9 @@
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">on_warp_sync_response</span>(
 		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
 		<span class="ident">peer_id</span>: <span class="ident">PeerId</span>,
-		<span class="ident">response</span>: <span class="ident"><span class="kw">crate</span>::warp_request_handler::EncodedProof</span>,
+		<span class="ident">response</span>: <span class="ident">EncodedProof</span>,
 	) -&gt; <span class="ident">CustomMessageOutcome</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> {
-		<span class="kw">match</span> <span class="self">self</span>.<span class="ident">sync</span>.<span class="ident">on_warp_sync_data</span>(<span class="kw-2">&amp;</span><span class="ident">peer_id</span>, <span class="ident">response</span>) {
+		<span class="kw">match</span> <span class="self">self</span>.<span class="ident">chain_sync</span>.<span class="ident">on_warp_sync_data</span>(<span class="kw-2">&amp;</span><span class="ident">peer_id</span>, <span class="ident">response</span>) {
 			<span class="prelude-val">Ok</span>(()) =&gt; <span class="ident">CustomMessageOutcome::None</span>,
 			<span class="prelude-val">Err</span>(<span class="ident">BadPeer</span>(<span class="ident">id</span>, <span class="ident">repu</span>)) =&gt; {
 				<span class="self">self</span>.<span class="ident">behaviour</span>.<span class="ident">disconnect_peer</span>(<span class="kw-2">&amp;</span><span class="ident">id</span>, <span class="ident">HARDCODED_PEERSETS_SYNC</span>);
@@ -2666,7 +2474,7 @@
 			<span class="kw">return</span> <span class="prelude-val">Err</span>(())
 		}
 
-		<span class="kw">if</span> <span class="self">self</span>.<span class="ident">config</span>.<span class="ident">roles</span>.<span class="ident">is_light</span>() {
+		<span class="kw">if</span> <span class="self">self</span>.<span class="ident">roles</span>.<span class="ident">is_light</span>() {
 			<span class="comment">// we&#39;re not interested in light peers</span>
 			<span class="kw">if</span> <span class="ident">status</span>.<span class="ident">roles</span>.<span class="ident">is_light</span>() {
 				<span class="macro">debug!</span>(<span class="ident">target</span>: <span class="string">&quot;sync&quot;</span>, <span class="string">&quot;Peer {} is unable to serve light requests&quot;</span>, <span class="ident">who</span>);
@@ -2689,14 +2497,15 @@
 			}
 		}
 
-		<span class="kw">if</span> <span class="ident">status</span>.<span class="ident">roles</span>.<span class="ident">is_full</span>() <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">sync</span>.<span class="ident">num_peers</span>() <span class="op">&gt;</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">default_peers_set_num_full</span> {
+		<span class="kw">if</span> <span class="ident">status</span>.<span class="ident">roles</span>.<span class="ident">is_full</span>() <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">chain_sync</span>.<span class="ident">num_peers</span>() <span class="op">&gt;</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">default_peers_set_num_full</span>
+		{
 			<span class="macro">debug!</span>(<span class="ident">target</span>: <span class="string">&quot;sync&quot;</span>, <span class="string">&quot;Too many full nodes, rejecting {}&quot;</span>, <span class="ident">who</span>);
 			<span class="self">self</span>.<span class="ident">behaviour</span>.<span class="ident">disconnect_peer</span>(<span class="kw-2">&amp;</span><span class="ident">who</span>, <span class="ident">HARDCODED_PEERSETS_SYNC</span>);
 			<span class="kw">return</span> <span class="prelude-val">Err</span>(())
 		}
 
 		<span class="kw">if</span> <span class="ident">status</span>.<span class="ident">roles</span>.<span class="ident">is_light</span>() <span class="op">&amp;&amp;</span>
-			(<span class="self">self</span>.<span class="ident">peers</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="self">self</span>.<span class="ident">sync</span>.<span class="ident">num_peers</span>()) <span class="op">&gt;</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">default_peers_set_num_light</span>
+			(<span class="self">self</span>.<span class="ident">peers</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="self">self</span>.<span class="ident">chain_sync</span>.<span class="ident">num_peers</span>()) <span class="op">&gt;</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">default_peers_set_num_light</span>
 		{
 			<span class="comment">// Make sure that not all slots are occupied by light clients.</span>
 			<span class="macro">debug!</span>(<span class="ident">target</span>: <span class="string">&quot;sync&quot;</span>, <span class="string">&quot;Too many light nodes, rejecting {}&quot;</span>, <span class="ident">who</span>);
@@ -2717,7 +2526,7 @@
 		};
 
 		<span class="kw">let</span> <span class="ident">req</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">peer</span>.<span class="ident">info</span>.<span class="ident">roles</span>.<span class="ident">is_full</span>() {
-			<span class="kw">match</span> <span class="self">self</span>.<span class="ident">sync</span>.<span class="ident">new_peer</span>(<span class="ident">who</span>, <span class="ident">peer</span>.<span class="ident">info</span>.<span class="ident">best_hash</span>, <span class="ident">peer</span>.<span class="ident">info</span>.<span class="ident">best_number</span>) {
+			<span class="kw">match</span> <span class="self">self</span>.<span class="ident">chain_sync</span>.<span class="ident">new_peer</span>(<span class="ident">who</span>, <span class="ident">peer</span>.<span class="ident">info</span>.<span class="ident">best_hash</span>, <span class="ident">peer</span>.<span class="ident">info</span>.<span class="ident">best_number</span>) {
 				<span class="prelude-val">Ok</span>(<span class="ident">req</span>) =&gt; <span class="ident">req</span>,
 				<span class="prelude-val">Err</span>(<span class="ident">BadPeer</span>(<span class="ident">id</span>, <span class="ident">repu</span>)) =&gt; {
 					<span class="self">self</span>.<span class="ident">behaviour</span>.<span class="ident">disconnect_peer</span>(<span class="kw-2">&amp;</span><span class="ident">id</span>, <span class="ident">HARDCODED_PEERSETS_SYNC</span>);
@@ -2736,8 +2545,12 @@
 			.<span class="ident">push_back</span>(<span class="ident">CustomMessageOutcome::PeerNewBest</span>(<span class="ident">who</span>, <span class="ident">status</span>.<span class="ident">best_number</span>));
 
 		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">req</span>) <span class="op">=</span> <span class="ident">req</span> {
-			<span class="kw">let</span> <span class="ident">event</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">prepare_block_request</span>(<span class="ident">who</span>, <span class="ident">req</span>);
-			<span class="self">self</span>.<span class="ident">pending_messages</span>.<span class="ident">push_back</span>(<span class="ident">event</span>);
+			<span class="self">self</span>.<span class="ident">pending_messages</span>.<span class="ident">push_back</span>(<span class="ident">prepare_block_request</span>(
+				<span class="self">self</span>.<span class="ident">chain_sync</span>.<span class="ident">as_ref</span>(),
+				<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">peers</span>,
+				<span class="ident">who</span>,
+				<span class="ident">req</span>,
+			));
 		}
 
 		<span class="prelude-val">Ok</span>(())
@@ -2821,7 +2634,7 @@
 		};
 
 		<span class="kw">if</span> <span class="ident">peer</span>.<span class="ident">info</span>.<span class="ident">roles</span>.<span class="ident">is_full</span>() {
-			<span class="self">self</span>.<span class="ident">sync</span>.<span class="ident">push_block_announce_validation</span>(<span class="ident">who</span>, <span class="ident">hash</span>, <span class="ident">announce</span>, <span class="ident">is_best</span>);
+			<span class="self">self</span>.<span class="ident">chain_sync</span>.<span class="ident">push_block_announce_validation</span>(<span class="ident">who</span>, <span class="ident">hash</span>, <span class="ident">announce</span>, <span class="ident">is_best</span>);
 		}
 	}
 
@@ -2878,7 +2691,7 @@
 
 		<span class="comment">// to import header from announced block let&#39;s construct response to request that normally</span>
 		<span class="comment">// would have been sent over network (but it is not in our case)</span>
-		<span class="kw">let</span> <span class="ident">blocks_to_import</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">sync</span>.<span class="ident">on_block_data</span>(
+		<span class="kw">let</span> <span class="ident">blocks_to_import</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">chain_sync</span>.<span class="ident">on_block_data</span>(
 			<span class="kw-2">&amp;</span><span class="ident">who</span>,
 			<span class="prelude-val">None</span>,
 			<span class="ident">BlockResponse</span>::<span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> {
@@ -2903,7 +2716,8 @@
 		<span class="kw">match</span> <span class="ident">blocks_to_import</span> {
 			<span class="prelude-val">Ok</span>(<span class="ident">OnBlockData::Import</span>(<span class="ident">origin</span>, <span class="ident">blocks</span>)) =&gt;
 				<span class="ident">CustomMessageOutcome::BlockImport</span>(<span class="ident">origin</span>, <span class="ident">blocks</span>),
-			<span class="prelude-val">Ok</span>(<span class="ident">OnBlockData::Request</span>(<span class="ident">peer</span>, <span class="ident">req</span>)) =&gt; <span class="self">self</span>.<span class="ident">prepare_block_request</span>(<span class="ident">peer</span>, <span class="ident">req</span>),
+			<span class="prelude-val">Ok</span>(<span class="ident">OnBlockData::Request</span>(<span class="ident">peer</span>, <span class="ident">req</span>)) =&gt;
+				<span class="ident">prepare_block_request</span>(<span class="self">self</span>.<span class="ident">chain_sync</span>.<span class="ident">as_ref</span>(), <span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">peers</span>, <span class="ident">peer</span>, <span class="ident">req</span>),
 			<span class="prelude-val">Err</span>(<span class="ident">BadPeer</span>(<span class="ident">id</span>, <span class="ident">repu</span>)) =&gt; {
 				<span class="self">self</span>.<span class="ident">behaviour</span>.<span class="ident">disconnect_peer</span>(<span class="kw-2">&amp;</span><span class="ident">id</span>, <span class="ident">HARDCODED_PEERSETS_SYNC</span>);
 				<span class="self">self</span>.<span class="ident">peerset_handle</span>.<span class="ident">report_peer</span>(<span class="ident">id</span>, <span class="ident">repu</span>);
@@ -2915,7 +2729,7 @@
 	<span class="doccomment">/// Call this when a block has been finalized. The sync layer may have some additional</span>
 	<span class="doccomment">/// requesting to perform.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">on_block_finalized</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">hash</span>: <span class="ident">B::Hash</span>, <span class="ident">header</span>: <span class="kw-2">&amp;</span><span class="ident">B::Header</span>) {
-		<span class="self">self</span>.<span class="ident">sync</span>.<span class="ident">on_block_finalized</span>(<span class="kw-2">&amp;</span><span class="ident">hash</span>, <span class="kw-2">*</span><span class="ident">header</span>.<span class="ident">number</span>())
+		<span class="self">self</span>.<span class="ident">chain_sync</span>.<span class="ident">on_block_finalized</span>(<span class="kw-2">&amp;</span><span class="ident">hash</span>, <span class="kw-2">*</span><span class="ident">header</span>.<span class="ident">number</span>())
 	}
 
 	<span class="doccomment">/// Request a justification for the given block.</span>
@@ -2923,12 +2737,12 @@
 	<span class="doccomment">/// Uses `protocol` to queue a new justification request and tries to dispatch all pending</span>
 	<span class="doccomment">/// requests.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">request_justification</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">hash</span>: <span class="kw-2">&amp;</span><span class="ident">B::Hash</span>, <span class="ident">number</span>: <span class="ident">NumberFor</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>) {
-		<span class="self">self</span>.<span class="ident">sync</span>.<span class="ident">request_justification</span>(<span class="ident">hash</span>, <span class="ident">number</span>)
+		<span class="self">self</span>.<span class="ident">chain_sync</span>.<span class="ident">request_justification</span>(<span class="ident">hash</span>, <span class="ident">number</span>)
 	}
 
 	<span class="doccomment">/// Clear all pending justification requests.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">clear_justification_requests</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) {
-		<span class="self">self</span>.<span class="ident">sync</span>.<span class="ident">clear_justification_requests</span>();
+		<span class="self">self</span>.<span class="ident">chain_sync</span>.<span class="ident">clear_justification_requests</span>();
 	}
 
 	<span class="doccomment">/// Request syncing for the given block from given set of peers.</span>
@@ -2940,7 +2754,7 @@
 		<span class="ident">hash</span>: <span class="kw-2">&amp;</span><span class="ident">B::Hash</span>,
 		<span class="ident">number</span>: <span class="ident">NumberFor</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
 	) {
-		<span class="self">self</span>.<span class="ident">sync</span>.<span class="ident">set_sync_fork_request</span>(<span class="ident">peers</span>, <span class="ident">hash</span>, <span class="ident">number</span>)
+		<span class="self">self</span>.<span class="ident">chain_sync</span>.<span class="ident">set_sync_fork_request</span>(<span class="ident">peers</span>, <span class="ident">hash</span>, <span class="ident">number</span>)
 	}
 
 	<span class="doccomment">/// A batch of blocks have been processed, with or without errors.</span>
@@ -2952,11 +2766,12 @@
 		<span class="ident">count</span>: <span class="ident">usize</span>,
 		<span class="ident">results</span>: <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">BlockImportStatus</span><span class="op">&lt;</span><span class="ident">NumberFor</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">BlockImportError</span><span class="op">&gt;</span>, <span class="ident">B::Hash</span>)<span class="op">&gt;</span>,
 	) {
-		<span class="kw">let</span> <span class="ident">results</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">sync</span>.<span class="ident">on_blocks_processed</span>(<span class="ident">imported</span>, <span class="ident">count</span>, <span class="ident">results</span>);
+		<span class="kw">let</span> <span class="ident">results</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">chain_sync</span>.<span class="ident">on_blocks_processed</span>(<span class="ident">imported</span>, <span class="ident">count</span>, <span class="ident">results</span>);
 		<span class="kw">for</span> <span class="ident">result</span> <span class="kw">in</span> <span class="ident">results</span> {
 			<span class="kw">match</span> <span class="ident">result</span> {
 				<span class="prelude-val">Ok</span>((<span class="ident">id</span>, <span class="ident">req</span>)) =&gt; {
 					<span class="self">self</span>.<span class="ident">pending_messages</span>.<span class="ident">push_back</span>(<span class="ident">prepare_block_request</span>(
+						<span class="self">self</span>.<span class="ident">chain_sync</span>.<span class="ident">as_ref</span>(),
 						<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">peers</span>,
 						<span class="ident">id</span>,
 						<span class="ident">req</span>,
@@ -2979,7 +2794,7 @@
 		<span class="ident">number</span>: <span class="ident">NumberFor</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
 		<span class="ident">success</span>: <span class="ident">bool</span>,
 	) {
-		<span class="self">self</span>.<span class="ident">sync</span>.<span class="ident">on_justification_import</span>(<span class="ident">hash</span>, <span class="ident">number</span>, <span class="ident">success</span>);
+		<span class="self">self</span>.<span class="ident">chain_sync</span>.<span class="ident">on_justification_import</span>(<span class="ident">hash</span>, <span class="ident">number</span>, <span class="ident">success</span>);
 		<span class="kw">if</span> <span class="op">!</span><span class="ident">success</span> {
 			<span class="macro">info!</span>(<span class="string">&quot;💔 Invalid justification provided by {} for #{}&quot;</span>, <span class="ident">who</span>, <span class="ident">hash</span>);
 			<span class="self">self</span>.<span class="ident">behaviour</span>.<span class="ident">disconnect_peer</span>(<span class="kw-2">&amp;</span><span class="ident">who</span>, <span class="ident">HARDCODED_PEERSETS_SYNC</span>);
@@ -3096,12 +2911,22 @@
 		}
 	}
 
+	<span class="doccomment">/// Encode implementation-specific block request.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">encode_block_request</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">request</span>: <span class="kw-2">&amp;</span><span class="ident">OpaqueBlockRequest</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>, <span class="ident">String</span><span class="op">&gt;</span> {
+		<span class="self">self</span>.<span class="ident">chain_sync</span>.<span class="ident">encode_block_request</span>(<span class="ident">request</span>)
+	}
+
+	<span class="doccomment">/// Encode implementation-specific state request.</span>
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">encode_state_request</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">request</span>: <span class="kw-2">&amp;</span><span class="ident">OpaqueStateRequest</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>, <span class="ident">String</span><span class="op">&gt;</span> {
+		<span class="self">self</span>.<span class="ident">chain_sync</span>.<span class="ident">encode_state_request</span>(<span class="ident">request</span>)
+	}
+
 	<span class="kw">fn</span> <span class="ident">report_metrics</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) {
 		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">metrics</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">metrics</span> {
 			<span class="kw">let</span> <span class="ident">n</span> <span class="op">=</span> <span class="ident">u64::try_from</span>(<span class="self">self</span>.<span class="ident">peers</span>.<span class="ident">len</span>()).<span class="ident">unwrap_or</span>(<span class="ident">std::u64::MAX</span>);
 			<span class="ident">metrics</span>.<span class="ident">peers</span>.<span class="ident">set</span>(<span class="ident">n</span>);
 
-			<span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">sync</span>.<span class="ident">metrics</span>();
+			<span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">chain_sync</span>.<span class="ident">metrics</span>();
 
 			<span class="ident">metrics</span>.<span class="ident">fork_targets</span>.<span class="ident">set</span>(<span class="ident">m</span>.<span class="ident">fork_targets</span>.<span class="ident">into</span>());
 			<span class="ident">metrics</span>.<span class="ident">queued_blocks</span>.<span class="ident">set</span>(<span class="ident">m</span>.<span class="ident">queued_blocks</span>.<span class="ident">into</span>());
@@ -3127,6 +2952,7 @@
 }
 
 <span class="kw">fn</span> <span class="ident">prepare_block_request</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">BlockT</span><span class="op">&gt;</span>(
+	<span class="ident">chain_sync</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">ChainSync</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
 	<span class="ident">peers</span>: <span class="kw-2">&amp;mut</span> <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">PeerId</span>, <span class="ident">Peer</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	<span class="ident">who</span>: <span class="ident">PeerId</span>,
 	<span class="ident">request</span>: <span class="ident">BlockRequest</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
@@ -3137,19 +2963,7 @@
 		<span class="ident">peer</span>.<span class="ident">request</span> <span class="op">=</span> <span class="prelude-val">Some</span>((<span class="ident">PeerRequest::Block</span>(<span class="ident">request</span>.<span class="ident">clone</span>()), <span class="ident">rx</span>));
 	}
 
-	<span class="kw">let</span> <span class="ident">request</span> <span class="op">=</span> <span class="ident">sc_network_sync::schema::v1::BlockRequest</span> {
-		<span class="ident">fields</span>: <span class="ident">request</span>.<span class="ident">fields</span>.<span class="ident">to_be_u32</span>(),
-		<span class="ident">from_block</span>: <span class="kw">match</span> <span class="ident">request</span>.<span class="ident">from</span> {
-			<span class="ident">FromBlock::Hash</span>(<span class="ident">h</span>) =&gt;
-				<span class="prelude-val">Some</span>(<span class="ident">sc_network_sync::schema::v1::block_request::FromBlock::Hash</span>(<span class="ident">h</span>.<span class="ident">encode</span>())),
-			<span class="ident">FromBlock::Number</span>(<span class="ident">n</span>) =&gt;
-				<span class="prelude-val">Some</span>(<span class="ident">sc_network_sync::schema::v1::block_request::FromBlock::Number</span>(<span class="ident">n</span>.<span class="ident">encode</span>())),
-		},
-		<span class="ident">to_block</span>: <span class="ident">request</span>.<span class="ident">to</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">h</span><span class="op">|</span> <span class="ident">h</span>.<span class="ident">encode</span>()).<span class="ident">unwrap_or_default</span>(),
-		<span class="ident">direction</span>: <span class="ident">request</span>.<span class="ident">direction</span> <span class="kw">as</span> <span class="ident">i32</span>,
-		<span class="ident">max_blocks</span>: <span class="ident">request</span>.<span class="ident">max</span>.<span class="ident">unwrap_or</span>(<span class="number">0</span>),
-		<span class="ident">support_multiple_justifications</span>: <span class="bool-val">true</span>,
-	};
+	<span class="kw">let</span> <span class="ident">request</span> <span class="op">=</span> <span class="ident">chain_sync</span>.<span class="ident">create_opaque_block_request</span>(<span class="kw-2">&amp;</span><span class="ident">request</span>);
 
 	<span class="ident">CustomMessageOutcome::BlockRequest</span> { <span class="ident">target</span>: <span class="ident">who</span>, <span class="ident">request</span>, <span class="ident">pending_response</span>: <span class="ident">tx</span> }
 }
@@ -3157,7 +2971,7 @@
 <span class="kw">fn</span> <span class="ident">prepare_state_request</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">BlockT</span><span class="op">&gt;</span>(
 	<span class="ident">peers</span>: <span class="kw-2">&amp;mut</span> <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">PeerId</span>, <span class="ident">Peer</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	<span class="ident">who</span>: <span class="ident">PeerId</span>,
-	<span class="ident">request</span>: <span class="ident">sc_network_sync::schema::v1::StateRequest</span>,
+	<span class="ident">request</span>: <span class="ident">OpaqueStateRequest</span>,
 ) -&gt; <span class="ident">CustomMessageOutcome</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> {
 	<span class="kw">let</span> (<span class="ident">tx</span>, <span class="ident">rx</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
 
@@ -3170,7 +2984,7 @@
 <span class="kw">fn</span> <span class="ident">prepare_warp_sync_request</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">BlockT</span><span class="op">&gt;</span>(
 	<span class="ident">peers</span>: <span class="kw-2">&amp;mut</span> <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">PeerId</span>, <span class="ident">Peer</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	<span class="ident">who</span>: <span class="ident">PeerId</span>,
-	<span class="ident">request</span>: <span class="ident"><span class="kw">crate</span>::warp_request_handler::Request</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
+	<span class="ident">request</span>: <span class="ident">WarpProofRequest</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
 ) -&gt; <span class="ident">CustomMessageOutcome</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> {
 	<span class="kw">let</span> (<span class="ident">tx</span>, <span class="ident">rx</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
 
@@ -3214,19 +3028,19 @@
 	<span class="doccomment">/// A new block request must be emitted.</span>
 	<span class="ident">BlockRequest</span> {
 		<span class="ident">target</span>: <span class="ident">PeerId</span>,
-		<span class="ident">request</span>: <span class="ident">sc_network_sync::schema::v1::BlockRequest</span>,
+		<span class="ident">request</span>: <span class="ident">OpaqueBlockRequest</span>,
 		<span class="ident">pending_response</span>: <span class="ident">oneshot::Sender</span><span class="op">&lt;</span><span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>, <span class="ident">RequestFailure</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	},
 	<span class="doccomment">/// A new storage request must be emitted.</span>
 	<span class="ident">StateRequest</span> {
 		<span class="ident">target</span>: <span class="ident">PeerId</span>,
-		<span class="ident">request</span>: <span class="ident">sc_network_sync::schema::v1::StateRequest</span>,
+		<span class="ident">request</span>: <span class="ident">OpaqueStateRequest</span>,
 		<span class="ident">pending_response</span>: <span class="ident">oneshot::Sender</span><span class="op">&lt;</span><span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>, <span class="ident">RequestFailure</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	},
 	<span class="doccomment">/// A new warp sync request must be emitted.</span>
 	<span class="ident">WarpSyncRequest</span> {
 		<span class="ident">target</span>: <span class="ident">PeerId</span>,
-		<span class="ident">request</span>: <span class="ident"><span class="kw">crate</span>::warp_request_handler::Request</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
+		<span class="ident">request</span>: <span class="ident">WarpProofRequest</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>,
 		<span class="ident">pending_response</span>: <span class="ident">oneshot::Sender</span><span class="op">&lt;</span><span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>, <span class="ident">RequestFailure</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	},
 	<span class="doccomment">/// Peer has a reported a new head of chain.</span>
@@ -3323,10 +3137,8 @@
 						<span class="kw">let</span> (<span class="ident">req</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">peer</span>.<span class="ident">request</span>.<span class="ident">take</span>().<span class="ident">unwrap</span>();
 						<span class="kw">match</span> <span class="ident">req</span> {
 							<span class="ident">PeerRequest::Block</span>(<span class="ident">req</span>) =&gt; {
-								<span class="kw">let</span> <span class="ident">protobuf_response</span> <span class="op">=</span>
-									<span class="kw">match</span> <span class="ident">sc_network_sync::schema::v1::BlockResponse::decode</span>(
-										<span class="kw-2">&amp;</span><span class="ident">resp</span>[..],
-									) {
+								<span class="kw">let</span> <span class="ident">response</span> <span class="op">=</span>
+									<span class="kw">match</span> <span class="self">self</span>.<span class="ident">chain_sync</span>.<span class="ident">decode_block_response</span>(<span class="kw-2">&amp;</span><span class="ident">resp</span>[..]) {
 										<span class="prelude-val">Ok</span>(<span class="ident">proto</span>) =&gt; <span class="ident">proto</span>,
 										<span class="prelude-val">Err</span>(<span class="ident">e</span>) =&gt; {
 											<span class="macro">debug!</span>(
@@ -3342,13 +3154,11 @@
 										},
 									};
 
-								<span class="ident">finished_block_requests</span>.<span class="ident">push</span>((<span class="kw-2">*</span><span class="ident">id</span>, <span class="ident">req</span>, <span class="ident">protobuf_response</span>));
+								<span class="ident">finished_block_requests</span>.<span class="ident">push</span>((<span class="kw-2">*</span><span class="ident">id</span>, <span class="ident">req</span>, <span class="ident">response</span>));
 							},
 							<span class="ident">PeerRequest::State</span> =&gt; {
-								<span class="kw">let</span> <span class="ident">protobuf_response</span> <span class="op">=</span>
-									<span class="kw">match</span> <span class="ident">sc_network_sync::schema::v1::StateResponse::decode</span>(
-										<span class="kw-2">&amp;</span><span class="ident">resp</span>[..],
-									) {
+								<span class="kw">let</span> <span class="ident">response</span> <span class="op">=</span>
+									<span class="kw">match</span> <span class="self">self</span>.<span class="ident">chain_sync</span>.<span class="ident">decode_state_response</span>(<span class="kw-2">&amp;</span><span class="ident">resp</span>[..]) {
 										<span class="prelude-val">Ok</span>(<span class="ident">proto</span>) =&gt; <span class="ident">proto</span>,
 										<span class="prelude-val">Err</span>(<span class="ident">e</span>) =&gt; {
 											<span class="macro">debug!</span>(
@@ -3364,7 +3174,7 @@
 										},
 									};
 
-								<span class="ident">finished_state_requests</span>.<span class="ident">push</span>((<span class="kw-2">*</span><span class="ident">id</span>, <span class="ident">protobuf_response</span>));
+								<span class="ident">finished_state_requests</span>.<span class="ident">push</span>((<span class="kw-2">*</span><span class="ident">id</span>, <span class="ident">response</span>));
 							},
 							<span class="ident">PeerRequest::WarpProof</span> =&gt; {
 								<span class="ident">finished_warp_sync_requests</span>.<span class="ident">push</span>((<span class="kw-2">*</span><span class="ident">id</span>, <span class="ident">resp</span>));
@@ -3423,12 +3233,12 @@
 				}
 			}
 		}
-		<span class="kw">for</span> (<span class="ident">id</span>, <span class="ident">req</span>, <span class="ident">protobuf_response</span>) <span class="kw">in</span> <span class="ident">finished_block_requests</span> {
-			<span class="kw">let</span> <span class="ident">ev</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">on_block_response</span>(<span class="ident">id</span>, <span class="ident">req</span>, <span class="ident">protobuf_response</span>);
+		<span class="kw">for</span> (<span class="ident">id</span>, <span class="ident">req</span>, <span class="ident">response</span>) <span class="kw">in</span> <span class="ident">finished_block_requests</span> {
+			<span class="kw">let</span> <span class="ident">ev</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">on_block_response</span>(<span class="ident">id</span>, <span class="ident">req</span>, <span class="ident">response</span>);
 			<span class="self">self</span>.<span class="ident">pending_messages</span>.<span class="ident">push_back</span>(<span class="ident">ev</span>);
 		}
-		<span class="kw">for</span> (<span class="ident">id</span>, <span class="ident">protobuf_response</span>) <span class="kw">in</span> <span class="ident">finished_state_requests</span> {
-			<span class="kw">let</span> <span class="ident">ev</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">on_state_response</span>(<span class="ident">id</span>, <span class="ident">protobuf_response</span>);
+		<span class="kw">for</span> (<span class="ident">id</span>, <span class="ident">response</span>) <span class="kw">in</span> <span class="ident">finished_state_requests</span> {
+			<span class="kw">let</span> <span class="ident">ev</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">on_state_response</span>(<span class="ident">id</span>, <span class="ident">response</span>);
 			<span class="self">self</span>.<span class="ident">pending_messages</span>.<span class="ident">push_back</span>(<span class="ident">ev</span>);
 		}
 		<span class="kw">for</span> (<span class="ident">id</span>, <span class="ident">response</span>) <span class="kw">in</span> <span class="ident">finished_warp_sync_requests</span> {
@@ -3440,25 +3250,32 @@
 			<span class="self">self</span>.<span class="ident">tick</span>();
 		}
 
-		<span class="kw">for</span> (<span class="ident">id</span>, <span class="ident">request</span>) <span class="kw">in</span> <span class="self">self</span>.<span class="ident">sync</span>.<span class="ident">block_requests</span>() {
-			<span class="kw">let</span> <span class="ident">event</span> <span class="op">=</span> <span class="ident">prepare_block_request</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">peers</span>, <span class="kw-2">*</span><span class="ident">id</span>, <span class="ident">request</span>);
+		<span class="kw">for</span> (<span class="ident">id</span>, <span class="ident">request</span>) <span class="kw">in</span> <span class="self">self</span>
+			.<span class="ident">chain_sync</span>
+			.<span class="ident">block_requests</span>()
+			.<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">peer_id</span>, <span class="ident">request</span>)<span class="op">|</span> (<span class="kw-2">*</span><span class="ident">peer_id</span>, <span class="ident">request</span>))
+			.<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>()
+		{
+			<span class="kw">let</span> <span class="ident">event</span> <span class="op">=</span>
+				<span class="ident">prepare_block_request</span>(<span class="self">self</span>.<span class="ident">chain_sync</span>.<span class="ident">as_ref</span>(), <span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">peers</span>, <span class="ident">id</span>, <span class="ident">request</span>);
 			<span class="self">self</span>.<span class="ident">pending_messages</span>.<span class="ident">push_back</span>(<span class="ident">event</span>);
 		}
-		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">id</span>, <span class="ident">request</span>)) <span class="op">=</span> <span class="self">self</span>.<span class="ident">sync</span>.<span class="ident">state_request</span>() {
+		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">id</span>, <span class="ident">request</span>)) <span class="op">=</span> <span class="self">self</span>.<span class="ident">chain_sync</span>.<span class="ident">state_request</span>() {
 			<span class="kw">let</span> <span class="ident">event</span> <span class="op">=</span> <span class="ident">prepare_state_request</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">peers</span>, <span class="ident">id</span>, <span class="ident">request</span>);
 			<span class="self">self</span>.<span class="ident">pending_messages</span>.<span class="ident">push_back</span>(<span class="ident">event</span>);
 		}
-		<span class="kw">for</span> (<span class="ident">id</span>, <span class="ident">request</span>) <span class="kw">in</span> <span class="self">self</span>.<span class="ident">sync</span>.<span class="ident">justification_requests</span>() {
-			<span class="kw">let</span> <span class="ident">event</span> <span class="op">=</span> <span class="ident">prepare_block_request</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">peers</span>, <span class="ident">id</span>, <span class="ident">request</span>);
+		<span class="kw">for</span> (<span class="ident">id</span>, <span class="ident">request</span>) <span class="kw">in</span> <span class="self">self</span>.<span class="ident">chain_sync</span>.<span class="ident">justification_requests</span>().<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>() {
+			<span class="kw">let</span> <span class="ident">event</span> <span class="op">=</span>
+				<span class="ident">prepare_block_request</span>(<span class="self">self</span>.<span class="ident">chain_sync</span>.<span class="ident">as_ref</span>(), <span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">peers</span>, <span class="ident">id</span>, <span class="ident">request</span>);
 			<span class="self">self</span>.<span class="ident">pending_messages</span>.<span class="ident">push_back</span>(<span class="ident">event</span>);
 		}
-		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">id</span>, <span class="ident">request</span>)) <span class="op">=</span> <span class="self">self</span>.<span class="ident">sync</span>.<span class="ident">warp_sync_request</span>() {
+		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">id</span>, <span class="ident">request</span>)) <span class="op">=</span> <span class="self">self</span>.<span class="ident">chain_sync</span>.<span class="ident">warp_sync_request</span>() {
 			<span class="kw">let</span> <span class="ident">event</span> <span class="op">=</span> <span class="ident">prepare_warp_sync_request</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">peers</span>, <span class="ident">id</span>, <span class="ident">request</span>);
 			<span class="self">self</span>.<span class="ident">pending_messages</span>.<span class="ident">push_back</span>(<span class="ident">event</span>);
 		}
 
 		<span class="comment">// Check if there is any block announcement validation finished.</span>
-		<span class="kw">while</span> <span class="kw">let</span> <span class="ident">Poll::Ready</span>(<span class="ident">result</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">sync</span>.<span class="ident">poll_block_announce_validation</span>(<span class="ident">cx</span>) {
+		<span class="kw">while</span> <span class="kw">let</span> <span class="ident">Poll::Ready</span>(<span class="ident">result</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">chain_sync</span>.<span class="ident">poll_block_announce_validation</span>(<span class="ident">cx</span>) {
 			<span class="kw">match</span> <span class="self">self</span>.<span class="ident">process_block_announce_validation_result</span>(<span class="ident">result</span>) {
 				<span class="ident">CustomMessageOutcome::None</span> =&gt; {},
 				<span class="ident">outcome</span> =&gt; <span class="self">self</span>.<span class="ident">pending_messages</span>.<span class="ident">push_back</span>(<span class="ident">outcome</span>),
@@ -3639,7 +3456,8 @@
 
 						<span class="comment">// Make sure that the newly added block announce validation future was</span>
 						<span class="comment">// polled once to be registered in the task.</span>
-						<span class="kw">if</span> <span class="kw">let</span> <span class="ident">Poll::Ready</span>(<span class="ident">res</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">sync</span>.<span class="ident">poll_block_announce_validation</span>(<span class="ident">cx</span>) {
+						<span class="kw">if</span> <span class="kw">let</span> <span class="ident">Poll::Ready</span>(<span class="ident">res</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">chain_sync</span>.<span class="ident">poll_block_announce_validation</span>(<span class="ident">cx</span>)
+						{
 							<span class="self">self</span>.<span class="ident">process_block_announce_validation_result</span>(<span class="ident">res</span>)
 						} <span class="kw">else</span> {
 							<span class="ident">CustomMessageOutcome::None</span>

@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/git/checkouts/substrate-7e08433d4c370a21/ee3eb8f/client/network/sync/src/blocks.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>blocks.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/git/checkouts/substrate-7e08433d4c370a21/367dab0/client/network/sync/src/blocks.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>blocks.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
     <noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../sc_network_sync/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
         </a><h2 class="location"></h2>
     </nav>
@@ -410,6 +410,33 @@
 <span id="405">405</span>
 <span id="406">406</span>
 <span id="407">407</span>
+<span id="408">408</span>
+<span id="409">409</span>
+<span id="410">410</span>
+<span id="411">411</span>
+<span id="412">412</span>
+<span id="413">413</span>
+<span id="414">414</span>
+<span id="415">415</span>
+<span id="416">416</span>
+<span id="417">417</span>
+<span id="418">418</span>
+<span id="419">419</span>
+<span id="420">420</span>
+<span id="421">421</span>
+<span id="422">422</span>
+<span id="423">423</span>
+<span id="424">424</span>
+<span id="425">425</span>
+<span id="426">426</span>
+<span id="427">427</span>
+<span id="428">428</span>
+<span id="429">429</span>
+<span id="430">430</span>
+<span id="431">431</span>
+<span id="432">432</span>
+<span id="433">433</span>
+<span id="434">434</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -428,9 +455,9 @@
 <span class="comment">// You should have received a copy of the GNU General Public License</span>
 <span class="comment">// along with this program. If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::message</span>;
 <span class="kw">use</span> <span class="ident">libp2p::PeerId</span>;
-<span class="kw">use</span> <span class="ident">log</span>::{<span class="ident">debug</span>, <span class="ident">trace</span>};
+<span class="kw">use</span> <span class="ident">log::trace</span>;
+<span class="kw">use</span> <span class="ident">sc_network_common::sync::message</span>;
 <span class="kw">use</span> <span class="ident">sp_runtime::traits</span>::{<span class="ident">Block</span> <span class="kw">as</span> <span class="ident">BlockT</span>, <span class="ident">NumberFor</span>, <span class="ident">One</span>};
 <span class="kw">use</span> <span class="ident">std</span>::{
 	<span class="ident">cmp</span>,
@@ -592,6 +619,9 @@
 
 	<span class="doccomment">/// Get a valid chain of blocks ordered in descending order and ready for importing into</span>
 	<span class="doccomment">/// the blockchain.</span>
+	<span class="doccomment">/// `from` is the maximum block number for the start of the range that we are interested in.</span>
+	<span class="doccomment">/// The function will return empty Vec if the first block ready is higher than `from`.</span>
+	<span class="doccomment">/// For each returned block hash `clear_queued` must be called at some later stage.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ready_blocks</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">from</span>: <span class="ident">NumberFor</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span>) -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">BlockData</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">ready</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
 
@@ -604,6 +634,10 @@
 				<span class="ident">BlockRangeState::Complete</span>(<span class="ident">blocks</span>) =&gt; {
 					<span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> (<span class="ident">blocks</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span>).<span class="ident">into</span>();
 					<span class="ident">prev</span> <span class="op">=</span> <span class="ident">start</span> <span class="op">+</span> <span class="ident">len</span>;
+					<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">BlockData</span> { <span class="ident">block</span>, .. }) <span class="op">=</span> <span class="ident">blocks</span>.<span class="ident">first</span>() {
+						<span class="self">self</span>.<span class="ident">queued_blocks</span>
+							.<span class="ident">insert</span>(<span class="ident">block</span>.<span class="ident">hash</span>, (<span class="ident">start</span>, <span class="ident">start</span> <span class="op">+</span> (<span class="ident">blocks</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span>).<span class="ident">into</span>()));
+					}
 					<span class="comment">// Remove all elements from `blocks` and add them to `ready`</span>
 					<span class="ident">ready</span>.<span class="ident">append</span>(<span class="ident">blocks</span>);
 					<span class="ident">len</span>
@@ -613,29 +647,18 @@
 			};
 			<span class="kw-2">*</span><span class="ident">range_data</span> <span class="op">=</span> <span class="ident">BlockRangeState::Queued</span> { <span class="ident">len</span> };
 		}
-
-		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">BlockData</span> { <span class="ident">block</span>, .. }) <span class="op">=</span> <span class="ident">ready</span>.<span class="ident">first</span>() {
-			<span class="self">self</span>.<span class="ident">queued_blocks</span>
-				.<span class="ident">insert</span>(<span class="ident">block</span>.<span class="ident">hash</span>, (<span class="ident">from</span>, <span class="ident">from</span> <span class="op">+</span> (<span class="ident">ready</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span>).<span class="ident">into</span>()));
-		}
-
 		<span class="macro">trace!</span>(<span class="ident">target</span>: <span class="string">&quot;sync&quot;</span>, <span class="string">&quot;{} blocks ready for import&quot;</span>, <span class="ident">ready</span>.<span class="ident">len</span>());
 		<span class="ident">ready</span>
 	}
 
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">clear_queued</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">from_hash</span>: <span class="kw-2">&amp;</span><span class="ident">B::Hash</span>) {
-		<span class="kw">match</span> <span class="self">self</span>.<span class="ident">queued_blocks</span>.<span class="ident">remove</span>(<span class="ident">from_hash</span>) {
-			<span class="prelude-val">None</span> =&gt; {
-				<span class="macro">debug!</span>(<span class="ident">target</span>: <span class="string">&quot;sync&quot;</span>, <span class="string">&quot;Can&#39;t clear unknown queued blocks from {:?}&quot;</span>, <span class="ident">from_hash</span>);
-			},
-			<span class="prelude-val">Some</span>((<span class="ident">from</span>, <span class="ident">to</span>)) =&gt; {
-				<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">block_num</span> <span class="op">=</span> <span class="ident">from</span>;
-				<span class="kw">while</span> <span class="ident">block_num</span> <span class="op">&lt;</span> <span class="ident">to</span> {
-					<span class="self">self</span>.<span class="ident">blocks</span>.<span class="ident">remove</span>(<span class="kw-2">&amp;</span><span class="ident">block_num</span>);
-					<span class="ident">block_num</span> <span class="op">+</span><span class="op">=</span> <span class="ident">One::one</span>();
-				}
-				<span class="macro">trace!</span>(<span class="ident">target</span>: <span class="string">&quot;sync&quot;</span>, <span class="string">&quot;Cleared blocks from {:?} to {:?}&quot;</span>, <span class="ident">from</span>, <span class="ident">to</span>);
-			},
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">clear_queued</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">hash</span>: <span class="kw-2">&amp;</span><span class="ident">B::Hash</span>) {
+		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">from</span>, <span class="ident">to</span>)) <span class="op">=</span> <span class="self">self</span>.<span class="ident">queued_blocks</span>.<span class="ident">remove</span>(<span class="ident">hash</span>) {
+			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">block_num</span> <span class="op">=</span> <span class="ident">from</span>;
+			<span class="kw">while</span> <span class="ident">block_num</span> <span class="op">&lt;</span> <span class="ident">to</span> {
+				<span class="self">self</span>.<span class="ident">blocks</span>.<span class="ident">remove</span>(<span class="kw-2">&amp;</span><span class="ident">block_num</span>);
+				<span class="ident">block_num</span> <span class="op">+</span><span class="op">=</span> <span class="ident">One::one</span>();
+			}
+			<span class="macro">trace!</span>(<span class="ident">target</span>: <span class="string">&quot;sync&quot;</span>, <span class="string">&quot;Cleared blocks from {:?} to {:?}&quot;</span>, <span class="ident">from</span>, <span class="ident">to</span>);
 		}
 	}
 
@@ -661,8 +684,8 @@
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">test</span> {
 	<span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">BlockCollection</span>, <span class="ident">BlockData</span>, <span class="ident">BlockRangeState</span>};
-	<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::message</span>;
 	<span class="kw">use</span> <span class="ident">libp2p::PeerId</span>;
+	<span class="kw">use</span> <span class="ident">sc_network_common::sync::message</span>;
 	<span class="kw">use</span> <span class="ident">sp_core::H256</span>;
 	<span class="kw">use</span> <span class="ident">sp_runtime::testing</span>::{<span class="ident">Block</span> <span class="kw">as</span> <span class="ident">RawBlock</span>, <span class="ident">ExtrinsicWrapper</span>};
 
@@ -815,6 +838,37 @@
 		);
 
 		<span class="macro">assert_eq!</span>(<span class="ident">bc</span>.<span class="ident">needed_blocks</span>(<span class="ident">peer</span>.<span class="ident">clone</span>(), <span class="number">5</span>, <span class="number">50</span>, <span class="number">39</span>, <span class="number">0</span>, <span class="number">200</span>), <span class="prelude-val">Some</span>(<span class="number">45</span>..<span class="number">50</span>));
+	}
+
+	<span class="attribute">#[<span class="ident">test</span>]</span>
+	<span class="kw">fn</span> <span class="ident">clear_queued_subsequent_ranges</span>() {
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">bc</span> <span class="op">=</span> <span class="ident">BlockCollection::new</span>();
+		<span class="macro">assert!</span>(<span class="ident">is_empty</span>(<span class="kw-2">&amp;</span><span class="ident">bc</span>));
+		<span class="kw">let</span> <span class="ident">peer</span> <span class="op">=</span> <span class="ident">PeerId::random</span>();
+
+		<span class="kw">let</span> <span class="ident">blocks</span> <span class="op">=</span> <span class="ident">generate_blocks</span>(<span class="number">10</span>);
+
+		<span class="comment">// Request 2 ranges</span>
+		<span class="macro">assert_eq!</span>(<span class="ident">bc</span>.<span class="ident">needed_blocks</span>(<span class="ident">peer</span>.<span class="ident">clone</span>(), <span class="number">5</span>, <span class="number">50</span>, <span class="number">39</span>, <span class="number">0</span>, <span class="number">200</span>), <span class="prelude-val">Some</span>(<span class="number">40</span>..<span class="number">45</span>));
+		<span class="macro">assert_eq!</span>(<span class="ident">bc</span>.<span class="ident">needed_blocks</span>(<span class="ident">peer</span>.<span class="ident">clone</span>(), <span class="number">5</span>, <span class="number">50</span>, <span class="number">39</span>, <span class="number">0</span>, <span class="number">200</span>), <span class="prelude-val">Some</span>(<span class="number">45</span>..<span class="number">50</span>));
+
+		<span class="comment">// got a response on the request for `40..50`</span>
+		<span class="ident">bc</span>.<span class="ident">clear_peer_download</span>(<span class="kw-2">&amp;</span><span class="ident">peer</span>);
+		<span class="ident">bc</span>.<span class="ident">insert</span>(<span class="number">40</span>, <span class="ident">blocks</span>.<span class="ident">to_vec</span>(), <span class="ident">peer</span>.<span class="ident">clone</span>());
+
+		<span class="comment">// request any blocks starting from 1000 or lower.</span>
+		<span class="kw">let</span> <span class="ident">ready</span> <span class="op">=</span> <span class="ident">bc</span>.<span class="ident">ready_blocks</span>(<span class="number">1000</span>);
+		<span class="macro">assert_eq!</span>(
+			<span class="ident">ready</span>,
+			<span class="ident">blocks</span>
+				.<span class="ident">iter</span>()
+				.<span class="ident">map</span>(<span class="op">|</span><span class="ident">b</span><span class="op">|</span> <span class="ident">BlockData</span> { <span class="ident">block</span>: <span class="ident">b</span>.<span class="ident">clone</span>(), <span class="ident">origin</span>: <span class="prelude-val">Some</span>(<span class="ident">peer</span>.<span class="ident">clone</span>()) })
+				.<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>()
+		);
+
+		<span class="ident">bc</span>.<span class="ident">clear_queued</span>(<span class="kw-2">&amp;</span><span class="ident">blocks</span>[<span class="number">0</span>].<span class="ident">hash</span>);
+		<span class="macro">assert!</span>(<span class="ident">bc</span>.<span class="ident">blocks</span>.<span class="ident">is_empty</span>());
+		<span class="macro">assert!</span>(<span class="ident">bc</span>.<span class="ident">queued_blocks</span>.<span class="ident">is_empty</span>());
 	}
 }
 </code></pre></div>

@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/registry/src/github.com-1ecc6299db9ec823/libp2p-gossipsub-0.38.1/src/behaviour.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>behaviour.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/registry/src/github.com-1ecc6299db9ec823/libp2p-gossipsub-0.39.0/src/behaviour.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>behaviour.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
     <noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../libp2p_gossipsub/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
         </a><h2 class="location"></h2>
     </nav>
@@ -3827,7 +3827,6 @@
 <span id="3822">3822</span>
 <span id="3823">3823</span>
 <span id="3824">3824</span>
-<span id="3825">3825</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Sigma Prime Pty Ltd.</span>
 <span class="comment">//</span>
 <span class="comment">// Permission is hereby granted, free of charge, to any person obtaining a</span>
@@ -3884,7 +3883,7 @@
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::mcache::MessageCache</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::metrics</span>::{<span class="ident">Churn</span>, <span class="ident">Config</span> <span class="kw">as</span> <span class="ident">MetricsConfig</span>, <span class="ident">Inclusion</span>, <span class="ident">Metrics</span>, <span class="ident">Penalty</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::peer_score</span>::{<span class="ident">PeerScore</span>, <span class="ident">PeerScoreParams</span>, <span class="ident">PeerScoreThresholds</span>, <span class="ident">RejectReason</span>};
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::protocol::SIGNING_PREFIX</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::protocol</span>::{<span class="ident">ProtocolConfig</span>, <span class="ident">SIGNING_PREFIX</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::subscription_filter</span>::{<span class="ident">AllowAllSubscriptionFilter</span>, <span class="ident">TopicSubscriptionFilter</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::time_cache</span>::{<span class="ident">DuplicateCache</span>, <span class="ident">TimeCache</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::topic</span>::{<span class="ident">Hasher</span>, <span class="ident">Topic</span>, <span class="ident">TopicHash</span>};
@@ -5346,19 +5345,16 @@
                 <span class="ident">peer_id</span>
             );
 
-            <span class="kw">if</span> <span class="self">self</span>
-                .<span class="ident">send_message</span>(
-                    <span class="kw-2">*</span><span class="ident">peer_id</span>,
-                    <span class="ident">GossipsubRpc</span> {
-                        <span class="ident">subscriptions</span>: <span class="ident">Vec::new</span>(),
-                        <span class="ident">messages</span>: <span class="ident">Vec::new</span>(),
-                        <span class="ident">control_msgs</span>: <span class="ident">prune_messages</span>,
-                    }
-                    .<span class="ident">into_protobuf</span>(),
-                )
-                .<span class="ident">is_err</span>()
-            {
-                <span class="macro">error!</span>(<span class="string">&quot;Failed to send graft. Message too large&quot;</span>);
+            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">send_message</span>(
+                <span class="kw-2">*</span><span class="ident">peer_id</span>,
+                <span class="ident">GossipsubRpc</span> {
+                    <span class="ident">subscriptions</span>: <span class="ident">Vec::new</span>(),
+                    <span class="ident">messages</span>: <span class="ident">Vec::new</span>(),
+                    <span class="ident">control_msgs</span>: <span class="ident">prune_messages</span>,
+                }
+                .<span class="ident">into_protobuf</span>(),
+            ) {
+                <span class="macro">error!</span>(<span class="string">&quot;Failed to send PRUNE: {:?}&quot;</span>, <span class="ident">e</span>);
             }
         }
         <span class="macro">debug!</span>(<span class="string">&quot;Completed GRAFT handling for peer: {}&quot;</span>, <span class="ident">peer_id</span>);
@@ -6886,13 +6882,15 @@
     <span class="kw">type</span> <span class="ident">OutEvent</span> <span class="op">=</span> <span class="ident">GossipsubEvent</span>;
 
     <span class="kw">fn</span> <span class="ident">new_handler</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="ident"><span class="self">Self</span>::ConnectionHandler</span> {
-        <span class="ident">GossipsubHandler::new</span>(
-            <span class="self">self</span>.<span class="ident">config</span>.<span class="ident">protocol_id_prefix</span>().<span class="ident">clone</span>(),
+        <span class="kw">let</span> <span class="ident">protocol_config</span> <span class="op">=</span> <span class="ident">ProtocolConfig::new</span>(
+            <span class="self">self</span>.<span class="ident">config</span>.<span class="ident">protocol_id</span>().<span class="ident">clone</span>(),
+            <span class="self">self</span>.<span class="ident">config</span>.<span class="ident">custom_id_version</span>().<span class="ident">clone</span>(),
             <span class="self">self</span>.<span class="ident">config</span>.<span class="ident">max_transmit_size</span>(),
             <span class="self">self</span>.<span class="ident">config</span>.<span class="ident">validation_mode</span>().<span class="ident">clone</span>(),
-            <span class="self">self</span>.<span class="ident">config</span>.<span class="ident">idle_timeout</span>(),
             <span class="self">self</span>.<span class="ident">config</span>.<span class="ident">support_floodsub</span>(),
-        )
+        );
+
+        <span class="ident">GossipsubHandler::new</span>(<span class="ident">protocol_config</span>, <span class="self">self</span>.<span class="ident">config</span>.<span class="ident">idle_timeout</span>())
     }
 
     <span class="kw">fn</span> <span class="ident">inject_connection_established</span>(

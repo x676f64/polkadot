@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/git/checkouts/substrate-7e08433d4c370a21/ee3eb8f/client/network/sync/src/extra_requests.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>extra_requests.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/git/checkouts/substrate-7e08433d4c370a21/367dab0/client/network/sync/src/extra_requests.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>extra_requests.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
     <noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../sc_network_sync/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
         </a><h2 class="location"></h2>
     </nav>
@@ -589,15 +589,6 @@
 <span id="584">584</span>
 <span id="585">585</span>
 <span id="586">586</span>
-<span id="587">587</span>
-<span id="588">588</span>
-<span id="589">589</span>
-<span id="590">590</span>
-<span id="591">591</span>
-<span id="592">592</span>
-<span id="593">593</span>
-<span id="594">594</span>
-<span id="595">595</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -620,6 +611,7 @@
 <span class="kw">use</span> <span class="ident">fork_tree::ForkTree</span>;
 <span class="kw">use</span> <span class="ident">libp2p::PeerId</span>;
 <span class="kw">use</span> <span class="ident">log</span>::{<span class="ident">debug</span>, <span class="ident">trace</span>, <span class="ident">warn</span>};
+<span class="kw">use</span> <span class="ident">sc_network_common::sync::metrics::Metrics</span>;
 <span class="kw">use</span> <span class="ident">sp_blockchain::Error</span> <span class="kw">as</span> <span class="ident">ClientError</span>;
 <span class="kw">use</span> <span class="ident">sp_runtime::traits</span>::{<span class="ident">Block</span> <span class="kw">as</span> <span class="ident">BlockT</span>, <span class="ident">NumberFor</span>, <span class="ident">Zero</span>};
 <span class="kw">use</span> <span class="ident">std</span>::{
@@ -654,15 +646,6 @@
 	<span class="ident">importing_requests</span>: <span class="ident">HashSet</span><span class="op">&lt;</span><span class="ident">ExtraRequest</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	<span class="doccomment">/// the name of this type of extra request (useful for logging.)</span>
 	<span class="ident">request_type_name</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>,
-}
-
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Metrics</span> {
-	<span class="kw">pub</span> <span class="ident">pending_requests</span>: <span class="ident">u32</span>,
-	<span class="kw">pub</span> <span class="ident">active_requests</span>: <span class="ident">u32</span>,
-	<span class="kw">pub</span> <span class="ident">importing_requests</span>: <span class="ident">u32</span>,
-	<span class="kw">pub</span> <span class="ident">failed_requests</span>: <span class="ident">u32</span>,
-	<span class="ident">_priv</span>: (),
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">BlockT</span><span class="op">&gt;</span> <span class="ident">ExtraRequests</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> {
@@ -858,7 +841,6 @@
 			<span class="ident">active_requests</span>: <span class="self">self</span>.<span class="ident">active_requests</span>.<span class="ident">len</span>().<span class="ident">try_into</span>().<span class="ident">unwrap_or</span>(<span class="ident">std::u32::MAX</span>),
 			<span class="ident">failed_requests</span>: <span class="self">self</span>.<span class="ident">failed_requests</span>.<span class="ident">len</span>().<span class="ident">try_into</span>().<span class="ident">unwrap_or</span>(<span class="ident">std::u32::MAX</span>),
 			<span class="ident">importing_requests</span>: <span class="self">self</span>.<span class="ident">importing_requests</span>.<span class="ident">len</span>().<span class="ident">try_into</span>().<span class="ident">unwrap_or</span>(<span class="ident">std::u32::MAX</span>),
-			<span class="ident">_priv</span>: (),
 		}
 	}
 }

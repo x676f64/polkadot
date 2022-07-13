@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/registry/src/github.com-1ecc6299db9ec823/libp2p-yamux-0.37.0/src/lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/registry/src/github.com-1ecc6299db9ec823/libp2p-yamux-0.38.0/src/lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
     <noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../libp2p_yamux/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
         </a><h2 class="location"></h2>
     </nav>
@@ -416,47 +416,6 @@
 <span id="411">411</span>
 <span id="412">412</span>
 <span id="413">413</span>
-<span id="414">414</span>
-<span id="415">415</span>
-<span id="416">416</span>
-<span id="417">417</span>
-<span id="418">418</span>
-<span id="419">419</span>
-<span id="420">420</span>
-<span id="421">421</span>
-<span id="422">422</span>
-<span id="423">423</span>
-<span id="424">424</span>
-<span id="425">425</span>
-<span id="426">426</span>
-<span id="427">427</span>
-<span id="428">428</span>
-<span id="429">429</span>
-<span id="430">430</span>
-<span id="431">431</span>
-<span id="432">432</span>
-<span id="433">433</span>
-<span id="434">434</span>
-<span id="435">435</span>
-<span id="436">436</span>
-<span id="437">437</span>
-<span id="438">438</span>
-<span id="439">439</span>
-<span id="440">440</span>
-<span id="441">441</span>
-<span id="442">442</span>
-<span id="443">443</span>
-<span id="444">444</span>
-<span id="445">445</span>
-<span id="446">446</span>
-<span id="447">447</span>
-<span id="448">448</span>
-<span id="449">449</span>
-<span id="450">450</span>
-<span id="451">451</span>
-<span id="452">452</span>
-<span id="453">453</span>
-<span id="454">454</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2018 Parity Technologies (UK) Ltd.</span>
 <span class="comment">//</span>
 <span class="comment">// Permission is hereby granted, free of charge, to any person obtaining a</span>
@@ -490,7 +449,7 @@
 <span class="kw">use</span> <span class="ident">libp2p_core::upgrade</span>::{<span class="ident">InboundUpgrade</span>, <span class="ident">OutboundUpgrade</span>, <span class="ident">UpgradeInfo</span>};
 <span class="kw">use</span> <span class="ident">parking_lot::Mutex</span>;
 <span class="kw">use</span> <span class="ident">std</span>::{
-    <span class="ident">fmt</span>, <span class="ident">io</span>, <span class="ident">iter</span>,
+    <span class="ident">fmt</span>, <span class="ident">io</span>, <span class="ident">iter</span>, <span class="ident">mem</span>,
     <span class="ident">pin::Pin</span>,
     <span class="ident">task</span>::{<span class="ident">Context</span>, <span class="ident">Poll</span>},
 };
@@ -596,58 +555,23 @@
         <span class="self">self</span>.<span class="number">0</span>.<span class="ident">lock</span>().<span class="ident">control</span>.<span class="ident">abort_open_stream</span>()
     }
 
-    <span class="kw">fn</span> <span class="ident">read_substream</span>(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        <span class="ident">c</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>,
-        <span class="ident">s</span>: <span class="kw-2">&amp;mut</span> <span class="ident"><span class="self">Self</span>::Substream</span>,
-        <span class="ident">b</span>: <span class="kw-2">&amp;mut</span> [<span class="ident">u8</span>],
-    ) -&gt; <span class="ident">Poll</span><span class="op">&lt;</span><span class="ident">YamuxResult</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-        <span class="ident">Pin::new</span>(<span class="ident">s</span>)
-            .<span class="ident">poll_read</span>(<span class="ident">c</span>, <span class="ident">b</span>)
-            .<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">YamuxError</span>(<span class="ident">e</span>.<span class="ident">into</span>()))
-    }
-
-    <span class="kw">fn</span> <span class="ident">write_substream</span>(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        <span class="ident">c</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>,
-        <span class="ident">s</span>: <span class="kw-2">&amp;mut</span> <span class="ident"><span class="self">Self</span>::Substream</span>,
-        <span class="ident">b</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>],
-    ) -&gt; <span class="ident">Poll</span><span class="op">&lt;</span><span class="ident">YamuxResult</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-        <span class="ident">Pin::new</span>(<span class="ident">s</span>)
-            .<span class="ident">poll_write</span>(<span class="ident">c</span>, <span class="ident">b</span>)
-            .<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">YamuxError</span>(<span class="ident">e</span>.<span class="ident">into</span>()))
-    }
-
-    <span class="kw">fn</span> <span class="ident">flush_substream</span>(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        <span class="ident">c</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>,
-        <span class="ident">s</span>: <span class="kw-2">&amp;mut</span> <span class="ident"><span class="self">Self</span>::Substream</span>,
-    ) -&gt; <span class="ident">Poll</span><span class="op">&lt;</span><span class="ident">YamuxResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span><span class="op">&gt;</span> {
-        <span class="ident">Pin::new</span>(<span class="ident">s</span>).<span class="ident">poll_flush</span>(<span class="ident">c</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">YamuxError</span>(<span class="ident">e</span>.<span class="ident">into</span>()))
-    }
-
-    <span class="kw">fn</span> <span class="ident">shutdown_substream</span>(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        <span class="ident">c</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>,
-        <span class="ident">s</span>: <span class="kw-2">&amp;mut</span> <span class="ident"><span class="self">Self</span>::Substream</span>,
-    ) -&gt; <span class="ident">Poll</span><span class="op">&lt;</span><span class="ident">YamuxResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span><span class="op">&gt;</span> {
-        <span class="ident">Pin::new</span>(<span class="ident">s</span>).<span class="ident">poll_close</span>(<span class="ident">c</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">YamuxError</span>(<span class="ident">e</span>.<span class="ident">into</span>()))
-    }
-
-    <span class="kw">fn</span> <span class="ident">destroy_substream</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw">_</span>: <span class="ident"><span class="self">Self</span>::Substream</span>) {}
-
     <span class="kw">fn</span> <span class="ident">poll_close</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">c</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="ident">Poll</span><span class="op">&lt;</span><span class="ident">YamuxResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">inner</span> <span class="op">=</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">lock</span>();
-        <span class="kw">if</span> <span class="kw">let</span> <span class="ident">std::task::Poll::Ready</span>(<span class="ident">x</span>) <span class="op">=</span> <span class="ident">Pin::new</span>(<span class="kw-2">&amp;mut</span> <span class="ident">inner</span>.<span class="ident">control</span>).<span class="ident">poll_close</span>(<span class="ident">c</span>) {
-            <span class="kw">return</span> <span class="ident">Poll::Ready</span>(<span class="ident">x</span>.<span class="ident">map_err</span>(<span class="ident">YamuxError</span>));
+
+        <span class="kw">if</span> <span class="kw">let</span> <span class="ident">Poll::Ready</span>(()) <span class="op">=</span> <span class="ident">Pin::new</span>(<span class="kw-2">&amp;mut</span> <span class="ident">inner</span>.<span class="ident">control</span>)
+            .<span class="ident">poll_close</span>(<span class="ident">c</span>)
+            .<span class="ident">map_err</span>(<span class="ident">YamuxError</span>)<span class="question-mark">?</span>
+        {
+            <span class="kw">return</span> <span class="ident">Poll::Ready</span>(<span class="prelude-val">Ok</span>(()));
         }
-        <span class="kw">while</span> <span class="kw">let</span> <span class="ident">std::task::Poll::Ready</span>(<span class="ident">x</span>) <span class="op">=</span> <span class="ident">inner</span>.<span class="ident">incoming</span>.<span class="ident">poll_next_unpin</span>(<span class="ident">c</span>) {
-            <span class="kw">match</span> <span class="ident">x</span> {
-                <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(<span class="kw">_</span>)) =&gt; {} <span class="comment">// drop inbound stream</span>
-                <span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(<span class="ident">e</span>)) =&gt; <span class="kw">return</span> <span class="ident">Poll::Ready</span>(<span class="prelude-val">Err</span>(<span class="ident">e</span>)),
+
+        <span class="kw">while</span> <span class="kw">let</span> <span class="ident">Poll::Ready</span>(<span class="ident">maybe_inbound_stream</span>) <span class="op">=</span> <span class="ident">inner</span>.<span class="ident">incoming</span>.<span class="ident">poll_next_unpin</span>(<span class="ident">c</span>)<span class="question-mark">?</span> {
+            <span class="kw">match</span> <span class="ident">maybe_inbound_stream</span> {
+                <span class="prelude-val">Some</span>(<span class="ident">inbound_stream</span>) =&gt; <span class="ident">mem::drop</span>(<span class="ident">inbound_stream</span>),
                 <span class="prelude-val">None</span> =&gt; <span class="kw">return</span> <span class="ident">Poll::Ready</span>(<span class="prelude-val">Ok</span>(())),
             }
         }
+
         <span class="ident">Poll::Pending</span>
     }
 }
@@ -881,10 +805,7 @@
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">Stream</span> <span class="kw">for</span> <span class="ident">Incoming</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
     <span class="kw">type</span> <span class="ident">Item</span> <span class="op">=</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">yamux::Stream</span>, <span class="ident">YamuxError</span><span class="op">&gt;</span>;
 
-    <span class="kw">fn</span> <span class="ident">poll_next</span>(
-        <span class="kw-2">mut</span> <span class="self">self</span>: <span class="ident">Pin</span><span class="op">&lt;</span><span class="kw-2">&amp;mut</span> <span class="self">Self</span><span class="op">&gt;</span>,
-        <span class="ident">cx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>,
-    ) -&gt; <span class="ident">std::task::Poll</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">poll_next</span>(<span class="kw-2">mut</span> <span class="self">self</span>: <span class="ident">Pin</span><span class="op">&lt;</span><span class="kw-2">&amp;mut</span> <span class="self">Self</span><span class="op">&gt;</span>, <span class="ident">cx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="ident">Poll</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">stream</span>.<span class="ident">as_mut</span>().<span class="ident">poll_next_unpin</span>(<span class="ident">cx</span>)
     }
 
@@ -898,10 +819,7 @@
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">Stream</span> <span class="kw">for</span> <span class="ident">LocalIncoming</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
     <span class="kw">type</span> <span class="ident">Item</span> <span class="op">=</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">yamux::Stream</span>, <span class="ident">YamuxError</span><span class="op">&gt;</span>;
 
-    <span class="kw">fn</span> <span class="ident">poll_next</span>(
-        <span class="kw-2">mut</span> <span class="self">self</span>: <span class="ident">Pin</span><span class="op">&lt;</span><span class="kw-2">&amp;mut</span> <span class="self">Self</span><span class="op">&gt;</span>,
-        <span class="ident">cx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>,
-    ) -&gt; <span class="ident">std::task::Poll</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">poll_next</span>(<span class="kw-2">mut</span> <span class="self">self</span>: <span class="ident">Pin</span><span class="op">&lt;</span><span class="kw-2">&amp;mut</span> <span class="self">Self</span><span class="op">&gt;</span>, <span class="ident">cx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="ident">Poll</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">stream</span>.<span class="ident">as_mut</span>().<span class="ident">poll_next_unpin</span>(<span class="ident">cx</span>)
     }
 

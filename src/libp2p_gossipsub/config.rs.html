@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/registry/src/github.com-1ecc6299db9ec823/libp2p-gossipsub-0.38.1/src/config.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>config.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/registry/src/github.com-1ecc6299db9ec823/libp2p-gossipsub-0.39.0/src/config.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>config.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
     <noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../libp2p_gossipsub/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
         </a><h2 class="location"></h2>
     </nav>
@@ -949,6 +949,95 @@
 <span id="944">944</span>
 <span id="945">945</span>
 <span id="946">946</span>
+<span id="947">947</span>
+<span id="948">948</span>
+<span id="949">949</span>
+<span id="950">950</span>
+<span id="951">951</span>
+<span id="952">952</span>
+<span id="953">953</span>
+<span id="954">954</span>
+<span id="955">955</span>
+<span id="956">956</span>
+<span id="957">957</span>
+<span id="958">958</span>
+<span id="959">959</span>
+<span id="960">960</span>
+<span id="961">961</span>
+<span id="962">962</span>
+<span id="963">963</span>
+<span id="964">964</span>
+<span id="965">965</span>
+<span id="966">966</span>
+<span id="967">967</span>
+<span id="968">968</span>
+<span id="969">969</span>
+<span id="970">970</span>
+<span id="971">971</span>
+<span id="972">972</span>
+<span id="973">973</span>
+<span id="974">974</span>
+<span id="975">975</span>
+<span id="976">976</span>
+<span id="977">977</span>
+<span id="978">978</span>
+<span id="979">979</span>
+<span id="980">980</span>
+<span id="981">981</span>
+<span id="982">982</span>
+<span id="983">983</span>
+<span id="984">984</span>
+<span id="985">985</span>
+<span id="986">986</span>
+<span id="987">987</span>
+<span id="988">988</span>
+<span id="989">989</span>
+<span id="990">990</span>
+<span id="991">991</span>
+<span id="992">992</span>
+<span id="993">993</span>
+<span id="994">994</span>
+<span id="995">995</span>
+<span id="996">996</span>
+<span id="997">997</span>
+<span id="998">998</span>
+<span id="999">999</span>
+<span id="1000">1000</span>
+<span id="1001">1001</span>
+<span id="1002">1002</span>
+<span id="1003">1003</span>
+<span id="1004">1004</span>
+<span id="1005">1005</span>
+<span id="1006">1006</span>
+<span id="1007">1007</span>
+<span id="1008">1008</span>
+<span id="1009">1009</span>
+<span id="1010">1010</span>
+<span id="1011">1011</span>
+<span id="1012">1012</span>
+<span id="1013">1013</span>
+<span id="1014">1014</span>
+<span id="1015">1015</span>
+<span id="1016">1016</span>
+<span id="1017">1017</span>
+<span id="1018">1018</span>
+<span id="1019">1019</span>
+<span id="1020">1020</span>
+<span id="1021">1021</span>
+<span id="1022">1022</span>
+<span id="1023">1023</span>
+<span id="1024">1024</span>
+<span id="1025">1025</span>
+<span id="1026">1026</span>
+<span id="1027">1027</span>
+<span id="1028">1028</span>
+<span id="1029">1029</span>
+<span id="1030">1030</span>
+<span id="1031">1031</span>
+<span id="1032">1032</span>
+<span id="1033">1033</span>
+<span id="1034">1034</span>
+<span id="1035">1035</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Sigma Prime Pty Ltd.</span>
 <span class="comment">//</span>
 <span class="comment">// Permission is hereby granted, free of charge, to any person obtaining a</span>
@@ -1000,10 +1089,18 @@
     <span class="prelude-val">None</span>,
 }
 
+<span class="doccomment">/// Selector for custom Protocol Id</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>, <span class="ident">PartialEq</span>)]</span>
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">GossipsubVersion</span> {
+    <span class="ident">V1_0</span>,
+    <span class="ident">V1_1</span>,
+}
+
 <span class="doccomment">/// Configuration parameters that define the performance of the gossipsub network.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">GossipsubConfig</span> {
-    <span class="ident">protocol_id_prefix</span>: <span class="ident">Cow</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span>, <span class="ident">str</span><span class="op">&gt;</span>,
+    <span class="ident">protocol_id</span>: <span class="ident">Cow</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span>, <span class="ident">str</span><span class="op">&gt;</span>,
+    <span class="ident">custom_id_version</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">GossipsubVersion</span><span class="op">&gt;</span>,
     <span class="ident">history_length</span>: <span class="ident">usize</span>,
     <span class="ident">history_gossip</span>: <span class="ident">usize</span>,
     <span class="ident">mesh_n</span>: <span class="ident">usize</span>,
@@ -1047,13 +1144,20 @@
 <span class="kw">impl</span> <span class="ident">GossipsubConfig</span> {
     <span class="comment">// All the getters</span>
 
-    <span class="doccomment">/// The protocol id prefix to negotiate this protocol. The protocol id is of the form</span>
-    <span class="doccomment">/// `/&lt;prefix&gt;/&lt;supported-versions&gt;`. As gossipsub supports version 1.0 and 1.1, there are two</span>
-    <span class="doccomment">/// protocol id&#39;s supported.</span>
+    <span class="doccomment">/// The protocol id to negotiate this protocol. By default, the resulting protocol id has the form</span>
+    <span class="doccomment">/// `/&lt;prefix&gt;/&lt;supported-versions&gt;`, but can optionally be changed to a literal form by providing some GossipsubVersion as custom_id_version.</span>
+    <span class="doccomment">/// As gossipsub supports version 1.0 and 1.1, there are two suffixes supported for the resulting protocol id.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// Calling `GossipsubConfigBuilder::protocol_id_prefix` will set a new prefix and retain the prefix logic.</span>
+    <span class="doccomment">/// Calling `GossipsubConfigBuilder::protocol_id` will set a custom `protocol_id` and disable the prefix logic.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// The default prefix is `meshsub`, giving the supported protocol ids: `/meshsub/1.1.0` and `/meshsub/1.0.0`, negotiated in that order.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">protocol_id_prefix</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">Cow</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span>, <span class="ident">str</span><span class="op">&gt;</span> {
-        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">protocol_id_prefix</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">protocol_id</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident">Cow</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span>, <span class="ident">str</span><span class="op">&gt;</span> {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">protocol_id</span>
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">custom_id_version</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">GossipsubVersion</span><span class="op">&gt;</span> {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">custom_id_version</span>
     }
 
     <span class="comment">// Overlay network parameters.</span>
@@ -1345,7 +1449,8 @@
     <span class="kw">fn</span> <span class="ident">default</span>() -&gt; <span class="self">Self</span> {
         <span class="ident">GossipsubConfigBuilder</span> {
             <span class="ident">config</span>: <span class="ident">GossipsubConfig</span> {
-                <span class="ident">protocol_id_prefix</span>: <span class="ident">Cow::Borrowed</span>(<span class="string">&quot;meshsub&quot;</span>),
+                <span class="ident">protocol_id</span>: <span class="ident">Cow::Borrowed</span>(<span class="string">&quot;meshsub&quot;</span>),
+                <span class="ident">custom_id_version</span>: <span class="prelude-val">None</span>,
                 <span class="ident">history_length</span>: <span class="number">5</span>,
                 <span class="ident">history_gossip</span>: <span class="number">3</span>,
                 <span class="ident">mesh_n</span>: <span class="number">6</span>,
@@ -1408,9 +1513,24 @@
 }
 
 <span class="kw">impl</span> <span class="ident">GossipsubConfigBuilder</span> {
-    <span class="doccomment">/// The protocol id to negotiate this protocol (default is `/meshsub/1.0.0`).</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">protocol_id_prefix</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">protocol_id</span>: <span class="kw">impl</span> <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">Cow</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span>, <span class="ident">str</span><span class="op">&gt;</span><span class="op">&gt;</span>) -&gt; <span class="kw-2">&amp;mut</span> <span class="self">Self</span> {
-        <span class="self">self</span>.<span class="ident">config</span>.<span class="ident">protocol_id_prefix</span> <span class="op">=</span> <span class="ident">protocol_id</span>.<span class="ident">into</span>();
+    <span class="doccomment">/// The protocol id prefix to negotiate this protocol (default is `/meshsub/1.0.0`).</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">protocol_id_prefix</span>(
+        <span class="kw-2">&amp;mut</span> <span class="self">self</span>,
+        <span class="ident">protocol_id_prefix</span>: <span class="kw">impl</span> <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">Cow</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span>, <span class="ident">str</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    ) -&gt; <span class="kw-2">&amp;mut</span> <span class="self">Self</span> {
+        <span class="self">self</span>.<span class="ident">config</span>.<span class="ident">custom_id_version</span> <span class="op">=</span> <span class="prelude-val">None</span>;
+        <span class="self">self</span>.<span class="ident">config</span>.<span class="ident">protocol_id</span> <span class="op">=</span> <span class="ident">protocol_id_prefix</span>.<span class="ident">into</span>();
+        <span class="self">self</span>
+    }
+
+    <span class="doccomment">/// The full protocol id to negotiate this protocol (does not append `/1.0.0` or `/1.1.0`).</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">protocol_id</span>(
+        <span class="kw-2">&amp;mut</span> <span class="self">self</span>,
+        <span class="ident">protocol_id</span>: <span class="kw">impl</span> <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">Cow</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span>, <span class="ident">str</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+        <span class="ident">custom_id_version</span>: <span class="ident">GossipsubVersion</span>,
+    ) -&gt; <span class="kw-2">&amp;mut</span> <span class="self">Self</span> {
+        <span class="self">self</span>.<span class="ident">config</span>.<span class="ident">custom_id_version</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">custom_id_version</span>);
+        <span class="self">self</span>.<span class="ident">config</span>.<span class="ident">protocol_id</span> <span class="op">=</span> <span class="ident">protocol_id</span>.<span class="ident">into</span>();
         <span class="self">self</span>
     }
 
@@ -1761,7 +1881,8 @@
 <span class="kw">impl</span> <span class="ident">std::fmt::Debug</span> <span class="kw">for</span> <span class="ident">GossipsubConfig</span> {
     <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">std::fmt::Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="ident">std::fmt::Result</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">builder</span> <span class="op">=</span> <span class="ident">f</span>.<span class="ident">debug_struct</span>(<span class="string">&quot;GossipsubConfig&quot;</span>);
-        <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">field</span>(<span class="string">&quot;protocol_id_prefix&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">protocol_id_prefix</span>);
+        <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">field</span>(<span class="string">&quot;protocol_id&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">protocol_id</span>);
+        <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">field</span>(<span class="string">&quot;custom_id_version&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">custom_id_version</span>);
         <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">field</span>(<span class="string">&quot;history_length&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">history_length</span>);
         <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">field</span>(<span class="string">&quot;history_gossip&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">history_gossip</span>);
         <span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">field</span>(<span class="string">&quot;mesh_n&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">mesh_n</span>);
@@ -1805,7 +1926,11 @@
 <span class="kw">mod</span> <span class="ident">test</span> {
     <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
     <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::topic::IdentityHash</span>;
+    <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::types::PeerKind</span>;
     <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::Topic</span>;
+    <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">Gossipsub</span>, <span class="ident">MessageAuthenticity</span>};
+    <span class="kw">use</span> <span class="ident">libp2p_core::UpgradeInfo</span>;
+    <span class="kw">use</span> <span class="ident">libp2p_swarm</span>::{<span class="ident">ConnectionHandler</span>, <span class="ident">NetworkBehaviour</span>};
     <span class="kw">use</span> <span class="ident">std::collections::hash_map::DefaultHasher</span>;
     <span class="kw">use</span> <span class="ident">std::hash</span>::{<span class="ident">Hash</span>, <span class="ident">Hasher</span>};
 
@@ -1893,6 +2018,59 @@
 
         <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">message_id</span>(<span class="kw-2">&amp;</span><span class="ident">get_gossipsub_message</span>());
         <span class="macro">assert_eq!</span>(<span class="ident">result</span>, <span class="ident">get_expected_message_id</span>());
+    }
+
+    <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="kw">fn</span> <span class="ident">create_config_with_protocol_id_prefix</span>() {
+        <span class="kw">let</span> <span class="ident">builder</span>: <span class="ident">GossipsubConfig</span> <span class="op">=</span> <span class="ident">GossipsubConfigBuilder::default</span>()
+            .<span class="ident">protocol_id_prefix</span>(<span class="string">&quot;purple&quot;</span>)
+            .<span class="ident">validation_mode</span>(<span class="ident">ValidationMode::Anonymous</span>)
+            .<span class="ident">message_id_fn</span>(<span class="ident">message_id_plain_function</span>)
+            .<span class="ident">build</span>()
+            .<span class="ident">unwrap</span>();
+
+        <span class="macro">assert_eq!</span>(<span class="ident">builder</span>.<span class="ident">protocol_id</span>(), <span class="string">&quot;purple&quot;</span>);
+        <span class="macro">assert_eq!</span>(<span class="ident">builder</span>.<span class="ident">custom_id_version</span>(), <span class="kw-2">&amp;</span><span class="prelude-val">None</span>);
+
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">gossipsub</span>: <span class="ident">Gossipsub</span> <span class="op">=</span>
+            <span class="ident">Gossipsub::new</span>(<span class="ident">MessageAuthenticity::Anonymous</span>, <span class="ident">builder</span>).<span class="ident">expect</span>(<span class="string">&quot;Correct configuration&quot;</span>);
+
+        <span class="kw">let</span> <span class="ident">handler</span> <span class="op">=</span> <span class="ident">gossipsub</span>.<span class="ident">new_handler</span>();
+        <span class="kw">let</span> (<span class="ident">protocol_config</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">handler</span>.<span class="ident">listen_protocol</span>().<span class="ident">into_upgrade</span>();
+        <span class="kw">let</span> <span class="ident">protocol_ids</span> <span class="op">=</span> <span class="ident">protocol_config</span>.<span class="ident">protocol_info</span>();
+
+        <span class="macro">assert_eq!</span>(<span class="ident">protocol_ids</span>.<span class="ident">len</span>(), <span class="number">2</span>);
+
+        <span class="macro">assert_eq!</span>(<span class="ident">protocol_ids</span>[<span class="number">0</span>].<span class="ident">protocol_id</span>, <span class="string">b&quot;/purple/1.1.0&quot;</span>.<span class="ident">to_vec</span>());
+        <span class="macro">assert_eq!</span>(<span class="ident">protocol_ids</span>[<span class="number">0</span>].<span class="ident">kind</span>, <span class="ident">PeerKind::Gossipsubv1_1</span>);
+
+        <span class="macro">assert_eq!</span>(<span class="ident">protocol_ids</span>[<span class="number">1</span>].<span class="ident">protocol_id</span>, <span class="string">b&quot;/purple/1.0.0&quot;</span>.<span class="ident">to_vec</span>());
+        <span class="macro">assert_eq!</span>(<span class="ident">protocol_ids</span>[<span class="number">1</span>].<span class="ident">kind</span>, <span class="ident">PeerKind::Gossipsub</span>);
+    }
+
+    <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="kw">fn</span> <span class="ident">create_config_with_custom_protocol_id</span>() {
+        <span class="kw">let</span> <span class="ident">builder</span>: <span class="ident">GossipsubConfig</span> <span class="op">=</span> <span class="ident">GossipsubConfigBuilder::default</span>()
+            .<span class="ident">protocol_id</span>(<span class="string">&quot;purple&quot;</span>, <span class="ident">GossipsubVersion::V1_0</span>)
+            .<span class="ident">validation_mode</span>(<span class="ident">ValidationMode::Anonymous</span>)
+            .<span class="ident">message_id_fn</span>(<span class="ident">message_id_plain_function</span>)
+            .<span class="ident">build</span>()
+            .<span class="ident">unwrap</span>();
+
+        <span class="macro">assert_eq!</span>(<span class="ident">builder</span>.<span class="ident">protocol_id</span>(), <span class="string">&quot;purple&quot;</span>);
+        <span class="macro">assert_eq!</span>(<span class="ident">builder</span>.<span class="ident">custom_id_version</span>(), <span class="kw-2">&amp;</span><span class="prelude-val">Some</span>(<span class="ident">GossipsubVersion::V1_0</span>));
+
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">gossipsub</span>: <span class="ident">Gossipsub</span> <span class="op">=</span>
+            <span class="ident">Gossipsub::new</span>(<span class="ident">MessageAuthenticity::Anonymous</span>, <span class="ident">builder</span>).<span class="ident">expect</span>(<span class="string">&quot;Correct configuration&quot;</span>);
+
+        <span class="kw">let</span> <span class="ident">handler</span> <span class="op">=</span> <span class="ident">gossipsub</span>.<span class="ident">new_handler</span>();
+        <span class="kw">let</span> (<span class="ident">protocol_config</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">handler</span>.<span class="ident">listen_protocol</span>().<span class="ident">into_upgrade</span>();
+        <span class="kw">let</span> <span class="ident">protocol_ids</span> <span class="op">=</span> <span class="ident">protocol_config</span>.<span class="ident">protocol_info</span>();
+
+        <span class="macro">assert_eq!</span>(<span class="ident">protocol_ids</span>.<span class="ident">len</span>(), <span class="number">1</span>);
+
+        <span class="macro">assert_eq!</span>(<span class="ident">protocol_ids</span>[<span class="number">0</span>].<span class="ident">protocol_id</span>, <span class="string">b&quot;purple&quot;</span>.<span class="ident">to_vec</span>());
+        <span class="macro">assert_eq!</span>(<span class="ident">protocol_ids</span>[<span class="number">0</span>].<span class="ident">kind</span>, <span class="ident">PeerKind::Gossipsub</span>);
     }
 }
 </code></pre></div>

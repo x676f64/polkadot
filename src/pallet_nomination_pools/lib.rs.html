@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/git/checkouts/substrate-7e08433d4c370a21/ee3eb8f/frame/nomination-pools/src/lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/git/checkouts/substrate-7e08433d4c370a21/367dab0/frame/nomination-pools/src/lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
     <noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../pallet_nomination_pools/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
         </a><h2 class="location"></h2>
     </nav>
@@ -2470,6 +2470,27 @@
 <span id="2465">2465</span>
 <span id="2466">2466</span>
 <span id="2467">2467</span>
+<span id="2468">2468</span>
+<span id="2469">2469</span>
+<span id="2470">2470</span>
+<span id="2471">2471</span>
+<span id="2472">2472</span>
+<span id="2473">2473</span>
+<span id="2474">2474</span>
+<span id="2475">2475</span>
+<span id="2476">2476</span>
+<span id="2477">2477</span>
+<span id="2478">2478</span>
+<span id="2479">2479</span>
+<span id="2480">2480</span>
+<span id="2481">2481</span>
+<span id="2482">2482</span>
+<span id="2483">2483</span>
+<span id="2484">2484</span>
+<span id="2485">2485</span>
+<span id="2486">2486</span>
+<span id="2487">2487</span>
+<span id="2488">2488</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2020-2022 Parity Technologies (UK) Ltd.</span>
@@ -2489,8 +2510,8 @@
 
 <span class="doccomment">//! # Nomination Pools for Staking Delegation</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! A pallet that allows members to delegate their stake to nominating pools. A nomination pool</span>
-<span class="doccomment">//! acts as nominator and nominates validators on the members behalf.</span>
+<span class="doccomment">//! A pallet that allows members to delegate their stake to nominating pools. A nomination pool acts</span>
+<span class="doccomment">//! as nominator and nominates validators on the members behalf.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! # Index</span>
 <span class="doccomment">//!</span>
@@ -2500,22 +2521,33 @@
 <span class="doccomment">//!</span>
 <span class="doccomment">//! ## Key terms</span>
 <span class="doccomment">//!</span>
+<span class="doccomment">//!  * pool id: A unique identifier of each pool. Set to u12</span>
 <span class="doccomment">//!  * bonded pool: Tracks the distribution of actively staked funds. See [`BondedPool`] and</span>
-<span class="doccomment">//! [`BondedPoolInner`]. Bonded pools are identified via the pools bonded account.</span>
+<span class="doccomment">//! [`BondedPoolInner`].</span>
 <span class="doccomment">//! * reward pool: Tracks rewards earned by actively staked funds. See [`RewardPool`] and</span>
-<span class="doccomment">//!   [`RewardPools`]. Reward pools are identified via the pools bonded account.</span>
+<span class="doccomment">//!   [`RewardPools`].</span>
 <span class="doccomment">//! * unbonding sub pools: Collection of pools at different phases of the unbonding lifecycle. See</span>
-<span class="doccomment">//!   [`SubPools`] and [`SubPoolsStorage`]. Sub pools are identified via the pools bonded account.</span>
-<span class="doccomment">//! * members: Accounts that are members of pools. See [`PoolMember`] and [`PoolMembers`]. Pool</span>
-<span class="doccomment">//!   members are identified via their account.</span>
-<span class="doccomment">//! * point: A unit of measure for a members portion of a pool&#39;s funds.</span>
+<span class="doccomment">//!   [`SubPools`] and [`SubPoolsStorage`].</span>
+<span class="doccomment">//! * members: Accounts that are members of pools. See [`PoolMember`] and [`PoolMembers`].</span>
+<span class="doccomment">//! * roles: Administrative roles of each pool, capable of controlling nomination, and the state of</span>
+<span class="doccomment">//!   the pool.</span>
+<span class="doccomment">//! * point: A unit of measure for a members portion of a pool&#39;s funds. Points initially have a</span>
+<span class="doccomment">//!   ratio of 1 (as set by `POINTS_TO_BALANCE_INIT_RATIO`) to balance, but as slashing happens,</span>
+<span class="doccomment">//!   this can change.</span>
 <span class="doccomment">//! * kick: The act of a pool administrator forcibly ejecting a member.</span>
+<span class="doccomment">//! * bonded account: A key-less account id derived from the pool id that acts as the bonded</span>
+<span class="doccomment">//!   account. This account registers itself as a nominator in the staking system, and follows</span>
+<span class="doccomment">//!   exactly the same rules and conditions as a normal staker. Its bond increases or decreases as</span>
+<span class="doccomment">//!   members join, it can `nominate` or `chill`, and might not even earn staking rewards if it is</span>
+<span class="doccomment">//!   not nominating proper validators.</span>
+<span class="doccomment">//! * reward account: A similar key-less account, that is set as the `Payee` account fo the bonded</span>
+<span class="doccomment">//!   account for all staking rewards.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! ## Usage</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! ### Join</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! A account can stake funds with a nomination pool by calling [`Call::join`].</span>
+<span class="doccomment">//! An account can stake funds with a nomination pool by calling [`Call::join`].</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! ### Claim rewards</span>
 <span class="doccomment">//!</span>
@@ -2527,11 +2559,13 @@
 <span class="doccomment">//!</span>
 <span class="doccomment">//! In order to leave, a member must take two steps.</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! First, they must call [`Call::unbond`]. The unbond other extrinsic will start the</span>
-<span class="doccomment">//! unbonding process by unbonding all of the members funds.</span>
+<span class="doccomment">//! First, they must call [`Call::unbond`]. The unbond extrinsic will start the unbonding process by</span>
+<span class="doccomment">//! unbonding all or a portion of the members funds.</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! Second, once [`sp_staking::StakingInterface::bonding_duration`] eras have passed, the member</span>
-<span class="doccomment">//! can call [`Call::withdraw_unbonded`] to withdraw all their funds.</span>
+<span class="doccomment">//! &gt; A member can have up to [`Config::MaxUnbonding`] distinct active unbonding requests.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! Second, once [`sp_staking::StakingInterface::bonding_duration`] eras have passed, the member can</span>
+<span class="doccomment">//! call [`Call::withdraw_unbonded`] to withdraw any funds that are free.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! For design docs see the [bonded pool](#bonded-pool) and [unbonding sub</span>
 <span class="doccomment">//! pools](#unbonding-sub-pools) sections.</span>
@@ -2539,9 +2573,13 @@
 <span class="doccomment">//! ### Slashes</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! Slashes are distributed evenly across the bonded pool and the unbonding pools from slash era+1</span>
-<span class="doccomment">//! through the slash apply era. Thus, any member who either a) unbonded or b) was actively</span>
-<span class="doccomment">//! bonded in the aforementioned range of eras will be affected by the slash. A member is slashed</span>
-<span class="doccomment">//! pro-rata based on its stake relative to the total slash amount.</span>
+<span class="doccomment">//! through the slash apply era. Thus, any member who either</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! 1. unbonded, or</span>
+<span class="doccomment">//! 2. was actively bonded</span>
+<span class="comment">//</span>
+<span class="doccomment">//! in the aforementioned range of eras will be affected by the slash. A member is slashed pro-rata</span>
+<span class="doccomment">//! based on its stake relative to the total slash amount.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! For design docs see the [slashing](#slashing) section.</span>
 <span class="doccomment">//!</span>
@@ -2554,19 +2592,32 @@
 <span class="doccomment">//! To help facilitate pool administration the pool has one of three states (see [`PoolState`]):</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! * Open: Anyone can join the pool and no members can be permissionlessly removed.</span>
-<span class="doccomment">//! * Blocked: No members can join and some admin roles can kick members.</span>
+<span class="doccomment">//! * Blocked: No members can join and some admin roles can kick members. Kicking is not instant,</span>
+<span class="doccomment">//!   and follows the same process of `unbond` and then `withdraw_unbonded`. In other words,</span>
+<span class="doccomment">//!   administrators can permissionlessly unbond other members.</span>
 <span class="doccomment">//! * Destroying: No members can join and all members can be permissionlessly removed with</span>
 <span class="doccomment">//!   [`Call::unbond`] and [`Call::withdraw_unbonded`]. Once a pool is in destroying state, it</span>
 <span class="doccomment">//!   cannot be reverted to another state.</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! A pool has 3 administrative roles (see [`PoolRoles`]):</span>
+<span class="doccomment">//! A pool has 4 administrative roles (see [`PoolRoles`]):</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! * Depositor: creates the pool and is the initial member. They can only leave the pool once all</span>
-<span class="doccomment">//!   other members have left. Once they fully leave the pool is destroyed.</span>
+<span class="doccomment">//!   other members have left. Once they fully withdraw their funds, the pool is destroyed.</span>
 <span class="doccomment">//! * Nominator: can select which validators the pool nominates.</span>
 <span class="doccomment">//! * State-Toggler: can change the pools state and kick members if the pool is blocked.</span>
 <span class="doccomment">//! * Root: can change the nominator, state-toggler, or itself and can perform any of the actions</span>
 <span class="doccomment">//!   the nominator or state-toggler can.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! ### Dismantling</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! As noted, a pool is destroyed once</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! 1. First, all members need to fully unbond and withdraw. If the pool state is set to</span>
+<span class="doccomment">//!    `Destroying`, this can happen permissionlessly.</span>
+<span class="doccomment">//! 2. The depositor itself fully unbonds and withdraws. Note that at this point, based on the</span>
+<span class="doccomment">//!    requirements of the staking system, the pool&#39;s bonded account&#39;s stake might not be able to ge</span>
+<span class="doccomment">//!    below a certain threshold as a nominator. At this point, the pool should `chill` itself to</span>
+<span class="doccomment">//!    allow the depositor to leave.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! ## Design</span>
 <span class="doccomment">//!</span>
@@ -2580,8 +2631,8 @@
 <span class="doccomment">//!   members that where in the pool while it was backing a validator that got slashed.</span>
 <span class="doccomment">//! * Maximize scalability in terms of member count.</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! In order to maintain scalability, all operations are independent of the number of members. To</span>
-<span class="doccomment">//! do this, delegation specific information is stored local to the member while the pool data</span>
+<span class="doccomment">//! In order to maintain scalability, all operations are independent of the number of members. To do</span>
+<span class="doccomment">//! this, delegation specific information is stored local to the member while the pool data</span>
 <span class="doccomment">//! structures have bounded datum.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! ### Bonded pool</span>
@@ -2590,9 +2641,9 @@
 <span class="doccomment">//! unbonding. The total points of a bonded pool are always equal to the sum of points of the</span>
 <span class="doccomment">//! delegation members. A bonded pool tracks its points and reads its bonded balance.</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! When a member joins a pool, `amount_transferred` is transferred from the members account</span>
-<span class="doccomment">//! to the bonded pools account. Then the pool calls `staking::bond_extra(amount_transferred)` and</span>
-<span class="doccomment">//! issues new points which are tracked by the member and added to the bonded pool&#39;s points.</span>
+<span class="doccomment">//! When a member joins a pool, `amount_transferred` is transferred from the members account to the</span>
+<span class="doccomment">//! bonded pools account. Then the pool calls `staking::bond_extra(amount_transferred)` and issues</span>
+<span class="doccomment">//! new points which are tracked by the member and added to the bonded pool&#39;s points.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! When the pool already has some balance, we want the value of a point before the transfer to</span>
 <span class="doccomment">//! equal the value of a point after the transfer. So, when a member joins a bonded pool with a</span>
@@ -2620,77 +2671,13 @@
 <span class="doccomment">//! ### Reward pool</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! When a pool is first bonded it sets up an deterministic, inaccessible account as its reward</span>
-<span class="doccomment">//! destination. To track staking rewards we track how the balance of this reward account changes.</span>
+<span class="doccomment">//! destination.</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! The reward pool needs to store:</span>
+<span class="doccomment">//! The reward pool is not really a pool anymore, as it does not track points anymore. Instead, it</span>
+<span class="doccomment">//! tracks, a virtual value called `reward_counter`, among a few other values.</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! * The pool balance at the time of the last payout: `reward_pool.balance`</span>
-<span class="doccomment">//! * The total earnings ever at the time of the last payout: `reward_pool.total_earnings`</span>
-<span class="doccomment">//! * The total points in the pool at the time of the last payout: `reward_pool.points`</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! And the member needs to store:</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! * The total payouts at the time of the last payout by that member:</span>
-<span class="doccomment">//!   `member.reward_pool_total_earnings`</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! Before the first reward claim is initiated for a pool, all the above variables are set to zero.</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! When a member initiates a claim, the following happens:</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! 1) Compute the reward pool&#39;s total points and the member&#39;s virtual points in the reward pool</span>
-<span class="doccomment">//!     * First `current_total_earnings` is computed (`current_balance` is the free balance of the</span>
-<span class="doccomment">//!       reward pool at the beginning of these operations.)</span>
-<span class="doccomment">//!			```text</span>
-<span class="doccomment">//!			current_total_earnings =</span>
-<span class="doccomment">//!       		current_balance - reward_pool.balance + pool.total_earnings;</span>
-<span class="doccomment">//!			```</span>
-<span class="doccomment">//!     * Then the `current_points` is computed. Every balance unit that was added to the reward</span>
-<span class="doccomment">//!       pool since last time recorded means that the `pool.points` is increased by</span>
-<span class="doccomment">//!       `bonding_pool.total_points`. In other words, for every unit of balance that has been</span>
-<span class="doccomment">//!       earned by the reward pool, the reward pool points are inflated by `bonded_pool.points`. In</span>
-<span class="doccomment">//!       effect this allows each, single unit of balance (e.g. planck) to be divvied up pro-rata</span>
-<span class="doccomment">//!       among members based on points.</span>
-<span class="doccomment">//!			```text</span>
-<span class="doccomment">//!			new_earnings = current_total_earnings - reward_pool.total_earnings;</span>
-<span class="doccomment">//!       	current_points = reward_pool.points + bonding_pool.points * new_earnings;</span>
-<span class="doccomment">//!			```</span>
-<span class="doccomment">//!     * Finally, the`member_virtual_points` are computed: the product of the member&#39;s points in</span>
-<span class="doccomment">//!       the bonding pool and the total inflow of balance units since the last time the member</span>
-<span class="doccomment">//!       claimed rewards</span>
-<span class="doccomment">//!			```text</span>
-<span class="doccomment">//!			new_earnings_since_last_claim = current_total_earnings - member.reward_pool_total_earnings;</span>
-<span class="doccomment">//!        	member_virtual_points = member.points * new_earnings_since_last_claim;</span>
-<span class="doccomment">//!       	```</span>
-<span class="doccomment">//! 2) Compute the `member_payout`:</span>
-<span class="doccomment">//!     ```text</span>
-<span class="doccomment">//!     member_pool_point_ratio = member_virtual_points / current_points;</span>
-<span class="doccomment">//!     member_payout = current_balance * member_pool_point_ratio;</span>
-<span class="doccomment">//!     ```</span>
-<span class="doccomment">//! 3) Transfer `member_payout` to the member</span>
-<span class="doccomment">//! 4) For the member set:</span>
-<span class="doccomment">//!     ```text</span>
-<span class="doccomment">//!     member.reward_pool_total_earnings = current_total_earnings;</span>
-<span class="doccomment">//!     ```</span>
-<span class="doccomment">//! 5) For the pool set:</span>
-<span class="doccomment">//!     ```text</span>
-<span class="doccomment">//!     reward_pool.points = current_points - member_virtual_points;</span>
-<span class="doccomment">//!     reward_pool.balance = current_balance - member_payout;</span>
-<span class="doccomment">//!     reward_pool.total_earnings = current_total_earnings;</span>
-<span class="doccomment">//!     ```</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! _Note_: One short coming of this design is that new joiners can claim rewards for the era after</span>
-<span class="doccomment">//! they join even though their funds did not contribute to the pools vote weight. When a</span>
-<span class="doccomment">//! member joins, it&#39;s `reward_pool_total_earnings` field is set equal to the `total_earnings`</span>
-<span class="doccomment">//! of the reward pool at that point in time. At best the reward pool has the rewards up through the</span>
-<span class="doccomment">//! previous era. If a member joins prior to the election snapshot it will benefit from the</span>
-<span class="doccomment">//! rewards for the active era despite not contributing to the pool&#39;s vote weight. If it joins</span>
-<span class="doccomment">//! after the election snapshot is taken it will benefit from the rewards of the next _2_ eras</span>
-<span class="doccomment">//! because it&#39;s vote weight will not be counted until the election snapshot in active era + 1.</span>
-<span class="doccomment">//! Related: &lt;https://github.com/paritytech/substrate/issues/10861&gt;</span>
-<span class="comment">// _Note to maintainers_: In order to ensure the reward account never falls below the existential</span>
-<span class="comment">// deposit, at creation the reward account must be endowed with the existential deposit. All logic</span>
-<span class="comment">// for calculating rewards then does not see that existential deposit as part of the free balance.</span>
-<span class="comment">// See `RewardPool::current_balance`.</span>
+<span class="doccomment">//! See [this link](https://hackmd.io/PFGn6wI5TbCmBYoEA_f2Uw) for an in-depth explanation of the</span>
+<span class="doccomment">//! reward pool mechanism.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! **Relevant extrinsics:**</span>
 <span class="doccomment">//!</span>
@@ -2771,11 +2758,6 @@
 <span class="doccomment">//!   funds via vote splitting.</span>
 <span class="doccomment">//! * PoolMembers cannot quickly transfer to another pool if they do no like nominations, instead</span>
 <span class="doccomment">//!   they must wait for the unbonding duration.</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! # Runtime builder warnings</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! * Watch out for overflow of [`RewardPoints`] and [`BalanceOf`] types. Consider things like the</span>
-<span class="doccomment">//!   chains total issuance, staking reward rate, and burn rate.</span>
 
 <span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>), <span class="ident">no_std</span>)]</span>
 
@@ -2788,11 +2770,14 @@
 		<span class="ident">Currency</span>, <span class="ident">Defensive</span>, <span class="ident">DefensiveOption</span>, <span class="ident">DefensiveResult</span>, <span class="ident">DefensiveSaturating</span>,
 		<span class="ident">ExistenceRequirement</span>, <span class="ident">Get</span>,
 	},
-	<span class="ident">CloneNoBound</span>, <span class="ident">DefaultNoBound</span>, <span class="ident">RuntimeDebugNoBound</span>,
+	<span class="ident">transactional</span>, <span class="ident">CloneNoBound</span>, <span class="ident">DefaultNoBound</span>, <span class="ident">RuntimeDebugNoBound</span>,
 };
 <span class="kw">use</span> <span class="ident">scale_info::TypeInfo</span>;
 <span class="kw">use</span> <span class="ident">sp_core::U256</span>;
-<span class="kw">use</span> <span class="ident">sp_runtime::traits</span>::{<span class="ident">AccountIdConversion</span>, <span class="ident">Bounded</span>, <span class="ident">CheckedSub</span>, <span class="ident">Convert</span>, <span class="ident">Saturating</span>, <span class="ident">Zero</span>};
+<span class="kw">use</span> <span class="ident">sp_runtime</span>::{
+	<span class="ident">traits</span>::{<span class="ident">AccountIdConversion</span>, <span class="ident">Bounded</span>, <span class="ident">CheckedAdd</span>, <span class="ident">CheckedSub</span>, <span class="ident">Convert</span>, <span class="ident">Saturating</span>, <span class="ident">Zero</span>},
+	<span class="ident">FixedPointNumber</span>, <span class="ident">FixedPointOperand</span>,
+};
 <span class="kw">use</span> <span class="ident">sp_staking</span>::{<span class="ident">EraIndex</span>, <span class="ident">OnStakerSlash</span>, <span class="ident">StakingInterface</span>};
 <span class="kw">use</span> <span class="ident">sp_std</span>::{<span class="ident">collections::btree_map::BTreeMap</span>, <span class="ident">fmt::Debug</span>, <span class="ident">ops::Div</span>, <span class="ident">vec::Vec</span>};
 
@@ -2824,8 +2809,6 @@
 <span class="doccomment">/// The balance type used by the currency system.</span>
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span>
 	<span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">Config</span><span class="op">&gt;</span><span class="ident">::Currency</span> <span class="kw">as</span> <span class="ident">Currency</span><span class="op">&lt;</span><span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">frame_system::Config</span><span class="op">&gt;</span><span class="ident">::AccountId</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::Balance</span>;
-<span class="doccomment">/// Type used to track the points of a reward pool.</span>
-<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">RewardPoints</span> <span class="op">=</span> <span class="ident">U256</span>;
 <span class="doccomment">/// Type used for unique identifier of each pool.</span>
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">PoolId</span> <span class="op">=</span> <span class="ident">u32</span>;
 
@@ -2879,26 +2862,50 @@
 	<span class="doccomment">/// The quantity of points this member has in the bonded pool or in a sub pool if</span>
 	<span class="doccomment">/// `Self::unbonding_era` is some.</span>
 	<span class="kw">pub</span> <span class="ident">points</span>: <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-	<span class="doccomment">/// The reward pools total earnings _ever_ the last time this member claimed a payout.</span>
-	<span class="doccomment">/// Assuming no massive burning events, we expect this value to always be below total issuance.</span>
-	<span class="doccomment">/// This value lines up with the [`RewardPool::total_earnings`] after a member claims a</span>
-	<span class="doccomment">/// payout.</span>
-	<span class="kw">pub</span> <span class="ident">reward_pool_total_earnings</span>: <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+	<span class="doccomment">/// The reward counter at the time of this member&#39;s last payout claim.</span>
+	<span class="kw">pub</span> <span class="ident">last_recorded_reward_counter</span>: <span class="ident">T::RewardCounter</span>,
 	<span class="doccomment">/// The eras in which this member is unbonding, mapped from era index to the number of</span>
 	<span class="doccomment">/// points scheduled to unbond in the given era.</span>
 	<span class="kw">pub</span> <span class="ident">unbonding_eras</span>: <span class="ident">BoundedBTreeMap</span><span class="op">&lt;</span><span class="ident">EraIndex</span>, <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">T::MaxUnbonding</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> <span class="ident">PoolMember</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-	<span class="kw">fn</span> <span class="ident">total_points</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-		<span class="self">self</span>.<span class="ident">active_points</span>().<span class="ident">saturating_add</span>(<span class="self">self</span>.<span class="ident">unbonding_points</span>())
+	<span class="doccomment">/// The pending rewards of this member.</span>
+	<span class="kw">fn</span> <span class="ident">pending_rewards</span>(
+		<span class="kw-2">&amp;</span><span class="self">self</span>,
+		<span class="ident">current_reward_counter</span>: <span class="ident">T::RewardCounter</span>,
+	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">Error</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+		<span class="comment">// accuracy note: Reward counters are `FixedU128` with base of 10^18. This value is being</span>
+		<span class="comment">// multiplied by a point. The worse case of a point is 10x the granularity of the balance</span>
+		<span class="comment">// (10x is the common configuration of `MaxPointsToBalance`).</span>
+		<span class="comment">//</span>
+		<span class="comment">// Assuming roughly the current issuance of polkadot (12,047,781,394,999,601,455, which is</span>
+		<span class="comment">// 1.2 * 10^9 * 10^10 = 1.2 * 10^19), the worse case point value is around 10^20.</span>
+		<span class="comment">//</span>
+		<span class="comment">// The final multiplication is:</span>
+		<span class="comment">//</span>
+		<span class="comment">// rc * 10^20 / 10^18 = rc * 100</span>
+		<span class="comment">//</span>
+		<span class="comment">// meaning that as long as reward_counter&#39;s value is less than 1/100th of its max capacity</span>
+		<span class="comment">// (u128::MAX_VALUE), `checked_mul_int` won&#39;t saturate.</span>
+		<span class="comment">//</span>
+		<span class="comment">// given the nature of reward counter being &#39;pending_rewards / pool_total_point&#39;, the only</span>
+		<span class="comment">// (unrealistic) way that super high values can be achieved is for a pool to suddenly</span>
+		<span class="comment">// receive massive rewards with a very very small amount of stake. In all normal pools, as</span>
+		<span class="comment">// the points increase, so does the rewards. Moreover, as long as rewards are not</span>
+		<span class="comment">// accumulated for astronomically large durations,</span>
+		<span class="comment">// `current_reward_counter.defensive_saturating_sub(self.last_recorded_reward_counter)`</span>
+		<span class="comment">// won&#39;t be extremely big.</span>
+		(<span class="ident">current_reward_counter</span>.<span class="ident">defensive_saturating_sub</span>(<span class="self">self</span>.<span class="ident">last_recorded_reward_counter</span>))
+			.<span class="ident">checked_mul_int</span>(<span class="self">self</span>.<span class="ident">active_points</span>())
+			.<span class="ident">ok_or</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::OverflowRisk</span>)
 	}
 
 	<span class="doccomment">/// Active balance of the member.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// This is derived from the ratio of points in the pool to which the member belongs to.</span>
 	<span class="doccomment">/// Might return different values based on the pool state for the same member and points.</span>
-	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">active_balance</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">active_balance</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
 		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">pool</span>) <span class="op">=</span> <span class="ident">BondedPool</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="self">self</span>.<span class="ident">pool_id</span>).<span class="ident">defensive</span>() {
 			<span class="ident">pool</span>.<span class="ident">points_to_balance</span>(<span class="self">self</span>.<span class="ident">points</span>)
 		} <span class="kw">else</span> {
@@ -2906,13 +2913,18 @@
 		}
 	}
 
+	<span class="doccomment">/// Total points of this member, both active and unbonding.</span>
+	<span class="kw">fn</span> <span class="ident">total_points</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+		<span class="self">self</span>.<span class="ident">active_points</span>().<span class="ident">saturating_add</span>(<span class="self">self</span>.<span class="ident">unbonding_points</span>())
+	}
+
 	<span class="doccomment">/// Active points of the member.</span>
-	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">active_points</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">active_points</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
 		<span class="self">self</span>.<span class="ident">points</span>
 	}
 
 	<span class="doccomment">/// Inactive points of the member, waiting to be withdrawn.</span>
-	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">unbonding_points</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">unbonding_points</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
 		<span class="self">self</span>.<span class="ident">unbonding_eras</span>
 			.<span class="ident">as_ref</span>()
 			.<span class="ident">iter</span>()
@@ -3145,7 +3157,7 @@
 			<span class="ident">MaxPoolMembers</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>().<span class="ident">map_or</span>(<span class="bool-val">true</span>, <span class="op">|</span><span class="ident">max</span><span class="op">|</span> <span class="ident">PoolMembers</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::count</span>() <span class="op">&lt;</span> <span class="ident">max</span>),
 			<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::MaxPoolMembers</span>
 		);
-		<span class="self">self</span>.<span class="ident">member_counter</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">member_counter</span>.<span class="ident">defensive_saturating_add</span>(<span class="number">1</span>);
+		<span class="self">self</span>.<span class="ident">member_counter</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">member_counter</span>.<span class="ident">checked_add</span>(<span class="number">1</span>).<span class="ident">ok_or</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::OverflowRisk</span>)<span class="question-mark">?</span>;
 		<span class="prelude-val">Ok</span>(())
 	}
 
@@ -3222,19 +3234,19 @@
 			<span class="comment">// We checked for zero above</span>
 			.<span class="ident">div</span>(<span class="ident">bonded_balance</span>);
 
-		<span class="kw">let</span> <span class="ident">min_points_to_balance</span> <span class="op">=</span> <span class="ident">T::MinPointsToBalance::get</span>();
+		<span class="kw">let</span> <span class="ident">max_points_to_balance</span> <span class="op">=</span> <span class="ident">T::MaxPointsToBalance::get</span>();
 
 		<span class="comment">// Pool points can inflate relative to balance, but only if the pool is slashed.</span>
 		<span class="comment">// If we cap the ratio of points:balance so one cannot join a pool that has been slashed</span>
-		<span class="comment">// by `min_points_to_balance`%, if not zero.</span>
+		<span class="comment">// by `max_points_to_balance`%, if not zero.</span>
 		<span class="macro">ensure!</span>(
-			<span class="ident">points_to_balance_ratio_floor</span> <span class="op">&lt;</span> <span class="ident">min_points_to_balance</span>.<span class="ident">into</span>(),
+			<span class="ident">points_to_balance_ratio_floor</span> <span class="op">&lt;</span> <span class="ident">max_points_to_balance</span>.<span class="ident">into</span>(),
 			<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::OverflowRisk</span>
 		);
-		<span class="comment">// while restricting the balance to `min_points_to_balance` of max total issuance,</span>
+		<span class="comment">// while restricting the balance to `max_points_to_balance` of max total issuance,</span>
 		<span class="kw">let</span> <span class="ident">next_bonded_balance</span> <span class="op">=</span> <span class="ident">bonded_balance</span>.<span class="ident">saturating_add</span>(<span class="ident">new_funds</span>);
 		<span class="macro">ensure!</span>(
-			<span class="ident">next_bonded_balance</span> <span class="op">&lt;</span> <span class="ident">BalanceOf</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::max_value</span>().<span class="ident">div</span>(<span class="ident">min_points_to_balance</span>.<span class="ident">into</span>()),
+			<span class="ident">next_bonded_balance</span> <span class="op">&lt;</span> <span class="ident">BalanceOf</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::max_value</span>().<span class="ident">div</span>(<span class="ident">max_points_to_balance</span>.<span class="ident">into</span>()),
 			<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::OverflowRisk</span>
 		);
 
@@ -3376,16 +3388,6 @@
 		<span class="prelude-val">Ok</span>(<span class="ident">points_issued</span>)
 	}
 
-	<span class="doccomment">/// If `n` saturates at it&#39;s upper bound, mark the pool as destroying. This is useful when a</span>
-	<span class="doccomment">/// number saturating indicates the pool can no longer correctly keep track of state.</span>
-	<span class="kw">fn</span> <span class="ident">bound_check</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">n</span>: <span class="ident">U256</span>) -&gt; <span class="ident">U256</span> {
-		<span class="kw">if</span> <span class="ident">n</span> <span class="op">==</span> <span class="ident">U256::max_value</span>() {
-			<span class="self">self</span>.<span class="ident">set_state</span>(<span class="ident">PoolState::Destroying</span>)
-		}
-
-		<span class="ident">n</span>
-	}
-
 	<span class="comment">// Set the state of `self`, and deposit an event if the state changed. State should never be set</span>
 	<span class="comment">// directly in in order to ensure a state change event is always correctly deposited.</span>
 	<span class="kw">fn</span> <span class="ident">set_state</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">state</span>: <span class="ident">PoolState</span>) {
@@ -3400,45 +3402,104 @@
 }
 
 <span class="doccomment">/// A reward pool.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// A reward pool is not so much a pool anymore, since it does not contain any shares or points.</span>
+<span class="doccomment">/// Rather, simply to fit nicely next to bonded pool and unbonding pools in terms of terminology. In</span>
+<span class="doccomment">/// reality, a reward pool is just a container for a few pool-dependent data related to the rewards.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Encode</span>, <span class="ident">Decode</span>, <span class="ident">MaxEncodedLen</span>, <span class="ident">TypeInfo</span>, <span class="ident">RuntimeDebugNoBound</span>)]</span>
-<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>, <span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">PartialEq</span>))]</span>
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>, <span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">PartialEq</span>, <span class="ident">DefaultNoBound</span>))]</span>
 <span class="attribute">#[<span class="ident">codec</span>(<span class="ident">mel_bound</span>(<span class="ident">T</span>: <span class="ident">Config</span>))]</span>
 <span class="attribute">#[<span class="ident">scale_info</span>(<span class="ident">skip_type_params</span>(<span class="ident">T</span>))]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">RewardPool</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> {
-	<span class="doccomment">/// The balance of this reward pool after the last claimed payout.</span>
-	<span class="kw">pub</span> <span class="ident">balance</span>: <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-	<span class="doccomment">/// The total earnings _ever_ of this reward pool after the last claimed payout. I.E. the sum</span>
-	<span class="doccomment">/// of all incoming balance through the pools life.</span>
+	<span class="doccomment">/// The last recorded value of the reward counter.</span>
 	<span class="doccomment">///</span>
-	<span class="doccomment">/// NOTE: We assume this will always be less than total issuance and thus can use the runtimes</span>
-	<span class="doccomment">/// `Balance` type. However in a chain with a burn rate higher than the rate this increases,</span>
-	<span class="doccomment">/// this type should be bigger than `Balance`.</span>
-	<span class="kw">pub</span> <span class="ident">total_earnings</span>: <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-	<span class="doccomment">/// The total points of this reward pool after the last claimed payout.</span>
-	<span class="kw">pub</span> <span class="ident">points</span>: <span class="ident">RewardPoints</span>,
+	<span class="doccomment">/// This is updated ONLY when the points in the bonded pool change, which means `join`,</span>
+	<span class="doccomment">/// `bond_extra` and `unbond`, all of which is done through `update_recorded`.</span>
+	<span class="ident">last_recorded_reward_counter</span>: <span class="ident">T::RewardCounter</span>,
+	<span class="doccomment">/// The last recorded total payouts of the reward pool.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Payouts is essentially income of the pool.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// Update criteria is same as that of `last_recorded_reward_counter`.</span>
+	<span class="ident">last_recorded_total_payouts</span>: <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+	<span class="doccomment">/// Total amount that this pool has paid out so far to the members.</span>
+	<span class="ident">total_rewards_claimed</span>: <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> <span class="ident">RewardPool</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-	<span class="doccomment">/// Mutate the reward pool by updating the total earnings and current free balance.</span>
-	<span class="kw">fn</span> <span class="ident">update_total_earnings_and_balance</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">id</span>: <span class="ident">PoolId</span>) {
-		<span class="kw">let</span> <span class="ident">current_balance</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::current_balance</span>(<span class="ident">id</span>);
-		<span class="comment">// The earnings since the last time it was updated</span>
-		<span class="kw">let</span> <span class="ident">new_earnings</span> <span class="op">=</span> <span class="ident">current_balance</span>.<span class="ident">saturating_sub</span>(<span class="self">self</span>.<span class="ident">balance</span>);
-		<span class="comment">// The lifetime earnings of the of the reward pool</span>
-		<span class="self">self</span>.<span class="ident">total_earnings</span> <span class="op">=</span> <span class="ident">new_earnings</span>.<span class="ident">saturating_add</span>(<span class="self">self</span>.<span class="ident">total_earnings</span>);
-		<span class="self">self</span>.<span class="ident">balance</span> <span class="op">=</span> <span class="ident">current_balance</span>;
+	<span class="doccomment">/// Getter for [`RewardPool::last_recorded_reward_counter`].</span>
+	<span class="kw">fn</span> <span class="ident">last_recorded_reward_counter</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">T::RewardCounter</span> {
+		<span class="self">self</span>.<span class="ident">last_recorded_reward_counter</span>
 	}
 
-	<span class="doccomment">/// Get a reward pool and update its total earnings and balance</span>
-	<span class="kw">fn</span> <span class="ident">get_and_update</span>(<span class="ident">id</span>: <span class="ident">PoolId</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
-		<span class="ident">RewardPools</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">id</span>).<span class="ident">map</span>(<span class="op">|</span><span class="kw-2">mut</span> <span class="ident">r</span><span class="op">|</span> {
-			<span class="ident">r</span>.<span class="ident">update_total_earnings_and_balance</span>(<span class="ident">id</span>);
-			<span class="ident">r</span>
-		})
+	<span class="doccomment">/// Register some rewards that are claimed from the pool by the members.</span>
+	<span class="kw">fn</span> <span class="ident">register_claimed_reward</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">reward</span>: <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) {
+		<span class="self">self</span>.<span class="ident">total_rewards_claimed</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">total_rewards_claimed</span>.<span class="ident">saturating_add</span>(<span class="ident">reward</span>);
 	}
 
-	<span class="doccomment">/// The current balance of the reward pool. Never access the reward pools free balance directly.</span>
-	<span class="doccomment">/// The existential deposit was not received as a reward, so the reward pool can not use it.</span>
+	<span class="doccomment">/// Update the recorded values of the pool.</span>
+	<span class="kw">fn</span> <span class="ident">update_records</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">id</span>: <span class="ident">PoolId</span>, <span class="ident">bonded_points</span>: <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+		<span class="kw">let</span> <span class="ident">balance</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::current_balance</span>(<span class="ident">id</span>);
+		<span class="self">self</span>.<span class="ident">last_recorded_reward_counter</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">current_reward_counter</span>(<span class="ident">id</span>, <span class="ident">bonded_points</span>)<span class="question-mark">?</span>;
+		<span class="self">self</span>.<span class="ident">last_recorded_total_payouts</span> <span class="op">=</span> <span class="ident">balance</span>
+			.<span class="ident">checked_add</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">total_rewards_claimed</span>)
+			.<span class="ident">ok_or</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::OverflowRisk</span>)<span class="question-mark">?</span>;
+		<span class="prelude-val">Ok</span>(())
+	}
+
+	<span class="doccomment">/// Get the current reward counter, based on the given `bonded_points` being the state of the</span>
+	<span class="doccomment">/// bonded pool at this time.</span>
+	<span class="kw">fn</span> <span class="ident">current_reward_counter</span>(
+		<span class="kw-2">&amp;</span><span class="self">self</span>,
+		<span class="ident">id</span>: <span class="ident">PoolId</span>,
+		<span class="ident">bonded_points</span>: <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T::RewardCounter</span>, <span class="ident">Error</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+		<span class="kw">let</span> <span class="ident">balance</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::current_balance</span>(<span class="ident">id</span>);
+		<span class="kw">let</span> <span class="ident">payouts_since_last_record</span> <span class="op">=</span> <span class="ident">balance</span>
+			.<span class="ident">saturating_add</span>(<span class="self">self</span>.<span class="ident">total_rewards_claimed</span>)
+			.<span class="ident">saturating_sub</span>(<span class="self">self</span>.<span class="ident">last_recorded_total_payouts</span>);
+
+		<span class="comment">// * accuracy notes regarding the multiplication in `checked_from_rational`:</span>
+		<span class="comment">// `payouts_since_last_record` is a subset of the total_issuance at the very</span>
+		<span class="comment">// worse. `bonded_points` are similarly, in a non-slashed pool, have the same granularity as</span>
+		<span class="comment">// balance, and are thus below within the range of total_issuance. In the worse case</span>
+		<span class="comment">// scenario, for `saturating_from_rational`, we have:</span>
+		<span class="comment">//</span>
+		<span class="comment">// dot_total_issuance * 10^18 / `minJoinBond`</span>
+		<span class="comment">//</span>
+		<span class="comment">// assuming `MinJoinBond == ED`</span>
+		<span class="comment">//</span>
+		<span class="comment">// dot_total_issuance * 10^18 / 10^10 = dot_total_issuance * 10^8</span>
+		<span class="comment">//</span>
+		<span class="comment">// which, with the current numbers, is a miniscule fraction of the u128 capacity.</span>
+		<span class="comment">//</span>
+		<span class="comment">// Thus, adding two values of type reward counter should be safe for ages in a chain like</span>
+		<span class="comment">// Polkadot. The important note here is that `reward_pool.last_recorded_reward_counter` only</span>
+		<span class="comment">// ever accumulates, but its semantics imply that it is less than total_issuance, when</span>
+		<span class="comment">// represented as `FixedU128`, which means it is less than `total_issuance * 10^18`.</span>
+		<span class="comment">//</span>
+		<span class="comment">// * accuracy notes regarding `checked_from_rational` collapsing to zero, meaning that no</span>
+		<span class="comment">// reward can be claimed:</span>
+		<span class="comment">//</span>
+		<span class="comment">// largest `bonded_points`, such that the reward counter is non-zero, with `FixedU128`</span>
+		<span class="comment">// will be when the payout is being computed. This essentially means `payout/bonded_points`</span>
+		<span class="comment">// needs to be more than 1/1^18. Thus, assuming that `bonded_points` will always be less</span>
+		<span class="comment">// than `10 * dot_total_issuance`, if the reward_counter is the smallest possible value,</span>
+		<span class="comment">// the value of the reward being calculated is:</span>
+		<span class="comment">//</span>
+		<span class="comment">// x / 10^20 = 1/ 10^18</span>
+		<span class="comment">//</span>
+		<span class="comment">// x = 100</span>
+		<span class="comment">//</span>
+		<span class="comment">// which is basically 10^-8 DOTs. See `smallest_claimable_reward` for an example of this.</span>
+		<span class="ident">T::RewardCounter::checked_from_rational</span>(<span class="ident">payouts_since_last_record</span>, <span class="ident">bonded_points</span>)
+			.<span class="ident">and_then</span>(<span class="op">|</span><span class="kw-2">ref</span> <span class="ident">r</span><span class="op">|</span> <span class="self">self</span>.<span class="ident">last_recorded_reward_counter</span>.<span class="ident">checked_add</span>(<span class="ident">r</span>))
+			.<span class="ident">ok_or</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::OverflowRisk</span>)
+	}
+
+	<span class="doccomment">/// Current free balance of the reward pool.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// This is sum of all the rewards that are claimable by pool members.</span>
 	<span class="kw">fn</span> <span class="ident">current_balance</span>(<span class="ident">id</span>: <span class="ident">PoolId</span>) -&gt; <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
 		<span class="ident">T::Currency::free_balance</span>(<span class="kw-2">&amp;</span><span class="ident">Pallet</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::create_reward_account</span>(<span class="ident">id</span>))
 			.<span class="ident">saturating_sub</span>(<span class="ident">T::Currency::minimum_balance</span>())
@@ -3570,9 +3631,10 @@
 	<span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
 	<span class="kw">use</span> <span class="ident">frame_support::traits::StorageVersion</span>;
 	<span class="kw">use</span> <span class="ident">frame_system</span>::{<span class="ident">ensure_signed</span>, <span class="ident">pallet_prelude</span>::<span class="kw-2">*</span>};
+	<span class="kw">use</span> <span class="ident">sp_runtime::traits::CheckedAdd</span>;
 
 	<span class="doccomment">/// The current storage version.</span>
-	<span class="kw">const</span> <span class="ident">STORAGE_VERSION</span>: <span class="ident">StorageVersion</span> <span class="op">=</span> <span class="ident">StorageVersion::new</span>(<span class="number">1</span>);
+	<span class="kw">const</span> <span class="ident">STORAGE_VERSION</span>: <span class="ident">StorageVersion</span> <span class="op">=</span> <span class="ident">StorageVersion::new</span>(<span class="number">2</span>);
 
 	<span class="attribute">#[<span class="ident">pallet::pallet</span>]</span>
 	<span class="attribute">#[<span class="ident">pallet::generate_store</span>(<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">trait</span> <span class="ident">Store</span>)]</span>
@@ -3588,19 +3650,53 @@
 		<span class="kw">type</span> <span class="ident">WeightInfo</span>: <span class="ident">weights::WeightInfo</span>;
 
 		<span class="doccomment">/// The nominating balance.</span>
-		<span class="kw">type</span> <span class="ident">Currency</span>: <span class="ident">Currency</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::AccountId</span><span class="op">&gt;</span>;
+		<span class="kw">type</span> <span class="ident">Currency</span>: <span class="ident">Currency</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::AccountId</span>, <span class="ident">Balance</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::CurrencyBalance</span><span class="op">&gt;</span>;
+
+		<span class="doccomment">/// Sadly needed to bound it to `FixedPointOperand`.</span>
+		<span class="comment">// The only alternative is to sprinkle a `where BalanceOf&lt;T&gt;: FixedPointOperand` in roughly</span>
+		<span class="comment">// a million places, so we prefer doing this.</span>
+		<span class="kw">type</span> <span class="ident">CurrencyBalance</span>: <span class="ident">sp_runtime::traits::AtLeast32BitUnsigned</span>
+			<span class="op">+</span> <span class="ident">codec::FullCodec</span>
+			<span class="op">+</span> <span class="ident">MaybeSerializeDeserialize</span>
+			<span class="op">+</span> <span class="ident">sp_std::fmt::Debug</span>
+			<span class="op">+</span> <span class="ident">Default</span>
+			<span class="op">+</span> <span class="ident">FixedPointOperand</span>
+			<span class="op">+</span> <span class="ident">CheckedAdd</span>
+			<span class="op">+</span> <span class="ident">TypeInfo</span>
+			<span class="op">+</span> <span class="ident">MaxEncodedLen</span>;
+
+		<span class="doccomment">/// The type that is used for reward counter.</span>
+		<span class="doccomment">///</span>
+		<span class="doccomment">/// The arithmetic of the reward counter might saturate based on the size of the</span>
+		<span class="doccomment">/// `Currency::Balance`. If this happens, operations fails. Nonetheless, this type should be</span>
+		<span class="doccomment">/// chosen such that this failure almost never happens, as if it happens, the pool basically</span>
+		<span class="doccomment">/// needs to be dismantled (or all pools migrated to a larger `RewardCounter` type, which is</span>
+		<span class="doccomment">/// a PITA to do).</span>
+		<span class="doccomment">///</span>
+		<span class="doccomment">/// See the inline code docs of `Member::pending_rewards` and `RewardPool::update_recorded`</span>
+		<span class="doccomment">/// for example analysis. A [`sp_runtime::FixedU128`] should be fine for chains with balance</span>
+		<span class="doccomment">/// types similar to that of Polkadot and Kusama, in the absence of severe slashing (or</span>
+		<span class="doccomment">/// prevented via a reasonable `MaxPointsToBalance`), for many many years to come.</span>
+		<span class="kw">type</span> <span class="ident">RewardCounter</span>: <span class="ident">FixedPointNumber</span> <span class="op">+</span> <span class="ident">MaxEncodedLen</span> <span class="op">+</span> <span class="ident">TypeInfo</span> <span class="op">+</span> <span class="ident">Default</span> <span class="op">+</span> <span class="ident">codec::FullCodec</span>;
 
 		<span class="doccomment">/// The nomination pool&#39;s pallet id.</span>
 		<span class="attribute">#[<span class="ident">pallet::constant</span>]</span>
 		<span class="kw">type</span> <span class="ident">PalletId</span>: <span class="ident">Get</span><span class="op">&lt;</span><span class="ident">frame_support::PalletId</span><span class="op">&gt;</span>;
 
-		<span class="doccomment">/// The minimum pool points-to-balance ratio that must be maintained for it to be `open`.</span>
+		<span class="doccomment">/// The maximum pool points-to-balance ratio that an `open` pool can have.</span>
+		<span class="doccomment">///</span>
 		<span class="doccomment">/// This is important in the event slashing takes place and the pool&#39;s points-to-balance</span>
 		<span class="doccomment">/// ratio becomes disproportional.</span>
+		<span class="doccomment">///</span>
+		<span class="doccomment">/// Moreover, this relates to the `RewardCounter` type as well, as the arithmetic operations</span>
+		<span class="doccomment">/// are a function of number of points, and by setting this value to e.g. 10, you ensure</span>
+		<span class="doccomment">/// that the total number of points in the system are at most 10 times the total_issuance of</span>
+		<span class="doccomment">/// the chain, in the absolute worse case.</span>
+		<span class="doccomment">///</span>
 		<span class="doccomment">/// For a value of 10, the threshold would be a pool points-to-balance ratio of 10:1.</span>
 		<span class="doccomment">/// Such a scenario would also be the equivalent of the pool being 90% slashed.</span>
 		<span class="attribute">#[<span class="ident">pallet::constant</span>]</span>
-		<span class="kw">type</span> <span class="ident">MinPointsToBalance</span>: <span class="ident">Get</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>;
+		<span class="kw">type</span> <span class="ident">MaxPointsToBalance</span>: <span class="ident">Get</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>;
 
 		<span class="doccomment">/// Infallible method for converting `Currency::Balance` to `U256`.</span>
 		<span class="kw">type</span> <span class="ident">BalanceToU256</span>: <span class="ident">Convert</span><span class="op">&lt;</span><span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>, <span class="ident">U256</span><span class="op">&gt;</span>;
@@ -3884,6 +3980,7 @@
 		<span class="doccomment">///   `existential deposit + amount` in their account.</span>
 		<span class="doccomment">/// * Only a pool with [`PoolState::Open`] can be joined</span>
 		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::join</span>())]</span>
+		<span class="attribute">#[<span class="ident">transactional</span>]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">join</span>(
 			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 			<span class="attribute">#[<span class="ident">pallet::compact</span>]</span> <span class="ident">amount</span>: <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
@@ -3898,10 +3995,10 @@
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">bonded_pool</span> <span class="op">=</span> <span class="ident">BondedPool</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">pool_id</span>).<span class="ident">ok_or</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::PoolNotFound</span>)<span class="question-mark">?</span>;
 			<span class="ident">bonded_pool</span>.<span class="ident">ok_to_join</span>(<span class="ident">amount</span>)<span class="question-mark">?</span>;
 
-			<span class="comment">// We just need its total earnings at this point in time, but we don&#39;t need to write it</span>
-			<span class="comment">// because we are not adjusting its points (all other values can calculated virtual).</span>
-			<span class="kw">let</span> <span class="ident">reward_pool</span> <span class="op">=</span> <span class="ident">RewardPool</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get_and_update</span>(<span class="ident">pool_id</span>)
+			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">reward_pool</span> <span class="op">=</span> <span class="ident">RewardPools</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">pool_id</span>)
 				.<span class="ident">defensive_ok_or</span>::<span class="op">&lt;</span><span class="ident">Error</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="ident">DefensiveError::RewardPoolNotFound</span>.<span class="ident">into</span>())<span class="question-mark">?</span>;
+			<span class="comment">// IMPORTANT: reward pool records must be updated with the old points.</span>
+			<span class="ident">reward_pool</span>.<span class="ident">update_records</span>(<span class="ident">pool_id</span>, <span class="ident">bonded_pool</span>.<span class="ident">points</span>)<span class="question-mark">?</span>;
 
 			<span class="ident">bonded_pool</span>.<span class="ident">try_inc_members</span>()<span class="question-mark">?</span>;
 			<span class="kw">let</span> <span class="ident">points_issued</span> <span class="op">=</span> <span class="ident">bonded_pool</span>.<span class="ident">try_bond_funds</span>(<span class="kw-2">&amp;</span><span class="ident">who</span>, <span class="ident">amount</span>, <span class="ident">BondType::Later</span>)<span class="question-mark">?</span>;
@@ -3911,13 +4008,9 @@
 				<span class="ident">PoolMember</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
 					<span class="ident">pool_id</span>,
 					<span class="ident">points</span>: <span class="ident">points_issued</span>,
-					<span class="comment">// At best the reward pool has the rewards up through the previous era. If the</span>
-					<span class="comment">// member joins prior to the snapshot they will benefit from the rewards of</span>
-					<span class="comment">// the active era despite not contributing to the pool&#39;s vote weight. If they</span>
-					<span class="comment">// join after the snapshot is taken they will benefit from the rewards of the</span>
-					<span class="comment">// next 2 eras because their vote weight will not be counted until the</span>
-					<span class="comment">// snapshot in active era + 1.</span>
-					<span class="ident">reward_pool_total_earnings</span>: <span class="ident">reward_pool</span>.<span class="ident">total_earnings</span>,
+					<span class="comment">// we just updated `last_known_reward_counter` to the current one in</span>
+					<span class="comment">// `update_recorded`.</span>
+					<span class="ident">last_recorded_reward_counter</span>: <span class="ident">reward_pool</span>.<span class="ident">last_recorded_reward_counter</span>(),
 					<span class="ident">unbonding_eras</span>: <span class="ident">Default::default</span>(),
 				},
 			);
@@ -3928,7 +4021,9 @@
 				<span class="ident">bonded</span>: <span class="ident">amount</span>,
 				<span class="ident">joined</span>: <span class="bool-val">true</span>,
 			});
+
 			<span class="ident">bonded_pool</span>.<span class="ident">put</span>();
+			<span class="ident">RewardPools</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">pool_id</span>, <span class="ident">reward_pool</span>);
 
 			<span class="prelude-val">Ok</span>(())
 		}
@@ -3937,6 +4032,8 @@
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Additional funds can come from either the free balance of the account, of from the</span>
 		<span class="doccomment">/// accumulated rewards, see [`BondExtra`].</span>
+		<span class="doccomment">///</span>
+		<span class="doccomment">/// Bonding extra funds implies an automatic payout of all pending rewards as well.</span>
 		<span class="comment">// NOTE: this transaction is implemented with the sole purpose of readability and</span>
 		<span class="comment">// correctness, not optimization. We read/write several storage items multiple times instead</span>
 		<span class="comment">// of just once, in the spirit reusing code.</span>
@@ -3944,23 +4041,28 @@
 			<span class="ident">T::WeightInfo::bond_extra_transfer</span>()
 			.<span class="ident">max</span>(<span class="ident">T::WeightInfo::bond_extra_reward</span>())
 		)]</span>
+		<span class="attribute">#[<span class="ident">transactional</span>]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">bond_extra</span>(<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">extra</span>: <span class="ident">BondExtra</span><span class="op">&lt;</span><span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>) -&gt; <span class="ident">DispatchResult</span> {
 			<span class="kw">let</span> <span class="ident">who</span> <span class="op">=</span> <span class="ident">ensure_signed</span>(<span class="ident">origin</span>)<span class="question-mark">?</span>;
 			<span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">member</span>, <span class="kw-2">mut</span> <span class="ident">bonded_pool</span>, <span class="kw-2">mut</span> <span class="ident">reward_pool</span>) <span class="op">=</span> <span class="ident"><span class="self">Self</span>::get_member_with_pools</span>(<span class="kw-2">&amp;</span><span class="ident">who</span>)<span class="question-mark">?</span>;
 
+			<span class="comment">// payout related stuff: we must claim the payouts, and updated recorded payout data</span>
+			<span class="comment">// before updating the bonded pool points, similar to that of `join` transaction.</span>
+			<span class="ident">reward_pool</span>.<span class="ident">update_records</span>(<span class="ident">bonded_pool</span>.<span class="ident">id</span>, <span class="ident">bonded_pool</span>.<span class="ident">points</span>)<span class="question-mark">?</span>;
+			<span class="comment">// TODO: optimize this to not touch the free balance of `who ` at all in benchmarks.</span>
+			<span class="comment">// Currently, bonding rewards is like a batch. In the same PR, also make this function</span>
+			<span class="comment">// take a boolean argument that make it either 100% pure (no storage update), or make it</span>
+			<span class="comment">// also emit event and do the transfer. #11671</span>
+			<span class="kw">let</span> <span class="ident">claimed</span> <span class="op">=</span>
+				<span class="ident"><span class="self">Self</span>::do_reward_payout</span>(<span class="kw-2">&amp;</span><span class="ident">who</span>, <span class="kw-2">&amp;mut</span> <span class="ident">member</span>, <span class="kw-2">&amp;mut</span> <span class="ident">bonded_pool</span>, <span class="kw-2">&amp;mut</span> <span class="ident">reward_pool</span>)<span class="question-mark">?</span>;
+
 			<span class="kw">let</span> (<span class="ident">points_issued</span>, <span class="ident">bonded</span>) <span class="op">=</span> <span class="kw">match</span> <span class="ident">extra</span> {
 				<span class="ident">BondExtra::FreeBalance</span>(<span class="ident">amount</span>) =&gt;
 					(<span class="ident">bonded_pool</span>.<span class="ident">try_bond_funds</span>(<span class="kw-2">&amp;</span><span class="ident">who</span>, <span class="ident">amount</span>, <span class="ident">BondType::Later</span>)<span class="question-mark">?</span>, <span class="ident">amount</span>),
-				<span class="ident">BondExtra::Rewards</span> =&gt; {
-					<span class="kw">let</span> <span class="ident">claimed</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::do_reward_payout</span>(
-						<span class="kw-2">&amp;</span><span class="ident">who</span>,
-						<span class="kw-2">&amp;mut</span> <span class="ident">member</span>,
-						<span class="kw-2">&amp;mut</span> <span class="ident">bonded_pool</span>,
-						<span class="kw-2">&amp;mut</span> <span class="ident">reward_pool</span>,
-					)<span class="question-mark">?</span>;
-					(<span class="ident">bonded_pool</span>.<span class="ident">try_bond_funds</span>(<span class="kw-2">&amp;</span><span class="ident">who</span>, <span class="ident">claimed</span>, <span class="ident">BondType::Later</span>)<span class="question-mark">?</span>, <span class="ident">claimed</span>)
-				},
+				<span class="ident">BondExtra::Rewards</span> =&gt;
+					(<span class="ident">bonded_pool</span>.<span class="ident">try_bond_funds</span>(<span class="kw-2">&amp;</span><span class="ident">who</span>, <span class="ident">claimed</span>, <span class="ident">BondType::Later</span>)<span class="question-mark">?</span>, <span class="ident">claimed</span>),
 			};
+
 			<span class="ident">bonded_pool</span>.<span class="ident">ok_to_be_open</span>(<span class="ident">bonded</span>)<span class="question-mark">?</span>;
 			<span class="ident">member</span>.<span class="ident">points</span> <span class="op">=</span> <span class="ident">member</span>.<span class="ident">points</span>.<span class="ident">saturating_add</span>(<span class="ident">points_issued</span>);
 
@@ -3982,6 +4084,7 @@
 		<span class="doccomment">/// The member will earn rewards pro rata based on the members stake vs the sum of the</span>
 		<span class="doccomment">/// members in the pools stake. Rewards do not &quot;expire&quot;.</span>
 		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::claim_payout</span>())]</span>
+		<span class="attribute">#[<span class="ident">transactional</span>]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">claim_payout</span>(<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) -&gt; <span class="ident">DispatchResult</span> {
 			<span class="kw">let</span> <span class="ident">who</span> <span class="op">=</span> <span class="ident">ensure_signed</span>(<span class="ident">origin</span>)<span class="question-mark">?</span>;
 			<span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">member</span>, <span class="kw-2">mut</span> <span class="ident">bonded_pool</span>, <span class="kw-2">mut</span> <span class="ident">reward_pool</span>) <span class="op">=</span> <span class="ident"><span class="self">Self</span>::get_member_with_pools</span>(<span class="kw-2">&amp;</span><span class="ident">who</span>)<span class="question-mark">?</span>;
@@ -4021,26 +4124,23 @@
 		<span class="doccomment">/// there are too many unlocking chunks, the result of this call will likely be the</span>
 		<span class="doccomment">/// `NoMoreChunks` error from the staking system.</span>
 		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::unbond</span>())]</span>
+		<span class="attribute">#[<span class="ident">transactional</span>]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">unbond</span>(
 			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 			<span class="ident">member_account</span>: <span class="ident">T::AccountId</span>,
 			<span class="attribute">#[<span class="ident">pallet::compact</span>]</span> <span class="ident">unbonding_points</span>: <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 		) -&gt; <span class="ident">DispatchResult</span> {
-			<span class="kw">let</span> <span class="ident">caller</span> <span class="op">=</span> <span class="ident">ensure_signed</span>(<span class="ident">origin</span>)<span class="question-mark">?</span>;
+			<span class="kw">let</span> <span class="ident">who</span> <span class="op">=</span> <span class="ident">ensure_signed</span>(<span class="ident">origin</span>)<span class="question-mark">?</span>;
 			<span class="kw">let</span> (<span class="kw-2">mut</span> <span class="ident">member</span>, <span class="kw-2">mut</span> <span class="ident">bonded_pool</span>, <span class="kw-2">mut</span> <span class="ident">reward_pool</span>) <span class="op">=</span>
 				<span class="ident"><span class="self">Self</span>::get_member_with_pools</span>(<span class="kw-2">&amp;</span><span class="ident">member_account</span>)<span class="question-mark">?</span>;
 
-			<span class="ident">bonded_pool</span>.<span class="ident">ok_to_unbond_with</span>(<span class="kw-2">&amp;</span><span class="ident">caller</span>, <span class="kw-2">&amp;</span><span class="ident">member_account</span>, <span class="kw-2">&amp;</span><span class="ident">member</span>, <span class="ident">unbonding_points</span>)<span class="question-mark">?</span>;
+			<span class="ident">bonded_pool</span>.<span class="ident">ok_to_unbond_with</span>(<span class="kw-2">&amp;</span><span class="ident">who</span>, <span class="kw-2">&amp;</span><span class="ident">member_account</span>, <span class="kw-2">&amp;</span><span class="ident">member</span>, <span class="ident">unbonding_points</span>)<span class="question-mark">?</span>;
 
 			<span class="comment">// Claim the the payout prior to unbonding. Once the user is unbonding their points no</span>
 			<span class="comment">// longer exist in the bonded pool and thus they can no longer claim their payouts. It</span>
 			<span class="comment">// is not strictly necessary to claim the rewards, but we do it here for UX.</span>
-			<span class="ident"><span class="self">Self</span>::do_reward_payout</span>(
-				<span class="kw-2">&amp;</span><span class="ident">member_account</span>,
-				<span class="kw-2">&amp;mut</span> <span class="ident">member</span>,
-				<span class="kw-2">&amp;mut</span> <span class="ident">bonded_pool</span>,
-				<span class="kw-2">&amp;mut</span> <span class="ident">reward_pool</span>,
-			)<span class="question-mark">?</span>;
+			<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">reward_pool</span>.<span class="ident">update_records</span>(<span class="ident">bonded_pool</span>.<span class="ident">id</span>, <span class="ident">bonded_pool</span>.<span class="ident">points</span>)<span class="question-mark">?</span>;
+			<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::do_reward_payout</span>(<span class="kw-2">&amp;</span><span class="ident">who</span>, <span class="kw-2">&amp;mut</span> <span class="ident">member</span>, <span class="kw-2">&amp;mut</span> <span class="ident">bonded_pool</span>, <span class="kw-2">&amp;mut</span> <span class="ident">reward_pool</span>)<span class="question-mark">?</span>;
 
 			<span class="kw">let</span> <span class="ident">current_era</span> <span class="op">=</span> <span class="ident">T::StakingInterface::current_era</span>();
 			<span class="kw">let</span> <span class="ident">unbond_era</span> <span class="op">=</span> <span class="ident">T::StakingInterface::bonding_duration</span>().<span class="ident">saturating_add</span>(<span class="ident">current_era</span>);
@@ -4098,6 +4198,7 @@
 		<span class="doccomment">/// would probably see an error like `NoMoreChunks` emitted from the staking system when</span>
 		<span class="doccomment">/// they attempt to unbond.</span>
 		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::pool_withdraw_unbonded</span>(<span class="kw-2">*</span><span class="ident">num_slashing_spans</span>))]</span>
+		<span class="attribute">#[<span class="ident">transactional</span>]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">pool_withdraw_unbonded</span>(
 			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 			<span class="ident">pool_id</span>: <span class="ident">PoolId</span>,
@@ -4134,6 +4235,7 @@
 		<span class="attribute">#[<span class="ident">pallet::weight</span>(
 			<span class="ident">T::WeightInfo::withdraw_unbonded_kill</span>(<span class="kw-2">*</span><span class="ident">num_slashing_spans</span>)
 		)]</span>
+		<span class="attribute">#[<span class="ident">transactional</span>]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">withdraw_unbonded</span>(
 			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 			<span class="ident">member_account</span>: <span class="ident">T::AccountId</span>,
@@ -4259,6 +4361,7 @@
 		<span class="doccomment">/// In addition to `amount`, the caller will transfer the existential deposit; so the caller</span>
 		<span class="doccomment">/// needs at have at least `amount + existential_deposit` transferrable.</span>
 		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::create</span>())]</span>
+		<span class="attribute">#[<span class="ident">transactional</span>]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">create</span>(
 			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 			<span class="attribute">#[<span class="ident">pallet::compact</span>]</span> <span class="ident">amount</span>: <span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
@@ -4311,23 +4414,25 @@
 				<span class="ident">PoolMember</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
 					<span class="ident">pool_id</span>,
 					<span class="ident">points</span>,
-					<span class="ident">reward_pool_total_earnings</span>: <span class="ident">Zero::zero</span>(),
+					<span class="ident">last_recorded_reward_counter</span>: <span class="ident">Zero::zero</span>(),
 					<span class="ident">unbonding_eras</span>: <span class="ident">Default::default</span>(),
 				},
 			);
 			<span class="ident">RewardPools</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::insert</span>(
 				<span class="ident">pool_id</span>,
 				<span class="ident">RewardPool</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-					<span class="ident">balance</span>: <span class="ident">Zero::zero</span>(),
-					<span class="ident">points</span>: <span class="ident">U256::zero</span>(),
-					<span class="ident">total_earnings</span>: <span class="ident">Zero::zero</span>(),
+					<span class="ident">last_recorded_reward_counter</span>: <span class="ident">Zero::zero</span>(),
+					<span class="ident">last_recorded_total_payouts</span>: <span class="ident">Zero::zero</span>(),
+					<span class="ident">total_rewards_claimed</span>: <span class="ident">Zero::zero</span>(),
 				},
 			);
 			<span class="ident">ReversePoolIdLookup</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::insert</span>(<span class="ident">bonded_pool</span>.<span class="ident">bonded_account</span>(), <span class="ident">pool_id</span>);
+
 			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::Created</span> {
 				<span class="ident">depositor</span>: <span class="ident">who</span>.<span class="ident">clone</span>(),
 				<span class="ident">pool_id</span>: <span class="ident">pool_id</span>.<span class="ident">clone</span>(),
 			});
+
 			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::Bonded</span> {
 				<span class="ident">member</span>: <span class="ident">who</span>,
 				<span class="ident">pool_id</span>,
@@ -4347,6 +4452,7 @@
 		<span class="doccomment">/// This directly forward the call to the staking pallet, on behalf of the pool bonded</span>
 		<span class="doccomment">/// account.</span>
 		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::nominate</span>(<span class="ident">validators</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span>))]</span>
+		<span class="attribute">#[<span class="ident">transactional</span>]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">nominate</span>(
 			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 			<span class="ident">pool_id</span>: <span class="ident">PoolId</span>,
@@ -4360,9 +4466,16 @@
 
 		<span class="doccomment">/// Set a new state for the pool.</span>
 		<span class="doccomment">///</span>
-		<span class="doccomment">/// The dispatch origin of this call must be signed by the state toggler, or the root role</span>
-		<span class="doccomment">/// of the pool.</span>
+		<span class="doccomment">/// If a pool is already in the `Destroying` state, then under no condition can its state</span>
+		<span class="doccomment">/// change again.</span>
+		<span class="doccomment">///</span>
+		<span class="doccomment">/// The dispatch origin of this call must be either:</span>
+		<span class="doccomment">///</span>
+		<span class="doccomment">/// 1. signed by the state toggler, or the root role of the pool,</span>
+		<span class="doccomment">/// 2. if the pool conditions to be open are NOT met (as described by `ok_to_be_open`), and</span>
+		<span class="doccomment">///    then the state of the pool can be permissionlessly changed to `Destroying`.</span>
 		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::set_state</span>())]</span>
+		<span class="attribute">#[<span class="ident">transactional</span>]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_state</span>(
 			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 			<span class="ident">pool_id</span>: <span class="ident">PoolId</span>,
@@ -4393,6 +4506,7 @@
 		<span class="doccomment">/// The dispatch origin of this call must be signed by the state toggler, or the root role</span>
 		<span class="doccomment">/// of the pool.</span>
 		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::set_metadata</span>(<span class="ident">metadata</span>.<span class="ident">len</span>() <span class="kw">as</span> <span class="ident">u32</span>))]</span>
+		<span class="attribute">#[<span class="ident">transactional</span>]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_metadata</span>(
 			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 			<span class="ident">pool_id</span>: <span class="ident">PoolId</span>,
@@ -4424,6 +4538,7 @@
 		<span class="doccomment">/// * `max_members` - Set [`MaxPoolMembers`].</span>
 		<span class="doccomment">/// * `max_members_per_pool` - Set [`MaxPoolMembersPerPool`].</span>
 		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::set_configs</span>())]</span>
+		<span class="attribute">#[<span class="ident">transactional</span>]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_configs</span>(
 			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 			<span class="ident">min_join_bond</span>: <span class="ident">ConfigOp</span><span class="op">&lt;</span><span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>,
@@ -4460,6 +4575,7 @@
 		<span class="doccomment">/// It emits an event, notifying UIs of the role change. This event is quite relevant to</span>
 		<span class="doccomment">/// most pool members and they should be informed of changes to pool roles.</span>
 		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::update_roles</span>())]</span>
+		<span class="attribute">#[<span class="ident">transactional</span>]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">update_roles</span>(
 			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 			<span class="ident">pool_id</span>: <span class="ident">PoolId</span>,
@@ -4512,6 +4628,7 @@
 		<span class="doccomment">/// This directly forward the call to the staking pallet, on behalf of the pool bonded</span>
 		<span class="doccomment">/// account.</span>
 		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">T::WeightInfo::chill</span>())]</span>
+		<span class="attribute">#[<span class="ident">transactional</span>]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">chill</span>(<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">pool_id</span>: <span class="ident">PoolId</span>) -&gt; <span class="ident">DispatchResult</span> {
 			<span class="kw">let</span> <span class="ident">who</span> <span class="op">=</span> <span class="ident">ensure_signed</span>(<span class="ident">origin</span>)<span class="question-mark">?</span>;
 			<span class="kw">let</span> <span class="ident">bonded_pool</span> <span class="op">=</span> <span class="ident">BondedPool</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(<span class="ident">pool_id</span>).<span class="ident">ok_or</span>(<span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::PoolNotFound</span>)<span class="question-mark">?</span>;
@@ -4524,13 +4641,8 @@
 	<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> <span class="ident">Hooks</span><span class="op">&lt;</span><span class="ident">BlockNumberFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Pallet</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
 		<span class="kw">fn</span> <span class="ident">integrity_test</span>() {
 			<span class="macro">assert!</span>(
-				<span class="ident">T::MinPointsToBalance::get</span>() <span class="op">&gt;</span> <span class="number">0</span>,
+				<span class="ident">T::MaxPointsToBalance::get</span>() <span class="op">&gt;</span> <span class="number">0</span>,
 				<span class="string">&quot;Minimum points to balance ratio must be greater than 0&quot;</span>
-			);
-			<span class="macro">assert!</span>(
-				<span class="ident">sp_std::mem::size_of</span>::<span class="op">&lt;</span><span class="ident">RewardPoints</span><span class="op">&gt;</span>() <span class="op">&gt;</span><span class="op">=</span>
-					<span class="number">2</span> <span class="op">*</span> <span class="ident">sp_std::mem::size_of</span>::<span class="op">&lt;</span><span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>(),
-				<span class="string">&quot;bit-length of the reward points must be at least twice as much as balance&quot;</span>
 			);
 			<span class="macro">assert!</span>(
 				<span class="ident">T::StakingInterface::bonding_duration</span>() <span class="op">&lt;</span> <span class="ident">TotalUnbondingPools</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::get</span>(),
@@ -4578,7 +4690,7 @@
 			<span class="ident">ExistenceRequirement::AllowDeath</span>,
 		);
 
-		<span class="comment">// TODO: this is purely defensive.</span>
+		<span class="comment">// NOTE: this is purely defensive.</span>
 		<span class="ident">T::Currency::make_free_balance_be</span>(<span class="kw-2">&amp;</span><span class="ident">reward_account</span>, <span class="ident">Zero::zero</span>());
 		<span class="ident">T::Currency::make_free_balance_be</span>(<span class="kw-2">&amp;</span><span class="ident">bonded_pool</span>.<span class="ident">bonded_account</span>(), <span class="ident">Zero::zero</span>());
 
@@ -4671,75 +4783,6 @@
 			.<span class="ident">div</span>(<span class="ident">current_points</span>)
 	}
 
-	<span class="doccomment">/// Calculate the rewards for `member`.</span>
-	<span class="doccomment">///</span>
-	<span class="doccomment">/// Returns the payout amount.</span>
-	<span class="kw">fn</span> <span class="ident">calculate_member_payout</span>(
-		<span class="ident">member</span>: <span class="kw-2">&amp;mut</span> <span class="ident">PoolMember</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-		<span class="ident">bonded_pool</span>: <span class="kw-2">&amp;mut</span> <span class="ident">BondedPool</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-		<span class="ident">reward_pool</span>: <span class="kw-2">&amp;mut</span> <span class="ident">RewardPool</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
-	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">DispatchError</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="ident">u256</span> <span class="op">=</span> <span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">T::BalanceToU256::convert</span>(<span class="ident">x</span>);
-		<span class="kw">let</span> <span class="ident">balance</span> <span class="op">=</span> <span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">T::U256ToBalance::convert</span>(<span class="ident">x</span>);
-
-		<span class="kw">let</span> <span class="ident">last_total_earnings</span> <span class="op">=</span> <span class="ident">reward_pool</span>.<span class="ident">total_earnings</span>;
-		<span class="ident">reward_pool</span>.<span class="ident">update_total_earnings_and_balance</span>(<span class="ident">bonded_pool</span>.<span class="ident">id</span>);
-
-		<span class="comment">// Notice there is an edge case where total_earnings have not increased and this is zero</span>
-		<span class="kw">let</span> <span class="ident">new_earnings</span> <span class="op">=</span> <span class="ident">u256</span>(<span class="ident">reward_pool</span>.<span class="ident">total_earnings</span>.<span class="ident">saturating_sub</span>(<span class="ident">last_total_earnings</span>));
-
-		<span class="comment">// The new points that will be added to the pool. For every unit of balance that has been</span>
-		<span class="comment">// earned by the reward pool, we inflate the reward pool points by `bonded_pool.points`. In</span>
-		<span class="comment">// effect this allows each, single unit of balance (e.g. plank) to be divvied up pro rata</span>
-		<span class="comment">// among members based on points.</span>
-		<span class="kw">let</span> <span class="ident">new_points</span> <span class="op">=</span> <span class="ident">u256</span>(<span class="ident">bonded_pool</span>.<span class="ident">points</span>).<span class="ident">saturating_mul</span>(<span class="ident">new_earnings</span>);
-
-		<span class="comment">// The points of the reward pool after taking into account the new earnings. Notice that</span>
-		<span class="comment">// this only stays even or increases over time except for when we subtract member virtual</span>
-		<span class="comment">// shares.</span>
-		<span class="kw">let</span> <span class="ident">current_points</span> <span class="op">=</span> <span class="ident">bonded_pool</span>.<span class="ident">bound_check</span>(<span class="ident">reward_pool</span>.<span class="ident">points</span>.<span class="ident">saturating_add</span>(<span class="ident">new_points</span>));
-
-		<span class="comment">// The rewards pool&#39;s earnings since the last time this member claimed a payout.</span>
-		<span class="kw">let</span> <span class="ident">new_earnings_since_last_claim</span> <span class="op">=</span>
-			<span class="ident">reward_pool</span>.<span class="ident">total_earnings</span>.<span class="ident">saturating_sub</span>(<span class="ident">member</span>.<span class="ident">reward_pool_total_earnings</span>);
-
-		<span class="comment">// The points of the reward pool that belong to the member.</span>
-		<span class="kw">let</span> <span class="ident">member_virtual_points</span> <span class="op">=</span>
-			<span class="comment">// The members portion of the reward pool</span>
-			<span class="ident">u256</span>(<span class="ident">member</span>.<span class="ident">active_points</span>())
-			<span class="comment">// times the amount the pool has earned since the member last claimed.</span>
-			.<span class="ident">saturating_mul</span>(<span class="ident">u256</span>(<span class="ident">new_earnings_since_last_claim</span>));
-
-		<span class="kw">let</span> <span class="ident">member_payout</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">member_virtual_points</span>.<span class="ident">is_zero</span>() <span class="op">|</span><span class="op">|</span>
-			<span class="ident">current_points</span>.<span class="ident">is_zero</span>() <span class="op">|</span><span class="op">|</span>
-			<span class="ident">reward_pool</span>.<span class="ident">balance</span>.<span class="ident">is_zero</span>()
-		{
-			<span class="ident">Zero::zero</span>()
-		} <span class="kw">else</span> {
-			<span class="comment">// Equivalent to `(member_virtual_points / current_points) * reward_pool.balance`</span>
-			<span class="kw">let</span> <span class="ident">numerator</span> <span class="op">=</span> {
-				<span class="kw">let</span> <span class="ident">numerator</span> <span class="op">=</span> <span class="ident">member_virtual_points</span>.<span class="ident">saturating_mul</span>(<span class="ident">u256</span>(<span class="ident">reward_pool</span>.<span class="ident">balance</span>));
-				<span class="ident">bonded_pool</span>.<span class="ident">bound_check</span>(<span class="ident">numerator</span>)
-			};
-			<span class="ident">balance</span>(
-				<span class="ident">numerator</span>
-					<span class="comment">// We check for zero above</span>
-					.<span class="ident">div</span>(<span class="ident">current_points</span>),
-			)
-		};
-
-		<span class="comment">// Record updates</span>
-		<span class="kw">if</span> <span class="ident">reward_pool</span>.<span class="ident">total_earnings</span> <span class="op">==</span> <span class="ident">BalanceOf</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::max_value</span>() {
-			<span class="ident">bonded_pool</span>.<span class="ident">set_state</span>(<span class="ident">PoolState::Destroying</span>);
-		};
-
-		<span class="ident">member</span>.<span class="ident">reward_pool_total_earnings</span> <span class="op">=</span> <span class="ident">reward_pool</span>.<span class="ident">total_earnings</span>;
-		<span class="ident">reward_pool</span>.<span class="ident">points</span> <span class="op">=</span> <span class="ident">current_points</span>.<span class="ident">saturating_sub</span>(<span class="ident">member_virtual_points</span>);
-		<span class="ident">reward_pool</span>.<span class="ident">balance</span> <span class="op">=</span> <span class="ident">reward_pool</span>.<span class="ident">balance</span>.<span class="ident">saturating_sub</span>(<span class="ident">member_payout</span>);
-
-		<span class="prelude-val">Ok</span>(<span class="ident">member_payout</span>)
-	}
-
 	<span class="doccomment">/// If the member has some rewards, transfer a payout from the reward pool to the member.</span>
 	<span class="comment">// Emits events and potentially modifies pool state if any arithmetic saturates, but does</span>
 	<span class="comment">// not persist any of the mutable inputs to storage.</span>
@@ -4750,38 +4793,37 @@
 		<span class="ident">reward_pool</span>: <span class="kw-2">&amp;mut</span> <span class="ident">RewardPool</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">BalanceOf</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">DispatchError</span><span class="op">&gt;</span> {
 		<span class="macro">debug_assert_eq!</span>(<span class="ident">member</span>.<span class="ident">pool_id</span>, <span class="ident">bonded_pool</span>.<span class="ident">id</span>);
+
 		<span class="comment">// a member who has no skin in the game anymore cannot claim any rewards.</span>
 		<span class="macro">ensure!</span>(<span class="op">!</span><span class="ident">member</span>.<span class="ident">active_points</span>().<span class="ident">is_zero</span>(), <span class="ident">Error</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::FullyUnbonding</span>);
-		<span class="kw">let</span> <span class="ident">was_destroying</span> <span class="op">=</span> <span class="ident">bonded_pool</span>.<span class="ident">is_destroying</span>();
 
-		<span class="kw">let</span> <span class="ident">member_payout</span> <span class="op">=</span> <span class="ident"><span class="self">Self</span>::calculate_member_payout</span>(<span class="ident">member</span>, <span class="ident">bonded_pool</span>, <span class="ident">reward_pool</span>)<span class="question-mark">?</span>;
+		<span class="kw">let</span> <span class="ident">current_reward_counter</span> <span class="op">=</span>
+			<span class="ident">reward_pool</span>.<span class="ident">current_reward_counter</span>(<span class="ident">bonded_pool</span>.<span class="ident">id</span>, <span class="ident">bonded_pool</span>.<span class="ident">points</span>)<span class="question-mark">?</span>;
+		<span class="kw">let</span> <span class="ident">pending_rewards</span> <span class="op">=</span> <span class="ident">member</span>.<span class="ident">pending_rewards</span>(<span class="ident">current_reward_counter</span>)<span class="question-mark">?</span>;
 
-		<span class="kw">if</span> <span class="ident">member_payout</span>.<span class="ident">is_zero</span>() {
-			<span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">member_payout</span>)
+		<span class="kw">if</span> <span class="ident">pending_rewards</span>.<span class="ident">is_zero</span>() {
+			<span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">pending_rewards</span>)
 		}
+
+		<span class="comment">// IFF the reward is non-zero alter the member and reward pool info.</span>
+		<span class="ident">member</span>.<span class="ident">last_recorded_reward_counter</span> <span class="op">=</span> <span class="ident">current_reward_counter</span>;
+		<span class="ident">reward_pool</span>.<span class="ident">register_claimed_reward</span>(<span class="ident">pending_rewards</span>);
 
 		<span class="comment">// Transfer payout to the member.</span>
 		<span class="ident">T::Currency::transfer</span>(
 			<span class="kw-2">&amp;</span><span class="ident">bonded_pool</span>.<span class="ident">reward_account</span>(),
 			<span class="kw-2">&amp;</span><span class="ident">member_account</span>,
-			<span class="ident">member_payout</span>,
+			<span class="ident">pending_rewards</span>,
 			<span class="ident">ExistenceRequirement::AllowDeath</span>,
 		)<span class="question-mark">?</span>;
 
 		<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::PaidOut</span> {
 			<span class="ident">member</span>: <span class="ident">member_account</span>.<span class="ident">clone</span>(),
 			<span class="ident">pool_id</span>: <span class="ident">member</span>.<span class="ident">pool_id</span>,
-			<span class="ident">payout</span>: <span class="ident">member_payout</span>,
+			<span class="ident">payout</span>: <span class="ident">pending_rewards</span>,
 		});
 
-		<span class="kw">if</span> <span class="ident">bonded_pool</span>.<span class="ident">is_destroying</span>() <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="ident">was_destroying</span> {
-			<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::StateChanged</span> {
-				<span class="ident">pool_id</span>: <span class="ident">member</span>.<span class="ident">pool_id</span>,
-				<span class="ident">new_state</span>: <span class="ident">PoolState::Destroying</span>,
-			});
-		}
-
-		<span class="prelude-val">Ok</span>(<span class="ident">member_payout</span>)
+		<span class="prelude-val">Ok</span>(<span class="ident">pending_rewards</span>)
 	}
 
 	<span class="doccomment">/// Ensure the correctness of the state of this pallet.</span>

@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/registry/src/github.com-1ecc6299db9ec823/libp2p-identify-0.36.1/src/identify.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>identify.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/registry/src/github.com-1ecc6299db9ec823/libp2p-identify-0.37.0/src/identify.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>identify.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
     <noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../libp2p_identify/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
         </a><h2 class="location"></h2>
     </nav>
@@ -809,6 +809,12 @@
 <span id="804">804</span>
 <span id="805">805</span>
 <span id="806">806</span>
+<span id="807">807</span>
+<span id="808">808</span>
+<span id="809">809</span>
+<span id="810">810</span>
+<span id="811">811</span>
+<span id="812">812</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2018 Parity Technologies (UK) Ltd.</span>
 <span class="comment">//</span>
 <span class="comment">// Permission is hereby granted, free of charge, to any person obtaining a</span>
@@ -829,13 +835,12 @@
 <span class="comment">// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER</span>
 <span class="comment">// DEALINGS IN THE SOFTWARE.</span>
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::handler</span>::{<span class="ident">IdentifyHandler</span>, <span class="ident">IdentifyHandlerEvent</span>, <span class="ident">IdentifyPush</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::handler</span>::{<span class="ident">IdentifyHandlerEvent</span>, <span class="ident">IdentifyHandlerProto</span>, <span class="ident">IdentifyPush</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::protocol</span>::{<span class="ident">IdentifyInfo</span>, <span class="ident">ReplySubstream</span>, <span class="ident">UpgradeError</span>};
 <span class="kw">use</span> <span class="ident">futures::prelude</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident">libp2p_core</span>::{
-    <span class="ident">connection</span>::{<span class="ident">ConnectionId</span>, <span class="ident">ListenerId</span>},
-    <span class="ident">multiaddr::Protocol</span>,
-    <span class="ident">ConnectedPoint</span>, <span class="ident">Multiaddr</span>, <span class="ident">PeerId</span>, <span class="ident">PublicKey</span>,
+    <span class="ident">connection::ConnectionId</span>, <span class="ident">multiaddr::Protocol</span>, <span class="ident">transport::ListenerId</span>, <span class="ident">ConnectedPoint</span>,
+    <span class="ident">Multiaddr</span>, <span class="ident">PeerId</span>, <span class="ident">PublicKey</span>,
 };
 <span class="kw">use</span> <span class="ident">libp2p_swarm</span>::{
     <span class="ident">dial_opts</span>::{<span class="self">self</span>, <span class="ident">DialOpts</span>},
@@ -865,7 +870,7 @@
     <span class="doccomment">/// Pending replies to send.</span>
     <span class="ident">pending_replies</span>: <span class="ident">VecDeque</span><span class="op">&lt;</span><span class="ident">Reply</span><span class="op">&gt;</span>,
     <span class="doccomment">/// Pending events to be emitted when polled.</span>
-    <span class="ident">events</span>: <span class="ident">VecDeque</span><span class="op">&lt;</span><span class="ident">NetworkBehaviourAction</span><span class="op">&lt;</span><span class="ident">IdentifyEvent</span>, <span class="ident">IdentifyHandler</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    <span class="ident">events</span>: <span class="ident">VecDeque</span><span class="op">&lt;</span><span class="ident">NetworkBehaviourAction</span><span class="op">&lt;</span><span class="ident">IdentifyEvent</span>, <span class="ident">IdentifyHandlerProto</span><span class="op">&gt;</span><span class="op">&gt;</span>,
     <span class="doccomment">/// Peers to which an active push with current information about</span>
     <span class="doccomment">/// the local peer should be sent.</span>
     <span class="ident">pending_push</span>: <span class="ident">HashSet</span><span class="op">&lt;</span><span class="ident">PeerId</span><span class="op">&gt;</span>,
@@ -1019,11 +1024,11 @@
 }
 
 <span class="kw">impl</span> <span class="ident">NetworkBehaviour</span> <span class="kw">for</span> <span class="ident">Identify</span> {
-    <span class="kw">type</span> <span class="ident">ConnectionHandler</span> <span class="op">=</span> <span class="ident">IdentifyHandler</span>;
+    <span class="kw">type</span> <span class="ident">ConnectionHandler</span> <span class="op">=</span> <span class="ident">IdentifyHandlerProto</span>;
     <span class="kw">type</span> <span class="ident">OutEvent</span> <span class="op">=</span> <span class="ident">IdentifyEvent</span>;
 
     <span class="kw">fn</span> <span class="ident">new_handler</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="ident"><span class="self">Self</span>::ConnectionHandler</span> {
-        <span class="ident">IdentifyHandler::new</span>(<span class="self">self</span>.<span class="ident">config</span>.<span class="ident">initial_delay</span>, <span class="self">self</span>.<span class="ident">config</span>.<span class="ident">interval</span>)
+        <span class="ident">IdentifyHandlerProto::new</span>(<span class="self">self</span>.<span class="ident">config</span>.<span class="ident">initial_delay</span>, <span class="self">self</span>.<span class="ident">config</span>.<span class="ident">interval</span>)
     }
 
     <span class="kw">fn</span> <span class="ident">inject_connection_established</span>(
@@ -1107,7 +1112,7 @@
         <span class="kw-2">&amp;mut</span> <span class="self">self</span>,
         <span class="ident">peer_id</span>: <span class="ident">PeerId</span>,
         <span class="ident">connection</span>: <span class="ident">ConnectionId</span>,
-        <span class="ident">event</span>: <span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::ConnectionHandler</span> <span class="kw">as</span> <span class="ident">ConnectionHandler</span><span class="op">&gt;</span><span class="ident">::OutEvent</span>,
+        <span class="ident">event</span>: <span class="op">&lt;</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::ConnectionHandler</span> <span class="kw">as</span> <span class="ident">IntoConnectionHandler</span><span class="op">&gt;</span><span class="ident">::Handler</span> <span class="kw">as</span> <span class="ident">ConnectionHandler</span><span class="op">&gt;</span><span class="ident">::OutEvent</span>,
     ) {
         <span class="kw">match</span> <span class="ident">event</span> {
             <span class="ident">IdentifyHandlerEvent::Identified</span>(<span class="kw-2">mut</span> <span class="ident">info</span>) =&gt; {
@@ -1324,11 +1329,12 @@
 <span class="kw">mod</span> <span class="ident">tests</span> {
     <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
     <span class="kw">use</span> <span class="ident">futures::pin_mut</span>;
+    <span class="kw">use</span> <span class="ident">libp2p::mplex::MplexConfig</span>;
+    <span class="kw">use</span> <span class="ident">libp2p::noise</span>;
+    <span class="kw">use</span> <span class="ident">libp2p::tcp</span>::{<span class="ident">GenTcpConfig</span>, <span class="ident">TcpTransport</span>};
     <span class="kw">use</span> <span class="ident">libp2p_core</span>::{<span class="ident">identity</span>, <span class="ident">muxing::StreamMuxerBox</span>, <span class="ident">transport</span>, <span class="ident">upgrade</span>, <span class="ident">PeerId</span>, <span class="ident">Transport</span>};
-    <span class="kw">use</span> <span class="ident">libp2p_mplex::MplexConfig</span>;
-    <span class="kw">use</span> <span class="ident">libp2p_noise</span> <span class="kw">as</span> <span class="ident">noise</span>;
     <span class="kw">use</span> <span class="ident">libp2p_swarm</span>::{<span class="ident">Swarm</span>, <span class="ident">SwarmEvent</span>};
-    <span class="kw">use</span> <span class="ident">libp2p_tcp::TcpConfig</span>;
+    <span class="kw">use</span> <span class="ident">std::time::Duration</span>;
 
     <span class="kw">fn</span> <span class="ident">transport</span>() -&gt; (
         <span class="ident">identity::PublicKey</span>,
@@ -1339,8 +1345,7 @@
             .<span class="ident">into_authentic</span>(<span class="kw-2">&amp;</span><span class="ident">id_keys</span>)
             .<span class="ident">unwrap</span>();
         <span class="kw">let</span> <span class="ident">pubkey</span> <span class="op">=</span> <span class="ident">id_keys</span>.<span class="ident">public</span>();
-        <span class="kw">let</span> <span class="ident">transport</span> <span class="op">=</span> <span class="ident">TcpConfig::new</span>()
-            .<span class="ident">nodelay</span>(<span class="bool-val">true</span>)
+        <span class="kw">let</span> <span class="ident">transport</span> <span class="op">=</span> <span class="ident">TcpTransport::new</span>(<span class="ident">GenTcpConfig::default</span>().<span class="ident">nodelay</span>(<span class="bool-val">true</span>))
             .<span class="ident">upgrade</span>(<span class="ident">upgrade::Version::V1</span>)
             .<span class="ident">authenticate</span>(<span class="ident">noise::NoiseConfig::xx</span>(<span class="ident">noise_keys</span>).<span class="ident">into_authenticated</span>())
             .<span class="ident">multiplex</span>(<span class="ident">MplexConfig::new</span>())
@@ -1511,7 +1516,14 @@
 
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">swarm1</span> <span class="op">=</span> {
             <span class="kw">let</span> (<span class="ident">pubkey</span>, <span class="ident">transport</span>) <span class="op">=</span> <span class="ident">transport</span>();
-            <span class="kw">let</span> <span class="ident">protocol</span> <span class="op">=</span> <span class="ident">Identify::new</span>(<span class="ident">IdentifyConfig::new</span>(<span class="string">&quot;a&quot;</span>.<span class="ident">to_string</span>(), <span class="ident">pubkey</span>.<span class="ident">clone</span>()));
+            <span class="kw">let</span> <span class="ident">protocol</span> <span class="op">=</span> <span class="ident">Identify::new</span>(
+                <span class="ident">IdentifyConfig::new</span>(<span class="string">&quot;a&quot;</span>.<span class="ident">to_string</span>(), <span class="ident">pubkey</span>.<span class="ident">clone</span>())
+                    <span class="comment">// `swarm1` will set `KeepAlive::No` once it identified `swarm2` and thus</span>
+                    <span class="comment">// closes the connection. At this point in time `swarm2` might not yet have</span>
+                    <span class="comment">// identified `swarm1`. To give `swarm2` enough time, set an initial delay on</span>
+                    <span class="comment">// `swarm1`.</span>
+                    .<span class="ident">with_initial_delay</span>(<span class="ident">Duration::from_secs</span>(<span class="number">10</span>)),
+            );
 
             <span class="ident">Swarm::new</span>(<span class="ident">transport</span>, <span class="ident">protocol</span>, <span class="ident">pubkey</span>.<span class="ident">to_peer_id</span>())
         };
