@@ -32,7 +32,7 @@ have length zero, then the pallet essentially runs only the fallback strategy, d
 <p>In the signed phase, solutions (of type <a href="struct.RawSolution.html" title="RawSolution"><code>RawSolution</code></a>) are submitted and queued on chain. A
 deposit is reserved, based on the size of the solution, for the cost of keeping this solution
 on-chain for a number of blocks, and the potential weight of the solution upon being checked. A
-maximum of <code>pallet::Config::MaxSignedSubmissions</code> solutions are stored. The queue is always
+maximum of <code>pallet::Config::SignedMaxSubmissions</code> solutions are stored. The queue is always
 sorted based on score (worse to best).</p>
 <p>Upon arrival of a new solution:</p>
 <ol>

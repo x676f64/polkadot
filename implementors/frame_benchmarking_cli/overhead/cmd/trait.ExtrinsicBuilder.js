@@ -1,3 +1,0 @@
-(function() {var implementors = {};
-implementors["polkadot_client"] = [{"text":"impl <a class=\"trait\" href=\"frame_benchmarking_cli/overhead/cmd/trait.ExtrinsicBuilder.html\" title=\"trait frame_benchmarking_cli::overhead::cmd::ExtrinsicBuilder\">ExtrinsicBuilder</a> for <a class=\"enum\" href=\"polkadot_client/enum.Client.html\" title=\"enum polkadot_client::Client\">Client</a>","synthetic":false,"types":["polkadot_client::Client"]}];
-if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

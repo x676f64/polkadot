@@ -1742,6 +1742,7 @@
 <span id="1737">1737</span>
 <span id="1738">1738</span>
 <span id="1739">1739</span>
+<span id="1740">1740</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -1820,6 +1821,7 @@
 <span class="kw">use</span> <span class="ident">sp_version::RuntimeVersion</span>;
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">frame_system::Call</span> <span class="kw">as</span> <span class="ident">SystemCall</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">pallet_balances::Call</span> <span class="kw">as</span> <span class="ident">BalancesCall</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">pallet_election_provider_multi_phase::Call</span> <span class="kw">as</span> <span class="ident">EPMCall</span>;
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>)]</span>
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">pallet_staking::StakerStatus</span>;
