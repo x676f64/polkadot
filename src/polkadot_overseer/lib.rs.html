@@ -924,11 +924,6 @@
 <span id="919">919</span>
 <span id="920">920</span>
 <span id="921">921</span>
-<span id="922">922</span>
-<span id="923">923</span>
-<span id="924">924</span>
-<span id="925">925</span>
-<span id="926">926</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -1002,11 +997,7 @@
 <span class="kw">use</span> <span class="ident">lru::LruCache</span>;
 
 <span class="kw">use</span> <span class="ident">client</span>::{<span class="ident">BlockImportNotification</span>, <span class="ident">BlockchainEvents</span>, <span class="ident">FinalityNotification</span>};
-<span class="kw">use</span> <span class="ident">polkadot_primitives</span>::{
-	<span class="ident">runtime_api::ParachainHost</span>,
-	<span class="ident">v2</span>::{<span class="ident">Block</span>, <span class="ident">BlockId</span>, <span class="ident">BlockNumber</span>, <span class="ident">Hash</span>},
-};
-<span class="kw">use</span> <span class="ident">sp_api</span>::{<span class="ident">ApiExt</span>, <span class="ident">ProvideRuntimeApi</span>};
+<span class="kw">use</span> <span class="ident">polkadot_primitives::v2</span>::{<span class="ident">Block</span>, <span class="ident">BlockNumber</span>, <span class="ident">Hash</span>};
 
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem_types::messages</span>::{
 	<span class="ident">ApprovalDistributionMessage</span>, <span class="ident">ApprovalVotingMessage</span>, <span class="ident">AvailabilityDistributionMessage</span>,
@@ -1020,6 +1011,7 @@
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">polkadot_node_subsystem_types</span>::{
 	<span class="ident">errors</span>::{<span class="ident">SubsystemError</span>, <span class="ident">SubsystemResult</span>},
 	<span class="ident">jaeger</span>, <span class="ident">ActivatedLeaf</span>, <span class="ident">ActiveLeavesUpdate</span>, <span class="ident">LeafStatus</span>, <span class="ident">OverseerSignal</span>,
+	<span class="ident">RuntimeApiSubsystemClient</span>,
 };
 
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">metrics</span>;
@@ -1088,25 +1080,20 @@
 }
 
 <span class="doccomment">/// Whether a header supports parachain consensus or not.</span>
+<span class="attribute">#[<span class="ident">async_trait::async_trait</span>]</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">HeadSupportsParachains</span> {
 	<span class="doccomment">/// Return true if the given header supports parachain consensus. Otherwise, false.</span>
-	<span class="kw">fn</span> <span class="ident">head_supports_parachains</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">head</span>: <span class="kw-2">&amp;</span><span class="ident">Hash</span>) -&gt; <span class="ident">bool</span>;
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">head_supports_parachains</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">head</span>: <span class="kw-2">&amp;</span><span class="ident">Hash</span>) -&gt; <span class="ident">bool</span>;
 }
 
+<span class="attribute">#[<span class="ident">async_trait::async_trait</span>]</span>
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Client</span><span class="op">&gt;</span> <span class="ident">HeadSupportsParachains</span> <span class="kw">for</span> <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Client</span><span class="op">&gt;</span>
 <span class="kw">where</span>
-	<span class="ident">Client</span>: <span class="ident">ProvideRuntimeApi</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>,
-	<span class="ident">Client::Api</span>: <span class="ident">ParachainHost</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>,
+	<span class="ident">Client</span>: <span class="ident">RuntimeApiSubsystemClient</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="ident">Send</span>,
 {
-	<span class="kw">fn</span> <span class="ident">head_supports_parachains</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">head</span>: <span class="kw-2">&amp;</span><span class="ident">Hash</span>) -&gt; <span class="ident">bool</span> {
-		<span class="kw">let</span> <span class="ident">id</span> <span class="op">=</span> <span class="ident">BlockId::Hash</span>(<span class="kw-2">*</span><span class="ident">head</span>);
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">head_supports_parachains</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">head</span>: <span class="kw-2">&amp;</span><span class="ident">Hash</span>) -&gt; <span class="ident">bool</span> {
 		<span class="comment">// Check that the `ParachainHost` runtime api is at least with version 1 present on chain.</span>
-		<span class="self">self</span>.<span class="ident">runtime_api</span>()
-			.<span class="ident">api_version</span>::<span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">ParachainHost</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">id</span>)
-			.<span class="ident">ok</span>()
-			.<span class="ident">flatten</span>()
-			.<span class="ident">unwrap_or</span>(<span class="number">0</span>) <span class="op">&gt;</span><span class="op">=</span>
-			<span class="number">1</span>
+		<span class="self">self</span>.<span class="ident">api_version_parachain_host</span>(<span class="kw-2">*</span><span class="ident">head</span>).<span class="kw">await</span>.<span class="ident">ok</span>().<span class="ident">flatten</span>().<span class="ident">unwrap_or</span>(<span class="number">0</span>) <span class="op">&gt;</span><span class="op">=</span> <span class="number">1</span>
 	}
 }
 
@@ -1352,9 +1339,12 @@
 <span class="doccomment">/// # fn main() { executor::block_on(async move {</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// struct AlwaysSupportsParachains;</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// #[async_trait::async_trait]</span>
 <span class="doccomment">/// impl HeadSupportsParachains for AlwaysSupportsParachains {</span>
-<span class="doccomment">///      fn head_supports_parachains(&amp;self, _head: &amp;Hash) -&gt; bool { true }</span>
+<span class="doccomment">///      async fn head_supports_parachains(&amp;self, _head: &amp;Hash) -&gt; bool { true }</span>
 <span class="doccomment">/// }</span>
+<span class="doccomment">///</span>
 <span class="doccomment">/// let spawner = sp_core::testing::TaskExecutor::new();</span>
 <span class="doccomment">/// let (overseer, _handle) = dummy_overseer_builder(spawner, AlwaysSupportsParachains, None)</span>
 <span class="doccomment">///		.unwrap()</span>
@@ -1649,7 +1639,7 @@
 		<span class="comment">// Notify about active leaves on startup before starting the loop</span>
 		<span class="kw">for</span> (<span class="ident">hash</span>, <span class="ident">number</span>) <span class="kw">in</span> <span class="ident">std::mem::take</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">leaves</span>) {
 			<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">active_leaves</span>.<span class="ident">insert</span>(<span class="ident">hash</span>, <span class="ident">number</span>);
-			<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">span</span>, <span class="ident">status</span>)) <span class="op">=</span> <span class="self">self</span>.<span class="ident">on_head_activated</span>(<span class="kw-2">&amp;</span><span class="ident">hash</span>, <span class="prelude-val">None</span>) {
+			<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">span</span>, <span class="ident">status</span>)) <span class="op">=</span> <span class="self">self</span>.<span class="ident">on_head_activated</span>(<span class="kw-2">&amp;</span><span class="ident">hash</span>, <span class="prelude-val">None</span>).<span class="kw">await</span> {
 				<span class="kw">let</span> <span class="ident">update</span> <span class="op">=</span>
 					<span class="ident">ActiveLeavesUpdate::start_work</span>(<span class="ident">ActivatedLeaf</span> { <span class="ident">hash</span>, <span class="ident">number</span>, <span class="ident">status</span>, <span class="ident">span</span> });
 				<span class="self">self</span>.<span class="ident">broadcast_signal</span>(<span class="ident">OverseerSignal::ActiveLeaves</span>(<span class="ident">update</span>)).<span class="kw">await</span><span class="question-mark">?</span>;
@@ -1711,7 +1701,7 @@
 			},
 		};
 
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">update</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">on_head_activated</span>(<span class="kw-2">&amp;</span><span class="ident">block</span>.<span class="ident">hash</span>, <span class="prelude-val">Some</span>(<span class="ident">block</span>.<span class="ident">parent_hash</span>)) {
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">update</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">on_head_activated</span>(<span class="kw-2">&amp;</span><span class="ident">block</span>.<span class="ident">hash</span>, <span class="prelude-val">Some</span>(<span class="ident">block</span>.<span class="ident">parent_hash</span>)).<span class="kw">await</span> {
 			<span class="prelude-val">Some</span>((<span class="ident">span</span>, <span class="ident">status</span>)) =&gt; <span class="ident">ActiveLeavesUpdate::start_work</span>(<span class="ident">ActivatedLeaf</span> {
 				<span class="ident">hash</span>: <span class="ident">block</span>.<span class="ident">hash</span>,
 				<span class="ident">number</span>: <span class="ident">block</span>.<span class="ident">number</span>,
@@ -1768,12 +1758,12 @@
 
 	<span class="doccomment">/// Handles a header activation. If the header&#39;s state doesn&#39;t support the parachains API,</span>
 	<span class="doccomment">/// this returns `None`.</span>
-	<span class="kw">fn</span> <span class="ident">on_head_activated</span>(
+	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">on_head_activated</span>(
 		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
 		<span class="ident">hash</span>: <span class="kw-2">&amp;</span><span class="ident">Hash</span>,
 		<span class="ident">parent_hash</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Hash</span><span class="op">&gt;</span>,
 	) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">jaeger::Span</span><span class="op">&gt;</span>, <span class="ident">LeafStatus</span>)<span class="op">&gt;</span> {
-		<span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">supports_parachains</span>.<span class="ident">head_supports_parachains</span>(<span class="ident">hash</span>) {
+		<span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">supports_parachains</span>.<span class="ident">head_supports_parachains</span>(<span class="ident">hash</span>).<span class="kw">await</span> {
 			<span class="kw">return</span> <span class="prelude-val">None</span>
 		}
 

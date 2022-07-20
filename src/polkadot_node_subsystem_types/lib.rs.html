@@ -147,6 +147,9 @@
 <span id="142">142</span>
 <span id="143">143</span>
 <span id="144">144</span>
+<span id="145">145</span>
+<span id="146">146</span>
+<span id="147">147</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -178,6 +181,9 @@
 
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">errors</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">messages</span>;
+
+<span class="kw">mod</span> <span class="ident">runtime_client</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">runtime_client::RuntimeApiSubsystemClient</span>;
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">jaeger</span>::<span class="kw-2">*</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">polkadot_node_jaeger</span> <span class="kw">as</span> <span class="ident">jaeger</span>;

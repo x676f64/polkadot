@@ -508,25 +508,6 @@
 <span id="503">503</span>
 <span id="504">504</span>
 <span id="505">505</span>
-<span id="506">506</span>
-<span id="507">507</span>
-<span id="508">508</span>
-<span id="509">509</span>
-<span id="510">510</span>
-<span id="511">511</span>
-<span id="512">512</span>
-<span id="513">513</span>
-<span id="514">514</span>
-<span id="515">515</span>
-<span id="516">516</span>
-<span id="517">517</span>
-<span id="518">518</span>
-<span id="519">519</span>
-<span id="520">520</span>
-<span id="521">521</span>
-<span id="522">522</span>
-<span id="523">523</span>
-<span id="524">524</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -556,14 +537,8 @@
 	<span class="ident">messages</span>::{<span class="ident">RuntimeApiMessage</span>, <span class="ident">RuntimeApiRequest</span> <span class="kw">as</span> <span class="ident">Request</span>},
 	<span class="ident">overseer</span>, <span class="ident">FromOrchestra</span>, <span class="ident">OverseerSignal</span>, <span class="ident">SpawnedSubsystem</span>, <span class="ident">SubsystemError</span>, <span class="ident">SubsystemResult</span>,
 };
-<span class="kw">use</span> <span class="ident">polkadot_primitives</span>::{
-	<span class="ident">runtime_api::ParachainHost</span>,
-	<span class="ident">v2</span>::{<span class="ident">Block</span>, <span class="ident">BlockId</span>, <span class="ident">Hash</span>},
-};
-
-<span class="kw">use</span> <span class="ident">sp_api::ProvideRuntimeApi</span>;
-<span class="kw">use</span> <span class="ident">sp_authority_discovery::AuthorityDiscoveryApi</span>;
-<span class="kw">use</span> <span class="ident">sp_consensus_babe::BabeApi</span>;
+<span class="kw">use</span> <span class="ident">polkadot_node_subsystem_types::RuntimeApiSubsystemClient</span>;
+<span class="kw">use</span> <span class="ident">polkadot_primitives::v2::Hash</span>;
 
 <span class="kw">use</span> <span class="ident">cache</span>::{<span class="ident">RequestResult</span>, <span class="ident">RequestResultCache</span>};
 <span class="kw">use</span> <span class="ident">futures</span>::{<span class="ident">channel::oneshot</span>, <span class="ident">prelude</span>::<span class="kw-2">*</span>, <span class="ident">select</span>, <span class="ident">stream::FuturesUnordered</span>};
@@ -617,8 +592,7 @@
 <span class="attribute">#[<span class="ident">overseer::subsystem</span>(<span class="ident">RuntimeApi</span>, <span class="ident">error</span> <span class="op">=</span> <span class="ident">SubsystemError</span>, <span class="ident">prefix</span> <span class="op">=</span> <span class="ident"><span class="self">self</span>::overseer</span>)]</span>
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Client</span>, <span class="ident">Context</span><span class="op">&gt;</span> <span class="ident">RuntimeApiSubsystem</span><span class="op">&lt;</span><span class="ident">Client</span><span class="op">&gt;</span>
 <span class="kw">where</span>
-	<span class="ident">Client</span>: <span class="ident">ProvideRuntimeApi</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span> <span class="op">+</span> <span class="ident">Sync</span>,
-	<span class="ident">Client::Api</span>: <span class="ident">ParachainHost</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">BabeApi</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">AuthorityDiscoveryApi</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>,
+	<span class="ident">Client</span>: <span class="ident">RuntimeApiSubsystemClient</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 {
 	<span class="kw">fn</span> <span class="ident">start</span>(<span class="self">self</span>, <span class="ident">ctx</span>: <span class="ident">Context</span>) -&gt; <span class="ident">SpawnedSubsystem</span> {
 		<span class="ident">SpawnedSubsystem</span> { <span class="ident">future</span>: <span class="ident">run</span>(<span class="ident">ctx</span>, <span class="self">self</span>).<span class="ident">boxed</span>(), <span class="ident">name</span>: <span class="string">&quot;runtime-api-subsystem&quot;</span> }
@@ -627,8 +601,7 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Client</span><span class="op">&gt;</span> <span class="ident">RuntimeApiSubsystem</span><span class="op">&lt;</span><span class="ident">Client</span><span class="op">&gt;</span>
 <span class="kw">where</span>
-	<span class="ident">Client</span>: <span class="ident">ProvideRuntimeApi</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span> <span class="op">+</span> <span class="ident">Sync</span>,
-	<span class="ident">Client::Api</span>: <span class="ident">ParachainHost</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">BabeApi</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">AuthorityDiscoveryApi</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>,
+	<span class="ident">Client</span>: <span class="ident">RuntimeApiSubsystemClient</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="lifetime">&#39;static</span> <span class="op">+</span> <span class="ident">Sync</span>,
 {
 	<span class="kw">fn</span> <span class="ident">store_cache</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">result</span>: <span class="ident">RequestResult</span>) {
 		<span class="kw">use</span> <span class="ident">RequestResult</span>::<span class="kw-2">*</span>;
@@ -811,7 +784,7 @@
 		};
 
 		<span class="kw">let</span> <span class="ident">request</span> <span class="op">=</span> <span class="kw">async</span> <span class="kw">move</span> {
-			<span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">make_runtime_api_request</span>(<span class="ident">client</span>, <span class="ident">metrics</span>, <span class="ident">relay_parent</span>, <span class="ident">request</span>);
+			<span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">make_runtime_api_request</span>(<span class="ident">client</span>, <span class="ident">metrics</span>, <span class="ident">relay_parent</span>, <span class="ident">request</span>).<span class="kw">await</span>;
 			<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">sender</span>.<span class="ident">send</span>(<span class="ident">result</span>);
 		}
 		.<span class="ident">boxed</span>();
@@ -846,8 +819,7 @@
 	<span class="kw-2">mut</span> <span class="ident">subsystem</span>: <span class="ident">RuntimeApiSubsystem</span><span class="op">&lt;</span><span class="ident">Client</span><span class="op">&gt;</span>,
 ) -&gt; <span class="ident">SubsystemResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 <span class="kw">where</span>
-	<span class="ident">Client</span>: <span class="ident">ProvideRuntimeApi</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
-	<span class="ident">Client::Api</span>: <span class="ident">ParachainHost</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">BabeApi</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">AuthorityDiscoveryApi</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>,
+	<span class="ident">Client</span>: <span class="ident">RuntimeApiSubsystemClient</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 {
 	<span class="kw">loop</span> {
 		<span class="comment">// Let&#39;s add some back pressure when the subsystem is running at `MAX_PARALLEL_REQUESTS`.</span>
@@ -877,26 +849,21 @@
 	}
 }
 
-<span class="kw">fn</span> <span class="ident">make_runtime_api_request</span><span class="op">&lt;</span><span class="ident">Client</span><span class="op">&gt;</span>(
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">make_runtime_api_request</span><span class="op">&lt;</span><span class="ident">Client</span><span class="op">&gt;</span>(
 	<span class="ident">client</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Client</span><span class="op">&gt;</span>,
 	<span class="ident">metrics</span>: <span class="ident">Metrics</span>,
 	<span class="ident">relay_parent</span>: <span class="ident">Hash</span>,
 	<span class="ident">request</span>: <span class="ident">Request</span>,
 ) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">RequestResult</span><span class="op">&gt;</span>
 <span class="kw">where</span>
-	<span class="ident">Client</span>: <span class="ident">ProvideRuntimeApi</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>,
-	<span class="ident">Client::Api</span>: <span class="ident">ParachainHost</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">BabeApi</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">AuthorityDiscoveryApi</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>,
+	<span class="ident">Client</span>: <span class="ident">RuntimeApiSubsystemClient</span> <span class="op">+</span> <span class="lifetime">&#39;static</span>,
 {
-	<span class="kw">use</span> <span class="ident">sp_api::ApiExt</span>;
-
 	<span class="kw">let</span> <span class="ident">_timer</span> <span class="op">=</span> <span class="ident">metrics</span>.<span class="ident">time_make_runtime_api_request</span>();
 
 	<span class="macro">macro_rules!</span> <span class="ident">query</span> {
 		(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">req_variant</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">api_name</span>:<span class="ident">ident</span> ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">param</span>:<span class="ident">expr</span>),<span class="kw-2">*</span>), <span class="ident">ver</span> <span class="op">=</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">version</span>:<span class="ident">literal</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">sender</span>:<span class="ident">expr</span>) =&gt; {{
 			<span class="kw">let</span> <span class="ident">sender</span> <span class="op">=</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">sender</span>;
-			<span class="kw">let</span> <span class="ident">api</span> <span class="op">=</span> <span class="ident">client</span>.<span class="ident">runtime_api</span>();
-
-			<span class="kw">let</span> <span class="ident">runtime_version</span> <span class="op">=</span> <span class="ident">api</span>.<span class="ident">api_version</span>::<span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">ParachainHost</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">BlockId::Hash</span>(<span class="ident">relay_parent</span>))
+			<span class="kw">let</span> <span class="ident">runtime_version</span> <span class="op">=</span> <span class="ident">client</span>.<span class="ident">api_version_parachain_host</span>(<span class="ident">relay_parent</span>).<span class="kw">await</span>
 				.<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> {
 					<span class="macro">gum::warn!</span>(
 						<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
@@ -914,7 +881,7 @@
 				});
 
 			<span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">runtime_version</span> <span class="op">&gt;</span><span class="op">=</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">version</span> {
-				<span class="ident">api</span>.<span class="macro-nonterminal">$</span><span class="macro-nonterminal">api_name</span>(<span class="kw-2">&amp;</span><span class="ident">BlockId::Hash</span>(<span class="ident">relay_parent</span>) $(, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">param</span>.<span class="ident">clone</span>() )<span class="kw-2">*</span>)
+				<span class="ident">client</span>.<span class="macro-nonterminal">$</span><span class="macro-nonterminal">api_name</span>(<span class="ident">relay_parent</span> $(, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">param</span>.<span class="ident">clone</span>() )<span class="kw-2">*</span>).<span class="kw">await</span>
 					.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">RuntimeApiError::Execution</span> {
 						<span class="ident">runtime_api_name</span>: <span class="macro">stringify!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">api_name</span>),
 						<span class="ident">source</span>: <span class="ident">std::sync::Arc::new</span>(<span class="ident">e</span>),
@@ -933,11 +900,7 @@
 
 	<span class="kw">match</span> <span class="ident">request</span> {
 		<span class="ident">Request::Version</span>(<span class="ident">sender</span>) =&gt; {
-			<span class="kw">let</span> <span class="ident">api</span> <span class="op">=</span> <span class="ident">client</span>.<span class="ident">runtime_api</span>();
-
-			<span class="kw">let</span> <span class="ident">runtime_version</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">api</span>
-				.<span class="ident">api_version</span>::<span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">ParachainHost</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">BlockId::Hash</span>(<span class="ident">relay_parent</span>))
-			{
+			<span class="kw">let</span> <span class="ident">runtime_version</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">client</span>.<span class="ident">api_version_parachain_host</span>(<span class="ident">relay_parent</span>).<span class="kw">await</span> {
 				<span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="ident">v</span>)) =&gt; <span class="prelude-val">Ok</span>(<span class="ident">v</span>),
 				<span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>) =&gt; <span class="prelude-val">Err</span>(<span class="ident">RuntimeApiError::NotSupported</span> { <span class="ident">runtime_api_name</span>: <span class="string">&quot;api_version&quot;</span> }),
 				<span class="prelude-val">Err</span>(<span class="ident">e</span>) =&gt; <span class="prelude-val">Err</span>(<span class="ident">RuntimeApiError::Execution</span> {
@@ -994,25 +957,24 @@
 		<span class="ident">Request::CandidateEvents</span>(<span class="ident">sender</span>) =&gt;
 			<span class="macro">query!</span>(<span class="ident">CandidateEvents</span>, <span class="ident">candidate_events</span>(), <span class="ident">ver</span> <span class="op">=</span> <span class="number">1</span>, <span class="ident">sender</span>),
 		<span class="ident">Request::SessionInfo</span>(<span class="ident">index</span>, <span class="ident">sender</span>) =&gt; {
-			<span class="kw">let</span> <span class="ident">api</span> <span class="op">=</span> <span class="ident">client</span>.<span class="ident">runtime_api</span>();
-			<span class="kw">let</span> <span class="ident">block_id</span> <span class="op">=</span> <span class="ident">BlockId::Hash</span>(<span class="ident">relay_parent</span>);
-
-			<span class="kw">let</span> <span class="ident">api_version</span> <span class="op">=</span> <span class="ident">api</span>
-				.<span class="ident">api_version</span>::<span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">ParachainHost</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">BlockId::Hash</span>(<span class="ident">relay_parent</span>))
+			<span class="kw">let</span> <span class="ident">api_version</span> <span class="op">=</span> <span class="ident">client</span>
+				.<span class="ident">api_version_parachain_host</span>(<span class="ident">relay_parent</span>)
+				.<span class="kw">await</span>
 				.<span class="ident">unwrap_or_default</span>()
 				.<span class="ident">unwrap_or_default</span>();
 
 			<span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">api_version</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">2</span> {
-				<span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span>
-					<span class="ident">api</span>.<span class="ident">session_info</span>(<span class="kw-2">&amp;</span><span class="ident">block_id</span>, <span class="ident">index</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">RuntimeApiError::Execution</span> {
+				<span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">client</span>.<span class="ident">session_info</span>(<span class="ident">relay_parent</span>, <span class="ident">index</span>).<span class="kw">await</span>.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> {
+					<span class="ident">RuntimeApiError::Execution</span> {
 						<span class="ident">runtime_api_name</span>: <span class="string">&quot;SessionInfo&quot;</span>,
 						<span class="ident">source</span>: <span class="ident">std::sync::Arc::new</span>(<span class="ident">e</span>),
-					});
+					}
+				});
 				<span class="ident">metrics</span>.<span class="ident">on_request</span>(<span class="ident">res</span>.<span class="ident">is_ok</span>());
 				<span class="ident">res</span>
 			} <span class="kw">else</span> {
 				<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">deprecated</span>)]</span>
-				<span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">api</span>.<span class="ident">session_info_before_version_2</span>(<span class="kw-2">&amp;</span><span class="ident">block_id</span>, <span class="ident">index</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> {
+				<span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="ident">client</span>.<span class="ident">session_info_before_version_2</span>(<span class="ident">relay_parent</span>, <span class="ident">index</span>).<span class="kw">await</span>.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> {
 					<span class="ident">RuntimeApiError::Execution</span> {
 						<span class="ident">runtime_api_name</span>: <span class="string">&quot;SessionInfo&quot;</span>,
 						<span class="ident">source</span>: <span class="ident">std::sync::Arc::new</span>(<span class="ident">e</span>),
