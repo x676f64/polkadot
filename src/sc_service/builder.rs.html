@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/git/checkouts/substrate-7e08433d4c370a21/7b81072/client/service/src/builder.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>builder.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/git/checkouts/substrate-7e08433d4c370a21/58a8080/client/service/src/builder.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>builder.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
     <noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../sc_service/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
         </a><h2 class="location"></h2>
     </nav>
@@ -886,35 +886,6 @@
 <span id="881">881</span>
 <span id="882">882</span>
 <span id="883">883</span>
-<span id="884">884</span>
-<span id="885">885</span>
-<span id="886">886</span>
-<span id="887">887</span>
-<span id="888">888</span>
-<span id="889">889</span>
-<span id="890">890</span>
-<span id="891">891</span>
-<span id="892">892</span>
-<span id="893">893</span>
-<span id="894">894</span>
-<span id="895">895</span>
-<span id="896">896</span>
-<span id="897">897</span>
-<span id="898">898</span>
-<span id="899">899</span>
-<span id="900">900</span>
-<span id="901">901</span>
-<span id="902">902</span>
-<span id="903">903</span>
-<span id="904">904</span>
-<span id="905">905</span>
-<span id="906">906</span>
-<span id="907">907</span>
-<span id="908">908</span>
-<span id="909">909</span>
-<span id="910">910</span>
-<span id="911">911</span>
-<span id="912">912</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2017-2022 Parity Technologies (UK) Ltd.</span>
@@ -954,17 +925,12 @@
 <span class="kw">use</span> <span class="ident">sc_consensus::import_queue::ImportQueue</span>;
 <span class="kw">use</span> <span class="ident">sc_executor::RuntimeVersionOf</span>;
 <span class="kw">use</span> <span class="ident">sc_keystore::LocalKeystore</span>;
-<span class="kw">use</span> <span class="ident">sc_network</span>::{
-	<span class="ident">config</span>::{<span class="ident">Role</span>, <span class="ident">SyncMode</span>},
-	<span class="ident">NetworkService</span>,
-};
+<span class="kw">use</span> <span class="ident">sc_network</span>::{<span class="ident">config::SyncMode</span>, <span class="ident">NetworkService</span>};
 <span class="kw">use</span> <span class="ident">sc_network_common::sync::warp::WarpSyncProvider</span>;
-<span class="kw">use</span> <span class="ident">sc_network_light::light_client_requests</span>::{<span class="self">self</span>, <span class="ident">handler::LightClientRequestHandler</span>};
+<span class="kw">use</span> <span class="ident">sc_network_light::light_client_requests::handler::LightClientRequestHandler</span>;
 <span class="kw">use</span> <span class="ident">sc_network_sync</span>::{
-	<span class="ident">block_request_handler</span>::{<span class="self">self</span>, <span class="ident">BlockRequestHandler</span>},
-	<span class="ident">state_request_handler</span>::{<span class="self">self</span>, <span class="ident">StateRequestHandler</span>},
-	<span class="ident">warp_request_handler</span>::{<span class="self">self</span>, <span class="ident">RequestHandler</span> <span class="kw">as</span> <span class="ident">WarpSyncRequestHandler</span>},
-	<span class="ident">ChainSync</span>,
+	<span class="ident">block_request_handler::BlockRequestHandler</span>, <span class="ident">state_request_handler::StateRequestHandler</span>,
+	<span class="ident">warp_request_handler::RequestHandler</span> <span class="kw">as</span> <span class="ident">WarpSyncRequestHandler</span>, <span class="ident">ChainSync</span>,
 };
 <span class="kw">use</span> <span class="ident">sc_rpc</span>::{
 	<span class="ident">author::AuthorApiServer</span>,
@@ -1648,11 +1614,8 @@
 		}
 	}
 
-	<span class="kw">let</span> <span class="ident">transaction_pool_adapter</span> <span class="op">=</span> <span class="ident">Arc::new</span>(<span class="ident">TransactionPoolAdapter</span> {
-		<span class="ident">imports_external_transactions</span>: <span class="op">!</span><span class="macro">matches!</span>(<span class="ident">config</span>.<span class="ident">role</span>, <span class="ident">Role::Light</span>),
-		<span class="ident">pool</span>: <span class="ident">transaction_pool</span>,
-		<span class="ident">client</span>: <span class="ident">client</span>.<span class="ident">clone</span>(),
-	});
+	<span class="kw">let</span> <span class="ident">transaction_pool_adapter</span> <span class="op">=</span>
+		<span class="ident">Arc::new</span>(<span class="ident">TransactionPoolAdapter</span> { <span class="ident">pool</span>: <span class="ident">transaction_pool</span>, <span class="ident">client</span>: <span class="ident">client</span>.<span class="ident">clone</span>() });
 
 	<span class="kw">let</span> <span class="ident">protocol_id</span> <span class="op">=</span> <span class="ident">config</span>.<span class="ident">protocol_id</span>();
 
@@ -1663,63 +1626,42 @@
 	};
 
 	<span class="kw">let</span> <span class="ident">block_request_protocol_config</span> <span class="op">=</span> {
-		<span class="kw">if</span> <span class="macro">matches!</span>(<span class="ident">config</span>.<span class="ident">role</span>, <span class="ident">Role::Light</span>) {
-			<span class="comment">// Allow outgoing requests but deny incoming requests.</span>
-			<span class="ident">block_request_handler::generate_protocol_config</span>(<span class="kw-2">&amp;</span><span class="ident">protocol_id</span>)
-		} <span class="kw">else</span> {
-			<span class="comment">// Allow both outgoing and incoming requests.</span>
-			<span class="kw">let</span> (<span class="ident">handler</span>, <span class="ident">protocol_config</span>) <span class="op">=</span> <span class="ident">BlockRequestHandler::new</span>(
-				<span class="kw-2">&amp;</span><span class="ident">protocol_id</span>,
-				<span class="ident">client</span>.<span class="ident">clone</span>(),
-				<span class="ident">config</span>.<span class="ident">network</span>.<span class="ident">default_peers_set</span>.<span class="ident">in_peers</span> <span class="kw">as</span> <span class="ident">usize</span> <span class="op">+</span>
-					<span class="ident">config</span>.<span class="ident">network</span>.<span class="ident">default_peers_set</span>.<span class="ident">out_peers</span> <span class="kw">as</span> <span class="ident">usize</span>,
-			);
-			<span class="ident">spawn_handle</span>.<span class="ident">spawn</span>(<span class="string">&quot;block-request-handler&quot;</span>, <span class="prelude-val">Some</span>(<span class="string">&quot;networking&quot;</span>), <span class="ident">handler</span>.<span class="ident">run</span>());
-			<span class="ident">protocol_config</span>
-		}
+		<span class="comment">// Allow both outgoing and incoming requests.</span>
+		<span class="kw">let</span> (<span class="ident">handler</span>, <span class="ident">protocol_config</span>) <span class="op">=</span> <span class="ident">BlockRequestHandler::new</span>(
+			<span class="kw-2">&amp;</span><span class="ident">protocol_id</span>,
+			<span class="ident">client</span>.<span class="ident">clone</span>(),
+			<span class="ident">config</span>.<span class="ident">network</span>.<span class="ident">default_peers_set</span>.<span class="ident">in_peers</span> <span class="kw">as</span> <span class="ident">usize</span> <span class="op">+</span>
+				<span class="ident">config</span>.<span class="ident">network</span>.<span class="ident">default_peers_set</span>.<span class="ident">out_peers</span> <span class="kw">as</span> <span class="ident">usize</span>,
+		);
+		<span class="ident">spawn_handle</span>.<span class="ident">spawn</span>(<span class="string">&quot;block-request-handler&quot;</span>, <span class="prelude-val">Some</span>(<span class="string">&quot;networking&quot;</span>), <span class="ident">handler</span>.<span class="ident">run</span>());
+		<span class="ident">protocol_config</span>
 	};
 
 	<span class="kw">let</span> <span class="ident">state_request_protocol_config</span> <span class="op">=</span> {
-		<span class="kw">if</span> <span class="macro">matches!</span>(<span class="ident">config</span>.<span class="ident">role</span>, <span class="ident">Role::Light</span>) {
-			<span class="comment">// Allow outgoing requests but deny incoming requests.</span>
-			<span class="ident">state_request_handler::generate_protocol_config</span>(<span class="kw-2">&amp;</span><span class="ident">protocol_id</span>)
-		} <span class="kw">else</span> {
-			<span class="comment">// Allow both outgoing and incoming requests.</span>
-			<span class="kw">let</span> (<span class="ident">handler</span>, <span class="ident">protocol_config</span>) <span class="op">=</span> <span class="ident">StateRequestHandler::new</span>(
-				<span class="kw-2">&amp;</span><span class="ident">protocol_id</span>,
-				<span class="ident">client</span>.<span class="ident">clone</span>(),
-				<span class="ident">config</span>.<span class="ident">network</span>.<span class="ident">default_peers_set_num_full</span> <span class="kw">as</span> <span class="ident">usize</span>,
-			);
-			<span class="ident">spawn_handle</span>.<span class="ident">spawn</span>(<span class="string">&quot;state-request-handler&quot;</span>, <span class="prelude-val">Some</span>(<span class="string">&quot;networking&quot;</span>), <span class="ident">handler</span>.<span class="ident">run</span>());
-			<span class="ident">protocol_config</span>
-		}
+		<span class="comment">// Allow both outgoing and incoming requests.</span>
+		<span class="kw">let</span> (<span class="ident">handler</span>, <span class="ident">protocol_config</span>) <span class="op">=</span> <span class="ident">StateRequestHandler::new</span>(
+			<span class="kw-2">&amp;</span><span class="ident">protocol_id</span>,
+			<span class="ident">client</span>.<span class="ident">clone</span>(),
+			<span class="ident">config</span>.<span class="ident">network</span>.<span class="ident">default_peers_set_num_full</span> <span class="kw">as</span> <span class="ident">usize</span>,
+		);
+		<span class="ident">spawn_handle</span>.<span class="ident">spawn</span>(<span class="string">&quot;state-request-handler&quot;</span>, <span class="prelude-val">Some</span>(<span class="string">&quot;networking&quot;</span>), <span class="ident">handler</span>.<span class="ident">run</span>());
+		<span class="ident">protocol_config</span>
 	};
 
 	<span class="kw">let</span> <span class="ident">warp_sync_params</span> <span class="op">=</span> <span class="ident">warp_sync</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">provider</span><span class="op">|</span> {
-		<span class="kw">let</span> <span class="ident">protocol_config</span> <span class="op">=</span> <span class="kw">if</span> <span class="macro">matches!</span>(<span class="ident">config</span>.<span class="ident">role</span>, <span class="ident">Role::Light</span>) {
-			<span class="comment">// Allow outgoing requests but deny incoming requests.</span>
-			<span class="ident">warp_request_handler::generate_request_response_config</span>(<span class="ident">protocol_id</span>.<span class="ident">clone</span>())
-		} <span class="kw">else</span> {
-			<span class="comment">// Allow both outgoing and incoming requests.</span>
-			<span class="kw">let</span> (<span class="ident">handler</span>, <span class="ident">protocol_config</span>) <span class="op">=</span>
-				<span class="ident">WarpSyncRequestHandler::new</span>(<span class="ident">protocol_id</span>.<span class="ident">clone</span>(), <span class="ident">provider</span>.<span class="ident">clone</span>());
-			<span class="ident">spawn_handle</span>.<span class="ident">spawn</span>(<span class="string">&quot;warp-sync-request-handler&quot;</span>, <span class="prelude-val">Some</span>(<span class="string">&quot;networking&quot;</span>), <span class="ident">handler</span>.<span class="ident">run</span>());
-			<span class="ident">protocol_config</span>
-		};
+		<span class="comment">// Allow both outgoing and incoming requests.</span>
+		<span class="kw">let</span> (<span class="ident">handler</span>, <span class="ident">protocol_config</span>) <span class="op">=</span>
+			<span class="ident">WarpSyncRequestHandler::new</span>(<span class="ident">protocol_id</span>.<span class="ident">clone</span>(), <span class="ident">provider</span>.<span class="ident">clone</span>());
+		<span class="ident">spawn_handle</span>.<span class="ident">spawn</span>(<span class="string">&quot;warp-sync-request-handler&quot;</span>, <span class="prelude-val">Some</span>(<span class="string">&quot;networking&quot;</span>), <span class="ident">handler</span>.<span class="ident">run</span>());
 		(<span class="ident">provider</span>, <span class="ident">protocol_config</span>)
 	});
 
 	<span class="kw">let</span> <span class="ident">light_client_request_protocol_config</span> <span class="op">=</span> {
-		<span class="kw">if</span> <span class="macro">matches!</span>(<span class="ident">config</span>.<span class="ident">role</span>, <span class="ident">Role::Light</span>) {
-			<span class="comment">// Allow outgoing requests but deny incoming requests.</span>
-			<span class="ident">light_client_requests::generate_protocol_config</span>(<span class="kw-2">&amp;</span><span class="ident">protocol_id</span>)
-		} <span class="kw">else</span> {
-			<span class="comment">// Allow both outgoing and incoming requests.</span>
-			<span class="kw">let</span> (<span class="ident">handler</span>, <span class="ident">protocol_config</span>) <span class="op">=</span>
-				<span class="ident">LightClientRequestHandler::new</span>(<span class="kw-2">&amp;</span><span class="ident">protocol_id</span>, <span class="ident">client</span>.<span class="ident">clone</span>());
-			<span class="ident">spawn_handle</span>.<span class="ident">spawn</span>(<span class="string">&quot;light-client-request-handler&quot;</span>, <span class="prelude-val">Some</span>(<span class="string">&quot;networking&quot;</span>), <span class="ident">handler</span>.<span class="ident">run</span>());
-			<span class="ident">protocol_config</span>
-		}
+		<span class="comment">// Allow both outgoing and incoming requests.</span>
+		<span class="kw">let</span> (<span class="ident">handler</span>, <span class="ident">protocol_config</span>) <span class="op">=</span>
+			<span class="ident">LightClientRequestHandler::new</span>(<span class="kw-2">&amp;</span><span class="ident">protocol_id</span>, <span class="ident">client</span>.<span class="ident">clone</span>());
+		<span class="ident">spawn_handle</span>.<span class="ident">spawn</span>(<span class="string">&quot;light-client-request-handler&quot;</span>, <span class="prelude-val">Some</span>(<span class="string">&quot;networking&quot;</span>), <span class="ident">handler</span>.<span class="ident">run</span>());
+		<span class="ident">protocol_config</span>
 	};
 
 	<span class="kw">let</span> <span class="ident">max_parallel_downloads</span> <span class="op">=</span> <span class="ident">config</span>.<span class="ident">network</span>.<span class="ident">max_parallel_downloads</span>;

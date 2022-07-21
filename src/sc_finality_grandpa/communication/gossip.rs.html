@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/git/checkouts/substrate-7e08433d4c370a21/7b81072/client/finality-grandpa/src/communication/gossip.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>gossip.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><script defer src="../../../main.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/usr/local/cargo/git/checkouts/substrate-7e08433d4c370a21/58a8080/client/finality-grandpa/src/communication/gossip.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>gossip.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../storage.js"></script><script src="../../../crates.js"></script><script defer src="../../../main.js"></script><script defer src="../../../source-script.js"></script><script defer src="../../../source-files.js"></script>
     <noscript><link rel="stylesheet" href="../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../../sc_finality_grandpa/index.html"><div class="logo-container"><img class="rust-logo" src="../../../rust-logo.svg" alt="logo"></div>
         </a><h2 class="location"></h2>
     </nav>
@@ -2547,18 +2547,6 @@
 <span id="2542">2542</span>
 <span id="2543">2543</span>
 <span id="2544">2544</span>
-<span id="2545">2545</span>
-<span id="2546">2546</span>
-<span id="2547">2547</span>
-<span id="2548">2548</span>
-<span id="2549">2549</span>
-<span id="2550">2550</span>
-<span id="2551">2551</span>
-<span id="2552">2552</span>
-<span id="2553">2553</span>
-<span id="2554">2554</span>
-<span id="2555">2555</span>
-<span id="2556">2556</span>
 </pre><pre class="rust"><code><span class="comment">// This file is part of Substrate.</span>
 
 <span class="comment">// Copyright (C) 2019-2022 Parity Technologies (UK) Ltd.</span>
@@ -3289,11 +3277,7 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Block</span>: <span class="ident">BlockT</span><span class="op">&gt;</span> <span class="ident">Inner</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span> {
 	<span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">config</span>: <span class="ident"><span class="kw">crate</span>::Config</span>) -&gt; <span class="self">Self</span> {
-		<span class="kw">let</span> <span class="ident">catch_up_config</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">config</span>.<span class="ident">local_role</span>.<span class="ident">is_light</span>() {
-			<span class="comment">// if we are a light client we shouldn&#39;t be issuing any catch-up requests</span>
-			<span class="comment">// as we don&#39;t participate in the full GRANDPA protocol</span>
-			<span class="ident">CatchUpConfig::disabled</span>()
-		} <span class="kw">else</span> <span class="kw">if</span> <span class="ident">config</span>.<span class="ident">observer_enabled</span> {
+		<span class="kw">let</span> <span class="ident">catch_up_config</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">config</span>.<span class="ident">observer_enabled</span> {
 			<span class="kw">if</span> <span class="ident">config</span>.<span class="ident">local_role</span>.<span class="ident">is_authority</span>() {
 				<span class="comment">// since the observer protocol is enabled, we will only issue</span>
 				<span class="comment">// catch-up requests if we are an authority (and only to other</span>
@@ -3792,10 +3776,6 @@
 			<span class="prelude-val">None</span> =&gt; <span class="kw">return</span> <span class="bool-val">false</span>,
 		};
 
-		<span class="kw">if</span> <span class="self">self</span>.<span class="ident">config</span>.<span class="ident">local_role</span>.<span class="ident">is_light</span>() {
-			<span class="kw">return</span> <span class="bool-val">false</span>
-		}
-
 		<span class="kw">if</span> <span class="ident">round_elapsed</span> <span class="op">&lt;</span> <span class="ident">round_duration</span>.<span class="ident">mul_f32</span>(<span class="ident">PROPAGATION_SOME</span>) {
 			<span class="self">self</span>.<span class="ident">peers</span>.<span class="ident">first_stage_peers</span>.<span class="ident">contains</span>(<span class="ident">who</span>)
 		} <span class="kw">else</span> <span class="kw">if</span> <span class="ident">round_elapsed</span> <span class="op">&lt;</span> <span class="ident">round_duration</span>.<span class="ident">mul_f32</span>(<span class="ident">PROPAGATION_ALL</span>) {
@@ -3826,10 +3806,6 @@
 			<span class="prelude-val">Some</span>(<span class="kw-2">ref</span> <span class="ident">local_view</span>) =&gt; <span class="ident">local_view</span>.<span class="ident">round_start</span>.<span class="ident">elapsed</span>(),
 			<span class="prelude-val">None</span> =&gt; <span class="kw">return</span> <span class="bool-val">false</span>,
 		};
-
-		<span class="kw">if</span> <span class="self">self</span>.<span class="ident">config</span>.<span class="ident">local_role</span>.<span class="ident">is_light</span>() {
-			<span class="kw">return</span> <span class="bool-val">false</span>
-		}
 
 		<span class="kw">if</span> <span class="ident">round_elapsed</span> <span class="op">&lt;</span> <span class="ident">round_duration</span>.<span class="ident">mul_f32</span>(<span class="ident">PROPAGATION_ALL</span>) {
 			<span class="self">self</span>.<span class="ident">peers</span>.<span class="ident">first_stage_peers</span>.<span class="ident">contains</span>(<span class="ident">who</span>) <span class="op">|</span><span class="op">|</span>
