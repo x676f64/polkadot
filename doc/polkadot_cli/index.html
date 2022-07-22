@@ -20,7 +20,9 @@ with all default values.</p>
 </div></div><div class="item-row"><div class="item-left module-item"><a class="fn" href="fn.run.html" title="polkadot_cli::run fn">run</a></div><div class="item-right docblock-short"><p>Parses polkadot specific CLI arguments and run the service.</p>
 </div></div><div class="item-row"><div class="item-left module-item"><a class="fn" href="fn.run_node.html" title="polkadot_cli::run_node fn">run_node</a></div><div class="item-right docblock-short"><p>Launch a node, accepting arguments just like a regular node,
 accepts an alternative overseer generator, to adjust behavior
-for integration tests as needed.</p>
+for integration tests as needed.
+<code>malus_finality_delay</code> restrict finality votes of this node
+to be at most <code>best_block - malus_finality_delay</code> height.</p>
 </div></div></div><h2 id="types" class="small-section-header"><a href="#types">Type Definitions</a></h2>
 <div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="type" href="type.Block.html" title="polkadot_cli::Block type">Block</a></div><div class="item-right docblock-short"><p>Block type.</p>
 </div></div><div class="item-row"><div class="item-left module-item"><a class="type" href="type.BlockId.html" title="polkadot_cli::BlockId type">BlockId</a></div><div class="item-right docblock-short"><p>Block ID.</p>

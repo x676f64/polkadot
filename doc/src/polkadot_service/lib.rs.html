@@ -1535,6 +1535,20 @@
 <span id="1530">1530</span>
 <span id="1531">1531</span>
 <span id="1532">1532</span>
+<span id="1533">1533</span>
+<span id="1534">1534</span>
+<span id="1535">1535</span>
+<span id="1536">1536</span>
+<span id="1537">1537</span>
+<span id="1538">1538</span>
+<span id="1539">1539</span>
+<span id="1540">1540</span>
+<span id="1541">1541</span>
+<span id="1542">1542</span>
+<span id="1543">1543</span>
+<span id="1544">1544</span>
+<span id="1545">1545</span>
+<span id="1546">1546</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -2262,6 +2276,7 @@
 	<span class="ident">overseer_enable_anyways</span>: <span class="ident">bool</span>,
 	<span class="ident">overseer_gen</span>: <span class="ident">OverseerGenerator</span>,
 	<span class="ident">overseer_message_channel_capacity_override</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
+	<span class="ident">_malus_finality_delay</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>,
 	<span class="ident">hwbench</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">sc_sysinfo::HwBench</span><span class="op">&gt;</span>,
 ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">NewFull</span><span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">FullClient</span><span class="op">&lt;</span><span class="ident">RuntimeApi</span>, <span class="ident">ExecutorDispatch</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">Error</span><span class="op">&gt;</span>
 <span class="kw">where</span>
@@ -2759,7 +2774,15 @@
 		<span class="comment">// add a custom voting rule to temporarily stop voting for new blocks</span>
 		<span class="comment">// after the given pause block is finalized and restarting after the</span>
 		<span class="comment">// given delay.</span>
-		<span class="kw">let</span> <span class="ident">builder</span> <span class="op">=</span> <span class="ident">grandpa::VotingRulesBuilder::default</span>();
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">builder</span> <span class="op">=</span> <span class="ident">grandpa::VotingRulesBuilder::default</span>();
+
+		<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;malus&quot;</span>))]</span>
+		<span class="kw">let</span> <span class="ident">_malus_finality_delay</span> <span class="op">=</span> <span class="prelude-val">None</span>;
+
+		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">delay</span>) <span class="op">=</span> <span class="ident">_malus_finality_delay</span> {
+			<span class="macro">info!</span>(<span class="question-mark">?</span><span class="ident">delay</span>, <span class="string">&quot;Enabling malus finality delay&quot;</span>,);
+			<span class="ident">builder</span> <span class="op">=</span> <span class="ident">builder</span>.<span class="ident">add</span>(<span class="ident">grandpa::BeforeBestBlockBy</span>(<span class="ident">delay</span>));
+		};
 
 		<span class="kw">let</span> <span class="ident">voting_rule</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">grandpa_pause</span> {
 			<span class="prelude-val">Some</span>((<span class="ident">block</span>, <span class="ident">delay</span>)) =&gt; {
@@ -2887,6 +2910,7 @@
 	<span class="ident">overseer_enable_anyways</span>: <span class="ident">bool</span>,
 	<span class="ident">overseer_gen</span>: <span class="kw">impl</span> <span class="ident">OverseerGen</span>,
 	<span class="ident">overseer_message_channel_override</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
+	<span class="ident">malus_finality_delay</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>,
 	<span class="ident">hwbench</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">sc_sysinfo::HwBench</span><span class="op">&gt;</span>,
 ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">NewFull</span><span class="op">&lt;</span><span class="ident">Client</span><span class="op">&gt;</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
 	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;rococo-native&quot;</span>)]</span>
@@ -2905,6 +2929,7 @@
 			<span class="ident">overseer_enable_anyways</span>,
 			<span class="ident">overseer_gen</span>,
 			<span class="ident">overseer_message_channel_override</span>,
+			<span class="ident">malus_finality_delay</span>,
 			<span class="ident">hwbench</span>,
 		)
 		.<span class="ident">map</span>(<span class="op">|</span><span class="ident">full</span><span class="op">|</span> <span class="ident">full</span>.<span class="ident">with_client</span>(<span class="ident">Client::Rococo</span>))
@@ -2923,6 +2948,7 @@
 			<span class="ident">overseer_enable_anyways</span>,
 			<span class="ident">overseer_gen</span>,
 			<span class="ident">overseer_message_channel_override</span>,
+			<span class="ident">malus_finality_delay</span>,
 			<span class="ident">hwbench</span>,
 		)
 		.<span class="ident">map</span>(<span class="op">|</span><span class="ident">full</span><span class="op">|</span> <span class="ident">full</span>.<span class="ident">with_client</span>(<span class="ident">Client::Kusama</span>))
@@ -2941,6 +2967,7 @@
 			<span class="ident">overseer_enable_anyways</span>,
 			<span class="ident">overseer_gen</span>,
 			<span class="ident">overseer_message_channel_override</span>,
+			<span class="ident">malus_finality_delay</span>,
 			<span class="ident">hwbench</span>,
 		)
 		.<span class="ident">map</span>(<span class="op">|</span><span class="ident">full</span><span class="op">|</span> <span class="ident">full</span>.<span class="ident">with_client</span>(<span class="ident">Client::Westend</span>))
@@ -2962,6 +2989,7 @@
 				<span class="macro">gum::warn!</span>(<span class="string">&quot;Channel capacity should _never_ be tampered with on polkadot!&quot;</span>);
 				<span class="ident">capacity</span>
 			}),
+			<span class="ident">malus_finality_delay</span>,
 			<span class="ident">hwbench</span>,
 		)
 		.<span class="ident">map</span>(<span class="op">|</span><span class="ident">full</span><span class="op">|</span> <span class="ident">full</span>.<span class="ident">with_client</span>(<span class="ident">Client::Polkadot</span>))

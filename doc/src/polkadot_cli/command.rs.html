@@ -681,6 +681,19 @@
 <span id="676">676</span>
 <span id="677">677</span>
 <span id="678">678</span>
+<span id="679">679</span>
+<span id="680">680</span>
+<span id="681">681</span>
+<span id="682">682</span>
+<span id="683">683</span>
+<span id="684">684</span>
+<span id="685">685</span>
+<span id="686">686</span>
+<span id="687">687</span>
+<span id="688">688</span>
+<span id="689">689</span>
+<span id="690">690</span>
+<span id="691">691</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -950,14 +963,21 @@
 <span class="doccomment">/// Launch a node, accepting arguments just like a regular node,</span>
 <span class="doccomment">/// accepts an alternative overseer generator, to adjust behavior</span>
 <span class="doccomment">/// for integration tests as needed.</span>
+<span class="doccomment">/// `malus_finality_delay` restrict finality votes of this node</span>
+<span class="doccomment">/// to be at most `best_block - malus_finality_delay` height.</span>
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;malus&quot;</span>)]</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">run_node</span>(<span class="ident">run</span>: <span class="ident">Cli</span>, <span class="ident">overseer_gen</span>: <span class="kw">impl</span> <span class="ident">service::OverseerGen</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-	<span class="ident">run_node_inner</span>(<span class="ident">run</span>, <span class="ident">overseer_gen</span>, <span class="op">|</span><span class="ident">_logger_builder</span>, <span class="ident">_config</span><span class="op">|</span> {})
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">run_node</span>(
+	<span class="ident">run</span>: <span class="ident">Cli</span>,
+	<span class="ident">overseer_gen</span>: <span class="kw">impl</span> <span class="ident">service::OverseerGen</span>,
+	<span class="ident">malus_finality_delay</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>,
+) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+	<span class="ident">run_node_inner</span>(<span class="ident">run</span>, <span class="ident">overseer_gen</span>, <span class="ident">malus_finality_delay</span>, <span class="op">|</span><span class="ident">_logger_builder</span>, <span class="ident">_config</span><span class="op">|</span> {})
 }
 
 <span class="kw">fn</span> <span class="ident">run_node_inner</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(
 	<span class="ident">cli</span>: <span class="ident">Cli</span>,
 	<span class="ident">overseer_gen</span>: <span class="kw">impl</span> <span class="ident">service::OverseerGen</span>,
+	<span class="ident">maybe_malus_finality_delay</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>,
 	<span class="ident">logger_hook</span>: <span class="ident">F</span>,
 ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 <span class="kw">where</span>
@@ -1023,6 +1043,7 @@
 			<span class="bool-val">false</span>,
 			<span class="ident">overseer_gen</span>,
 			<span class="ident">cli</span>.<span class="ident">run</span>.<span class="ident">overseer_channel_capacity_override</span>,
+			<span class="ident">maybe_malus_finality_delay</span>,
 			<span class="ident">hwbench</span>,
 		)
 		.<span class="ident">map</span>(<span class="op">|</span><span class="ident">full</span><span class="op">|</span> <span class="ident">full</span>.<span class="ident">task_manager</span>)
@@ -1060,7 +1081,12 @@
 	}
 
 	<span class="kw">match</span> <span class="kw-2">&amp;</span><span class="ident">cli</span>.<span class="ident">subcommand</span> {
-		<span class="prelude-val">None</span> =&gt; <span class="ident">run_node_inner</span>(<span class="ident">cli</span>, <span class="ident">service::RealOverseerGen</span>, <span class="ident">polkadot_node_metrics::logger_hook</span>()),
+		<span class="prelude-val">None</span> =&gt; <span class="ident">run_node_inner</span>(
+			<span class="ident">cli</span>,
+			<span class="ident">service::RealOverseerGen</span>,
+			<span class="prelude-val">None</span>,
+			<span class="ident">polkadot_node_metrics::logger_hook</span>(),
+		),
 		<span class="prelude-val">Some</span>(<span class="ident">Subcommand::BuildSpec</span>(<span class="ident">cmd</span>)) =&gt; {
 			<span class="kw">let</span> <span class="ident">runner</span> <span class="op">=</span> <span class="ident">cli</span>.<span class="ident">create_runner</span>(<span class="ident">cmd</span>)<span class="question-mark">?</span>;
 			<span class="prelude-val">Ok</span>(<span class="ident">runner</span>.<span class="ident">sync_run</span>(<span class="op">|</span><span class="ident">config</span><span class="op">|</span> <span class="ident">cmd</span>.<span class="ident">run</span>(<span class="ident">config</span>.<span class="ident">chain_spec</span>, <span class="ident">config</span>.<span class="ident">network</span>))<span class="question-mark">?</span>)
