@@ -1,1 +1,0 @@
-initSidebarItems({"enum":[["Color","Available standard ANSI colors for use with `OwoColorize::color` or `OwoColorize::on_color`"]]});

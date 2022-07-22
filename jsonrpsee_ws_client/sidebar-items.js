@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["WsClient","Generic asynchronous client."],["WsClientBuilder","Builder for [`WsClient`]."]]});

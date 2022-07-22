@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["IDSequence","A Sequence of IDs."],["SeqID","A Sequential ID."]]});

@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["CDict","Compression dictionary."],["DDict","A digested decompression dictionary."],["DecoderDictionary","Prepared dictionary for decompression"],["EncoderDictionary","Prepared dictionary for compression"]]});

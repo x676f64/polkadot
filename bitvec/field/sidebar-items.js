@@ -1,1 +1,0 @@
-initSidebarItems({"trait":[["BitField","C-Style Bit-Field Access"]]});

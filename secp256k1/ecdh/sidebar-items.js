@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["SharedSecret","Enables two parties to create a shared secret without revealing their own secrets."]]});

@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["BitVec","Bit-Precision Dynamic Array"],["Drain","Draining Iteration"],["IntoIter","An iterator over a `BitBox`."],["Splice","Splicing Iteration"]]});

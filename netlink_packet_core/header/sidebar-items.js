@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["NetlinkHeader","A Netlink header representation. A netlink header has the following structure:"]]});

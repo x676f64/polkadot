@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["MigrateToV2","Migrate the pool reward scheme to the new version, as per https://github.com/paritytech/substrate/pull/11669.."],["OldPoolMember",""],["OldRewardPool",""]]});

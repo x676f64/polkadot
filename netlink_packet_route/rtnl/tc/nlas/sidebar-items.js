@@ -1,1 +1,0 @@
-initSidebarItems({"constant":[["STATS_BASIC_LEN",""],["STATS_LEN",""],["STATS_QUEUE_LEN",""]],"enum":[["Nla",""],["Stats2",""]],"struct":[["Stats","Generic queue statistics"],["StatsBasic","Byte/Packet throughput statistics"],["StatsBasicBuffer",""],["StatsBuffer",""],["StatsQueue","Queuing statistics"],["StatsQueueBuffer",""]]});

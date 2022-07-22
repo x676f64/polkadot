@@ -1,1 +1,0 @@
-initSidebarItems({"fn":[["entropy","Obtain a series of random bytes."]]});

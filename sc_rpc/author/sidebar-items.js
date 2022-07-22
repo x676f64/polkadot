@@ -1,1 +1,0 @@
-initSidebarItems({"mod":[["error","Authoring RPC module errors."],["hash","Extrinsic helpers for author RPC module."]],"struct":[["Author","Authoring API"]],"trait":[["AuthorApiClient","Client implementation for the `AuthorApi` RPC API."],["AuthorApiServer","Server trait implementation for the `AuthorApi` RPC API."]]});

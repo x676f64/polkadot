@@ -1,1 +1,0 @@
-initSidebarItems({"type":[["CStr","See [core::ffi::CStr]."],["CString","See [alloc::ffi::CString]."],["FromBytesWithNulError","See [core::ffi::FromBytesWithNulError]."],["NulError","See [alloc::ffi::NulError]."],["c_char","Equivalent to C’s `char` type."]]});

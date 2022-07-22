@@ -1,1 +1,0 @@
-initSidebarItems({"mod":[["error","State RPC errors."],["helpers","Substrate state API helpers."]],"trait":[["StateApiClient","Client implementation for the `StateApi` RPC API."],["StateApiServer","Server trait implementation for the `StateApi` RPC API."]]});
