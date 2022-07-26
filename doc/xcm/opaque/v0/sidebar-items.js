@@ -1,1 +1,1 @@
-initSidebarItems({"type":[["Order",""]]});
+window.SIDEBAR_ITEMS = {"type":[["Order",""]]};

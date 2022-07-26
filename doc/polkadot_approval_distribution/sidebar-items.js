@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["ApprovalDistribution","The Approval Distribution subsystem."]]});
+window.SIDEBAR_ITEMS = {"struct":[["ApprovalDistribution","The Approval Distribution subsystem."]]};

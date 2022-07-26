@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["CandidateBackingSubsystem","The candidate backing subsystem."]]});
+window.SIDEBAR_ITEMS = {"struct":[["CandidateBackingSubsystem","The candidate backing subsystem."]]};

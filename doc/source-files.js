@@ -1,4 +1,4 @@
-var N = null;var sourcesIndex = {};
+var sourcesIndex = {};
 sourcesIndex["adder_collator"] = {"name":"","files":["cli.rs","main.rs"]};
 sourcesIndex["adder_collator_puppet_worker"] = {"name":"","files":["puppet_worker.rs"]};
 sourcesIndex["gen_ref_constants"] = {"name":"","files":["gen_ref_constants.rs"]};

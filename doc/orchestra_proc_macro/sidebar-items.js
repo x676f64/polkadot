@@ -1,1 +1,1 @@
-initSidebarItems({"attr":[["contextbounds",""],["orchestra",""],["subsystem",""]]});
+window.SIDEBAR_ITEMS = {"attr":[["contextbounds",""],["orchestra",""],["subsystem",""]]};

@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["create_uxt_kusama",""]]});
+window.SIDEBAR_ITEMS = {"fn":[["create_uxt_kusama",""]]};

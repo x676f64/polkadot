@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["constants",""]]});
+window.SIDEBAR_ITEMS = {"mod":[["constants",""]]};

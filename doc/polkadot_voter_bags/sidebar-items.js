@@ -1,1 +1,1 @@
-initSidebarItems({"enum":[["Runtime",""]],"fn":[["main",""]],"struct":[["Opt",""]]});
+window.SIDEBAR_ITEMS = {"enum":[["Runtime",""]],"fn":[["main",""]],"struct":[["Opt",""]]};

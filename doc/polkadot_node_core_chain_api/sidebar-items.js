@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["ChainApiSubsystem","The Chain API Subsystem implementation."]]});
+window.SIDEBAR_ITEMS = {"struct":[["ChainApiSubsystem","The Chain API Subsystem implementation."]]};

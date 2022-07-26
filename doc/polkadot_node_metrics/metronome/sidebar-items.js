@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["Metronome","Create a stream of ticks with a defined cycle duration."]]});
+window.SIDEBAR_ITEMS = {"struct":[["Metronome","Create a stream of ticks with a defined cycle duration."]]};

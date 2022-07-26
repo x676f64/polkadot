@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["DisputeAncestorOptions",""],["DisputeValidCandidates",""]]});
+window.SIDEBAR_ITEMS = {"struct":[["DisputeAncestorOptions",""],["DisputeValidCandidates",""]]};

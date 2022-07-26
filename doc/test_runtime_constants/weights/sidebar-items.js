@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["block_weights",""],["extrinsic_weights",""],["paritydb_weights",""],["rocksdb_weights",""]]});
+window.SIDEBAR_ITEMS = {"mod":[["block_weights",""],["extrinsic_weights",""],["paritydb_weights",""],["rocksdb_weights",""]]};

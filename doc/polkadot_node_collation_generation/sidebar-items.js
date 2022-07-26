@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["CollationGenerationSubsystem","Collation Generation Subsystem"]]});
+window.SIDEBAR_ITEMS = {"struct":[["CollationGenerationSubsystem","Collation Generation Subsystem"]]};

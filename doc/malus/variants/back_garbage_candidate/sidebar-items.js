@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["BackGarbageCandidate","Generates an overseer that replaces the candidate validation subsystem with our malicious variant."]]});
+window.SIDEBAR_ITEMS = {"struct":[["BackGarbageCandidate","Generates an overseer that replaces the candidate validation subsystem with our malicious variant."]]};
