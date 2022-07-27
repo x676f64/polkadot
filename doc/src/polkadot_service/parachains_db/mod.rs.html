@@ -153,6 +153,15 @@
 <span id="147">147</span>
 <span id="148">148</span>
 <span id="149">149</span>
+<span id="150">150</span>
+<span id="151">151</span>
+<span id="152">152</span>
+<span id="153">153</span>
+<span id="154">154</span>
+<span id="155">155</span>
+<span id="156">156</span>
+<span id="157">157</span>
+<span id="158">158</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -176,20 +185,25 @@
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;full-node&quot;</span>)]</span>
 <span class="kw">mod</span> <span class="ident">upgrade</span>;
 
+<span class="kw">const</span> <span class="ident">LOG_TARGET</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;parachain::db&quot;</span>;
+
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">any</span>(<span class="ident">test</span>, <span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;full-node&quot;</span>))]</span>
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">mod</span> <span class="ident">columns</span> {
 	<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">v0</span> {
 		<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">NUM_COLUMNS</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">3</span>;
 	}
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">NUM_COLUMNS</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">5</span>;
 
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">COL_AVAILABILITY_DATA</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">0</span>;
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">COL_AVAILABILITY_META</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">1</span>;
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">COL_APPROVAL_DATA</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">2</span>;
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">COL_CHAIN_SELECTION_DATA</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">3</span>;
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">COL_DISPUTE_COORDINATOR_DATA</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">4</span>;
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">ORDERED_COL</span>: <span class="kw-2">&amp;</span>[<span class="ident">u32</span>] <span class="op">=</span>
-		<span class="kw-2">&amp;</span>[<span class="ident">COL_AVAILABILITY_META</span>, <span class="ident">COL_CHAIN_SELECTION_DATA</span>, <span class="ident">COL_DISPUTE_COORDINATOR_DATA</span>];
+	<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">v1</span> {
+		<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">NUM_COLUMNS</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">5</span>;
+
+		<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">COL_AVAILABILITY_DATA</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">0</span>;
+		<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">COL_AVAILABILITY_META</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">1</span>;
+		<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">COL_APPROVAL_DATA</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">2</span>;
+		<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">COL_CHAIN_SELECTION_DATA</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">3</span>;
+		<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">COL_DISPUTE_COORDINATOR_DATA</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">4</span>;
+		<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">ORDERED_COL</span>: <span class="kw-2">&amp;</span>[<span class="ident">u32</span>] <span class="op">=</span>
+			<span class="kw-2">&amp;</span>[<span class="ident">COL_AVAILABILITY_META</span>, <span class="ident">COL_CHAIN_SELECTION_DATA</span>, <span class="ident">COL_DISPUTE_COORDINATOR_DATA</span>];
+	}
 }
 
 <span class="doccomment">/// Columns used by different subsystems.</span>
@@ -211,12 +225,18 @@
 <span class="doccomment">/// The real columns used by the parachains DB.</span>
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">any</span>(<span class="ident">test</span>, <span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;full-node&quot;</span>))]</span>
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">REAL_COLUMNS</span>: <span class="ident">ColumnsConfig</span> <span class="op">=</span> <span class="ident">ColumnsConfig</span> {
-	<span class="ident">col_availability_data</span>: <span class="ident">columns::COL_AVAILABILITY_DATA</span>,
-	<span class="ident">col_availability_meta</span>: <span class="ident">columns::COL_AVAILABILITY_META</span>,
-	<span class="ident">col_approval_data</span>: <span class="ident">columns::COL_APPROVAL_DATA</span>,
-	<span class="ident">col_chain_selection_data</span>: <span class="ident">columns::COL_CHAIN_SELECTION_DATA</span>,
-	<span class="ident">col_dispute_coordinator_data</span>: <span class="ident">columns::COL_DISPUTE_COORDINATOR_DATA</span>,
+	<span class="ident">col_availability_data</span>: <span class="ident">columns::v1::COL_AVAILABILITY_DATA</span>,
+	<span class="ident">col_availability_meta</span>: <span class="ident">columns::v1::COL_AVAILABILITY_META</span>,
+	<span class="ident">col_approval_data</span>: <span class="ident">columns::v1::COL_APPROVAL_DATA</span>,
+	<span class="ident">col_chain_selection_data</span>: <span class="ident">columns::v1::COL_CHAIN_SELECTION_DATA</span>,
+	<span class="ident">col_dispute_coordinator_data</span>: <span class="ident">columns::v1::COL_DISPUTE_COORDINATOR_DATA</span>,
 };
+
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">PartialEq</span>)]</span>
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">enum</span> <span class="ident">DatabaseKind</span> {
+	<span class="ident">ParityDB</span>,
+	<span class="ident">RocksDB</span>,
+}
 
 <span class="doccomment">/// The cache size for each column, in megabytes.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
@@ -250,27 +270,29 @@
 
 	<span class="kw">let</span> <span class="ident">path</span> <span class="op">=</span> <span class="ident">root</span>.<span class="ident">join</span>(<span class="string">&quot;parachains&quot;</span>).<span class="ident">join</span>(<span class="string">&quot;db&quot;</span>);
 
-	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">db_config</span> <span class="op">=</span> <span class="ident">DatabaseConfig::with_columns</span>(<span class="ident">columns::NUM_COLUMNS</span>);
+	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">db_config</span> <span class="op">=</span> <span class="ident">DatabaseConfig::with_columns</span>(<span class="ident">columns::v1::NUM_COLUMNS</span>);
 
 	<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">db_config</span>
 		.<span class="ident">memory_budget</span>
-		.<span class="ident">insert</span>(<span class="ident">columns::COL_AVAILABILITY_DATA</span>, <span class="ident">cache_sizes</span>.<span class="ident">availability_data</span>);
+		.<span class="ident">insert</span>(<span class="ident">columns::v1::COL_AVAILABILITY_DATA</span>, <span class="ident">cache_sizes</span>.<span class="ident">availability_data</span>);
 	<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">db_config</span>
 		.<span class="ident">memory_budget</span>
-		.<span class="ident">insert</span>(<span class="ident">columns::COL_AVAILABILITY_META</span>, <span class="ident">cache_sizes</span>.<span class="ident">availability_meta</span>);
+		.<span class="ident">insert</span>(<span class="ident">columns::v1::COL_AVAILABILITY_META</span>, <span class="ident">cache_sizes</span>.<span class="ident">availability_meta</span>);
 	<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">db_config</span>
 		.<span class="ident">memory_budget</span>
-		.<span class="ident">insert</span>(<span class="ident">columns::COL_APPROVAL_DATA</span>, <span class="ident">cache_sizes</span>.<span class="ident">approval_data</span>);
+		.<span class="ident">insert</span>(<span class="ident">columns::v1::COL_APPROVAL_DATA</span>, <span class="ident">cache_sizes</span>.<span class="ident">approval_data</span>);
 
 	<span class="kw">let</span> <span class="ident">path_str</span> <span class="op">=</span> <span class="ident">path</span>
 		.<span class="ident">to_str</span>()
 		.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">other_io_error</span>(<span class="macro">format!</span>(<span class="string">&quot;Bad database path: {:?}&quot;</span>, <span class="ident">path</span>)))<span class="question-mark">?</span>;
 
 	<span class="ident">std::fs::create_dir_all</span>(<span class="kw-2">&amp;</span><span class="ident">path_str</span>)<span class="question-mark">?</span>;
-	<span class="ident">upgrade::try_upgrade_db</span>(<span class="kw-2">&amp;</span><span class="ident">path</span>)<span class="question-mark">?</span>;
+	<span class="ident">upgrade::try_upgrade_db</span>(<span class="kw-2">&amp;</span><span class="ident">path</span>, <span class="ident">DatabaseKind::RocksDB</span>)<span class="question-mark">?</span>;
 	<span class="kw">let</span> <span class="ident">db</span> <span class="op">=</span> <span class="ident">Database::open</span>(<span class="kw-2">&amp;</span><span class="ident">db_config</span>, <span class="kw-2">&amp;</span><span class="ident">path_str</span>)<span class="question-mark">?</span>;
-	<span class="kw">let</span> <span class="ident">db</span> <span class="op">=</span>
-		<span class="ident">polkadot_node_subsystem_util::database::kvdb_impl::DbAdapter::new</span>(<span class="ident">db</span>, <span class="ident">columns::ORDERED_COL</span>);
+	<span class="kw">let</span> <span class="ident">db</span> <span class="op">=</span> <span class="ident">polkadot_node_subsystem_util::database::kvdb_impl::DbAdapter::new</span>(
+		<span class="ident">db</span>,
+		<span class="ident">columns::v1::ORDERED_COL</span>,
+	);
 
 	<span class="prelude-val">Ok</span>(<span class="ident">Arc::new</span>(<span class="ident">db</span>))
 }
@@ -287,18 +309,14 @@
 		.<span class="ident">ok_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">other_io_error</span>(<span class="macro">format!</span>(<span class="string">&quot;Bad database path: {:?}&quot;</span>, <span class="ident">path</span>)))<span class="question-mark">?</span>;
 
 	<span class="ident">std::fs::create_dir_all</span>(<span class="kw-2">&amp;</span><span class="ident">path_str</span>)<span class="question-mark">?</span>;
+	<span class="ident">upgrade::try_upgrade_db</span>(<span class="kw-2">&amp;</span><span class="ident">path</span>, <span class="ident">DatabaseKind::ParityDB</span>)<span class="question-mark">?</span>;
 
-	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">options</span> <span class="op">=</span> <span class="ident">parity_db::Options::with_columns</span>(<span class="kw-2">&amp;</span><span class="ident">path</span>, <span class="ident">columns::NUM_COLUMNS</span> <span class="kw">as</span> <span class="ident">u8</span>);
-	<span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="ident">columns::ORDERED_COL</span> {
-		<span class="ident">options</span>.<span class="ident">columns</span>[<span class="kw-2">*</span><span class="ident">i</span> <span class="kw">as</span> <span class="ident">usize</span>].<span class="ident">btree_index</span> <span class="op">=</span> <span class="bool-val">true</span>;
-	}
-
-	<span class="kw">let</span> <span class="ident">db</span> <span class="op">=</span> <span class="ident">parity_db::Db::open_or_create</span>(<span class="kw-2">&amp;</span><span class="ident">options</span>)
+	<span class="kw">let</span> <span class="ident">db</span> <span class="op">=</span> <span class="ident">parity_db::Db::open_or_create</span>(<span class="kw-2">&amp;</span><span class="ident">upgrade::paritydb_version_1_config</span>(<span class="kw-2">&amp;</span><span class="ident">path</span>))
 		.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> <span class="ident">io::Error::new</span>(<span class="ident">io::ErrorKind::Other</span>, <span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="ident">err</span>)))<span class="question-mark">?</span>;
 
 	<span class="kw">let</span> <span class="ident">db</span> <span class="op">=</span> <span class="ident">polkadot_node_subsystem_util::database::paritydb_impl::DbAdapter::new</span>(
 		<span class="ident">db</span>,
-		<span class="ident">columns::ORDERED_COL</span>,
+		<span class="ident">columns::v1::ORDERED_COL</span>,
 	);
 	<span class="prelude-val">Ok</span>(<span class="ident">Arc::new</span>(<span class="ident">db</span>))
 }

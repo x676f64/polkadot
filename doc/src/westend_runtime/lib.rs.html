@@ -1747,6 +1747,16 @@
 <span id="1741">1741</span>
 <span id="1742">1742</span>
 <span id="1743">1743</span>
+<span id="1744">1744</span>
+<span id="1745">1745</span>
+<span id="1746">1746</span>
+<span id="1747">1747</span>
+<span id="1748">1748</span>
+<span id="1749">1749</span>
+<span id="1750">1750</span>
+<span id="1751">1751</span>
+<span id="1752">1752</span>
+<span id="1753">1753</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -3324,6 +3334,16 @@
 		}
 		<span class="kw">fn</span> <span class="ident">query_fee_details</span>(<span class="ident">uxt</span>: <span class="op">&lt;</span><span class="ident">Block</span> <span class="kw">as</span> <span class="ident">BlockT</span><span class="op">&gt;</span><span class="ident">::Extrinsic</span>, <span class="ident">len</span>: <span class="ident">u32</span>) -&gt; <span class="ident">FeeDetails</span><span class="op">&lt;</span><span class="ident">Balance</span><span class="op">&gt;</span> {
 			<span class="ident">TransactionPayment::query_fee_details</span>(<span class="ident">uxt</span>, <span class="ident">len</span>)
+		}
+	}
+
+	<span class="kw">impl</span> <span class="ident">pallet_nomination_pools_runtime_api::NominationPoolsApi</span><span class="op">&lt;</span>
+		<span class="ident">Block</span>,
+		<span class="ident">AccountId</span>,
+		<span class="ident">Balance</span>,
+	<span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
+		<span class="kw">fn</span> <span class="ident">pending_rewards</span>(<span class="ident">member</span>: <span class="ident">AccountId</span>) -&gt; <span class="ident">Balance</span> {
+			<span class="ident">NominationPools::pending_rewards</span>(<span class="ident">member</span>)
 		}
 	}
 
