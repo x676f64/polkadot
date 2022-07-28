@@ -1545,11 +1545,6 @@
 <span id="1539">1539</span>
 <span id="1540">1540</span>
 <span id="1541">1541</span>
-<span id="1542">1542</span>
-<span id="1543">1543</span>
-<span id="1544">1544</span>
-<span id="1545">1545</span>
-<span id="1546">1546</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -2677,11 +2672,6 @@
 						<span class="ident">parent</span>,
 					).<span class="kw">await</span>.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">Box::new</span>(<span class="ident">e</span>))<span class="question-mark">?</span>;
 
-					<span class="kw">let</span> <span class="ident">uncles</span> <span class="op">=</span> <span class="ident">sc_consensus_uncles::create_uncles_inherent_data_provider</span>(
-						<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">client_clone</span>,
-						<span class="ident">parent</span>,
-					)<span class="question-mark">?</span>;
-
 					<span class="kw">let</span> <span class="ident">timestamp</span> <span class="op">=</span> <span class="ident">sp_timestamp::InherentDataProvider::from_system_time</span>();
 
 					<span class="kw">let</span> <span class="ident">slot</span> <span class="op">=</span>
@@ -2690,7 +2680,7 @@
 							<span class="ident">slot_duration</span>,
 						);
 
-					<span class="prelude-val">Ok</span>((<span class="ident">timestamp</span>, <span class="ident">slot</span>, <span class="ident">uncles</span>, <span class="ident">parachain</span>))
+					<span class="prelude-val">Ok</span>((<span class="ident">timestamp</span>, <span class="ident">slot</span>, <span class="ident">parachain</span>))
 				}
 			},
 			<span class="ident">force_authoring</span>,
