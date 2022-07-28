@@ -2309,6 +2309,8 @@
 <span id="2303">2303</span>
 <span id="2304">2304</span>
 <span id="2305">2305</span>
+<span id="2306">2306</span>
+<span id="2307">2307</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -4436,7 +4438,9 @@
 			<span class="string">&quot;can support {} voters in a single block for council elections; total bond {}&quot;</span>,
 			<span class="ident">voters</span>, <span class="ident">cost_dollars</span>,
 		);
-		<span class="macro">assert!</span>(<span class="ident">cost_dollars</span> <span class="op">&gt;</span> <span class="number">150_000</span>); <span class="comment">// DOLLAR ~ new DOT ~ 10e10</span>
+		<span class="comment">// The minimal number of voters we expect per block.</span>
+		<span class="macro">assert!</span>(<span class="ident">voters</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">1_000</span>);
+		<span class="macro">assert!</span>(<span class="ident">cost_dollars</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">10_000</span>);
 	}
 
 	<span class="attribute">#[<span class="ident">test</span>]</span>
