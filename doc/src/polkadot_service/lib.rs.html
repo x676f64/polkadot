@@ -1545,6 +1545,16 @@
 <span id="1539">1539</span>
 <span id="1540">1540</span>
 <span id="1541">1541</span>
+<span id="1542">1542</span>
+<span id="1543">1543</span>
+<span id="1544">1544</span>
+<span id="1545">1545</span>
+<span id="1546">1546</span>
+<span id="1547">1547</span>
+<span id="1548">1548</span>
+<span id="1549">1549</span>
+<span id="1550">1550</span>
+<span id="1551">1551</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -1581,7 +1591,6 @@
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;full-node&quot;</span>)]</span>
 <span class="kw">use</span> {
-	<span class="ident">beefy_gadget::notification</span>::{<span class="ident">BeefyBestBlockSender</span>, <span class="ident">BeefySignedCommitmentSender</span>},
 	<span class="ident">grandpa</span>::{<span class="self">self</span>, <span class="ident">FinalityProofProvider</span> <span class="kw">as</span> <span class="ident">GrandpaFinalityProofProvider</span>},
 	<span class="ident">gum::info</span>,
 	<span class="ident">polkadot_node_core_approval_voting</span>::{
@@ -1895,6 +1904,14 @@
 		<span class="ident">FullClient</span><span class="op">&lt;</span><span class="ident">RuntimeApi</span>, <span class="ident">ExecutorDispatch</span><span class="op">&gt;</span>,
 		<span class="ident">ChainSelection</span>,
 	<span class="op">&gt;</span>;
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;full-node&quot;</span>)]</span>
+<span class="kw">type</span> <span class="ident">FullBeefyBlockImport</span><span class="op">&lt;</span><span class="ident">RuntimeApi</span>, <span class="ident">ExecutorDispatch</span>, <span class="ident">InnerBlockImport</span><span class="op">&gt;</span> <span class="op">=</span>
+	<span class="ident">beefy_gadget::import::BeefyBlockImport</span><span class="op">&lt;</span>
+		<span class="ident">Block</span>,
+		<span class="ident">FullBackend</span>,
+		<span class="ident">FullClient</span><span class="op">&lt;</span><span class="ident">RuntimeApi</span>, <span class="ident">ExecutorDispatch</span><span class="op">&gt;</span>,
+		<span class="ident">InnerBlockImport</span>,
+	<span class="op">&gt;</span>;
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;full-node&quot;</span>)]</span>
 <span class="kw">struct</span> <span class="ident">Basics</span><span class="op">&lt;</span><span class="ident">RuntimeApi</span>, <span class="ident">ExecutorDispatch</span><span class="op">&gt;</span>
@@ -2001,11 +2018,15 @@
 				<span class="ident">babe::BabeBlockImport</span><span class="op">&lt;</span>
 					<span class="ident">Block</span>,
 					<span class="ident">FullClient</span><span class="op">&lt;</span><span class="ident">RuntimeApi</span>, <span class="ident">ExecutorDispatch</span><span class="op">&gt;</span>,
-					<span class="ident">FullGrandpaBlockImport</span><span class="op">&lt;</span><span class="ident">RuntimeApi</span>, <span class="ident">ExecutorDispatch</span>, <span class="ident">ChainSelection</span><span class="op">&gt;</span>,
+					<span class="ident">FullBeefyBlockImport</span><span class="op">&lt;</span>
+						<span class="ident">RuntimeApi</span>,
+						<span class="ident">ExecutorDispatch</span>,
+						<span class="ident">FullGrandpaBlockImport</span><span class="op">&lt;</span><span class="ident">RuntimeApi</span>, <span class="ident">ExecutorDispatch</span>, <span class="ident">ChainSelection</span><span class="op">&gt;</span>,
+					<span class="op">&gt;</span>,
 				<span class="op">&gt;</span>,
 				<span class="ident">grandpa::LinkHalf</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">FullClient</span><span class="op">&lt;</span><span class="ident">RuntimeApi</span>, <span class="ident">ExecutorDispatch</span><span class="op">&gt;</span>, <span class="ident">ChainSelection</span><span class="op">&gt;</span>,
 				<span class="ident">babe::BabeLink</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>,
-				(<span class="ident">BeefySignedCommitmentSender</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>, <span class="ident">BeefyBestBlockSender</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>),
+				<span class="ident">beefy_gadget::BeefyVoterLinks</span><span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span>,
 			),
 			<span class="ident">grandpa::SharedVoterState</span>,
 			<span class="ident">sp_consensus_babe::SlotDuration</span>,
@@ -2045,12 +2066,18 @@
 		<span class="ident">grandpa_hard_forks</span>,
 		<span class="ident">telemetry</span>.<span class="ident">as_ref</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">handle</span>()),
 	)<span class="question-mark">?</span>;
-
 	<span class="kw">let</span> <span class="ident">justification_import</span> <span class="op">=</span> <span class="ident">grandpa_block_import</span>.<span class="ident">clone</span>();
+
+	<span class="kw">let</span> (<span class="ident">beefy_block_import</span>, <span class="ident">beefy_voter_links</span>, <span class="ident">beefy_rpc_links</span>) <span class="op">=</span>
+		<span class="ident">beefy_gadget::beefy_block_import_and_links</span>(
+			<span class="ident">grandpa_block_import</span>,
+			<span class="ident">backend</span>.<span class="ident">clone</span>(),
+			<span class="ident">client</span>.<span class="ident">clone</span>(),
+		);
 
 	<span class="kw">let</span> <span class="ident">babe_config</span> <span class="op">=</span> <span class="ident">babe::Config::get</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">client</span>)<span class="question-mark">?</span>;
 	<span class="kw">let</span> (<span class="ident">block_import</span>, <span class="ident">babe_link</span>) <span class="op">=</span>
-		<span class="ident">babe::block_import</span>(<span class="ident">babe_config</span>.<span class="ident">clone</span>(), <span class="ident">grandpa_block_import</span>, <span class="ident">client</span>.<span class="ident">clone</span>())<span class="question-mark">?</span>;
+		<span class="ident">babe::block_import</span>(<span class="ident">babe_config</span>.<span class="ident">clone</span>(), <span class="ident">beefy_block_import</span>, <span class="ident">client</span>.<span class="ident">clone</span>())<span class="question-mark">?</span>;
 
 	<span class="kw">let</span> <span class="ident">slot_duration</span> <span class="op">=</span> <span class="ident">babe_link</span>.<span class="ident">config</span>().<span class="ident">slot_duration</span>();
 	<span class="kw">let</span> <span class="ident">import_queue</span> <span class="op">=</span> <span class="ident">babe::import_queue</span>(
@@ -2076,12 +2103,6 @@
 		<span class="ident">telemetry</span>.<span class="ident">as_ref</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span>.<span class="ident">handle</span>()),
 	)<span class="question-mark">?</span>;
 
-	<span class="kw">let</span> (<span class="ident">beefy_commitment_link</span>, <span class="ident">beefy_commitment_stream</span>) <span class="op">=</span>
-		<span class="ident">beefy_gadget::notification::BeefySignedCommitmentStream</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="ident">::channel</span>();
-	<span class="kw">let</span> (<span class="ident">beefy_best_block_link</span>, <span class="ident">beefy_best_block_stream</span>) <span class="op">=</span>
-		<span class="ident">beefy_gadget::notification::BeefyBestBlockStream</span>::<span class="op">&lt;</span><span class="ident">Block</span><span class="op">&gt;</span><span class="ident">::channel</span>();
-	<span class="kw">let</span> <span class="ident">beefy_links</span> <span class="op">=</span> (<span class="ident">beefy_commitment_link</span>, <span class="ident">beefy_best_block_link</span>);
-
 	<span class="kw">let</span> <span class="ident">justification_stream</span> <span class="op">=</span> <span class="ident">grandpa_link</span>.<span class="ident">justification_stream</span>();
 	<span class="kw">let</span> <span class="ident">shared_authority_set</span> <span class="op">=</span> <span class="ident">grandpa_link</span>.<span class="ident">shared_authority_set</span>().<span class="ident">clone</span>();
 	<span class="kw">let</span> <span class="ident">shared_voter_state</span> <span class="op">=</span> <span class="ident">grandpa::SharedVoterState::empty</span>();
@@ -2093,7 +2114,7 @@
 	<span class="kw">let</span> <span class="ident">shared_epoch_changes</span> <span class="op">=</span> <span class="ident">babe_link</span>.<span class="ident">epoch_changes</span>().<span class="ident">clone</span>();
 	<span class="kw">let</span> <span class="ident">slot_duration</span> <span class="op">=</span> <span class="ident">babe_config</span>.<span class="ident">slot_duration</span>();
 
-	<span class="kw">let</span> <span class="ident">import_setup</span> <span class="op">=</span> (<span class="ident">block_import</span>, <span class="ident">grandpa_link</span>, <span class="ident">babe_link</span>, <span class="ident">beefy_links</span>);
+	<span class="kw">let</span> <span class="ident">import_setup</span> <span class="op">=</span> (<span class="ident">block_import</span>, <span class="ident">grandpa_link</span>, <span class="ident">babe_link</span>, <span class="ident">beefy_voter_links</span>);
 	<span class="kw">let</span> <span class="ident">rpc_setup</span> <span class="op">=</span> <span class="ident">shared_voter_state</span>.<span class="ident">clone</span>();
 
 	<span class="kw">let</span> <span class="ident">rpc_extensions_builder</span> <span class="op">=</span> {
@@ -2126,8 +2147,8 @@
 					<span class="ident">finality_provider</span>: <span class="ident">finality_proof_provider</span>.<span class="ident">clone</span>(),
 				},
 				<span class="ident">beefy</span>: <span class="ident">polkadot_rpc::BeefyDeps</span> {
-					<span class="ident">beefy_commitment_stream</span>: <span class="ident">beefy_commitment_stream</span>.<span class="ident">clone</span>(),
-					<span class="ident">beefy_best_block_stream</span>: <span class="ident">beefy_best_block_stream</span>.<span class="ident">clone</span>(),
+					<span class="ident">beefy_commitment_stream</span>: <span class="ident">beefy_rpc_links</span>.<span class="ident">from_voter_justif_stream</span>.<span class="ident">clone</span>(),
+					<span class="ident">beefy_best_block_stream</span>: <span class="ident">beefy_rpc_links</span>.<span class="ident">from_voter_best_beefy_stream</span>.<span class="ident">clone</span>(),
 					<span class="ident">subscription_executor</span>,
 				},
 			};
@@ -2708,11 +2729,10 @@
 			<span class="ident">runtime</span>: <span class="ident">client</span>.<span class="ident">clone</span>(),
 			<span class="ident">key_store</span>: <span class="ident">keystore_opt</span>.<span class="ident">clone</span>(),
 			<span class="ident">network</span>: <span class="ident">network</span>.<span class="ident">clone</span>(),
-			<span class="ident">signed_commitment_sender</span>: <span class="ident">beefy_links</span>.<span class="number">0</span>,
-			<span class="ident">beefy_best_block_sender</span>: <span class="ident">beefy_links</span>.<span class="number">1</span>,
 			<span class="ident">min_block_delta</span>: <span class="kw">if</span> <span class="ident">chain_spec</span>.<span class="ident">is_wococo</span>() { <span class="number">4</span> } <span class="kw">else</span> { <span class="number">8</span> },
 			<span class="ident">prometheus_registry</span>: <span class="ident">prometheus_registry</span>.<span class="ident">clone</span>(),
 			<span class="ident">protocol_name</span>: <span class="ident">beefy_protocol_name</span>,
+			<span class="ident">links</span>: <span class="ident">beefy_links</span>,
 		};
 
 		<span class="kw">let</span> <span class="ident">gadget</span> <span class="op">=</span> <span class="ident">beefy_gadget::start_beefy_gadget</span>::<span class="op">&lt;</span><span class="kw">_</span>, <span class="kw">_</span>, <span class="kw">_</span>, <span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span>(<span class="ident">beefy_params</span>);
