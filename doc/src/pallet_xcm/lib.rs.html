@@ -1568,10 +1568,6 @@
 <span id="1562">1562</span>
 <span id="1563">1563</span>
 <span id="1564">1564</span>
-<span id="1565">1565</span>
-<span id="1566">1566</span>
-<span id="1567">1567</span>
-<span id="1568">1568</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020-2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -1991,13 +1987,13 @@
 			<span class="comment">// by the destinations being most sent to.</span>
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">q</span> <span class="op">=</span> <span class="ident">VersionDiscoveryQueue</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="ident">::take</span>().<span class="ident">into_inner</span>();
 			<span class="comment">// TODO: correct weights.</span>
-			<span class="ident">weight_used</span> <span class="op">+</span><span class="op">=</span> <span class="ident">T::DbWeight::get</span>().<span class="ident">read</span> <span class="op">+</span> <span class="ident">T::DbWeight::get</span>().<span class="ident">write</span>;
+			<span class="ident">weight_used</span>.<span class="ident">saturating_accrue</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">reads_writes</span>(<span class="number">1</span>, <span class="number">1</span>));
 			<span class="ident">q</span>.<span class="ident">sort_by_key</span>(<span class="op">|</span><span class="ident">i</span><span class="op">|</span> <span class="ident">i</span>.<span class="number">1</span>);
 			<span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">versioned_dest</span>, <span class="kw">_</span>)) <span class="op">=</span> <span class="ident">q</span>.<span class="ident">pop</span>() {
 				<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">dest</span>) <span class="op">=</span> <span class="ident">MultiLocation::try_from</span>(<span class="ident">versioned_dest</span>) {
 					<span class="kw">if</span> <span class="ident"><span class="self">Self</span>::request_version_notify</span>(<span class="ident">dest</span>).<span class="ident">is_ok</span>() {
 						<span class="comment">// TODO: correct weights.</span>
-						<span class="ident">weight_used</span> <span class="op">+</span><span class="op">=</span> <span class="ident">T::DbWeight::get</span>().<span class="ident">read</span> <span class="op">+</span> <span class="ident">T::DbWeight::get</span>().<span class="ident">write</span>;
+						<span class="ident">weight_used</span>.<span class="ident">saturating_accrue</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">reads_writes</span>(<span class="number">1</span>, <span class="number">1</span>));
 						<span class="kw">break</span>
 					}
 				}
@@ -2064,7 +2060,7 @@
 						<span class="ident">WithdrawAsset</span>(<span class="ident">assets</span>),
 						<span class="ident">InitiateTeleport</span> { <span class="ident">assets</span>: <span class="ident">Wild</span>(<span class="ident">All</span>), <span class="ident">dest</span>, <span class="ident">xcm</span>: <span class="ident">Xcm</span>(<span class="macro">vec!</span>[]</span>) },
 					]);
-					<span class="ident">T::Weigher::weight</span>(<span class="kw-2">&amp;mut</span> <span class="ident">message</span>).<span class="ident">map_or</span>(<span class="ident">Weight::max_value</span>(), <span class="op">|</span><span class="ident">w</span><span class="op">|</span> <span class="number">100_000_000</span> <span class="op">+</span> <span class="ident">w</span>)
+					<span class="ident">T::Weigher::weight</span>(<span class="kw-2">&amp;mut</span> <span class="ident">message</span>).<span class="ident">map_or</span>(<span class="ident">Weight::max_value</span>(), <span class="op">|</span><span class="ident">w</span><span class="op">|</span> <span class="number">100_000_000</span>.<span class="ident">saturating_add</span>(<span class="ident">w</span>))
 				},
 				<span class="kw">_</span> =&gt; <span class="ident">Weight::max_value</span>(),
 			}
@@ -2102,7 +2098,7 @@
 					<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">message</span> <span class="op">=</span> <span class="ident">Xcm</span>(<span class="macro">vec!</span>[
 						<span class="ident">TransferReserveAsset</span> { <span class="ident">assets</span>, <span class="ident">dest</span>, <span class="ident">xcm</span>: <span class="ident">Xcm</span>(<span class="macro">vec!</span>[]</span>) }
 					]);
-					<span class="ident">T::Weigher::weight</span>(<span class="kw-2">&amp;mut</span> <span class="ident">message</span>).<span class="ident">map_or</span>(<span class="ident">Weight::max_value</span>(), <span class="op">|</span><span class="ident">w</span><span class="op">|</span> <span class="number">100_000_000</span> <span class="op">+</span> <span class="ident">w</span>)
+					<span class="ident">T::Weigher::weight</span>(<span class="kw-2">&amp;mut</span> <span class="ident">message</span>).<span class="ident">map_or</span>(<span class="ident">Weight::max_value</span>(), <span class="op">|</span><span class="ident">w</span><span class="op">|</span> <span class="number">100_000_000</span>.<span class="ident">saturating_add</span>(<span class="ident">w</span>))
 				},
 				<span class="kw">_</span> =&gt; <span class="ident">Weight::max_value</span>(),
 			}
@@ -2264,7 +2260,7 @@
 					<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">message</span> <span class="op">=</span> <span class="ident">Xcm</span>(<span class="macro">vec!</span>[
 						<span class="ident">TransferReserveAsset</span> { <span class="ident">assets</span>, <span class="ident">dest</span>, <span class="ident">xcm</span>: <span class="ident">Xcm</span>(<span class="macro">vec!</span>[]</span>) }
 					]);
-					<span class="ident">T::Weigher::weight</span>(<span class="kw-2">&amp;mut</span> <span class="ident">message</span>).<span class="ident">map_or</span>(<span class="ident">Weight::max_value</span>(), <span class="op">|</span><span class="ident">w</span><span class="op">|</span> <span class="number">100_000_000</span> <span class="op">+</span> <span class="ident">w</span>)
+					<span class="ident">T::Weigher::weight</span>(<span class="kw-2">&amp;mut</span> <span class="ident">message</span>).<span class="ident">map_or</span>(<span class="ident">Weight::max_value</span>(), <span class="op">|</span><span class="ident">w</span><span class="op">|</span> <span class="number">100_000_000</span>.<span class="ident">saturating_add</span>(<span class="ident">w</span>))
 				},
 				<span class="kw">_</span> =&gt; <span class="ident">Weight::max_value</span>(),
 			}
@@ -2314,7 +2310,7 @@
 						<span class="ident">WithdrawAsset</span>(<span class="ident">assets</span>),
 						<span class="ident">InitiateTeleport</span> { <span class="ident">assets</span>: <span class="ident">Wild</span>(<span class="ident">All</span>), <span class="ident">dest</span>, <span class="ident">xcm</span>: <span class="ident">Xcm</span>(<span class="macro">vec!</span>[]</span>) },
 					]);
-					<span class="ident">T::Weigher::weight</span>(<span class="kw-2">&amp;mut</span> <span class="ident">message</span>).<span class="ident">map_or</span>(<span class="ident">Weight::max_value</span>(), <span class="op">|</span><span class="ident">w</span><span class="op">|</span> <span class="number">100_000_000</span> <span class="op">+</span> <span class="ident">w</span>)
+					<span class="ident">T::Weigher::weight</span>(<span class="kw-2">&amp;mut</span> <span class="ident">message</span>).<span class="ident">map_or</span>(<span class="ident">Weight::max_value</span>(), <span class="op">|</span><span class="ident">w</span><span class="op">|</span> <span class="number">100_000_000</span>.<span class="ident">saturating_add</span>(<span class="ident">w</span>))
 				},
 				<span class="kw">_</span> =&gt; <span class="ident">Weight::max_value</span>(),
 			}
@@ -2463,17 +2459,13 @@
 			<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">weight_used</span> <span class="op">=</span> <span class="number">0</span>;
 
 			<span class="comment">// TODO: Correct weights for the components of this:</span>
-			<span class="kw">let</span> <span class="ident">todo_sv_migrate_weight</span>: <span class="ident">Weight</span> <span class="op">=</span> <span class="ident">T::DbWeight::get</span>().<span class="ident">read</span> <span class="op">+</span> <span class="ident">T::DbWeight::get</span>().<span class="ident">write</span>;
-			<span class="kw">let</span> <span class="ident">todo_vn_migrate_weight</span>: <span class="ident">Weight</span> <span class="op">=</span> <span class="ident">T::DbWeight::get</span>().<span class="ident">read</span> <span class="op">+</span> <span class="ident">T::DbWeight::get</span>().<span class="ident">write</span>;
+			<span class="kw">let</span> <span class="ident">todo_sv_migrate_weight</span>: <span class="ident">Weight</span> <span class="op">=</span> <span class="ident">T::DbWeight::get</span>().<span class="ident">reads_writes</span>(<span class="number">1</span>, <span class="number">1</span>);
+			<span class="kw">let</span> <span class="ident">todo_vn_migrate_weight</span>: <span class="ident">Weight</span> <span class="op">=</span> <span class="ident">T::DbWeight::get</span>().<span class="ident">reads_writes</span>(<span class="number">1</span>, <span class="number">1</span>);
 			<span class="kw">let</span> <span class="ident">todo_vnt_already_notified_weight</span>: <span class="ident">Weight</span> <span class="op">=</span> <span class="ident">T::DbWeight::get</span>().<span class="ident">read</span>;
-			<span class="kw">let</span> <span class="ident">todo_vnt_notify_weight</span>: <span class="ident">Weight</span> <span class="op">=</span>
-				<span class="ident">T::DbWeight::get</span>().<span class="ident">read</span> <span class="op">+</span> <span class="ident">T::DbWeight::get</span>().<span class="ident">write</span> <span class="op">*</span> <span class="number">3</span>;
-			<span class="kw">let</span> <span class="ident">todo_vnt_migrate_weight</span>: <span class="ident">Weight</span> <span class="op">=</span>
-				<span class="ident">T::DbWeight::get</span>().<span class="ident">read</span> <span class="op">+</span> <span class="ident">T::DbWeight::get</span>().<span class="ident">write</span>;
-			<span class="kw">let</span> <span class="ident">todo_vnt_migrate_fail_weight</span>: <span class="ident">Weight</span> <span class="op">=</span>
-				<span class="ident">T::DbWeight::get</span>().<span class="ident">read</span> <span class="op">+</span> <span class="ident">T::DbWeight::get</span>().<span class="ident">write</span>;
-			<span class="kw">let</span> <span class="ident">todo_vnt_notify_migrate_weight</span>: <span class="ident">Weight</span> <span class="op">=</span>
-				<span class="ident">T::DbWeight::get</span>().<span class="ident">read</span> <span class="op">+</span> <span class="ident">T::DbWeight::get</span>().<span class="ident">write</span> <span class="op">*</span> <span class="number">3</span>;
+			<span class="kw">let</span> <span class="ident">todo_vnt_notify_weight</span>: <span class="ident">Weight</span> <span class="op">=</span> <span class="ident">T::DbWeight::get</span>().<span class="ident">reads_writes</span>(<span class="number">1</span>, <span class="number">3</span>);
+			<span class="kw">let</span> <span class="ident">todo_vnt_migrate_weight</span>: <span class="ident">Weight</span> <span class="op">=</span> <span class="ident">T::DbWeight::get</span>().<span class="ident">reads_writes</span>(<span class="number">1</span>, <span class="number">1</span>);
+			<span class="kw">let</span> <span class="ident">todo_vnt_migrate_fail_weight</span>: <span class="ident">Weight</span> <span class="op">=</span> <span class="ident">T::DbWeight::get</span>().<span class="ident">reads_writes</span>(<span class="number">1</span>, <span class="number">1</span>);
+			<span class="kw">let</span> <span class="ident">todo_vnt_notify_migrate_weight</span>: <span class="ident">Weight</span> <span class="op">=</span> <span class="ident">T::DbWeight::get</span>().<span class="ident">reads_writes</span>(<span class="number">1</span>, <span class="number">3</span>);
 
 			<span class="kw">use</span> <span class="ident">VersionMigrationStage</span>::<span class="kw-2">*</span>;
 
