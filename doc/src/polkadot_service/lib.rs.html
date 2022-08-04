@@ -2147,7 +2147,7 @@
 					<span class="ident">finality_provider</span>: <span class="ident">finality_proof_provider</span>.<span class="ident">clone</span>(),
 				},
 				<span class="ident">beefy</span>: <span class="ident">polkadot_rpc::BeefyDeps</span> {
-					<span class="ident">beefy_commitment_stream</span>: <span class="ident">beefy_rpc_links</span>.<span class="ident">from_voter_justif_stream</span>.<span class="ident">clone</span>(),
+					<span class="ident">beefy_finality_proof_stream</span>: <span class="ident">beefy_rpc_links</span>.<span class="ident">from_voter_justif_stream</span>.<span class="ident">clone</span>(),
 					<span class="ident">beefy_best_block_stream</span>: <span class="ident">beefy_rpc_links</span>.<span class="ident">from_voter_best_beefy_stream</span>.<span class="ident">clone</span>(),
 					<span class="ident">subscription_executor</span>,
 				},
