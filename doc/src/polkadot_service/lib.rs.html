@@ -1555,6 +1555,7 @@
 <span id="1549">1549</span>
 <span id="1550">1550</span>
 <span id="1551">1551</span>
+<span id="1552">1552</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -2545,6 +2546,7 @@
 	<span class="kw">let</span> <span class="ident">authority_discovery_service</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">auth_or_collator</span> <span class="op">|</span><span class="op">|</span> <span class="ident">overseer_enable_anyways</span> {
 		<span class="kw">use</span> <span class="ident">futures::StreamExt</span>;
 		<span class="kw">use</span> <span class="ident">sc_network::Event</span>;
+		<span class="kw">use</span> <span class="ident">sc_network_common::service::NetworkEventStream</span>;
 
 		<span class="kw">let</span> <span class="ident">authority_discovery_role</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">role</span>.<span class="ident">is_authority</span>() {
 			<span class="ident">sc_authority_discovery::Role::PublishAndDiscover</span>(<span class="ident">keystore_container</span>.<span class="ident">keystore</span>())
