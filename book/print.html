@@ -4868,7 +4868,7 @@ be aware of a dispute and have the relevant votes.</p>
 </ul>
 <h3 id="wire-format"><a class="header" href="#wire-format">Wire format</a></h3>
 <h4 id="disputes-1"><a class="header" href="#disputes-1">Disputes</a></h4>
-<p>Protocol: <code>&quot;/polkadot/send_dispute/1&quot;</code></p>
+<p>Protocol: <code>&quot;/&lt;genesis_hash&gt;/&lt;fork_id&gt;/send_dispute/1&quot;</code></p>
 <p>Request:</p>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
@@ -4922,7 +4922,7 @@ pub struct ValidDisputeVote {
 <span class="boring">}
 </span></code></pre></pre>
 <h4 id="vote-recovery"><a class="header" href="#vote-recovery">Vote Recovery</a></h4>
-<p>Protocol: <code>&quot;/polkadot/req_votes/1&quot;</code></p>
+<p>Protocol: <code>&quot;/&lt;genesis_hash&gt;/&lt;fork_id&gt;/req_votes/1&quot;</code></p>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>struct IHaveVotesRequest {

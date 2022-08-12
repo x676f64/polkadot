@@ -236,6 +236,8 @@
 <span id="230">230</span>
 <span id="231">231</span>
 <span id="232">232</span>
+<span id="233">233</span>
+<span id="234">234</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -263,7 +265,7 @@
 
 <span class="kw">use</span> <span class="ident">sc_network</span>::{<span class="ident">config</span> <span class="kw">as</span> <span class="ident">netconfig</span>, <span class="ident">config::RequestResponseConfig</span>, <span class="ident">PeerId</span>};
 
-<span class="kw">use</span> <span class="ident"><span class="kw">super</span>::IsRequest</span>;
+<span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">IsRequest</span>, <span class="ident">ReqProtocolNames</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::UnifiedReputationChange</span>;
 
 <span class="kw">mod</span> <span class="ident">error</span>;
@@ -293,8 +295,10 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// This Register that config with substrate networking and receive incoming requests via the</span>
 	<span class="doccomment">/// returned `IncomingRequestReceiver`.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_config_receiver</span>() -&gt; (<span class="ident">IncomingRequestReceiver</span><span class="op">&lt;</span><span class="ident">Req</span><span class="op">&gt;</span>, <span class="ident">RequestResponseConfig</span>) {
-		<span class="kw">let</span> (<span class="ident">raw</span>, <span class="ident">cfg</span>) <span class="op">=</span> <span class="ident">Req::PROTOCOL</span>.<span class="ident">get_config</span>();
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_config_receiver</span>(
+		<span class="ident">req_protocol_names</span>: <span class="kw-2">&amp;</span><span class="ident">ReqProtocolNames</span>,
+	) -&gt; (<span class="ident">IncomingRequestReceiver</span><span class="op">&lt;</span><span class="ident">Req</span><span class="op">&gt;</span>, <span class="ident">RequestResponseConfig</span>) {
+		<span class="kw">let</span> (<span class="ident">raw</span>, <span class="ident">cfg</span>) <span class="op">=</span> <span class="ident">Req::PROTOCOL</span>.<span class="ident">get_config</span>(<span class="ident">req_protocol_names</span>);
 		(<span class="ident">IncomingRequestReceiver</span> { <span class="ident">raw</span>, <span class="ident">phantom</span>: <span class="ident">PhantomData</span> {} }, <span class="ident">cfg</span>)
 	}
 
