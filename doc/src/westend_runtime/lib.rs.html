@@ -1775,20 +1775,6 @@
 <span id="1769">1769</span>
 <span id="1770">1770</span>
 <span id="1771">1771</span>
-<span id="1772">1772</span>
-<span id="1773">1773</span>
-<span id="1774">1774</span>
-<span id="1775">1775</span>
-<span id="1776">1776</span>
-<span id="1777">1777</span>
-<span id="1778">1778</span>
-<span id="1779">1779</span>
-<span id="1780">1780</span>
-<span id="1781">1781</span>
-<span id="1782">1782</span>
-<span id="1783">1783</span>
-<span id="1784">1784</span>
-<span id="1785">1785</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -1835,8 +1821,8 @@
 };
 <span class="kw">use</span> <span class="ident">runtime_common</span>::{
 	<span class="ident">assigned_slots</span>, <span class="ident">auctions</span>, <span class="ident">crowdloan</span>, <span class="ident">elections::OnChainAccuracy</span>, <span class="ident">impl_runtime_weights</span>,
-	<span class="ident">impls::ToAuthor</span>, <span class="ident">paras_registrar</span>, <span class="ident">paras_sudo_wrapper</span>, <span class="ident">prod_or_fast</span>, <span class="ident">slots</span>, <span class="ident">BlockHashCount</span>,
-	<span class="ident">BlockLength</span>, <span class="ident">CurrencyToVote</span>, <span class="ident">SlowAdjustingFeeUpdate</span>,
+	<span class="ident">impls::ToAuthor</span>, <span class="ident">paras_registrar</span>, <span class="ident">paras_sudo_wrapper</span>, <span class="ident">prod_or_fast</span>, <span class="ident">slots</span>, <span class="ident">BalanceToU256</span>,
+	<span class="ident">BlockHashCount</span>, <span class="ident">BlockLength</span>, <span class="ident">CurrencyToVote</span>, <span class="ident">SlowAdjustingFeeUpdate</span>, <span class="ident">U256ToBalance</span>,
 };
 <span class="kw">use</span> <span class="ident">runtime_parachains</span>::{
 	<span class="ident">configuration</span> <span class="kw">as</span> <span class="ident">parachains_configuration</span>, <span class="ident">disputes</span> <span class="kw">as</span> <span class="ident">parachains_disputes</span>,
@@ -2804,20 +2790,6 @@
 	<span class="kw">type</span> <span class="ident">Randomness</span> <span class="op">=</span> <span class="ident">pallet_babe::RandomnessFromOneEpochAgo</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">InitiateOrigin</span> <span class="op">=</span> <span class="ident">EnsureRoot</span><span class="op">&lt;</span><span class="ident">AccountId</span><span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> <span class="ident">weights::runtime_common_auctions::WeightInfo</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>;
-}
-
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">BalanceToU256</span>;
-<span class="kw">impl</span> <span class="ident">sp_runtime::traits::Convert</span><span class="op">&lt;</span><span class="ident">Balance</span>, <span class="ident">sp_core::U256</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">BalanceToU256</span> {
-	<span class="kw">fn</span> <span class="ident">convert</span>(<span class="ident">n</span>: <span class="ident">Balance</span>) -&gt; <span class="ident">sp_core::U256</span> {
-		<span class="ident">n</span>.<span class="ident">into</span>()
-	}
-}
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">U256ToBalance</span>;
-<span class="kw">impl</span> <span class="ident">sp_runtime::traits::Convert</span><span class="op">&lt;</span><span class="ident">sp_core::U256</span>, <span class="ident">Balance</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">U256ToBalance</span> {
-	<span class="kw">fn</span> <span class="ident">convert</span>(<span class="ident">n</span>: <span class="ident">sp_core::U256</span>) -&gt; <span class="ident">Balance</span> {
-		<span class="kw">use</span> <span class="ident">frame_support::traits::Defensive</span>;
-		<span class="ident">n</span>.<span class="ident">try_into</span>().<span class="ident">defensive_unwrap_or</span>(<span class="ident">Balance::MAX</span>)
-	}
 }
 
 <span class="macro">parameter_types!</span> {
