@@ -225,7 +225,10 @@
 </span></code></pre></pre>
 <p>Add <code>Seconded</code> statements and <code>Valid</code> statements to a quorum. If the quorum reaches a pre-defined threshold, send a <a href="../../types/overseer-protocol.html#provisioner-message"><code>ProvisionerMessage</code></a><code>::ProvisionableData(ProvisionableData::BackedCandidate(CandidateReceipt))</code> message.
 <code>Invalid</code> statements that conflict with already witnessed <code>Seconded</code> and <code>Valid</code> statements for the given candidate, statements that are double-votes, self-contradictions and so on, should result in issuing a <a href="../../types/overseer-protocol.html#provisioner-message"><code>ProvisionerMessage</code></a><code>::MisbehaviorReport</code> message for each newly detected case of this kind.</p>
-<p>On each incoming statement, <a href="../../types/overseer-protocol.html#dispute-coordinator-message"><code>DisputeCoordinatorMessage::ImportStatement</code></a> should be issued.</p>
+<p>Backing does not need to concern itself with providing statements to the dispute
+coordinator as the dispute coordinator scrapes them from chain. This way the
+import is batched and contains only statements that actually made it on some
+chain.</p>
 <h3 id="validating-candidates"><a class="header" href="#validating-candidates">Validating Candidates.</a></h3>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {

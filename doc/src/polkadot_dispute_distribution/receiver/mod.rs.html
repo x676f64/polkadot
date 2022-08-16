@@ -394,8 +394,6 @@
 <span id="388">388</span>
 <span id="389">389</span>
 <span id="390">390</span>
-<span id="391">391</span>
-<span id="392">392</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -662,10 +660,8 @@
 		};
 
 		<span class="kw">let</span> (<span class="ident">pending_confirmation</span>, <span class="ident">confirmation_rx</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
-		<span class="kw">let</span> <span class="ident">candidate_hash</span> <span class="op">=</span> <span class="ident">candidate_receipt</span>.<span class="ident">hash</span>();
 		<span class="self">self</span>.<span class="ident">sender</span>
 			.<span class="ident">send_message</span>(<span class="ident">DisputeCoordinatorMessage::ImportStatements</span> {
-				<span class="ident">candidate_hash</span>,
 				<span class="ident">candidate_receipt</span>,
 				<span class="ident">session</span>: <span class="ident">valid_vote</span>.<span class="number">0</span>.<span class="ident">session_index</span>(),
 				<span class="ident">statements</span>: <span class="macro">vec!</span>[<span class="ident">valid_vote</span>, <span class="ident">invalid_vote</span>],

@@ -142,6 +142,21 @@
 <span id="136">136</span>
 <span id="137">137</span>
 <span id="138">138</span>
+<span id="139">139</span>
+<span id="140">140</span>
+<span id="141">141</span>
+<span id="142">142</span>
+<span id="143">143</span>
+<span id="144">144</span>
+<span id="145">145</span>
+<span id="146">146</span>
+<span id="147">147</span>
+<span id="148">148</span>
+<span id="149">149</span>
+<span id="150">150</span>
+<span id="151">151</span>
+<span id="152">152</span>
+<span id="153">153</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -166,6 +181,8 @@
 	<span class="ident">open</span>: <span class="ident">prometheus::Counter</span><span class="op">&lt;</span><span class="ident">prometheus::U64</span><span class="op">&gt;</span>,
 	<span class="doccomment">/// Votes of all disputes.</span>
 	<span class="ident">votes</span>: <span class="ident">prometheus::CounterVec</span><span class="op">&lt;</span><span class="ident">prometheus::U64</span><span class="op">&gt;</span>,
+	<span class="doccomment">/// Number of approval votes explicitly fetched from approval voting.</span>
+	<span class="ident">approval_votes</span>: <span class="ident">prometheus::Counter</span><span class="op">&lt;</span><span class="ident">prometheus::U64</span><span class="op">&gt;</span>,
 	<span class="doccomment">/// Conclusion across all disputes.</span>
 	<span class="ident">concluded</span>: <span class="ident">prometheus::CounterVec</span><span class="op">&lt;</span><span class="ident">prometheus::U64</span><span class="op">&gt;</span>,
 	<span class="doccomment">/// Number of participations that have been queued.</span>
@@ -185,15 +202,21 @@
 		}
 	}
 
-	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">on_valid_vote</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) {
+	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">on_valid_votes</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vote_count</span>: <span class="ident">u32</span>) {
 		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">metrics</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span> {
-			<span class="ident">metrics</span>.<span class="ident">votes</span>.<span class="ident">with_label_values</span>(<span class="kw-2">&amp;</span>[<span class="string">&quot;valid&quot;</span>]).<span class="ident">inc</span>();
+			<span class="ident">metrics</span>.<span class="ident">votes</span>.<span class="ident">with_label_values</span>(<span class="kw-2">&amp;</span>[<span class="string">&quot;valid&quot;</span>]).<span class="ident">inc_by</span>(<span class="ident">vote_count</span> <span class="kw">as</span> <span class="kw">_</span>);
 		}
 	}
 
-	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">on_invalid_vote</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) {
+	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">on_invalid_votes</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vote_count</span>: <span class="ident">u32</span>) {
 		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">metrics</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span> {
-			<span class="ident">metrics</span>.<span class="ident">votes</span>.<span class="ident">with_label_values</span>(<span class="kw-2">&amp;</span>[<span class="string">&quot;invalid&quot;</span>]).<span class="ident">inc</span>();
+			<span class="ident">metrics</span>.<span class="ident">votes</span>.<span class="ident">with_label_values</span>(<span class="kw-2">&amp;</span>[<span class="string">&quot;invalid&quot;</span>]).<span class="ident">inc_by</span>(<span class="ident">vote_count</span> <span class="kw">as</span> <span class="kw">_</span>);
+		}
+	}
+
+	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">on_approval_votes</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">vote_count</span>: <span class="ident">u32</span>) {
+		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">metrics</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span> {
+			<span class="ident">metrics</span>.<span class="ident">approval_votes</span>.<span class="ident">inc_by</span>(<span class="ident">vote_count</span> <span class="kw">as</span> <span class="kw">_</span>);
 		}
 	}
 
@@ -254,6 +277,13 @@
 					),
 					<span class="kw-2">&amp;</span>[<span class="string">&quot;validity&quot;</span>],
 				)<span class="question-mark">?</span>,
+				<span class="ident">registry</span>,
+			)<span class="question-mark">?</span>,
+			<span class="ident">approval_votes</span>: <span class="ident">prometheus::register</span>(
+				<span class="ident">prometheus::Counter::with_opts</span>(<span class="ident">prometheus::Opts::new</span>(
+					<span class="string">&quot;polkadot_parachain_dispute_candidate_approval_votes_fetched_total&quot;</span>,
+					<span class="string">&quot;Number of approval votes fetched from approval voting.&quot;</span>,
+				))<span class="question-mark">?</span>,
 				<span class="ident">registry</span>,
 			)<span class="question-mark">?</span>,
 			<span class="ident">queued_participations</span>: <span class="ident">prometheus::register</span>(

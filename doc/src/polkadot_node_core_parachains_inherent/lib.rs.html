@@ -253,7 +253,7 @@
 			<span class="prelude-val">Err</span>(<span class="ident">err</span>) =&gt; {
 				<span class="macro">gum::debug!</span>(
 					<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
-					<span class="question-mark">?</span><span class="ident">err</span>,
+					<span class="op">%</span><span class="ident">err</span>,
 					<span class="string">&quot;Could not get provisioner inherent data; injecting default data&quot;</span>,
 				);
 				<span class="ident">ParachainsInherentData</span> {

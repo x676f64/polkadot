@@ -947,6 +947,19 @@
 <span id="941">941</span>
 <span id="942">942</span>
 <span id="943">943</span>
+<span id="944">944</span>
+<span id="945">945</span>
+<span id="946">946</span>
+<span id="947">947</span>
+<span id="948">948</span>
+<span id="949">949</span>
+<span id="950">950</span>
+<span id="951">951</span>
+<span id="952">952</span>
+<span id="953">953</span>
+<span id="954">954</span>
+<span id="955">955</span>
+<span id="956">956</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -1192,8 +1205,6 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// This does not do any checking of the message signature.</span>
 	<span class="ident">ImportStatements</span> {
-		<span class="doccomment">/// The hash of the candidate.</span>
-		<span class="ident">candidate_hash</span>: <span class="ident">CandidateHash</span>,
 		<span class="doccomment">/// The candidate receipt itself.</span>
 		<span class="ident">candidate_receipt</span>: <span class="ident">CandidateReceipt</span>,
 		<span class="doccomment">/// The session the candidate appears in.</span>
@@ -1224,7 +1235,7 @@
 	<span class="doccomment">/// and which may have already concluded.</span>
 	<span class="ident">RecentDisputes</span>(<span class="ident">oneshot::Sender</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">SessionIndex</span>, <span class="ident">CandidateHash</span>)<span class="op">&gt;</span><span class="op">&gt;</span>),
 	<span class="doccomment">/// Fetch a list of all active disputes that the coordinator is aware of.</span>
-	<span class="doccomment">/// These disputes are either unconcluded or recently concluded.</span>
+	<span class="doccomment">/// These disputes are either not yet concluded or recently concluded.</span>
 	<span class="ident">ActiveDisputes</span>(<span class="ident">oneshot::Sender</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">SessionIndex</span>, <span class="ident">CandidateHash</span>)<span class="op">&gt;</span><span class="op">&gt;</span>),
 	<span class="doccomment">/// Get candidate votes for a candidate.</span>
 	<span class="ident">QueryCandidateVotes</span>(
@@ -1857,6 +1868,15 @@
 	<span class="doccomment">/// It can also return the same block hash, if that is acceptable to vote upon.</span>
 	<span class="doccomment">/// Return `None` if the input hash is unrecognized.</span>
 	<span class="ident">ApprovedAncestor</span>(<span class="ident">Hash</span>, <span class="ident">BlockNumber</span>, <span class="ident">oneshot::Sender</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">HighestApprovedAncestorBlock</span><span class="op">&gt;</span><span class="op">&gt;</span>),
+
+	<span class="doccomment">/// Retrieve all available approval signatures for a candidate from approval-voting.</span>
+	<span class="doccomment">///</span>
+	<span class="doccomment">/// This message involves a linear search for candidates on each relay chain fork and also</span>
+	<span class="doccomment">/// requires calling into `approval-distribution`: Calls should be infrequent and bounded.</span>
+	<span class="ident">GetApprovalSignaturesForCandidate</span>(
+		<span class="ident">CandidateHash</span>,
+		<span class="ident">oneshot::Sender</span><span class="op">&lt;</span><span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">ValidatorIndex</span>, <span class="ident">ValidatorSignature</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+	),
 }
 
 <span class="doccomment">/// Message to the Approval Distribution subsystem.</span>
@@ -1875,6 +1895,12 @@
 	<span class="doccomment">/// An update from the network bridge.</span>
 	<span class="attribute">#[<span class="ident">from</span>]</span>
 	<span class="ident">NetworkBridgeUpdate</span>(<span class="ident">NetworkBridgeEvent</span><span class="op">&lt;</span><span class="ident">net_protocol::ApprovalDistributionMessage</span><span class="op">&gt;</span>),
+
+	<span class="doccomment">/// Get all approval signatures for all chains a candidate appeared in.</span>
+	<span class="ident">GetApprovalSignatures</span>(
+		<span class="ident">HashSet</span><span class="op">&lt;</span>(<span class="ident">Hash</span>, <span class="ident">CandidateIndex</span>)<span class="op">&gt;</span>,
+		<span class="ident">oneshot::Sender</span><span class="op">&lt;</span><span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">ValidatorIndex</span>, <span class="ident">ValidatorSignature</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+	),
 }
 
 <span class="doccomment">/// Message to the Gossip Support subsystem.</span>

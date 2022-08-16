@@ -2552,6 +2552,51 @@
 <span id="2546">2546</span>
 <span id="2547">2547</span>
 <span id="2548">2548</span>
+<span id="2549">2549</span>
+<span id="2550">2550</span>
+<span id="2551">2551</span>
+<span id="2552">2552</span>
+<span id="2553">2553</span>
+<span id="2554">2554</span>
+<span id="2555">2555</span>
+<span id="2556">2556</span>
+<span id="2557">2557</span>
+<span id="2558">2558</span>
+<span id="2559">2559</span>
+<span id="2560">2560</span>
+<span id="2561">2561</span>
+<span id="2562">2562</span>
+<span id="2563">2563</span>
+<span id="2564">2564</span>
+<span id="2565">2565</span>
+<span id="2566">2566</span>
+<span id="2567">2567</span>
+<span id="2568">2568</span>
+<span id="2569">2569</span>
+<span id="2570">2570</span>
+<span id="2571">2571</span>
+<span id="2572">2572</span>
+<span id="2573">2573</span>
+<span id="2574">2574</span>
+<span id="2575">2575</span>
+<span id="2576">2576</span>
+<span id="2577">2577</span>
+<span id="2578">2578</span>
+<span id="2579">2579</span>
+<span id="2580">2580</span>
+<span id="2581">2581</span>
+<span id="2582">2582</span>
+<span id="2583">2583</span>
+<span id="2584">2584</span>
+<span id="2585">2585</span>
+<span id="2586">2586</span>
+<span id="2587">2587</span>
+<span id="2588">2588</span>
+<span id="2589">2589</span>
+<span id="2590">2590</span>
+<span id="2591">2591</span>
+<span id="2592">2592</span>
+<span id="2593">2593</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -2580,7 +2625,7 @@
 	<span class="ident">approval</span>::{
 		<span class="ident">BlockApprovalMeta</span>, <span class="ident">DelayTranche</span>, <span class="ident">IndirectAssignmentCert</span>, <span class="ident">IndirectSignedApprovalVote</span>,
 	},
-	<span class="ident">SignedDisputeStatement</span>, <span class="ident">ValidationResult</span>, <span class="ident">APPROVAL_EXECUTION_TIMEOUT</span>,
+	<span class="ident">ValidationResult</span>, <span class="ident">APPROVAL_EXECUTION_TIMEOUT</span>,
 };
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem</span>::{
 	<span class="ident">errors::RecoveryError</span>,
@@ -2653,6 +2698,11 @@
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">APPROVAL_SESSIONS</span>: <span class="ident">SessionWindowSize</span> <span class="op">=</span> <span class="macro">new_session_window_size!</span>(<span class="number">6</span>);
 
 <span class="kw">const</span> <span class="ident">APPROVAL_CHECKING_TIMEOUT</span>: <span class="ident">Duration</span> <span class="op">=</span> <span class="ident">Duration::from_secs</span>(<span class="number">120</span>);
+<span class="doccomment">/// How long are we willing to wait for approval signatures?</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// Value rather arbitrarily: Should not be hit in practice, it exists to more easily diagnose dead</span>
+<span class="doccomment">/// lock issues for example.</span>
+<span class="kw">const</span> <span class="ident">WAIT_FOR_SIGS_TIMEOUT</span>: <span class="ident">Duration</span> <span class="op">=</span> <span class="ident">Duration::from_millis</span>(<span class="number">500</span>);
 <span class="kw">const</span> <span class="ident">APPROVAL_CACHE_SIZE</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">1024</span>;
 <span class="kw">const</span> <span class="ident">TICK_TOO_FAR_IN_FUTURE</span>: <span class="ident">Tick</span> <span class="op">=</span> <span class="number">20</span>; <span class="comment">// 10 seconds.</span>
 <span class="kw">const</span> <span class="ident">APPROVAL_DELAY</span>: <span class="ident">Tick</span> <span class="op">=</span> <span class="number">2</span>;
@@ -2706,6 +2756,7 @@
 	<span class="ident">block_approval_time_ticks</span>: <span class="ident">prometheus::Histogram</span>,
 	<span class="ident">time_db_transaction</span>: <span class="ident">prometheus::Histogram</span>,
 	<span class="ident">time_recover_and_approve</span>: <span class="ident">prometheus::Histogram</span>,
+	<span class="ident">candidate_signatures_requests_total</span>: <span class="ident">prometheus::Counter</span><span class="op">&lt;</span><span class="ident">prometheus::U64</span><span class="op">&gt;</span>,
 }
 
 <span class="doccomment">/// Approval Voting metrics.</span>
@@ -2776,6 +2827,12 @@
 	<span class="kw">fn</span> <span class="ident">on_block_approved</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ticks</span>: <span class="ident">Tick</span>) {
 		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">metrics</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span> {
 			<span class="ident">metrics</span>.<span class="ident">block_approval_time_ticks</span>.<span class="ident">observe</span>(<span class="ident">ticks</span> <span class="kw">as</span> <span class="ident">f64</span>);
+		}
+	}
+
+	<span class="kw">fn</span> <span class="ident">on_candidate_signatures_request</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) {
+		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">metrics</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span> {
+			<span class="ident">metrics</span>.<span class="ident">candidate_signatures_requests_total</span>.<span class="ident">inc</span>();
 		}
 	}
 
@@ -2866,6 +2923,13 @@
 						<span class="string">&quot;polkadot_parachain_time_recover_and_approve&quot;</span>,
 						<span class="string">&quot;Time spent recovering and approving data in approval voting&quot;</span>,
 					)
+				)<span class="question-mark">?</span>,
+				<span class="ident">registry</span>,
+			)<span class="question-mark">?</span>,
+			<span class="ident">candidate_signatures_requests_total</span>: <span class="ident">prometheus::register</span>(
+				<span class="ident">prometheus::Counter::new</span>(
+					<span class="string">&quot;polkadot_parachain_approval_candidate_signatures_requests_total&quot;</span>,
+					<span class="string">&quot;Number of times signatures got requested by other subsystems&quot;</span>,
 				)<span class="question-mark">?</span>,
 				<span class="ident">registry</span>,
 			)<span class="question-mark">?</span>,
@@ -3245,13 +3309,6 @@
 		<span class="ident">candidate</span>: <span class="ident">CandidateReceipt</span>,
 		<span class="ident">backing_group</span>: <span class="ident">GroupIndex</span>,
 	},
-	<span class="ident">InformDisputeCoordinator</span> {
-		<span class="ident">candidate_hash</span>: <span class="ident">CandidateHash</span>,
-		<span class="ident">candidate_receipt</span>: <span class="ident">CandidateReceipt</span>,
-		<span class="ident">session</span>: <span class="ident">SessionIndex</span>,
-		<span class="ident">dispute_statement</span>: <span class="ident">SignedDisputeStatement</span>,
-		<span class="ident">validator_index</span>: <span class="ident">ValidatorIndex</span>,
-	},
 	<span class="ident">NoteApprovedInChainSelection</span>(<span class="ident">Hash</span>),
 	<span class="ident">IssueApproval</span>(<span class="ident">CandidateHash</span>, <span class="ident">ApprovalVoteRequest</span>),
 	<span class="ident">BecomeActive</span>,
@@ -3511,22 +3568,6 @@
 					<span class="prelude-val">Some</span>(<span class="kw">_</span>) =&gt; {},
 				}
 			},
-			<span class="ident">Action::InformDisputeCoordinator</span> {
-				<span class="ident">candidate_hash</span>,
-				<span class="ident">candidate_receipt</span>,
-				<span class="ident">session</span>,
-				<span class="ident">dispute_statement</span>,
-				<span class="ident">validator_index</span>,
-			} =&gt; {
-				<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">DisputeCoordinatorMessage::ImportStatements</span> {
-					<span class="ident">candidate_hash</span>,
-					<span class="ident">candidate_receipt</span>,
-					<span class="ident">session</span>,
-					<span class="ident">statements</span>: <span class="macro">vec!</span>[(<span class="ident">dispute_statement</span>, <span class="ident">validator_index</span>)],
-					<span class="ident">pending_confirmation</span>: <span class="prelude-val">None</span>,
-				})
-				.<span class="kw">await</span>;
-			},
 			<span class="ident">Action::NoteApprovedInChainSelection</span>(<span class="ident">block_hash</span>) =&gt; {
 				<span class="ident">ctx</span>.<span class="ident">send_message</span>(<span class="ident">ChainSelectionMessage::Approved</span>(<span class="ident">block_hash</span>)).<span class="kw">await</span>;
 			},
@@ -3746,10 +3787,92 @@
 
 				<span class="ident">Vec::new</span>()
 			},
+			<span class="ident">ApprovalVotingMessage::GetApprovalSignaturesForCandidate</span>(<span class="ident">candidate_hash</span>, <span class="ident">tx</span>) =&gt; {
+				<span class="ident">metrics</span>.<span class="ident">on_candidate_signatures_request</span>();
+				<span class="ident">get_approval_signatures_for_candidate</span>(<span class="ident">ctx</span>, <span class="ident">db</span>, <span class="ident">candidate_hash</span>, <span class="ident">tx</span>).<span class="kw">await</span><span class="question-mark">?</span>;
+				<span class="ident">Vec::new</span>()
+			},
 		},
 	};
 
 	<span class="prelude-val">Ok</span>(<span class="ident">actions</span>)
+}
+
+<span class="doccomment">/// Retrieve approval signatures.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// This involves an unbounded message send to approval-distribution, the caller has to ensure that</span>
+<span class="doccomment">/// calls to this function are infrequent and bounded.</span>
+<span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">ApprovalVoting</span>, <span class="ident">prefix</span> <span class="op">=</span> <span class="ident"><span class="self">self</span>::overseer</span>)]</span>
+<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">get_approval_signatures_for_candidate</span><span class="op">&lt;</span><span class="ident">Context</span><span class="op">&gt;</span>(
+	<span class="ident">ctx</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Context</span>,
+	<span class="ident">db</span>: <span class="kw-2">&amp;</span><span class="ident">OverlayedBackend</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span>, <span class="kw">impl</span> <span class="ident">Backend</span><span class="op">&gt;</span>,
+	<span class="ident">candidate_hash</span>: <span class="ident">CandidateHash</span>,
+	<span class="ident">tx</span>: <span class="ident">oneshot::Sender</span><span class="op">&lt;</span><span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">ValidatorIndex</span>, <span class="ident">ValidatorSignature</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+) -&gt; <span class="ident">SubsystemResult</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
+	<span class="kw">let</span> <span class="ident">entry</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">db</span>.<span class="ident">load_candidate_entry</span>(<span class="kw-2">&amp;</span><span class="ident">candidate_hash</span>)<span class="question-mark">?</span> {
+		<span class="prelude-val">None</span> =&gt; <span class="kw">return</span> <span class="prelude-val">Ok</span>(()),
+		<span class="prelude-val">Some</span>(<span class="ident">e</span>) =&gt; <span class="ident">e</span>,
+	};
+
+	<span class="kw">let</span> <span class="ident">relay_hashes</span> <span class="op">=</span> <span class="ident">entry</span>.<span class="ident">block_assignments</span>.<span class="ident">iter</span>().<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">relay_hash</span>, <span class="kw">_</span>)<span class="op">|</span> <span class="ident">relay_hash</span>);
+
+	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">candidate_indices</span> <span class="op">=</span> <span class="ident">HashSet::new</span>();
+	<span class="comment">// Retrieve `CoreIndices`/`CandidateIndices` as required by approval-distribution:</span>
+	<span class="kw">for</span> <span class="ident">hash</span> <span class="kw">in</span> <span class="ident">relay_hashes</span> {
+		<span class="kw">let</span> <span class="ident">entry</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">db</span>.<span class="ident">load_block_entry</span>(<span class="ident">hash</span>)<span class="question-mark">?</span> {
+			<span class="prelude-val">None</span> =&gt; {
+				<span class="macro">gum::debug!</span>(
+					<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
+					<span class="question-mark">?</span><span class="ident">candidate_hash</span>,
+					<span class="question-mark">?</span><span class="ident">hash</span>,
+					<span class="string">&quot;Block entry for assignment missing.&quot;</span>
+				);
+				<span class="kw">continue</span>
+			},
+			<span class="prelude-val">Some</span>(<span class="ident">e</span>) =&gt; <span class="ident">e</span>,
+		};
+		<span class="kw">for</span> (<span class="ident">candidate_index</span>, (<span class="ident">_core_index</span>, <span class="ident">c_hash</span>)) <span class="kw">in</span> <span class="ident">entry</span>.<span class="ident">candidates</span>().<span class="ident">iter</span>().<span class="ident">enumerate</span>() {
+			<span class="kw">if</span> <span class="ident">c_hash</span> <span class="op">==</span> <span class="kw-2">&amp;</span><span class="ident">candidate_hash</span> {
+				<span class="ident">candidate_indices</span>.<span class="ident">insert</span>((<span class="kw-2">*</span><span class="ident">hash</span>, <span class="ident">candidate_index</span> <span class="kw">as</span> <span class="ident">u32</span>));
+				<span class="kw">break</span>
+			}
+		}
+	}
+
+	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">sender</span> <span class="op">=</span> <span class="ident">ctx</span>.<span class="ident">sender</span>().<span class="ident">clone</span>();
+	<span class="kw">let</span> <span class="ident">get_approvals</span> <span class="op">=</span> <span class="kw">async</span> <span class="kw">move</span> {
+		<span class="kw">let</span> (<span class="ident">tx_distribution</span>, <span class="ident">rx_distribution</span>) <span class="op">=</span> <span class="ident">oneshot::channel</span>();
+		<span class="ident">sender</span>.<span class="ident">send_unbounded_message</span>(<span class="ident">ApprovalDistributionMessage::GetApprovalSignatures</span>(
+			<span class="ident">candidate_indices</span>,
+			<span class="ident">tx_distribution</span>,
+		));
+
+		<span class="comment">// Because of the unbounded sending and the nature of the call (just fetching data from state),</span>
+		<span class="comment">// this should not block long:</span>
+		<span class="kw">match</span> <span class="ident">rx_distribution</span>.<span class="ident">timeout</span>(<span class="ident">WAIT_FOR_SIGS_TIMEOUT</span>).<span class="kw">await</span> {
+			<span class="prelude-val">None</span> =&gt; {
+				<span class="macro">gum::warn!</span>(
+					<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
+					<span class="string">&quot;Waiting for approval signatures timed out - dead lock?&quot;</span>
+				);
+			},
+			<span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(<span class="kw">_</span>)) =&gt; <span class="macro">gum::debug!</span>(
+				<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
+				<span class="string">&quot;Request for approval signatures got cancelled by `approval-distribution`.&quot;</span>
+			),
+			<span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(<span class="ident">votes</span>)) =&gt;
+				<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span> <span class="ident">tx</span>.<span class="ident">send</span>(<span class="ident">votes</span>) {
+					<span class="macro">gum::debug!</span>(
+						<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
+						<span class="string">&quot;Sending approval signatures back failed, as receiver got closed&quot;</span>
+					);
+				},
+		}
+	};
+
+	<span class="comment">// No need to block subsystem on this (also required to break cycle).</span>
+	<span class="comment">// We should not be sending this message frequently - caller must make sure this is bounded.</span>
+	<span class="ident">ctx</span>.<span class="ident">spawn</span>(<span class="string">&quot;get-approval-signatures&quot;</span>, <span class="ident">Box::pin</span>(<span class="ident">get_approvals</span>))
 }
 
 <span class="attribute">#[<span class="ident">overseer::contextbounds</span>(<span class="ident">ApprovalVoting</span>, <span class="ident">prefix</span> <span class="op">=</span> <span class="ident"><span class="self">self</span>::overseer</span>)]</span>
@@ -4271,19 +4394,17 @@
 		)),
 	};
 
-	<span class="comment">// Transform the approval vote into the wrapper used to import statements into disputes.</span>
-	<span class="comment">// This also does signature checking.</span>
-	<span class="kw">let</span> <span class="ident">signed_dispute_statement</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">SignedDisputeStatement::new_checked</span>(
-		<span class="ident">DisputeStatement::Valid</span>(<span class="ident">ValidDisputeStatementKind::ApprovalChecking</span>),
+	<span class="comment">// Signature check:</span>
+	<span class="kw">match</span> <span class="ident">DisputeStatement::Valid</span>(<span class="ident">ValidDisputeStatementKind::ApprovalChecking</span>).<span class="ident">check_signature</span>(
+		<span class="kw-2">&amp;</span><span class="ident">pubkey</span>,
 		<span class="ident">approved_candidate_hash</span>,
 		<span class="ident">block_entry</span>.<span class="ident">session</span>(),
-		<span class="ident">pubkey</span>.<span class="ident">clone</span>(),
-		<span class="ident">approval</span>.<span class="ident">signature</span>.<span class="ident">clone</span>(),
+		<span class="kw-2">&amp;</span><span class="ident">approval</span>.<span class="ident">signature</span>,
 	) {
 		<span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; <span class="macro">respond_early!</span>(<span class="ident">ApprovalCheckResult::Bad</span>(<span class="ident">ApprovalCheckError::InvalidSignature</span>(
 			<span class="ident">approval</span>.<span class="ident">validator</span>
 		),)),
-		<span class="prelude-val">Ok</span>(<span class="ident">s</span>) =&gt; <span class="ident">s</span>,
+		<span class="prelude-val">Ok</span>(()) =&gt; {},
 	};
 
 	<span class="kw">let</span> <span class="ident">candidate_entry</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">db</span>.<span class="ident">load_candidate_entry</span>(<span class="kw-2">&amp;</span><span class="ident">approved_candidate_hash</span>)<span class="question-mark">?</span> {
@@ -4324,23 +4445,7 @@
 		<span class="string">&quot;Importing approval vote&quot;</span>,
 	);
 
-	<span class="kw">let</span> <span class="ident">inform_disputes_action</span> <span class="op">=</span> <span class="kw">if</span> <span class="op">!</span><span class="ident">candidate_entry</span>.<span class="ident">has_approved</span>(<span class="ident">approval</span>.<span class="ident">validator</span>) {
-		<span class="comment">// The approval voting system requires a separate approval for each assignment</span>
-		<span class="comment">// to the candidate. It&#39;s possible that there are semi-duplicate approvals,</span>
-		<span class="comment">// but we only need to inform the dispute coordinator about the first expressed</span>
-		<span class="comment">// opinion by the validator about the candidate.</span>
-		<span class="prelude-val">Some</span>(<span class="ident">Action::InformDisputeCoordinator</span> {
-			<span class="ident">candidate_hash</span>: <span class="ident">approved_candidate_hash</span>,
-			<span class="ident">candidate_receipt</span>: <span class="ident">candidate_entry</span>.<span class="ident">candidate_receipt</span>().<span class="ident">clone</span>(),
-			<span class="ident">session</span>: <span class="ident">block_entry</span>.<span class="ident">session</span>(),
-			<span class="ident">dispute_statement</span>: <span class="ident">signed_dispute_statement</span>,
-			<span class="ident">validator_index</span>: <span class="ident">approval</span>.<span class="ident">validator</span>,
-		})
-	} <span class="kw">else</span> {
-		<span class="prelude-val">None</span>
-	};
-
-	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">actions</span> <span class="op">=</span> <span class="ident">advance_approval_state</span>(
+	<span class="kw">let</span> <span class="ident">actions</span> <span class="op">=</span> <span class="ident">advance_approval_state</span>(
 		<span class="ident">state</span>,
 		<span class="ident">db</span>,
 		<span class="kw-2">&amp;</span><span class="ident">metrics</span>,
@@ -4349,8 +4454,6 @@
 		<span class="ident">candidate_entry</span>,
 		<span class="ident">ApprovalStateTransition::RemoteApproval</span>(<span class="ident">approval</span>.<span class="ident">validator</span>),
 	);
-
-	<span class="ident">actions</span>.<span class="ident">extend</span>(<span class="ident">inform_disputes_action</span>);
 
 	<span class="prelude-val">Ok</span>((<span class="ident">actions</span>, <span class="ident">t</span>))
 }
@@ -4796,15 +4899,12 @@
 							<span class="string">&quot;Data recovery invalid for candidate {:?}&quot;</span>,
 							(<span class="ident">candidate_hash</span>, <span class="ident">candidate</span>.<span class="ident">descriptor</span>.<span class="ident">para_id</span>),
 						);
-
-						<span class="ident">sender</span>
-							.<span class="ident">send_message</span>(<span class="ident">DisputeCoordinatorMessage::IssueLocalStatement</span>(
-								<span class="ident">session_index</span>,
-								<span class="ident">candidate_hash</span>,
-								<span class="ident">candidate</span>.<span class="ident">clone</span>(),
-								<span class="bool-val">false</span>,
-							))
-							.<span class="kw">await</span>;
+						<span class="ident">issue_local_invalid_statement</span>(
+							<span class="kw-2">&amp;mut</span> <span class="ident">sender</span>,
+							<span class="ident">session_index</span>,
+							<span class="ident">candidate_hash</span>,
+							<span class="ident">candidate</span>.<span class="ident">clone</span>(),
+						);
 						<span class="ident">metrics_guard</span>.<span class="ident">take</span>().<span class="ident">on_approval_invalid</span>();
 					},
 				}
@@ -4858,14 +4958,12 @@
 					<span class="kw">return</span> <span class="ident">ApprovalState::approved</span>(<span class="ident">validator_index</span>, <span class="ident">candidate_hash</span>)
 				} <span class="kw">else</span> {
 					<span class="comment">// Commitments mismatch - issue a dispute.</span>
-					<span class="ident">sender</span>
-						.<span class="ident">send_message</span>(<span class="ident">DisputeCoordinatorMessage::IssueLocalStatement</span>(
-							<span class="ident">session_index</span>,
-							<span class="ident">candidate_hash</span>,
-							<span class="ident">candidate</span>.<span class="ident">clone</span>(),
-							<span class="bool-val">false</span>,
-						))
-						.<span class="kw">await</span>;
+					<span class="ident">issue_local_invalid_statement</span>(
+						<span class="kw-2">&amp;mut</span> <span class="ident">sender</span>,
+						<span class="ident">session_index</span>,
+						<span class="ident">candidate_hash</span>,
+						<span class="ident">candidate</span>.<span class="ident">clone</span>(),
+					);
 
 					<span class="ident">metrics_guard</span>.<span class="ident">take</span>().<span class="ident">on_approval_invalid</span>();
 					<span class="kw">return</span> <span class="ident">ApprovalState::failed</span>(<span class="ident">validator_index</span>, <span class="ident">candidate_hash</span>)
@@ -4880,14 +4978,12 @@
 					<span class="string">&quot;Detected invalid candidate as an approval checker.&quot;</span>,
 				);
 
-				<span class="ident">sender</span>
-					.<span class="ident">send_message</span>(<span class="ident">DisputeCoordinatorMessage::IssueLocalStatement</span>(
-						<span class="ident">session_index</span>,
-						<span class="ident">candidate_hash</span>,
-						<span class="ident">candidate</span>.<span class="ident">clone</span>(),
-						<span class="bool-val">false</span>,
-					))
-					.<span class="kw">await</span>;
+				<span class="ident">issue_local_invalid_statement</span>(
+					<span class="kw-2">&amp;mut</span> <span class="ident">sender</span>,
+					<span class="ident">session_index</span>,
+					<span class="ident">candidate_hash</span>,
+					<span class="ident">candidate</span>.<span class="ident">clone</span>(),
+				);
 
 				<span class="ident">metrics_guard</span>.<span class="ident">take</span>().<span class="ident">on_approval_invalid</span>();
 				<span class="kw">return</span> <span class="ident">ApprovalState::failed</span>(<span class="ident">validator_index</span>, <span class="ident">candidate_hash</span>)
@@ -5022,17 +5118,6 @@
 		},
 	};
 
-	<span class="comment">// Record our statement in the dispute coordinator for later</span>
-	<span class="comment">// participation in disputes on the same candidate.</span>
-	<span class="kw">let</span> <span class="ident">signed_dispute_statement</span> <span class="op">=</span> <span class="ident">SignedDisputeStatement::new_checked</span>(
-		<span class="ident">DisputeStatement::Valid</span>(<span class="ident">ValidDisputeStatementKind::ApprovalChecking</span>),
-		<span class="ident">candidate_hash</span>,
-		<span class="ident">session</span>,
-		<span class="ident">validator_pubkey</span>.<span class="ident">clone</span>(),
-		<span class="ident">sig</span>.<span class="ident">clone</span>(),
-	)
-	.<span class="ident">expect</span>(<span class="string">&quot;Statement just signed; should pass checks; qed&quot;</span>);
-
 	<span class="macro">gum::trace!</span>(
 		<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
 		<span class="question-mark">?</span><span class="ident">candidate_hash</span>,
@@ -5041,25 +5126,7 @@
 		<span class="string">&quot;Issuing approval vote&quot;</span>,
 	);
 
-	<span class="kw">let</span> <span class="ident">candidate_receipt</span> <span class="op">=</span> <span class="ident">candidate_entry</span>.<span class="ident">candidate_receipt</span>().<span class="ident">clone</span>();
-
-	<span class="kw">let</span> <span class="ident">inform_disputes_action</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">candidate_entry</span>.<span class="ident">has_approved</span>(<span class="ident">validator_index</span>) {
-		<span class="comment">// The approval voting system requires a separate approval for each assignment</span>
-		<span class="comment">// to the candidate. It&#39;s possible that there are semi-duplicate approvals,</span>
-		<span class="comment">// but we only need to inform the dispute coordinator about the first expressed</span>
-		<span class="comment">// opinion by the validator about the candidate.</span>
-		<span class="prelude-val">Some</span>(<span class="ident">Action::InformDisputeCoordinator</span> {
-			<span class="ident">candidate_hash</span>,
-			<span class="ident">candidate_receipt</span>,
-			<span class="ident">session</span>,
-			<span class="ident">dispute_statement</span>: <span class="ident">signed_dispute_statement</span>,
-			<span class="ident">validator_index</span>,
-		})
-	} <span class="kw">else</span> {
-		<span class="prelude-val">None</span>
-	};
-
-	<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">actions</span> <span class="op">=</span> <span class="ident">advance_approval_state</span>(
+	<span class="kw">let</span> <span class="ident">actions</span> <span class="op">=</span> <span class="ident">advance_approval_state</span>(
 		<span class="ident">state</span>,
 		<span class="ident">db</span>,
 		<span class="ident">metrics</span>,
@@ -5081,9 +5148,6 @@
 		},
 	));
 
-	<span class="comment">// dispatch to dispute coordinator.</span>
-	<span class="ident">actions</span>.<span class="ident">extend</span>(<span class="ident">inform_disputes_action</span>);
-
 	<span class="prelude-val">Ok</span>(<span class="ident">actions</span>)
 }
 
@@ -5099,6 +5163,32 @@
 	<span class="kw">let</span> <span class="ident">payload</span> <span class="op">=</span> <span class="ident">ApprovalVote</span>(<span class="ident">candidate_hash</span>).<span class="ident">signing_payload</span>(<span class="ident">session_index</span>);
 
 	<span class="prelude-val">Some</span>(<span class="ident">key</span>.<span class="ident">sign</span>(<span class="kw-2">&amp;</span><span class="ident">payload</span>[..]))
+}
+
+<span class="doccomment">/// Send `IssueLocalStatement` to dispute-coordinator.</span>
+<span class="kw">fn</span> <span class="ident">issue_local_invalid_statement</span><span class="op">&lt;</span><span class="ident">Sender</span><span class="op">&gt;</span>(
+	<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Sender</span>,
+	<span class="ident">session_index</span>: <span class="ident">SessionIndex</span>,
+	<span class="ident">candidate_hash</span>: <span class="ident">CandidateHash</span>,
+	<span class="ident">candidate</span>: <span class="ident">CandidateReceipt</span>,
+) <span class="kw">where</span>
+	<span class="ident">Sender</span>: <span class="ident">overseer::ApprovalVotingSenderTrait</span>,
+{
+	<span class="comment">// We need to send an unbounded message here to break a cycle:</span>
+	<span class="comment">// DisputeCoordinatorMessage::IssueLocalStatement -&gt;</span>
+	<span class="comment">// ApprovalVotingMessage::GetApprovalSignaturesForCandidate.</span>
+	<span class="comment">//</span>
+	<span class="comment">// Use of unbounded _should_ be fine here as raising a dispute should be an</span>
+	<span class="comment">// exceptional event. Even in case of bugs: There can be no more than</span>
+	<span class="comment">// number of slots per block requests every block. Also for sending this</span>
+	<span class="comment">// message a full recovery and validation procedure took place, which takes</span>
+	<span class="comment">// longer than issuing a local statement + import.</span>
+	<span class="ident">sender</span>.<span class="ident">send_unbounded_message</span>(<span class="ident">DisputeCoordinatorMessage::IssueLocalStatement</span>(
+		<span class="ident">session_index</span>,
+		<span class="ident">candidate_hash</span>,
+		<span class="ident">candidate</span>.<span class="ident">clone</span>(),
+		<span class="bool-val">false</span>,
+	));
 }
 </code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="polkadot_node_core_approval_voting" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0-nightly (7fe022f5a 2022-07-24)" ></div>

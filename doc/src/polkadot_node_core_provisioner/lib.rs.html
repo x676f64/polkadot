@@ -838,6 +838,117 @@
 <span id="832">832</span>
 <span id="833">833</span>
 <span id="834">834</span>
+<span id="835">835</span>
+<span id="836">836</span>
+<span id="837">837</span>
+<span id="838">838</span>
+<span id="839">839</span>
+<span id="840">840</span>
+<span id="841">841</span>
+<span id="842">842</span>
+<span id="843">843</span>
+<span id="844">844</span>
+<span id="845">845</span>
+<span id="846">846</span>
+<span id="847">847</span>
+<span id="848">848</span>
+<span id="849">849</span>
+<span id="850">850</span>
+<span id="851">851</span>
+<span id="852">852</span>
+<span id="853">853</span>
+<span id="854">854</span>
+<span id="855">855</span>
+<span id="856">856</span>
+<span id="857">857</span>
+<span id="858">858</span>
+<span id="859">859</span>
+<span id="860">860</span>
+<span id="861">861</span>
+<span id="862">862</span>
+<span id="863">863</span>
+<span id="864">864</span>
+<span id="865">865</span>
+<span id="866">866</span>
+<span id="867">867</span>
+<span id="868">868</span>
+<span id="869">869</span>
+<span id="870">870</span>
+<span id="871">871</span>
+<span id="872">872</span>
+<span id="873">873</span>
+<span id="874">874</span>
+<span id="875">875</span>
+<span id="876">876</span>
+<span id="877">877</span>
+<span id="878">878</span>
+<span id="879">879</span>
+<span id="880">880</span>
+<span id="881">881</span>
+<span id="882">882</span>
+<span id="883">883</span>
+<span id="884">884</span>
+<span id="885">885</span>
+<span id="886">886</span>
+<span id="887">887</span>
+<span id="888">888</span>
+<span id="889">889</span>
+<span id="890">890</span>
+<span id="891">891</span>
+<span id="892">892</span>
+<span id="893">893</span>
+<span id="894">894</span>
+<span id="895">895</span>
+<span id="896">896</span>
+<span id="897">897</span>
+<span id="898">898</span>
+<span id="899">899</span>
+<span id="900">900</span>
+<span id="901">901</span>
+<span id="902">902</span>
+<span id="903">903</span>
+<span id="904">904</span>
+<span id="905">905</span>
+<span id="906">906</span>
+<span id="907">907</span>
+<span id="908">908</span>
+<span id="909">909</span>
+<span id="910">910</span>
+<span id="911">911</span>
+<span id="912">912</span>
+<span id="913">913</span>
+<span id="914">914</span>
+<span id="915">915</span>
+<span id="916">916</span>
+<span id="917">917</span>
+<span id="918">918</span>
+<span id="919">919</span>
+<span id="920">920</span>
+<span id="921">921</span>
+<span id="922">922</span>
+<span id="923">923</span>
+<span id="924">924</span>
+<span id="925">925</span>
+<span id="926">926</span>
+<span id="927">927</span>
+<span id="928">928</span>
+<span id="929">929</span>
+<span id="930">930</span>
+<span id="931">931</span>
+<span id="932">932</span>
+<span id="933">933</span>
+<span id="934">934</span>
+<span id="935">935</span>
+<span id="936">936</span>
+<span id="937">937</span>
+<span id="938">938</span>
+<span id="939">939</span>
+<span id="940">940</span>
+<span id="941">941</span>
+<span id="942">942</span>
+<span id="943">943</span>
+<span id="944">944</span>
+<span id="945">945</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -875,7 +986,9 @@
 	<span class="ident">overseer</span>, <span class="ident">ActivatedLeaf</span>, <span class="ident">ActiveLeavesUpdate</span>, <span class="ident">FromOrchestra</span>, <span class="ident">LeafStatus</span>, <span class="ident">OverseerSignal</span>,
 	<span class="ident">PerLeafSpan</span>, <span class="ident">SpawnedSubsystem</span>, <span class="ident">SubsystemError</span>,
 };
-<span class="kw">use</span> <span class="ident">polkadot_node_subsystem_util</span>::{<span class="ident">request_availability_cores</span>, <span class="ident">request_persisted_validation_data</span>};
+<span class="kw">use</span> <span class="ident">polkadot_node_subsystem_util</span>::{
+	<span class="ident">request_availability_cores</span>, <span class="ident">request_persisted_validation_data</span>, <span class="ident">TimeoutExt</span>,
+};
 <span class="kw">use</span> <span class="ident">polkadot_primitives::v2</span>::{
 	<span class="ident">BackedCandidate</span>, <span class="ident">BlockNumber</span>, <span class="ident">CandidateHash</span>, <span class="ident">CandidateReceipt</span>, <span class="ident">CoreState</span>, <span class="ident">DisputeState</span>,
 	<span class="ident">DisputeStatement</span>, <span class="ident">DisputeStatementSet</span>, <span class="ident">Hash</span>, <span class="ident">MultiDisputeStatementSet</span>, <span class="ident">OccupiedCoreAssumption</span>,
@@ -895,6 +1008,8 @@
 
 <span class="doccomment">/// How long to wait before proposing.</span>
 <span class="kw">const</span> <span class="ident">PRE_PROPOSE_TIMEOUT</span>: <span class="ident">std::time::Duration</span> <span class="op">=</span> <span class="ident">core::time::Duration::from_millis</span>(<span class="number">2000</span>);
+<span class="doccomment">/// Some timeout to ensure task won&#39;t hang around in the background forever on issues.</span>
+<span class="kw">const</span> <span class="ident">SEND_INHERENT_DATA_TIMEOUT</span>: <span class="ident">std::time::Duration</span> <span class="op">=</span> <span class="ident">core::time::Duration::from_millis</span>(<span class="number">500</span>);
 
 <span class="kw">const</span> <span class="ident">LOG_TARGET</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;parachain::provisioner&quot;</span>;
 
@@ -993,6 +1108,12 @@
 				<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">state</span>) <span class="op">=</span> <span class="ident">per_relay_parent</span>.<span class="ident">get_mut</span>(<span class="kw-2">&amp;</span><span class="ident">hash</span>) {
 					<span class="ident">state</span>.<span class="ident">is_inherent_ready</span> <span class="op">=</span> <span class="bool-val">true</span>;
 
+					<span class="macro">gum::trace!</span>(
+						<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
+						<span class="ident">relay_parent</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">hash</span>,
+						<span class="string">&quot;Inherent Data became ready&quot;</span>
+					);
+
 					<span class="kw">let</span> <span class="ident">return_senders</span> <span class="op">=</span> <span class="ident">std::mem::take</span>(<span class="kw-2">&amp;mut</span> <span class="ident">state</span>.<span class="ident">awaiting_inherent</span>);
 					<span class="kw">if</span> <span class="op">!</span><span class="ident">return_senders</span>.<span class="ident">is_empty</span>() {
 						<span class="ident">send_inherent_data_bg</span>(<span class="ident">ctx</span>, <span class="kw-2">&amp;</span><span class="ident">state</span>, <span class="ident">return_senders</span>, <span class="ident">metrics</span>.<span class="ident">clone</span>()).<span class="kw">await</span><span class="question-mark">?</span>;
@@ -1028,11 +1149,19 @@
 ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
 	<span class="kw">match</span> <span class="ident">message</span> {
 		<span class="ident">ProvisionerMessage::RequestInherentData</span>(<span class="ident">relay_parent</span>, <span class="ident">return_sender</span>) =&gt; {
+			<span class="macro">gum::trace!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="question-mark">?</span><span class="ident">relay_parent</span>, <span class="string">&quot;Inherent data got requested.&quot;</span>);
+
 			<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">state</span>) <span class="op">=</span> <span class="ident">per_relay_parent</span>.<span class="ident">get_mut</span>(<span class="kw-2">&amp;</span><span class="ident">relay_parent</span>) {
 				<span class="kw">if</span> <span class="ident">state</span>.<span class="ident">is_inherent_ready</span> {
+					<span class="macro">gum::trace!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="question-mark">?</span><span class="ident">relay_parent</span>, <span class="string">&quot;Calling send_inherent_data.&quot;</span>);
 					<span class="ident">send_inherent_data_bg</span>(<span class="ident">ctx</span>, <span class="kw-2">&amp;</span><span class="ident">state</span>, <span class="macro">vec!</span>[<span class="ident">return_sender</span>], <span class="ident">metrics</span>.<span class="ident">clone</span>())
 						.<span class="kw">await</span><span class="question-mark">?</span>;
 				} <span class="kw">else</span> {
+					<span class="macro">gum::trace!</span>(
+						<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
+						<span class="question-mark">?</span><span class="ident">relay_parent</span>,
+						<span class="string">&quot;Queuing inherent data request (inherent data not yet ready).&quot;</span>
+					);
 					<span class="ident">state</span>.<span class="ident">awaiting_inherent</span>.<span class="ident">push</span>(<span class="ident">return_sender</span>);
 				}
 			}
@@ -1041,6 +1170,8 @@
 			<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">state</span>) <span class="op">=</span> <span class="ident">per_relay_parent</span>.<span class="ident">get_mut</span>(<span class="kw-2">&amp;</span><span class="ident">relay_parent</span>) {
 				<span class="kw">let</span> <span class="ident">span</span> <span class="op">=</span> <span class="ident">state</span>.<span class="ident">span</span>.<span class="ident">child</span>(<span class="string">&quot;provisionable-data&quot;</span>);
 				<span class="kw">let</span> <span class="ident">_timer</span> <span class="op">=</span> <span class="ident">metrics</span>.<span class="ident">time_provisionable_data</span>();
+
+				<span class="macro">gum::trace!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="question-mark">?</span><span class="ident">relay_parent</span>, <span class="string">&quot;Received provisionable data.&quot;</span>);
 
 				<span class="ident">note_provisionable_data</span>(<span class="ident">state</span>, <span class="kw-2">&amp;</span><span class="ident">span</span>, <span class="ident">data</span>);
 			}
@@ -1068,28 +1199,42 @@
 		<span class="kw">let</span> <span class="ident">_span</span> <span class="op">=</span> <span class="ident">span</span>;
 		<span class="kw">let</span> <span class="ident">_timer</span> <span class="op">=</span> <span class="ident">metrics</span>.<span class="ident">time_request_inherent_data</span>();
 
-		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">err</span>) <span class="op">=</span> <span class="ident">send_inherent_data</span>(
+		<span class="macro">gum::trace!</span>(
+			<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
+			<span class="ident">relay_parent</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">leaf</span>.<span class="ident">hash</span>,
+			<span class="string">&quot;Sending inherent data in background.&quot;</span>
+		);
+
+		<span class="kw">let</span> <span class="ident">send_result</span> <span class="op">=</span> <span class="ident">send_inherent_data</span>(
 			<span class="kw-2">&amp;</span><span class="ident">leaf</span>,
 			<span class="kw-2">&amp;</span><span class="ident">signed_bitfields</span>,
 			<span class="kw-2">&amp;</span><span class="ident">backed_candidates</span>,
 			<span class="ident">return_senders</span>,
 			<span class="kw-2">&amp;mut</span> <span class="ident">sender</span>,
 			<span class="kw-2">&amp;</span><span class="ident">metrics</span>,
-		)
-		.<span class="kw">await</span>
-		{
-			<span class="macro">gum::warn!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="ident">err</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">err</span>, <span class="string">&quot;failed to assemble or send inherent data&quot;</span>);
-			<span class="ident">metrics</span>.<span class="ident">on_inherent_data_request</span>(<span class="prelude-val">Err</span>(()));
-		} <span class="kw">else</span> {
-			<span class="ident">metrics</span>.<span class="ident">on_inherent_data_request</span>(<span class="prelude-val">Ok</span>(()));
-			<span class="macro">gum::debug!</span>(
-				<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
-				<span class="ident">signed_bitfield_count</span> <span class="op">=</span> <span class="ident">signed_bitfields</span>.<span class="ident">len</span>(),
-				<span class="ident">backed_candidates_count</span> <span class="op">=</span> <span class="ident">backed_candidates</span>.<span class="ident">len</span>(),
-				<span class="ident">leaf_hash</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">leaf</span>.<span class="ident">hash</span>,
-				<span class="string">&quot;inherent data sent successfully&quot;</span>
-			);
-			<span class="ident">metrics</span>.<span class="ident">observe_inherent_data_bitfields_count</span>(<span class="ident">signed_bitfields</span>.<span class="ident">len</span>());
+		) <span class="comment">// Make sure call is not taking forever:</span>
+		.<span class="ident">timeout</span>(<span class="ident">SEND_INHERENT_DATA_TIMEOUT</span>)
+		.<span class="ident">map</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="kw">match</span> <span class="ident">v</span> {
+			<span class="prelude-val">Some</span>(<span class="ident">r</span>) =&gt; <span class="ident">r</span>,
+			<span class="prelude-val">None</span> =&gt; <span class="prelude-val">Err</span>(<span class="ident">Error::SendInherentDataTimeout</span>),
+		});
+
+		<span class="kw">match</span> <span class="ident">send_result</span>.<span class="kw">await</span> {
+			<span class="prelude-val">Err</span>(<span class="ident">err</span>) =&gt; {
+				<span class="macro">gum::warn!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="ident">err</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">err</span>, <span class="string">&quot;failed to assemble or send inherent data&quot;</span>);
+				<span class="ident">metrics</span>.<span class="ident">on_inherent_data_request</span>(<span class="prelude-val">Err</span>(()));
+			},
+			<span class="prelude-val">Ok</span>(()) =&gt; {
+				<span class="ident">metrics</span>.<span class="ident">on_inherent_data_request</span>(<span class="prelude-val">Ok</span>(()));
+				<span class="macro">gum::debug!</span>(
+					<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
+					<span class="ident">signed_bitfield_count</span> <span class="op">=</span> <span class="ident">signed_bitfields</span>.<span class="ident">len</span>(),
+					<span class="ident">backed_candidates_count</span> <span class="op">=</span> <span class="ident">backed_candidates</span>.<span class="ident">len</span>(),
+					<span class="ident">leaf_hash</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">leaf</span>.<span class="ident">hash</span>,
+					<span class="string">&quot;inherent data sent successfully&quot;</span>
+				);
+				<span class="ident">metrics</span>.<span class="ident">observe_inherent_data_bitfields_count</span>(<span class="ident">signed_bitfields</span>.<span class="ident">len</span>());
+			},
 		}
 	};
 
@@ -1152,12 +1297,27 @@
 	<span class="ident">from_job</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">overseer::ProvisionerSenderTrait</span>,
 	<span class="ident">metrics</span>: <span class="kw-2">&amp;</span><span class="ident">Metrics</span>,
 ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
+	<span class="macro">gum::trace!</span>(
+		<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
+		<span class="ident">relay_parent</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">leaf</span>.<span class="ident">hash</span>,
+		<span class="string">&quot;Requesting availability cores&quot;</span>
+	);
 	<span class="kw">let</span> <span class="ident">availability_cores</span> <span class="op">=</span> <span class="ident">request_availability_cores</span>(<span class="ident">leaf</span>.<span class="ident">hash</span>, <span class="ident">from_job</span>)
 		.<span class="kw">await</span>
 		.<span class="kw">await</span>
 		.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">err</span><span class="op">|</span> <span class="ident">Error::CanceledAvailabilityCores</span>(<span class="ident">err</span>))<span class="question-mark">?</span><span class="question-mark">?</span>;
 
+	<span class="macro">gum::trace!</span>(
+		<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
+		<span class="ident">relay_parent</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">leaf</span>.<span class="ident">hash</span>,
+		<span class="string">&quot;Selecting disputes&quot;</span>
+	);
 	<span class="kw">let</span> <span class="ident">disputes</span> <span class="op">=</span> <span class="ident">select_disputes</span>(<span class="ident">from_job</span>, <span class="ident">metrics</span>, <span class="ident">leaf</span>).<span class="kw">await</span><span class="question-mark">?</span>;
+	<span class="macro">gum::trace!</span>(
+		<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
+		<span class="ident">relay_parent</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">leaf</span>.<span class="ident">hash</span>,
+		<span class="string">&quot;Selected disputes&quot;</span>
+	);
 
 	<span class="comment">// Only include bitfields on fresh leaves. On chain reversions, we want to make sure that</span>
 	<span class="comment">// there will be at least one block, which cannot get disputed, so the chain can make progress.</span>
@@ -1166,8 +1326,20 @@
 			<span class="ident">select_availability_bitfields</span>(<span class="kw-2">&amp;</span><span class="ident">availability_cores</span>, <span class="ident">bitfields</span>, <span class="kw-2">&amp;</span><span class="ident">leaf</span>.<span class="ident">hash</span>),
 		<span class="ident">LeafStatus::Stale</span> =&gt; <span class="ident">Vec::new</span>(),
 	};
+
+	<span class="macro">gum::trace!</span>(
+		<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
+		<span class="ident">relay_parent</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">leaf</span>.<span class="ident">hash</span>,
+		<span class="string">&quot;Selected bitfields&quot;</span>
+	);
 	<span class="kw">let</span> <span class="ident">candidates</span> <span class="op">=</span>
 		<span class="ident">select_candidates</span>(<span class="kw-2">&amp;</span><span class="ident">availability_cores</span>, <span class="kw-2">&amp;</span><span class="ident">bitfields</span>, <span class="ident">candidates</span>, <span class="ident">leaf</span>.<span class="ident">hash</span>, <span class="ident">from_job</span>).<span class="kw">await</span><span class="question-mark">?</span>;
+
+	<span class="macro">gum::trace!</span>(
+		<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
+		<span class="ident">relay_parent</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">leaf</span>.<span class="ident">hash</span>,
+		<span class="string">&quot;Selected candidates&quot;</span>
+	);
 
 	<span class="macro">gum::debug!</span>(
 		<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
@@ -1181,6 +1353,12 @@
 
 	<span class="kw">let</span> <span class="ident">inherent_data</span> <span class="op">=</span>
 		<span class="ident">ProvisionerInherentData</span> { <span class="ident">bitfields</span>, <span class="ident">backed_candidates</span>: <span class="ident">candidates</span>, <span class="ident">disputes</span> };
+
+	<span class="macro">gum::trace!</span>(
+		<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
+		<span class="ident">relay_parent</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">leaf</span>.<span class="ident">hash</span>,
+		<span class="string">&quot;Sending back inherent data to requesters.&quot;</span>
+	);
 
 	<span class="kw">for</span> <span class="ident">return_sender</span> <span class="kw">in</span> <span class="ident">return_senders</span> {
 		<span class="ident">return_sender</span>
@@ -1605,6 +1783,12 @@
 			<span class="ident">active</span>
 		};
 
+	<span class="macro">gum::trace!</span>(
+		<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
+		<span class="ident">relay_parent</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">_leaf</span>.<span class="ident">hash</span>,
+		<span class="string">&quot;Request recent disputes&quot;</span>
+	);
+
 	<span class="comment">// We use `RecentDisputes` instead of `ActiveDisputes` because redundancy is fine.</span>
 	<span class="comment">// It&#39;s heavier than `ActiveDisputes` but ensures that everything from the dispute</span>
 	<span class="comment">// window gets on-chain, unlike `ActiveDisputes`.</span>
@@ -1612,6 +1796,18 @@
 	<span class="comment">// upper bound of disputes to pass to wasm `fn create_inherent_data`.</span>
 	<span class="comment">// If the active ones are already exceeding the bounds, randomly select a subset.</span>
 	<span class="kw">let</span> <span class="ident">recent</span> <span class="op">=</span> <span class="ident">request_disputes</span>(<span class="ident">sender</span>, <span class="ident">RequestType::Recent</span>).<span class="kw">await</span>;
+
+	<span class="macro">gum::trace!</span>(
+		<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
+		<span class="ident">relay_paent</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">_leaf</span>.<span class="ident">hash</span>,
+		<span class="string">&quot;Received recent disputes&quot;</span>
+	);
+
+	<span class="macro">gum::trace!</span>(
+		<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
+		<span class="ident">relay_paent</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">_leaf</span>.<span class="ident">hash</span>,
+		<span class="string">&quot;Request on chain disputes&quot;</span>
+	);
 
 	<span class="comment">// On chain disputes are fetched from the runtime. We want to prioritise the inclusion of unknown</span>
 	<span class="comment">// disputes in the inherent data. The call relies on staging Runtime API. If the staging API is not</span>
@@ -1627,6 +1823,18 @@
 			<span class="ident">HashMap::new</span>()
 		},
 	};
+
+	<span class="macro">gum::trace!</span>(
+		<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
+		<span class="ident">relay_paent</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">_leaf</span>.<span class="ident">hash</span>,
+		<span class="string">&quot;Received on chain disputes&quot;</span>
+	);
+
+	<span class="macro">gum::trace!</span>(
+		<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
+		<span class="ident">relay_paent</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">_leaf</span>.<span class="ident">hash</span>,
+		<span class="string">&quot;Filtering disputes&quot;</span>
+	);
 
 	<span class="kw">let</span> <span class="ident">disputes</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">recent</span>.<span class="ident">len</span>() <span class="op">&gt;</span> <span class="ident">MAX_DISPUTES_FORWARDED_TO_RUNTIME</span> {
 		<span class="macro">gum::warn!</span>(
@@ -1645,20 +1853,34 @@
 		<span class="ident">recent</span>
 	};
 
+	<span class="macro">gum::trace!</span>(
+		<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
+		<span class="ident">relay_paent</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">_leaf</span>.<span class="ident">hash</span>,
+		<span class="string">&quot;Calling `request_votes`&quot;</span>
+	);
+
 	<span class="comment">// Load all votes for all disputes from the coordinator.</span>
 	<span class="kw">let</span> <span class="ident">dispute_candidate_votes</span> <span class="op">=</span> <span class="ident">request_votes</span>(<span class="ident">sender</span>, <span class="ident">disputes</span>).<span class="kw">await</span>;
+
+	<span class="macro">gum::trace!</span>(
+		<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
+		<span class="ident">relay_paent</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">_leaf</span>.<span class="ident">hash</span>,
+		<span class="string">&quot;Finished `request_votes`&quot;</span>
+	);
 
 	<span class="comment">// Transform all `CandidateVotes` into `MultiDisputeStatementSet`.</span>
 	<span class="prelude-val">Ok</span>(<span class="ident">dispute_candidate_votes</span>
 		.<span class="ident">into_iter</span>()
 		.<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">session_index</span>, <span class="ident">candidate_hash</span>, <span class="ident">votes</span>)<span class="op">|</span> {
-			<span class="kw">let</span> <span class="ident">valid_statements</span> <span class="op">=</span>
-				<span class="ident">votes</span>.<span class="ident">valid</span>.<span class="ident">into_iter</span>().<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">s</span>, <span class="ident">i</span>, <span class="ident">sig</span>)<span class="op">|</span> (<span class="ident">DisputeStatement::Valid</span>(<span class="ident">s</span>), <span class="ident">i</span>, <span class="ident">sig</span>));
+			<span class="kw">let</span> <span class="ident">valid_statements</span> <span class="op">=</span> <span class="ident">votes</span>
+				.<span class="ident">valid</span>
+				.<span class="ident">into_iter</span>()
+				.<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">i</span>, (<span class="ident">s</span>, <span class="ident">sig</span>))<span class="op">|</span> (<span class="ident">DisputeStatement::Valid</span>(<span class="ident">s</span>), <span class="ident">i</span>, <span class="ident">sig</span>));
 
 			<span class="kw">let</span> <span class="ident">invalid_statements</span> <span class="op">=</span> <span class="ident">votes</span>
 				.<span class="ident">invalid</span>
 				.<span class="ident">into_iter</span>()
-				.<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">s</span>, <span class="ident">i</span>, <span class="ident">sig</span>)<span class="op">|</span> (<span class="ident">DisputeStatement::Invalid</span>(<span class="ident">s</span>), <span class="ident">i</span>, <span class="ident">sig</span>));
+				.<span class="ident">map</span>(<span class="op">|</span>(<span class="ident">i</span>, (<span class="ident">s</span>, <span class="ident">sig</span>))<span class="op">|</span> (<span class="ident">DisputeStatement::Invalid</span>(<span class="ident">s</span>), <span class="ident">i</span>, <span class="ident">sig</span>));
 
 			<span class="ident">metrics</span>.<span class="ident">inc_valid_statements_by</span>(<span class="ident">valid_statements</span>.<span class="ident">len</span>());
 			<span class="ident">metrics</span>.<span class="ident">inc_invalid_statements_by</span>(<span class="ident">invalid_statements</span>.<span class="ident">len</span>());

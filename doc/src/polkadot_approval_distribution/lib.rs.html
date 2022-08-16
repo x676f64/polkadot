@@ -1699,6 +1699,58 @@
 <span id="1693">1693</span>
 <span id="1694">1694</span>
 <span id="1695">1695</span>
+<span id="1696">1696</span>
+<span id="1697">1697</span>
+<span id="1698">1698</span>
+<span id="1699">1699</span>
+<span id="1700">1700</span>
+<span id="1701">1701</span>
+<span id="1702">1702</span>
+<span id="1703">1703</span>
+<span id="1704">1704</span>
+<span id="1705">1705</span>
+<span id="1706">1706</span>
+<span id="1707">1707</span>
+<span id="1708">1708</span>
+<span id="1709">1709</span>
+<span id="1710">1710</span>
+<span id="1711">1711</span>
+<span id="1712">1712</span>
+<span id="1713">1713</span>
+<span id="1714">1714</span>
+<span id="1715">1715</span>
+<span id="1716">1716</span>
+<span id="1717">1717</span>
+<span id="1718">1718</span>
+<span id="1719">1719</span>
+<span id="1720">1720</span>
+<span id="1721">1721</span>
+<span id="1722">1722</span>
+<span id="1723">1723</span>
+<span id="1724">1724</span>
+<span id="1725">1725</span>
+<span id="1726">1726</span>
+<span id="1727">1727</span>
+<span id="1728">1728</span>
+<span id="1729">1729</span>
+<span id="1730">1730</span>
+<span id="1731">1731</span>
+<span id="1732">1732</span>
+<span id="1733">1733</span>
+<span id="1734">1734</span>
+<span id="1735">1735</span>
+<span id="1736">1736</span>
+<span id="1737">1737</span>
+<span id="1738">1738</span>
+<span id="1739">1739</span>
+<span id="1740">1740</span>
+<span id="1741">1741</span>
+<span id="1742">1742</span>
+<span id="1743">1743</span>
+<span id="1744">1744</span>
+<span id="1745">1745</span>
+<span id="1746">1746</span>
+<span id="1747">1747</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -2911,6 +2963,49 @@
 		}
 	}
 
+	<span class="doccomment">/// Retrieve approval signatures from state for the given relay block/indices:</span>
+	<span class="kw">fn</span> <span class="ident">get_approval_signatures</span>(
+		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
+		<span class="ident">indices</span>: <span class="ident">HashSet</span><span class="op">&lt;</span>(<span class="ident">Hash</span>, <span class="ident">CandidateIndex</span>)<span class="op">&gt;</span>,
+	) -&gt; <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">ValidatorIndex</span>, <span class="ident">ValidatorSignature</span><span class="op">&gt;</span> {
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">all_sigs</span> <span class="op">=</span> <span class="ident">HashMap::new</span>();
+		<span class="kw">for</span> (<span class="ident">hash</span>, <span class="ident">index</span>) <span class="kw">in</span> <span class="ident">indices</span> {
+			<span class="kw">let</span> <span class="ident">block_entry</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>.<span class="ident">blocks</span>.<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="ident">hash</span>) {
+				<span class="prelude-val">None</span> =&gt; {
+					<span class="macro">gum::debug!</span>(
+						<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
+						<span class="question-mark">?</span><span class="ident">hash</span>,
+						<span class="string">&quot;`get_approval_signatures`: could not find block entry for given hash!&quot;</span>
+					);
+					<span class="kw">continue</span>
+				},
+				<span class="prelude-val">Some</span>(<span class="ident">e</span>) =&gt; <span class="ident">e</span>,
+			};
+
+			<span class="kw">let</span> <span class="ident">candidate_entry</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">block_entry</span>.<span class="ident">candidates</span>.<span class="ident">get</span>(<span class="ident">index</span> <span class="kw">as</span> <span class="ident">usize</span>) {
+				<span class="prelude-val">None</span> =&gt; {
+					<span class="macro">gum::debug!</span>(
+						<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
+						<span class="question-mark">?</span><span class="ident">hash</span>,
+						<span class="question-mark">?</span><span class="ident">index</span>,
+						<span class="string">&quot;`get_approval_signatures`: could not find candidate entry for given hash and index!&quot;</span>
+						);
+					<span class="kw">continue</span>
+				},
+				<span class="prelude-val">Some</span>(<span class="ident">e</span>) =&gt; <span class="ident">e</span>,
+			};
+			<span class="kw">let</span> <span class="ident">sigs</span> <span class="op">=</span>
+				<span class="ident">candidate_entry</span>.<span class="ident">messages</span>.<span class="ident">iter</span>().<span class="ident">filter_map</span>(<span class="op">|</span>(<span class="ident">validator_index</span>, <span class="ident">message_state</span>)<span class="op">|</span> {
+					<span class="kw">match</span> <span class="kw-2">&amp;</span><span class="ident">message_state</span>.<span class="ident">approval_state</span> {
+						<span class="ident">ApprovalState::Approved</span>(<span class="kw">_</span>, <span class="ident">sig</span>) =&gt; <span class="prelude-val">Some</span>((<span class="kw-2">*</span><span class="ident">validator_index</span>, <span class="ident">sig</span>.<span class="ident">clone</span>())),
+						<span class="ident">ApprovalState::Assigned</span>(<span class="kw">_</span>) =&gt; <span class="prelude-val">None</span>,
+					}
+				});
+			<span class="ident">all_sigs</span>.<span class="ident">extend</span>(<span class="ident">sigs</span>);
+		}
+		<span class="ident">all_sigs</span>
+	}
+
 	<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">unify_with_peer</span>(
 		<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">overseer::ApprovalDistributionSenderTrait</span>,
 		<span class="ident">metrics</span>: <span class="kw-2">&amp;</span><span class="ident">Metrics</span>,
@@ -3381,6 +3476,15 @@
 				<span class="ident">state</span>
 					.<span class="ident">import_and_circulate_approval</span>(<span class="ident">ctx</span>, <span class="ident">metrics</span>, <span class="ident">MessageSource::Local</span>, <span class="ident">vote</span>)
 					.<span class="kw">await</span>;
+			},
+			<span class="ident">ApprovalDistributionMessage::GetApprovalSignatures</span>(<span class="ident">indices</span>, <span class="ident">tx</span>) =&gt; {
+				<span class="kw">let</span> <span class="ident">sigs</span> <span class="op">=</span> <span class="ident">state</span>.<span class="ident">get_approval_signatures</span>(<span class="ident">indices</span>);
+				<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span> <span class="ident">tx</span>.<span class="ident">send</span>(<span class="ident">sigs</span>) {
+					<span class="macro">gum::debug!</span>(
+						<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>,
+						<span class="string">&quot;Sending back approval signatures failed, oneshot got closed&quot;</span>
+					);
+				}
 			},
 		}
 	}

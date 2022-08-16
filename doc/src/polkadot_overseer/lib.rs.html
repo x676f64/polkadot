@@ -1394,7 +1394,6 @@
 		<span class="ident">StatementDistributionMessage</span>,
 		<span class="ident">ProvisionerMessage</span>,
 		<span class="ident">RuntimeApiMessage</span>,
-		<span class="ident">DisputeCoordinatorMessage</span>,
 	]</span>)]
 	<span class="ident">candidate_backing</span>: <span class="ident">CandidateBacking</span>,
 
@@ -1489,13 +1488,13 @@
 	<span class="ident">approval_distribution</span>: <span class="ident">ApprovalDistribution</span>,
 
 	<span class="attribute">#[<span class="ident">subsystem</span>(<span class="ident">blocking</span>, <span class="ident">ApprovalVotingMessage</span>, <span class="ident">sends</span>: [
-		<span class="ident">RuntimeApiMessage</span>,
+		<span class="ident">ApprovalDistributionMessage</span>,
+		<span class="ident">AvailabilityRecoveryMessage</span>,
+		<span class="ident">CandidateValidationMessage</span>,
 		<span class="ident">ChainApiMessage</span>,
 		<span class="ident">ChainSelectionMessage</span>,
 		<span class="ident">DisputeCoordinatorMessage</span>,
-		<span class="ident">AvailabilityRecoveryMessage</span>,
-		<span class="ident">ApprovalDistributionMessage</span>,
-		<span class="ident">CandidateValidationMessage</span>,
+		<span class="ident">RuntimeApiMessage</span>,
 	]</span>)]
 	<span class="ident">approval_voting</span>: <span class="ident">ApprovalVoting</span>,
 
@@ -1512,6 +1511,7 @@
 		<span class="ident">ChainApiMessage</span>,
 		<span class="ident">DisputeDistributionMessage</span>,
 		<span class="ident">CandidateValidationMessage</span>,
+		<span class="ident">ApprovalVotingMessage</span>,
 		<span class="ident">AvailabilityStoreMessage</span>,
 		<span class="ident">AvailabilityRecoveryMessage</span>,
 	]</span>)]
