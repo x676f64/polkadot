@@ -144,9 +144,9 @@
 	<span class="doccomment">/// Create a new trader instance.</span>
 	<span class="kw">fn</span> <span class="ident">new</span>() -&gt; <span class="self">Self</span>;
 
-	<span class="doccomment">/// Purchase execution weight credit in return for up to a given `fee`. If less of the fee is required</span>
-	<span class="doccomment">/// then the surplus is returned. If the `fee` cannot be used to pay for the `weight`, then an error is</span>
-	<span class="doccomment">/// returned.</span>
+	<span class="doccomment">/// Purchase execution weight credit in return for up to a given `payment`. If less of the</span>
+	<span class="doccomment">/// payment is required then the surplus is returned. If the `payment` cannot be used to pay</span>
+	<span class="doccomment">/// for the `weight`, then an error is returned.</span>
 	<span class="kw">fn</span> <span class="ident">buy_weight</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">weight</span>: <span class="ident">Weight</span>, <span class="ident">payment</span>: <span class="ident">Assets</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Assets</span>, <span class="ident">XcmError</span><span class="op">&gt;</span>;
 
 	<span class="doccomment">/// Attempt a refund of `weight` into some asset. The caller does not guarantee that the weight was</span>

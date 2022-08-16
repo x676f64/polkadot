@@ -567,8 +567,8 @@
 	}
 
 	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;runtime-benchmarks&quot;</span>)]</span>
-	<span class="kw">fn</span> <span class="ident">successful_origin</span>() -&gt; <span class="ident">Origin</span> {
-		<span class="ident">Origin::root</span>()
+	<span class="kw">fn</span> <span class="ident">try_successful_origin</span>() -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Origin</span>, ()<span class="op">&gt;</span> {
+		<span class="prelude-val">Ok</span>(<span class="ident">Origin::root</span>())
 	}
 }
 
