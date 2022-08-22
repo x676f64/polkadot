@@ -227,6 +227,7 @@
 <span id="221">221</span>
 <span id="222">222</span>
 <span id="223">223</span>
+<span id="224">224</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020-2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -251,11 +252,12 @@
 <span class="kw">use</span> <span class="ident">parity_scale_codec::Encode</span>;
 
 <span class="kw">use</span> <span class="ident">sc_network</span>::{
-	<span class="ident">config::parse_addr</span>, <span class="ident">multiaddr::Multiaddr</span>, <span class="ident">Event</span> <span class="kw">as</span> <span class="ident">NetworkEvent</span>, <span class="ident">IfDisconnected</span>,
-	<span class="ident">NetworkService</span>, <span class="ident">OutboundFailure</span>, <span class="ident">RequestFailure</span>,
+	<span class="ident">multiaddr::Multiaddr</span>, <span class="ident">Event</span> <span class="kw">as</span> <span class="ident">NetworkEvent</span>, <span class="ident">IfDisconnected</span>, <span class="ident">NetworkService</span>, <span class="ident">OutboundFailure</span>,
+	<span class="ident">RequestFailure</span>,
 };
-<span class="kw">use</span> <span class="ident">sc_network_common::service</span>::{
-	<span class="ident">NetworkEventStream</span>, <span class="ident">NetworkNotification</span>, <span class="ident">NetworkPeers</span>, <span class="ident">NetworkRequest</span>,
+<span class="kw">use</span> <span class="ident">sc_network_common</span>::{
+	<span class="ident">config::parse_addr</span>,
+	<span class="ident">service</span>::{<span class="ident">NetworkEventStream</span>, <span class="ident">NetworkNotification</span>, <span class="ident">NetworkPeers</span>, <span class="ident">NetworkRequest</span>},
 };
 
 <span class="kw">use</span> <span class="ident">polkadot_node_network_protocol</span>::{
