@@ -2268,7 +2268,7 @@
 	<span class="ident">peer_data</span>.<span class="ident">update_view</span>(<span class="ident">view</span>);
 	<span class="ident">state</span>
 		.<span class="ident">requested_collations</span>
-		.<span class="ident">retain</span>(<span class="op">|</span><span class="ident">pc</span>, <span class="kw">_</span><span class="op">|</span> <span class="ident">pc</span>.<span class="ident">peer_id</span> <span class="op">!</span><span class="op">=</span> <span class="ident">peer_id</span> <span class="op">|</span><span class="op">|</span> <span class="op">!</span><span class="ident">peer_data</span>.<span class="ident">has_advertised</span>(<span class="kw-2">&amp;</span><span class="ident">pc</span>.<span class="ident">relay_parent</span>));
+		.<span class="ident">retain</span>(<span class="op">|</span><span class="ident">pc</span>, <span class="kw">_</span><span class="op">|</span> <span class="ident">pc</span>.<span class="ident">peer_id</span> <span class="op">!</span><span class="op">=</span> <span class="ident">peer_id</span> <span class="op">|</span><span class="op">|</span> <span class="ident">peer_data</span>.<span class="ident">has_advertised</span>(<span class="kw-2">&amp;</span><span class="ident">pc</span>.<span class="ident">relay_parent</span>));
 
 	<span class="prelude-val">Ok</span>(())
 }
