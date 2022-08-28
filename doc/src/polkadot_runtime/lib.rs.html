@@ -2417,6 +2417,19 @@
 <span id="2411">2411</span>
 <span id="2412">2412</span>
 <span id="2413">2413</span>
+<span id="2414">2414</span>
+<span id="2415">2415</span>
+<span id="2416">2416</span>
+<span id="2417">2417</span>
+<span id="2418">2418</span>
+<span id="2419">2419</span>
+<span id="2420">2420</span>
+<span id="2421">2421</span>
+<span id="2422">2422</span>
+<span id="2423">2423</span>
+<span id="2424">2424</span>
+<span id="2425">2425</span>
+<span id="2426">2426</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -2945,6 +2958,9 @@
 	<span class="kw">type</span> <span class="ident">OffchainRepeat</span> <span class="op">=</span> <span class="ident">OffchainRepeat</span>;
 	<span class="kw">type</span> <span class="ident">MinerTxPriority</span> <span class="op">=</span> <span class="ident">NposSolutionPriority</span>;
 	<span class="kw">type</span> <span class="ident">DataProvider</span> <span class="op">=</span> <span class="ident">Staking</span>;
+	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;fast-runtime&quot;</span>)]</span>
+	<span class="kw">type</span> <span class="ident">Fallback</span> <span class="op">=</span> <span class="ident">onchain::UnboundedExecution</span><span class="op">&lt;</span><span class="ident">OnChainSeqPhragmen</span><span class="op">&gt;</span>;
+	<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;fast-runtime&quot;</span>))]</span>
 	<span class="kw">type</span> <span class="ident">Fallback</span> <span class="op">=</span> <span class="ident">pallet_election_provider_multi_phase::NoFallback</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">GovernanceFallback</span> <span class="op">=</span> <span class="ident">onchain::UnboundedExecution</span><span class="op">&lt;</span><span class="ident">OnChainSeqPhragmen</span><span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">Solver</span> <span class="op">=</span> <span class="ident">SequentialPhragmen</span><span class="op">&lt;</span>
@@ -2992,7 +3008,7 @@
 
 <span class="macro">parameter_types!</span> {
 	<span class="comment">// Six sessions in an era (24 hours).</span>
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">SessionsPerEra</span>: <span class="ident">SessionIndex</span> <span class="op">=</span> <span class="number">6</span>;
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">SessionsPerEra</span>: <span class="ident">SessionIndex</span> <span class="op">=</span> <span class="macro">prod_or_fast!</span>(<span class="number">6</span>, <span class="number">1</span>);
 	<span class="comment">// 28 eras for unbonding (28 days).</span>
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">BondingDuration</span>: <span class="ident">sp_staking::EraIndex</span> <span class="op">=</span> <span class="number">28</span>;
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">SlashDeferDuration</span>: <span class="ident">sp_staking::EraIndex</span> <span class="op">=</span> <span class="number">27</span>;
@@ -4089,6 +4105,16 @@
 			<span class="ident">data</span>: <span class="ident">inherents::InherentData</span>,
 		) -&gt; <span class="ident">inherents::CheckInherentsResult</span> {
 			<span class="ident">data</span>.<span class="ident">check_extrinsics</span>(<span class="kw-2">&amp;</span><span class="ident">block</span>)
+		}
+	}
+
+	<span class="kw">impl</span> <span class="ident">pallet_nomination_pools_runtime_api::NominationPoolsApi</span><span class="op">&lt;</span>
+		<span class="ident">Block</span>,
+		<span class="ident">AccountId</span>,
+		<span class="ident">Balance</span>,
+	<span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
+		<span class="kw">fn</span> <span class="ident">pending_rewards</span>(<span class="ident">member</span>: <span class="ident">AccountId</span>) -&gt; <span class="ident">Balance</span> {
+			<span class="ident">NominationPools::pending_rewards</span>(<span class="ident">member</span>).<span class="ident">unwrap_or_default</span>()
 		}
 	}
 
