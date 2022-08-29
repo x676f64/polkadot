@@ -377,7 +377,7 @@
 <span class="doccomment">/// - Monitors for inclusion events to keep track of candidates that have been included on chains.</span>
 <span class="doccomment">/// - Calls `FetchOnChainVotes` for each block to gather potentially missed votes from chain.</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// With this information it provies a `CandidateComparator` and as a return value of</span>
+<span class="doccomment">/// With this information it provides a `CandidateComparator` and as a return value of</span>
 <span class="doccomment">/// `process_active_leaves_update` any scraped votes.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ChainScraper</span> {
 	<span class="doccomment">/// All candidates we have seen included, which not yet have been finalized.</span>
@@ -458,7 +458,7 @@
 
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">on_chain_votes</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
 		<span class="kw">for</span> (<span class="ident">block_number</span>, <span class="ident">block_hash</span>) <span class="kw">in</span> <span class="ident">block_numbers</span>.<span class="ident">zip</span>(<span class="ident">block_hashes</span>) {
-			<span class="macro">gum::trace!</span>(<span class="question-mark">?</span><span class="ident">block_number</span>, <span class="question-mark">?</span><span class="ident">block_hash</span>, <span class="string">&quot;In ancestor processesing.&quot;</span>);
+			<span class="macro">gum::trace!</span>(<span class="question-mark">?</span><span class="ident">block_number</span>, <span class="question-mark">?</span><span class="ident">block_hash</span>, <span class="string">&quot;In ancestor processing.&quot;</span>);
 
 			<span class="self">self</span>.<span class="ident">process_candidate_events</span>(<span class="ident">sender</span>, <span class="ident">block_number</span>, <span class="ident">block_hash</span>).<span class="kw">await</span><span class="question-mark">?</span>;
 
