@@ -370,6 +370,18 @@
 <span id="364">364</span>
 <span id="365">365</span>
 <span id="366">366</span>
+<span id="367">367</span>
+<span id="368">368</span>
+<span id="369">369</span>
+<span id="370">370</span>
+<span id="371">371</span>
+<span id="372">372</span>
+<span id="373">373</span>
+<span id="374">374</span>
+<span id="375">375</span>
+<span id="376">376</span>
+<span id="377">377</span>
+<span id="378">378</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -399,7 +411,7 @@
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">polkadot_node_network_protocol::authority_discovery::AuthorityDiscovery</span>;
 <span class="kw">use</span> <span class="ident">polkadot_node_network_protocol</span>::{
-	<span class="ident">peer_set</span>::{<span class="ident">PeerSet</span>, <span class="ident">PerPeerSet</span>},
+	<span class="ident">peer_set</span>::{<span class="ident">PeerSet</span>, <span class="ident">PeerSetProtocolNames</span>, <span class="ident">PerPeerSet</span>},
 	<span class="ident">PeerId</span>,
 };
 <span class="kw">use</span> <span class="ident">polkadot_primitives::v2::AuthorityDiscoveryId</span>;
@@ -408,6 +420,7 @@
 
 <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">struct</span> <span class="ident">Service</span><span class="op">&lt;</span><span class="ident">N</span>, <span class="ident">AD</span><span class="op">&gt;</span> {
 	<span class="ident">state</span>: <span class="ident">PerPeerSet</span><span class="op">&lt;</span><span class="ident">StatePerPeerSet</span><span class="op">&gt;</span>,
+	<span class="ident">peerset_protocol_names</span>: <span class="ident">PeerSetProtocolNames</span>,
 	<span class="comment">// PhantomData used to make the struct generic instead of having generic methods</span>
 	<span class="ident">_phantom</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span>(<span class="ident">N</span>, <span class="ident">AD</span>)<span class="op">&gt;</span>,
 }
@@ -418,8 +431,8 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">N</span>: <span class="ident">Network</span>, <span class="ident">AD</span>: <span class="ident">AuthorityDiscovery</span><span class="op">&gt;</span> <span class="ident">Service</span><span class="op">&lt;</span><span class="ident">N</span>, <span class="ident">AD</span><span class="op">&gt;</span> {
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() -&gt; <span class="self">Self</span> {
-		<span class="self">Self</span> { <span class="ident">state</span>: <span class="ident">Default::default</span>(), <span class="ident">_phantom</span>: <span class="ident">PhantomData</span> }
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">peerset_protocol_names</span>: <span class="ident">PeerSetProtocolNames</span>) -&gt; <span class="self">Self</span> {
+		<span class="self">Self</span> { <span class="ident">state</span>: <span class="ident">Default::default</span>(), <span class="ident">peerset_protocol_names</span>, <span class="ident">_phantom</span>: <span class="ident">PhantomData</span> }
 	}
 
 	<span class="doccomment">/// Connect to already resolved addresses.</span>
@@ -448,20 +461,26 @@
 		<span class="comment">// ask the network to connect to these nodes and not disconnect</span>
 		<span class="comment">// from them until removed from the set</span>
 		<span class="comment">//</span>
-		<span class="comment">// for peer-set management, the default should be used regardless of</span>
+		<span class="comment">// for peer-set management, the main protocol name should be used regardless of</span>
 		<span class="comment">// the negotiated version.</span>
 		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Err</span>(<span class="ident">e</span>) <span class="op">=</span> <span class="ident">network_service</span>
-			.<span class="ident">set_reserved_peers</span>(<span class="ident">peer_set</span>.<span class="ident">into_default_protocol_name</span>(), <span class="ident">newly_requested</span>)
+			.<span class="ident">set_reserved_peers</span>(
+				<span class="self">self</span>.<span class="ident">peerset_protocol_names</span>.<span class="ident">get_main_name</span>(<span class="ident">peer_set</span>),
+				<span class="ident">newly_requested</span>,
+			)
 			.<span class="kw">await</span>
 		{
 			<span class="macro">gum::warn!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="ident">err</span> <span class="op">=</span> <span class="question-mark">?</span><span class="ident">e</span>, <span class="string">&quot;AuthorityDiscoveryService returned an invalid multiaddress&quot;</span>);
 		}
 		<span class="comment">// the addresses are known to be valid</span>
 		<span class="comment">//</span>
-		<span class="comment">// for peer-set management, the default should be used regardless of</span>
+		<span class="comment">// for peer-set management, the main protocol name should be used regardless of</span>
 		<span class="comment">// the negotiated version.</span>
 		<span class="kw">let</span> <span class="kw">_</span> <span class="op">=</span> <span class="ident">network_service</span>
-			.<span class="ident">remove_from_peers_set</span>(<span class="ident">peer_set</span>.<span class="ident">into_default_protocol_name</span>(), <span class="ident">peers_to_remove</span>)
+			.<span class="ident">remove_from_peers_set</span>(
+				<span class="self">self</span>.<span class="ident">peerset_protocol_names</span>.<span class="ident">get_main_name</span>(<span class="ident">peer_set</span>),
+				<span class="ident">peers_to_remove</span>,
+			)
 			.<span class="kw">await</span>;
 
 		<span class="ident">network_service</span>
@@ -538,6 +557,7 @@
 		<span class="ident">request_response</span>::{<span class="ident">outgoing::Requests</span>, <span class="ident">ReqProtocolNames</span>},
 		<span class="ident">PeerId</span>,
 	};
+	<span class="kw">use</span> <span class="ident">polkadot_primitives::v2::Hash</span>;
 	<span class="kw">use</span> <span class="ident">sc_network</span>::{<span class="ident">Event</span> <span class="kw">as</span> <span class="ident">NetworkEvent</span>, <span class="ident">IfDisconnected</span>};
 	<span class="kw">use</span> <span class="ident">sp_keyring::Sr25519Keyring</span>;
 	<span class="kw">use</span> <span class="ident">std</span>::{
@@ -546,7 +566,11 @@
 	};
 
 	<span class="kw">fn</span> <span class="ident">new_service</span>() -&gt; <span class="ident">Service</span><span class="op">&lt;</span><span class="ident">TestNetwork</span>, <span class="ident">TestAuthorityDiscovery</span><span class="op">&gt;</span> {
-		<span class="ident">Service::new</span>()
+		<span class="kw">let</span> <span class="ident">genesis_hash</span> <span class="op">=</span> <span class="ident">Hash::repeat_byte</span>(<span class="number">0xff</span>);
+		<span class="kw">let</span> <span class="ident">fork_id</span> <span class="op">=</span> <span class="prelude-val">None</span>;
+		<span class="kw">let</span> <span class="ident">protocol_names</span> <span class="op">=</span> <span class="ident">PeerSetProtocolNames::new</span>(<span class="ident">genesis_hash</span>, <span class="ident">fork_id</span>);
+
+		<span class="ident">Service::new</span>(<span class="ident">protocol_names</span>)
 	}
 
 	<span class="kw">fn</span> <span class="ident">new_network</span>() -&gt; (<span class="ident">TestNetwork</span>, <span class="ident">TestAuthorityDiscovery</span>) {
@@ -620,11 +644,11 @@
 			<span class="macro">panic!</span>()
 		}
 
-		<span class="kw">fn</span> <span class="ident">disconnect_peer</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw">_</span>: <span class="ident">PeerId</span>, <span class="kw">_</span>: <span class="ident">PeerSet</span>) {
+		<span class="kw">fn</span> <span class="ident">disconnect_peer</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw">_</span>: <span class="ident">PeerId</span>, <span class="kw">_</span>: <span class="ident">Cow</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span>, <span class="ident">str</span><span class="op">&gt;</span>) {
 			<span class="macro">panic!</span>()
 		}
 
-		<span class="kw">fn</span> <span class="ident">write_notification</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw">_</span>: <span class="ident">PeerId</span>, <span class="kw">_</span>: <span class="ident">PeerSet</span>, <span class="kw">_</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>) {
+		<span class="kw">fn</span> <span class="ident">write_notification</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw">_</span>: <span class="ident">PeerId</span>, <span class="kw">_</span>: <span class="ident">Cow</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span>, <span class="ident">str</span><span class="op">&gt;</span>, <span class="kw">_</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>) {
 			<span class="macro">panic!</span>()
 		}
 	}

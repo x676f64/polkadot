@@ -373,6 +373,12 @@
 <span id="367">367</span>
 <span id="368">368</span>
 <span id="369">369</span>
+<span id="370">370</span>
+<span id="371">371</span>
+<span id="372">372</span>
+<span id="373">373</span>
+<span id="374">374</span>
+<span id="375">375</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -399,8 +405,9 @@
 <span class="kw">use</span> <span class="ident">polkadot_node_core_candidate_validation::Config</span> <span class="kw">as</span> <span class="ident">CandidateValidationConfig</span>;
 <span class="kw">use</span> <span class="ident">polkadot_node_core_chain_selection::Config</span> <span class="kw">as</span> <span class="ident">ChainSelectionConfig</span>;
 <span class="kw">use</span> <span class="ident">polkadot_node_core_dispute_coordinator::Config</span> <span class="kw">as</span> <span class="ident">DisputeCoordinatorConfig</span>;
-<span class="kw">use</span> <span class="ident">polkadot_node_network_protocol::request_response</span>::{
-	<span class="ident">v1</span> <span class="kw">as</span> <span class="ident">request_v1</span>, <span class="ident">IncomingRequestReceiver</span>, <span class="ident">ReqProtocolNames</span>,
+<span class="kw">use</span> <span class="ident">polkadot_node_network_protocol</span>::{
+	<span class="ident">peer_set::PeerSetProtocolNames</span>,
+	<span class="ident">request_response</span>::{<span class="ident">v1</span> <span class="kw">as</span> <span class="ident">request_v1</span>, <span class="ident">IncomingRequestReceiver</span>, <span class="ident">ReqProtocolNames</span>},
 };
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">any</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;malus&quot;</span>, <span class="ident">test</span>))]</span>
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">polkadot_overseer</span>::{
@@ -497,6 +504,8 @@
 	<span class="kw">pub</span> <span class="ident">overseer_message_channel_capacity_override</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
 	<span class="doccomment">/// Request-response protocol names source.</span>
 	<span class="kw">pub</span> <span class="ident">req_protocol_names</span>: <span class="ident">ReqProtocolNames</span>,
+	<span class="doccomment">/// [`PeerSet`] protocol names to protocols mapping.</span>
+	<span class="kw">pub</span> <span class="ident">peerset_protocol_names</span>: <span class="ident">PeerSetProtocolNames</span>,
 }
 
 <span class="doccomment">/// Obtain a prepared `OverseerBuilder`, that is initialized</span>
@@ -526,6 +535,7 @@
 		<span class="ident">pvf_checker_enabled</span>,
 		<span class="ident">overseer_message_channel_capacity_override</span>,
 		<span class="ident">req_protocol_names</span>,
+		<span class="ident">peerset_protocol_names</span>,
 	}: <span class="ident">OverseerGenArgs</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">Spawner</span>, <span class="ident">RuntimeClient</span><span class="op">&gt;</span>,
 ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>
 	<span class="ident">InitializedOverseerBuilder</span><span class="op">&lt;</span>
@@ -581,12 +591,14 @@
 			<span class="ident">authority_discovery_service</span>.<span class="ident">clone</span>(),
 			<span class="ident">network_bridge_metrics</span>.<span class="ident">clone</span>(),
 			<span class="ident">req_protocol_names</span>,
+			<span class="ident">peerset_protocol_names</span>.<span class="ident">clone</span>(),
 		))
 		.<span class="ident">network_bridge_rx</span>(<span class="ident">NetworkBridgeRxSubsystem::new</span>(
 			<span class="ident">network_service</span>.<span class="ident">clone</span>(),
 			<span class="ident">authority_discovery_service</span>.<span class="ident">clone</span>(),
 			<span class="ident">Box::new</span>(<span class="ident">network_service</span>.<span class="ident">clone</span>()),
 			<span class="ident">network_bridge_metrics</span>,
+			<span class="ident">peerset_protocol_names</span>,
 		))
 		.<span class="ident">availability_distribution</span>(<span class="ident">AvailabilityDistributionSubsystem::new</span>(
 			<span class="ident">keystore</span>.<span class="ident">clone</span>(),
