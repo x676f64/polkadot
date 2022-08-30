@@ -132,8 +132,8 @@
 	};
 
 	<span class="doccomment">/// Gets the on-chain disputes at a given block number and returns them as a `HashSet` so that searching in them is cheap.</span>
-	<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">get_onchain_disputes</span><span class="op">&lt;</span><span class="ident">Sender</span><span class="op">&gt;</span>(
-		<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Sender</span>,
+	<span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">get_onchain_disputes</span>(
+		<span class="ident">sender</span>: <span class="kw-2">&amp;mut</span> <span class="kw">impl</span> <span class="ident">SubsystemSender</span><span class="op">&lt;</span><span class="ident">RuntimeApiMessage</span><span class="op">&gt;</span>,
 		<span class="ident">relay_parent</span>: <span class="ident">Hash</span>,
 	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">HashMap</span><span class="op">&lt;</span>(<span class="ident">SessionIndex</span>, <span class="ident">CandidateHash</span>), <span class="ident">DisputeState</span><span class="op">&gt;</span>, <span class="ident">GetOnchainDisputesError</span><span class="op">&gt;</span> {
 		<span class="macro">gum::trace!</span>(<span class="ident">target</span>: <span class="ident">LOG_TARGET</span>, <span class="question-mark">?</span><span class="ident">relay_parent</span>, <span class="string">&quot;Fetching on-chain disputes&quot;</span>);
