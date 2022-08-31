@@ -281,7 +281,7 @@
 	<span class="doccomment">/// This migration converts crowdloans to use a crowdloan index rather than the parachain id as a</span>
 	<span class="doccomment">/// unique identifier. This makes it easier to swap two crowdloans between parachains.</span>
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">migrate</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span>() -&gt; <span class="ident">frame_support::weights::Weight</span> {
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">weight</span> <span class="op">=</span> <span class="number">0</span>;
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">weight</span> <span class="op">=</span> <span class="ident">Weight::new</span>();
 
 		<span class="comment">// First migrate `NextTrieIndex` counter to `NextFundIndex`.</span>
 

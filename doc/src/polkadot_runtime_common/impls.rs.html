@@ -214,6 +214,11 @@
 <span id="208">208</span>
 <span id="209">209</span>
 <span id="210">210</span>
+<span id="211">211</span>
+<span id="212">212</span>
+<span id="213">213</span>
+<span id="214">214</span>
+<span id="215">215</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2019-2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -276,7 +281,12 @@
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">tests</span> {
 	<span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
-	<span class="kw">use</span> <span class="ident">frame_support</span>::{<span class="ident">parameter_types</span>, <span class="ident">traits::FindAuthor</span>, <span class="ident">weights::DispatchClass</span>, <span class="ident">PalletId</span>};
+	<span class="kw">use</span> <span class="ident">frame_support</span>::{
+		<span class="ident">parameter_types</span>,
+		<span class="ident">traits::FindAuthor</span>,
+		<span class="ident">weights</span>::{<span class="ident">DispatchClass</span>, <span class="ident">Weight</span>},
+		<span class="ident">PalletId</span>,
+	};
 	<span class="kw">use</span> <span class="ident">frame_system::limits</span>;
 	<span class="kw">use</span> <span class="ident">primitives::v2::AccountId</span>;
 	<span class="kw">use</span> <span class="ident">sp_core::H256</span>;
@@ -306,12 +316,12 @@
 	<span class="macro">parameter_types!</span> {
 		<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">BlockHashCount</span>: <span class="ident">u64</span> <span class="op">=</span> <span class="number">250</span>;
 		<span class="kw">pub</span> <span class="ident">BlockWeights</span>: <span class="ident">limits::BlockWeights</span> <span class="op">=</span> <span class="ident">limits::BlockWeights::builder</span>()
-			.<span class="ident">base_block</span>(<span class="number">10</span>)
+			.<span class="ident">base_block</span>(<span class="ident">Weight::from_ref_time</span>(<span class="number">10</span>))
 			.<span class="ident">for_class</span>(<span class="ident">DispatchClass::all</span>(), <span class="op">|</span><span class="ident">weight</span><span class="op">|</span> {
-				<span class="ident">weight</span>.<span class="ident">base_extrinsic</span> <span class="op">=</span> <span class="number">100</span>;
+				<span class="ident">weight</span>.<span class="ident">base_extrinsic</span> <span class="op">=</span> <span class="ident">Weight::from_ref_time</span>(<span class="number">100</span>);
 			})
 			.<span class="ident">for_class</span>(<span class="ident">DispatchClass::non_mandatory</span>(), <span class="op">|</span><span class="ident">weight</span><span class="op">|</span> {
-				<span class="ident">weight</span>.<span class="ident">max_total</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="number">1024</span>);
+				<span class="ident">weight</span>.<span class="ident">max_total</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">Weight::from_ref_time</span>(<span class="number">1024</span>));
 			})
 			.<span class="ident">build_or_panic</span>();
 		<span class="kw">pub</span> <span class="ident">BlockLength</span>: <span class="ident">limits::BlockLength</span> <span class="op">=</span> <span class="ident">limits::BlockLength::max</span>(<span class="number">2</span> <span class="op">*</span> <span class="number">1024</span>);

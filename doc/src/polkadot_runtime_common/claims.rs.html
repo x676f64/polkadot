@@ -1691,19 +1691,19 @@
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">TestWeightInfo</span>;
 <span class="kw">impl</span> <span class="ident">WeightInfo</span> <span class="kw">for</span> <span class="ident">TestWeightInfo</span> {
 	<span class="kw">fn</span> <span class="ident">claim</span>() -&gt; <span class="ident">Weight</span> {
-		<span class="number">0</span>
+		<span class="ident">Weight::zero</span>()
 	}
 	<span class="kw">fn</span> <span class="ident">mint_claim</span>() -&gt; <span class="ident">Weight</span> {
-		<span class="number">0</span>
+		<span class="ident">Weight::zero</span>()
 	}
 	<span class="kw">fn</span> <span class="ident">claim_attest</span>() -&gt; <span class="ident">Weight</span> {
-		<span class="number">0</span>
+		<span class="ident">Weight::zero</span>()
 	}
 	<span class="kw">fn</span> <span class="ident">attest</span>() -&gt; <span class="ident">Weight</span> {
-		<span class="number">0</span>
+		<span class="ident">Weight::zero</span>()
 	}
 	<span class="kw">fn</span> <span class="ident">move_claim</span>() -&gt; <span class="ident">Weight</span> {
-		<span class="number">0</span>
+		<span class="ident">Weight::zero</span>()
 	}
 }
 

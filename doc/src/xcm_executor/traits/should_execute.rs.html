@@ -69,7 +69,6 @@
 <span id="63">63</span>
 <span id="64">64</span>
 <span id="65">65</span>
-<span id="66">66</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -86,9 +85,8 @@
 <span class="comment">// You should have received a copy of the GNU General Public License</span>
 <span class="comment">// along with Polkadot.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
 
-<span class="kw">use</span> <span class="ident">frame_support::weights::Weight</span>;
 <span class="kw">use</span> <span class="ident">sp_std::result::Result</span>;
-<span class="kw">use</span> <span class="ident">xcm::latest</span>::{<span class="ident">MultiLocation</span>, <span class="ident">Xcm</span>};
+<span class="kw">use</span> <span class="ident">xcm::latest</span>::{<span class="ident">MultiLocation</span>, <span class="ident">Weight</span>, <span class="ident">Xcm</span>};
 
 <span class="doccomment">/// Trait to determine whether the execution engine should actually execute a given XCM.</span>
 <span class="doccomment">///</span>

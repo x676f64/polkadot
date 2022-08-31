@@ -333,6 +333,9 @@
 <span id="327">327</span>
 <span id="328">328</span>
 <span id="329">329</span>
+<span id="330">330</span>
+<span id="331">331</span>
+<span id="332">332</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -432,8 +435,8 @@
 }
 
 <span class="macro">parameter_types!</span> {
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">ReservedXcmpWeight</span>: <span class="ident">Weight</span> <span class="op">=</span> <span class="ident">WEIGHT_PER_SECOND</span> <span class="op">/</span> <span class="number">4</span>;
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">ReservedDmpWeight</span>: <span class="ident">Weight</span> <span class="op">=</span> <span class="ident">WEIGHT_PER_SECOND</span> <span class="op">/</span> <span class="number">4</span>;
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">ReservedXcmpWeight</span>: <span class="ident">Weight</span> <span class="op">=</span> <span class="ident">WEIGHT_PER_SECOND</span>.<span class="ident">scalar_div</span>(<span class="number">4</span>);
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">ReservedDmpWeight</span>: <span class="ident">Weight</span> <span class="op">=</span> <span class="ident">WEIGHT_PER_SECOND</span>.<span class="ident">scalar_div</span>(<span class="number">4</span>);
 }
 
 <span class="macro">parameter_types!</span> {
@@ -455,7 +458,7 @@
 );
 
 <span class="macro">parameter_types!</span> {
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">UnitWeightCost</span>: <span class="ident">Weight</span> <span class="op">=</span> <span class="number">1</span>;
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">UnitWeightCost</span>: <span class="ident">u64</span> <span class="op">=</span> <span class="number">1</span>;
 	<span class="kw">pub</span> <span class="ident">KsmPerSecond</span>: (<span class="ident">AssetId</span>, <span class="ident">u128</span>) <span class="op">=</span> (<span class="ident">Concrete</span>(<span class="ident">Parent</span>.<span class="ident">into</span>()), <span class="number">1</span>);
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MaxInstructions</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">100</span>;
 }
@@ -557,12 +560,14 @@
 			<span class="kw">let</span> (<span class="ident">result</span>, <span class="ident">event</span>) <span class="op">=</span> <span class="kw">match</span> <span class="ident">Xcm</span>::<span class="op">&lt;</span><span class="ident">T::Call</span><span class="op">&gt;</span><span class="ident">::try_from</span>(<span class="ident">xcm</span>) {
 				<span class="prelude-val">Ok</span>(<span class="ident">xcm</span>) =&gt; {
 					<span class="kw">let</span> <span class="ident">location</span> <span class="op">=</span> <span class="ident">MultiLocation::new</span>(<span class="number">1</span>, <span class="ident">X1</span>(<span class="ident">Parachain</span>(<span class="ident">sender</span>.<span class="ident">into</span>())));
-					<span class="kw">match</span> <span class="ident">T::XcmExecutor::execute_xcm</span>(<span class="ident">location</span>, <span class="ident">xcm</span>, <span class="ident">max_weight</span>) {
+					<span class="kw">match</span> <span class="ident">T::XcmExecutor::execute_xcm</span>(<span class="ident">location</span>, <span class="ident">xcm</span>, <span class="ident">max_weight</span>.<span class="ident">ref_time</span>()) {
 						<span class="ident">Outcome::Error</span>(<span class="ident">e</span>) =&gt; (<span class="prelude-val">Err</span>(<span class="ident">e</span>.<span class="ident">clone</span>()), <span class="ident">Event::Fail</span>(<span class="prelude-val">Some</span>(<span class="ident">hash</span>), <span class="ident">e</span>)),
-						<span class="ident">Outcome::Complete</span>(<span class="ident">w</span>) =&gt; (<span class="prelude-val">Ok</span>(<span class="ident">w</span>), <span class="ident">Event::Success</span>(<span class="prelude-val">Some</span>(<span class="ident">hash</span>))),
+						<span class="ident">Outcome::Complete</span>(<span class="ident">w</span>) =&gt;
+							(<span class="prelude-val">Ok</span>(<span class="ident">Weight::from_ref_time</span>(<span class="ident">w</span>)), <span class="ident">Event::Success</span>(<span class="prelude-val">Some</span>(<span class="ident">hash</span>))),
 						<span class="comment">// As far as the caller is concerned, this was dispatched without error, so</span>
 						<span class="comment">// we just report the weight used.</span>
-						<span class="ident">Outcome::Incomplete</span>(<span class="ident">w</span>, <span class="ident">e</span>) =&gt; (<span class="prelude-val">Ok</span>(<span class="ident">w</span>), <span class="ident">Event::Fail</span>(<span class="prelude-val">Some</span>(<span class="ident">hash</span>), <span class="ident">e</span>)),
+						<span class="ident">Outcome::Incomplete</span>(<span class="ident">w</span>, <span class="ident">e</span>) =&gt;
+							(<span class="prelude-val">Ok</span>(<span class="ident">Weight::from_ref_time</span>(<span class="ident">w</span>)), <span class="ident">Event::Fail</span>(<span class="prelude-val">Some</span>(<span class="ident">hash</span>), <span class="ident">e</span>)),
 					}
 				},
 				<span class="prelude-val">Err</span>(()) =&gt; (<span class="prelude-val">Err</span>(<span class="ident">XcmError::UnhandledXcmVersion</span>), <span class="ident">Event::BadVersion</span>(<span class="prelude-val">Some</span>(<span class="ident">hash</span>))),
@@ -612,7 +617,8 @@
 						<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event::UnsupportedVersion</span>(<span class="ident">id</span>));
 					},
 					<span class="prelude-val">Ok</span>(<span class="prelude-val">Ok</span>(<span class="ident">x</span>)) =&gt; {
-						<span class="kw">let</span> <span class="ident">outcome</span> <span class="op">=</span> <span class="ident">T::XcmExecutor::execute_xcm</span>(<span class="ident">Parent</span>, <span class="ident">x</span>.<span class="ident">clone</span>(), <span class="ident">limit</span>);
+						<span class="kw">let</span> <span class="ident">outcome</span> <span class="op">=</span>
+							<span class="ident">T::XcmExecutor::execute_xcm</span>(<span class="ident">Parent</span>, <span class="ident">x</span>.<span class="ident">clone</span>(), <span class="ident">limit</span>.<span class="ident">ref_time</span>());
 						<span class="op">&lt;</span><span class="ident">ReceivedDmp</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::append</span>(<span class="ident">x</span>);
 						<span class="ident"><span class="self">Self</span>::deposit_event</span>(<span class="ident">Event::ExecutedDownward</span>(<span class="ident">id</span>, <span class="ident">outcome</span>));
 					},

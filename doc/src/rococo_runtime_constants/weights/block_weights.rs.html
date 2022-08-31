@@ -136,7 +136,7 @@
 	<span class="doccomment">///   99th: 4_189_094</span>
 	<span class="doccomment">///   95th: 4_152_261</span>
 	<span class="doccomment">///   75th: 4_098_529</span>
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">BlockExecutionWeight</span>: <span class="ident">Weight</span> <span class="op">=</span> <span class="number">4_084_738</span> <span class="op">*</span> <span class="ident">WEIGHT_PER_NANOS</span>;
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">BlockExecutionWeight</span>: <span class="ident">Weight</span> <span class="op">=</span> <span class="ident">WEIGHT_PER_NANOS</span>.<span class="ident">scalar_saturating_mul</span>(<span class="number">4_084_738</span>);
 }
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>

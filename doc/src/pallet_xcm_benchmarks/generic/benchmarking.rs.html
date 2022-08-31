@@ -439,7 +439,7 @@
 
 		<span class="kw">let</span> <span class="ident">instruction</span> <span class="op">=</span> <span class="ident">Instruction::Transact</span> {
 			<span class="ident">origin_type</span>: <span class="ident">OriginKind::SovereignAccount</span>,
-			<span class="ident">require_weight_at_most</span>: <span class="ident">noop_call</span>.<span class="ident">get_dispatch_info</span>().<span class="ident">weight</span>,
+			<span class="ident">require_weight_at_most</span>: <span class="ident">noop_call</span>.<span class="ident">get_dispatch_info</span>().<span class="ident">weight</span>.<span class="ident">ref_time</span>(),
 			<span class="ident">call</span>: <span class="ident">double_encoded_noop_call</span>,
 		};
 		<span class="kw">let</span> <span class="ident">xcm</span> <span class="op">=</span> <span class="ident">Xcm</span>(<span class="macro">vec!</span>[<span class="ident">instruction</span>]);

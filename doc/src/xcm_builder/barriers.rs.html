@@ -174,6 +174,8 @@
 <span id="168">168</span>
 <span id="169">169</span>
 <span id="170">170</span>
+<span id="171">171</span>
+<span id="172">172</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -192,10 +194,12 @@
 
 <span class="doccomment">//! Various implementations for `ShouldExecute`.</span>
 
-<span class="kw">use</span> <span class="ident">frame_support</span>::{<span class="ident">ensure</span>, <span class="ident">traits::Contains</span>, <span class="ident">weights::Weight</span>};
+<span class="kw">use</span> <span class="ident">frame_support</span>::{<span class="ident">ensure</span>, <span class="ident">traits::Contains</span>};
 <span class="kw">use</span> <span class="ident">polkadot_parachain::primitives::IsSystem</span>;
 <span class="kw">use</span> <span class="ident">sp_std</span>::{<span class="ident">marker::PhantomData</span>, <span class="ident">result::Result</span>};
-<span class="kw">use</span> <span class="ident">xcm::latest</span>::{<span class="ident">Instruction</span>::<span class="kw-2">*</span>, <span class="ident">Junction</span>, <span class="ident">Junctions</span>, <span class="ident">MultiLocation</span>, <span class="ident">WeightLimit</span>::<span class="kw-2">*</span>, <span class="ident">Xcm</span>};
+<span class="kw">use</span> <span class="ident">xcm::latest</span>::{
+	<span class="ident">Instruction</span>::<span class="kw-2">*</span>, <span class="ident">Junction</span>, <span class="ident">Junctions</span>, <span class="ident">MultiLocation</span>, <span class="ident">Weight</span>, <span class="ident">WeightLimit</span>::<span class="kw-2">*</span>, <span class="ident">Xcm</span>,
+};
 <span class="kw">use</span> <span class="ident">xcm_executor::traits</span>::{<span class="ident">OnResponse</span>, <span class="ident">ShouldExecute</span>};
 
 <span class="doccomment">/// Execution barrier that just takes `max_weight` from `weight_credit`.</span>

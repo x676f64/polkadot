@@ -173,7 +173,6 @@
 <span id="167">167</span>
 <span id="168">168</span>
 <span id="169">169</span>
-<span id="170">170</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2022 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -199,7 +198,6 @@
 <span class="kw">use</span> <span class="ident">frame_support</span>::{
 	<span class="ident">parameter_types</span>,
 	<span class="ident">traits</span>::{<span class="ident">Everything</span>, <span class="ident">IsInVec</span>, <span class="ident">Nothing</span>},
-	<span class="ident">weights::Weight</span>,
 };
 <span class="kw">use</span> <span class="ident">runtime_common</span>::{<span class="ident">xcm_sender</span>, <span class="ident">ToAuthor</span>};
 <span class="kw">use</span> <span class="ident">sp_std::prelude</span>::<span class="kw-2">*</span>;
@@ -242,7 +240,7 @@
 );
 
 <span class="macro">parameter_types!</span> {
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">BaseXcmWeight</span>: <span class="ident">Weight</span> <span class="op">=</span> <span class="number">1_000_000_000</span>;
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">BaseXcmWeight</span>: <span class="ident">u64</span> <span class="op">=</span> <span class="number">1_000_000_000</span>;
 }
 
 <span class="doccomment">/// The XCM router. When we want to send an XCM message, we use this type. It amalgamates all of our</span>

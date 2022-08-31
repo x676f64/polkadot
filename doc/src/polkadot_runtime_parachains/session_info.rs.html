@@ -414,7 +414,7 @@
 
 	<span class="doccomment">/// Called by the initializer to initialize the session info pallet.</span>
 	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">initializer_initialize</span>(<span class="ident">_now</span>: <span class="ident">T::BlockNumber</span>) -&gt; <span class="ident">Weight</span> {
-		<span class="number">0</span>
+		<span class="ident">Weight::zero</span>()
 	}
 
 	<span class="doccomment">/// Called by the initializer to finalize the session info pallet.</span>

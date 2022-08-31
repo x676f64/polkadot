@@ -1203,16 +1203,16 @@
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">TestWeightInfo</span>;
 <span class="kw">impl</span> <span class="ident">WeightInfo</span> <span class="kw">for</span> <span class="ident">TestWeightInfo</span> {
 	<span class="kw">fn</span> <span class="ident">force_lease</span>() -&gt; <span class="ident">Weight</span> {
-		<span class="number">0</span>
+		<span class="ident">Weight::zero</span>()
 	}
 	<span class="kw">fn</span> <span class="ident">manage_lease_period_start</span>(<span class="ident">_c</span>: <span class="ident">u32</span>, <span class="ident">_t</span>: <span class="ident">u32</span>) -&gt; <span class="ident">Weight</span> {
-		<span class="number">0</span>
+		<span class="ident">Weight::zero</span>()
 	}
 	<span class="kw">fn</span> <span class="ident">clear_all_leases</span>() -&gt; <span class="ident">Weight</span> {
-		<span class="number">0</span>
+		<span class="ident">Weight::zero</span>()
 	}
 	<span class="kw">fn</span> <span class="ident">trigger_onboard</span>() -&gt; <span class="ident">Weight</span> {
-		<span class="number">0</span>
+		<span class="ident">Weight::zero</span>()
 	}
 }
 
@@ -1309,7 +1309,7 @@
 			}
 
 			<span class="comment">// We didn&#39;t return early above, so we didn&#39;t do anything.</span>
-			<span class="number">0</span>
+			<span class="ident">Weight::zero</span>()
 		}
 	}
 

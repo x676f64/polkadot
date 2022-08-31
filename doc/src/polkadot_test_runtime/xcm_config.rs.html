@@ -115,8 +115,8 @@
 <span class="comment">// You should have received a copy of the GNU General Public License</span>
 <span class="comment">// along with Polkadot.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
 
-<span class="kw">use</span> <span class="ident">frame_support</span>::{<span class="ident">parameter_types</span>, <span class="ident">traits::Everything</span>, <span class="ident">weights::Weight</span>};
-<span class="kw">use</span> <span class="ident">xcm::latest::prelude</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="ident">frame_support</span>::{<span class="ident">parameter_types</span>, <span class="ident">traits::Everything</span>};
+<span class="kw">use</span> <span class="ident">xcm::latest</span>::{<span class="ident">prelude</span>::<span class="kw-2">*</span>, <span class="ident">Weight</span> <span class="kw">as</span> <span class="ident">XCMWeight</span>};
 <span class="kw">use</span> <span class="ident">xcm_builder</span>::{<span class="ident">AllowUnpaidExecutionFrom</span>, <span class="ident">FixedWeightBounds</span>, <span class="ident">SignedToAccountId32</span>};
 <span class="kw">use</span> <span class="ident">xcm_executor</span>::{
 	<span class="ident">traits</span>::{<span class="ident">InvertLocation</span>, <span class="ident">TransactAsset</span>, <span class="ident">WeightTrader</span>},
@@ -162,7 +162,7 @@
 		<span class="ident">DummyWeightTrader</span>
 	}
 
-	<span class="kw">fn</span> <span class="ident">buy_weight</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">_weight</span>: <span class="ident">Weight</span>, <span class="ident">_payment</span>: <span class="ident">Assets</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Assets</span>, <span class="ident">XcmError</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">buy_weight</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">_weight</span>: <span class="ident">XCMWeight</span>, <span class="ident">_payment</span>: <span class="ident">Assets</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Assets</span>, <span class="ident">XcmError</span><span class="op">&gt;</span> {
 		<span class="prelude-val">Ok</span>(<span class="ident">Assets::default</span>())
 	}
 }

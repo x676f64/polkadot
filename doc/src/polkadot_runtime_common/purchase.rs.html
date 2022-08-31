@@ -1380,7 +1380,7 @@
 		<span class="doccomment">/// We check that the account does not exist at this stage.</span>
 		<span class="doccomment">///</span>
 		<span class="doccomment">/// Origin must match the `ValidityOrigin`.</span>
-		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="number">200_000_000</span> <span class="op">+</span> <span class="ident">T::DbWeight::get</span>().<span class="ident">reads_writes</span>(<span class="number">4</span>, <span class="number">1</span>))]</span>
+		<span class="attribute">#[<span class="ident">pallet::weight</span>(<span class="ident">Weight::from_ref_time</span>(<span class="number">200_000_000</span>) <span class="op">+</span> <span class="ident">T::DbWeight::get</span>().<span class="ident">reads_writes</span>(<span class="number">4</span>, <span class="number">1</span>))]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">create_account</span>(
 			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 			<span class="ident">who</span>: <span class="ident">T::AccountId</span>,

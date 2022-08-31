@@ -758,6 +758,8 @@
 <span id="752">752</span>
 <span id="753">753</span>
 <span id="754">754</span>
+<span id="755">755</span>
+<span id="756">756</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -833,7 +835,7 @@
 		<span class="kw">_</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>],
 		<span class="kw">_</span>: <span class="ident">Weight</span>,
 	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Weight</span>, (<span class="ident">MessageId</span>, <span class="ident">Weight</span>)<span class="op">&gt;</span> {
-		<span class="prelude-val">Ok</span>(<span class="number">0</span>)
+		<span class="prelude-val">Ok</span>(<span class="ident">Weight::zero</span>())
 	}
 }
 
@@ -883,7 +885,7 @@
 		<span class="kw">match</span> <span class="ident">maybe_msg_and_weight</span> {
 			<span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; {
 				<span class="ident">Pallet</span>::<span class="op">&lt;</span><span class="ident">C</span><span class="op">&gt;</span><span class="ident">::deposit_event</span>(<span class="ident">Event::InvalidFormat</span>(<span class="ident">id</span>));
-				<span class="prelude-val">Ok</span>(<span class="number">0</span>)
+				<span class="prelude-val">Ok</span>(<span class="ident">Weight::zero</span>())
 			},
 			<span class="prelude-val">Ok</span>((<span class="prelude-val">Err</span>(()), <span class="ident">weight_used</span>)) =&gt; {
 				<span class="ident">Pallet</span>::<span class="op">&lt;</span><span class="ident">C</span><span class="op">&gt;</span><span class="ident">::deposit_event</span>(<span class="ident">Event::UnsupportedVersion</span>(<span class="ident">id</span>));
@@ -891,11 +893,13 @@
 			},
 			<span class="prelude-val">Ok</span>((<span class="prelude-val">Ok</span>(<span class="ident">xcm_message</span>), <span class="ident">weight_used</span>)) =&gt; {
 				<span class="kw">let</span> <span class="ident">xcm_junction</span> <span class="op">=</span> <span class="ident">Junction::Parachain</span>(<span class="ident">origin</span>.<span class="ident">into</span>());
-				<span class="kw">let</span> <span class="ident">outcome</span> <span class="op">=</span> <span class="ident">XcmExecutor::execute_xcm</span>(<span class="ident">xcm_junction</span>, <span class="ident">xcm_message</span>, <span class="ident">max_weight</span>);
+				<span class="kw">let</span> <span class="ident">outcome</span> <span class="op">=</span>
+					<span class="ident">XcmExecutor::execute_xcm</span>(<span class="ident">xcm_junction</span>, <span class="ident">xcm_message</span>, <span class="ident">max_weight</span>.<span class="ident">ref_time</span>());
 				<span class="kw">match</span> <span class="ident">outcome</span> {
-					<span class="ident">Outcome::Error</span>(<span class="ident">XcmError::WeightLimitReached</span>(<span class="ident">required</span>)) =&gt; <span class="prelude-val">Err</span>((<span class="ident">id</span>, <span class="ident">required</span>)),
+					<span class="ident">Outcome::Error</span>(<span class="ident">XcmError::WeightLimitReached</span>(<span class="ident">required</span>)) =&gt;
+						<span class="prelude-val">Err</span>((<span class="ident">id</span>, <span class="ident">Weight::from_ref_time</span>(<span class="ident">required</span>))),
 					<span class="ident">outcome</span> =&gt; {
-						<span class="kw">let</span> <span class="ident">outcome_weight</span> <span class="op">=</span> <span class="ident">outcome</span>.<span class="ident">weight_used</span>();
+						<span class="kw">let</span> <span class="ident">outcome_weight</span> <span class="op">=</span> <span class="ident">Weight::from_ref_time</span>(<span class="ident">outcome</span>.<span class="ident">weight_used</span>());
 						<span class="ident">Pallet</span>::<span class="op">&lt;</span><span class="ident">C</span><span class="op">&gt;</span><span class="ident">::deposit_event</span>(<span class="ident">Event::ExecutedUpward</span>(<span class="ident">id</span>, <span class="ident">outcome</span>));
 						<span class="prelude-val">Ok</span>(<span class="ident">weight_used</span>.<span class="ident">saturating_add</span>(<span class="ident">outcome_weight</span>))
 					},
@@ -1128,7 +1132,7 @@
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Config</span><span class="op">&gt;</span> <span class="ident">Pallet</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Block initialization logic, called by initializer.</span>
 	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">initializer_initialize</span>(<span class="ident">_now</span>: <span class="ident">T::BlockNumber</span>) -&gt; <span class="ident">Weight</span> {
-		<span class="number">0</span>
+		<span class="ident">Weight::zero</span>()
 	}
 
 	<span class="doccomment">/// Block finalization logic, called by initializer.</span>
@@ -1145,7 +1149,7 @@
 	<span class="doccomment">/// Iterate over all paras that were noted for offboarding and remove all the data</span>
 	<span class="doccomment">/// associated with them.</span>
 	<span class="kw">fn</span> <span class="ident">perform_outgoing_para_cleanup</span>(<span class="ident">outgoing</span>: <span class="kw-2">&amp;</span>[<span class="ident">ParaId</span>]) -&gt; <span class="ident">Weight</span> {
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">weight</span>: <span class="ident">Weight</span> <span class="op">=</span> <span class="number">0</span>;
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">weight</span>: <span class="ident">Weight</span> <span class="op">=</span> <span class="ident">Weight::new</span>();
 		<span class="kw">for</span> <span class="ident">outgoing_para</span> <span class="kw">in</span> <span class="ident">outgoing</span> {
 			<span class="ident">weight</span> <span class="op">=</span> <span class="ident">weight</span>.<span class="ident">saturating_add</span>(<span class="ident"><span class="self">Self</span>::clean_ump_after_outgoing</span>(<span class="ident">outgoing_para</span>));
 		}
@@ -1227,7 +1231,7 @@
 		<span class="ident">para</span>: <span class="ident">ParaId</span>,
 		<span class="ident">upward_messages</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">UpwardMessage</span><span class="op">&gt;</span>,
 	) -&gt; <span class="ident">Weight</span> {
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">weight</span> <span class="op">=</span> <span class="number">0</span>;
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">weight</span> <span class="op">=</span> <span class="ident">Weight::new</span>();
 
 		<span class="kw">if</span> <span class="op">!</span><span class="ident">upward_messages</span>.<span class="ident">is_empty</span>() {
 			<span class="kw">let</span> (<span class="ident">extra_count</span>, <span class="ident">extra_size</span>) <span class="op">=</span> <span class="ident">upward_messages</span>
@@ -1263,7 +1267,7 @@
 
 	<span class="doccomment">/// Devote some time into dispatching pending upward messages.</span>
 	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">process_pending_upward_messages</span>() -&gt; <span class="ident">Weight</span> {
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">weight_used</span> <span class="op">=</span> <span class="number">0</span>;
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">weight_used</span> <span class="op">=</span> <span class="ident">Weight::new</span>();
 
 		<span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">configuration::Pallet</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::config</span>();
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cursor</span> <span class="op">=</span> <span class="ident">NeedsDispatchCursor::new</span>::<span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>();
@@ -1277,7 +1281,7 @@
 				<span class="comment">// if so - bail.</span>
 				<span class="kw">break</span>
 			}
-			<span class="kw">let</span> <span class="ident">max_weight</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">weight_used</span> <span class="op">==</span> <span class="number">0</span> {
+			<span class="kw">let</span> <span class="ident">max_weight</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">weight_used</span> <span class="op">==</span> <span class="ident">Weight::zero</span>() {
 				<span class="comment">// we increase the amount of weight that we&#39;re allowed to use on the first message to try to prevent</span>
 				<span class="comment">// the possibility of blockage of the queue.</span>
 				<span class="ident">config</span>.<span class="ident">ump_service_total_weight</span> <span class="op">*</span> <span class="ident">T::FirstMessageFactorPercent::get</span>() <span class="op">/</span> <span class="number">100</span>

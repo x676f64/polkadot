@@ -1983,16 +1983,16 @@
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">TestWeightInfo</span>;
 <span class="kw">impl</span> <span class="ident">WeightInfo</span> <span class="kw">for</span> <span class="ident">TestWeightInfo</span> {
 	<span class="kw">fn</span> <span class="ident">new_auction</span>() -&gt; <span class="ident">Weight</span> {
-		<span class="number">0</span>
+		<span class="ident">Weight::zero</span>()
 	}
 	<span class="kw">fn</span> <span class="ident">bid</span>() -&gt; <span class="ident">Weight</span> {
-		<span class="number">0</span>
+		<span class="ident">Weight::zero</span>()
 	}
 	<span class="kw">fn</span> <span class="ident">cancel_auction</span>() -&gt; <span class="ident">Weight</span> {
-		<span class="number">0</span>
+		<span class="ident">Weight::zero</span>()
 	}
 	<span class="kw">fn</span> <span class="ident">on_initialize</span>() -&gt; <span class="ident">Weight</span> {
-		<span class="number">0</span>
+		<span class="ident">Weight::zero</span>()
 	}
 }
 

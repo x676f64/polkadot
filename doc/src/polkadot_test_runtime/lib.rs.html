@@ -1608,7 +1608,7 @@
 <span class="kw">impl</span> <span class="ident">parachains_dmp::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {}
 
 <span class="macro">parameter_types!</span> {
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">FirstMessageFactorPercent</span>: <span class="ident">u64</span> <span class="op">=</span> <span class="number">100</span>;
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">FirstMessageFactorPercent</span>: <span class="ident">Weight</span> <span class="op">=</span> <span class="ident">Weight::from_ref_time</span>(<span class="number">100</span>);
 }
 
 <span class="kw">impl</span> <span class="ident">parachains_ump::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
@@ -1620,7 +1620,7 @@
 }
 
 <span class="macro">parameter_types!</span> {
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">BaseXcmWeight</span>: <span class="ident">frame_support::weights::Weight</span> <span class="op">=</span> <span class="number">1_000</span>;
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">BaseXcmWeight</span>: <span class="ident">xcm::latest::Weight</span> <span class="op">=</span> <span class="number">1_000</span>;
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">AnyNetwork</span>: <span class="ident">xcm::latest::NetworkId</span> <span class="op">=</span> <span class="ident">xcm::latest::NetworkId::Any</span>;
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MaxInstructions</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">100</span>;
 }

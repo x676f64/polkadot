@@ -105,9 +105,9 @@
 
 <span class="comment">// Shared test utilities and implementations for the XCM Builder.</span>
 
-<span class="kw">use</span> <span class="ident">frame_support</span>::{<span class="ident">dispatch::Weight</span>, <span class="ident">parameter_types</span>};
+<span class="kw">use</span> <span class="ident">frame_support::parameter_types</span>;
 <span class="kw">use</span> <span class="ident">sp_std::vec::Vec</span>;
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">xcm::latest::prelude</span>::<span class="kw-2">*</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">xcm::latest</span>::{<span class="ident">prelude</span>::<span class="kw-2">*</span>, <span class="ident">Weight</span>};
 <span class="kw">use</span> <span class="ident">xcm_executor::traits</span>::{<span class="ident">ClaimAssets</span>, <span class="ident">DropAssets</span>, <span class="ident">VersionChangeNotifier</span>};
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">xcm_executor</span>::{
 	<span class="ident">traits</span>::{<span class="ident">ConvertOrigin</span>, <span class="ident">FilterAssetLocation</span>, <span class="ident">InvertLocation</span>, <span class="ident">OnResponse</span>, <span class="ident">TransactAsset</span>},

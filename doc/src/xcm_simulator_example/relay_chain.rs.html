@@ -297,7 +297,7 @@
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">KusamaNetwork</span>: <span class="ident">NetworkId</span> <span class="op">=</span> <span class="ident">NetworkId::Kusama</span>;
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">AnyNetwork</span>: <span class="ident">NetworkId</span> <span class="op">=</span> <span class="ident">NetworkId::Any</span>;
 	<span class="kw">pub</span> <span class="ident">Ancestry</span>: <span class="ident">MultiLocation</span> <span class="op">=</span> <span class="ident">Here</span>.<span class="ident">into</span>();
-	<span class="kw">pub</span> <span class="ident">UnitWeightCost</span>: <span class="ident">Weight</span> <span class="op">=</span> <span class="number">1_000</span>;
+	<span class="kw">pub</span> <span class="ident">UnitWeightCost</span>: <span class="ident">u64</span> <span class="op">=</span> <span class="number">1_000</span>;
 }
 
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">SovereignAccountOf</span> <span class="op">=</span>
@@ -314,7 +314,7 @@
 );
 
 <span class="macro">parameter_types!</span> {
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">BaseXcmWeight</span>: <span class="ident">Weight</span> <span class="op">=</span> <span class="number">1_000</span>;
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">BaseXcmWeight</span>: <span class="ident">u64</span> <span class="op">=</span> <span class="number">1_000</span>;
 	<span class="kw">pub</span> <span class="ident">KsmPerSecond</span>: (<span class="ident">AssetId</span>, <span class="ident">u128</span>) <span class="op">=</span> (<span class="ident">Concrete</span>(<span class="ident">KsmLocation::get</span>()), <span class="number">1</span>);
 	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MaxInstructions</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">100</span>;
 }
@@ -361,7 +361,7 @@
 }
 
 <span class="macro">parameter_types!</span> {
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">FirstMessageFactorPercent</span>: <span class="ident">u64</span> <span class="op">=</span> <span class="number">100</span>;
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">FirstMessageFactorPercent</span>: <span class="ident">Weight</span> <span class="op">=</span> <span class="ident">Weight::from_ref_time</span>(<span class="number">100</span>);
 }
 
 <span class="kw">impl</span> <span class="ident">ump::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {

@@ -306,6 +306,8 @@
 <span id="300">300</span>
 <span id="301">301</span>
 <span id="302">302</span>
+<span id="303">303</span>
+<span id="304">304</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -324,12 +326,12 @@
 
 <span class="kw">use</span> <span class="ident">frame_support</span>::{
 	<span class="ident">traits</span>::{<span class="ident">tokens::currency::Currency</span> <span class="kw">as</span> <span class="ident">CurrencyT</span>, <span class="ident">Get</span>, <span class="ident">OnUnbalanced</span> <span class="kw">as</span> <span class="ident">OnUnbalancedT</span>},
-	<span class="ident">weights</span>::{<span class="ident">constants::WEIGHT_PER_SECOND</span>, <span class="ident">GetDispatchInfo</span>, <span class="ident">Weight</span>, <span class="ident">WeightToFee</span> <span class="kw">as</span> <span class="ident">WeightToFeeT</span>},
+	<span class="ident">weights</span>::{<span class="ident">constants::WEIGHT_PER_SECOND</span>, <span class="ident">GetDispatchInfo</span>, <span class="ident">WeightToFee</span> <span class="kw">as</span> <span class="ident">WeightToFeeT</span>},
 };
 <span class="kw">use</span> <span class="ident">parity_scale_codec::Decode</span>;
 <span class="kw">use</span> <span class="ident">sp_runtime::traits</span>::{<span class="ident">SaturatedConversion</span>, <span class="ident">Saturating</span>, <span class="ident">Zero</span>};
 <span class="kw">use</span> <span class="ident">sp_std</span>::{<span class="ident">marker::PhantomData</span>, <span class="ident">result::Result</span>};
-<span class="kw">use</span> <span class="ident">xcm::latest::prelude</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="ident">xcm::latest</span>::{<span class="ident">prelude</span>::<span class="kw-2">*</span>, <span class="ident">Weight</span>};
 <span class="kw">use</span> <span class="ident">xcm_executor</span>::{
 	<span class="ident">traits</span>::{<span class="ident">WeightBounds</span>, <span class="ident">WeightTrader</span>},
 	<span class="ident">Assets</span>,
@@ -460,7 +462,7 @@
 			<span class="ident">weight</span>, <span class="ident">payment</span>,
 		);
 		<span class="kw">let</span> (<span class="ident">id</span>, <span class="ident">units_per_second</span>) <span class="op">=</span> <span class="ident">T::get</span>();
-		<span class="kw">let</span> <span class="ident">amount</span> <span class="op">=</span> <span class="ident">units_per_second</span> <span class="op">*</span> (<span class="ident">weight</span> <span class="kw">as</span> <span class="ident">u128</span>) <span class="op">/</span> (<span class="ident">WEIGHT_PER_SECOND</span> <span class="kw">as</span> <span class="ident">u128</span>);
+		<span class="kw">let</span> <span class="ident">amount</span> <span class="op">=</span> <span class="ident">units_per_second</span> <span class="op">*</span> (<span class="ident">weight</span> <span class="kw">as</span> <span class="ident">u128</span>) <span class="op">/</span> (<span class="ident">WEIGHT_PER_SECOND</span>.<span class="ident">ref_time</span>() <span class="kw">as</span> <span class="ident">u128</span>);
 		<span class="kw">let</span> <span class="ident">unused</span> <span class="op">=</span>
 			<span class="ident">payment</span>.<span class="ident">checked_sub</span>((<span class="ident">id</span>, <span class="ident">amount</span>).<span class="ident">into</span>()).<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">XcmError::TooExpensive</span>)<span class="question-mark">?</span>;
 		<span class="self">self</span>.<span class="number">0</span> <span class="op">=</span> <span class="self">self</span>.<span class="number">0</span>.<span class="ident">saturating_add</span>(<span class="ident">weight</span>);
@@ -472,7 +474,7 @@
 		<span class="macro">log::trace!</span>(<span class="ident">target</span>: <span class="string">&quot;xcm::weight&quot;</span>, <span class="string">&quot;FixedRateOfConcreteFungible::refund_weight weight: {:?}&quot;</span>, <span class="ident">weight</span>);
 		<span class="kw">let</span> (<span class="ident">id</span>, <span class="ident">units_per_second</span>) <span class="op">=</span> <span class="ident">T::get</span>();
 		<span class="kw">let</span> <span class="ident">weight</span> <span class="op">=</span> <span class="ident">weight</span>.<span class="ident">min</span>(<span class="self">self</span>.<span class="number">0</span>);
-		<span class="kw">let</span> <span class="ident">amount</span> <span class="op">=</span> <span class="ident">units_per_second</span> <span class="op">*</span> (<span class="ident">weight</span> <span class="kw">as</span> <span class="ident">u128</span>) <span class="op">/</span> (<span class="ident">WEIGHT_PER_SECOND</span> <span class="kw">as</span> <span class="ident">u128</span>);
+		<span class="kw">let</span> <span class="ident">amount</span> <span class="op">=</span> <span class="ident">units_per_second</span> <span class="op">*</span> (<span class="ident">weight</span> <span class="kw">as</span> <span class="ident">u128</span>) <span class="op">/</span> (<span class="ident">WEIGHT_PER_SECOND</span>.<span class="ident">ref_time</span>() <span class="kw">as</span> <span class="ident">u128</span>);
 		<span class="self">self</span>.<span class="number">0</span> <span class="op">-</span><span class="op">=</span> <span class="ident">weight</span>;
 		<span class="self">self</span>.<span class="number">1</span> <span class="op">=</span> <span class="self">self</span>.<span class="number">1</span>.<span class="ident">saturating_sub</span>(<span class="ident">amount</span>);
 		<span class="kw">if</span> <span class="ident">amount</span> <span class="op">&gt;</span> <span class="number">0</span> {
@@ -512,7 +514,7 @@
 			<span class="ident">weight</span>, <span class="ident">payment</span>,
 		);
 		<span class="kw">let</span> (<span class="ident">id</span>, <span class="ident">units_per_second</span>) <span class="op">=</span> <span class="ident">T::get</span>();
-		<span class="kw">let</span> <span class="ident">amount</span> <span class="op">=</span> <span class="ident">units_per_second</span> <span class="op">*</span> (<span class="ident">weight</span> <span class="kw">as</span> <span class="ident">u128</span>) <span class="op">/</span> (<span class="ident">WEIGHT_PER_SECOND</span> <span class="kw">as</span> <span class="ident">u128</span>);
+		<span class="kw">let</span> <span class="ident">amount</span> <span class="op">=</span> <span class="ident">units_per_second</span> <span class="op">*</span> (<span class="ident">weight</span> <span class="kw">as</span> <span class="ident">u128</span>) <span class="op">/</span> (<span class="ident">WEIGHT_PER_SECOND</span>.<span class="ident">ref_time</span>() <span class="kw">as</span> <span class="ident">u128</span>);
 		<span class="kw">if</span> <span class="ident">amount</span> <span class="op">==</span> <span class="number">0</span> {
 			<span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">payment</span>)
 		}
@@ -527,7 +529,7 @@
 		<span class="macro">log::trace!</span>(<span class="ident">target</span>: <span class="string">&quot;xcm::weight&quot;</span>, <span class="string">&quot;FixedRateOfFungible::refund_weight weight: {:?}&quot;</span>, <span class="ident">weight</span>);
 		<span class="kw">let</span> (<span class="ident">id</span>, <span class="ident">units_per_second</span>) <span class="op">=</span> <span class="ident">T::get</span>();
 		<span class="kw">let</span> <span class="ident">weight</span> <span class="op">=</span> <span class="ident">weight</span>.<span class="ident">min</span>(<span class="self">self</span>.<span class="number">0</span>);
-		<span class="kw">let</span> <span class="ident">amount</span> <span class="op">=</span> <span class="ident">units_per_second</span> <span class="op">*</span> (<span class="ident">weight</span> <span class="kw">as</span> <span class="ident">u128</span>) <span class="op">/</span> (<span class="ident">WEIGHT_PER_SECOND</span> <span class="kw">as</span> <span class="ident">u128</span>);
+		<span class="kw">let</span> <span class="ident">amount</span> <span class="op">=</span> <span class="ident">units_per_second</span> <span class="op">*</span> (<span class="ident">weight</span> <span class="kw">as</span> <span class="ident">u128</span>) <span class="op">/</span> (<span class="ident">WEIGHT_PER_SECOND</span>.<span class="ident">ref_time</span>() <span class="kw">as</span> <span class="ident">u128</span>);
 		<span class="self">self</span>.<span class="number">0</span> <span class="op">-</span><span class="op">=</span> <span class="ident">weight</span>;
 		<span class="self">self</span>.<span class="number">1</span> <span class="op">=</span> <span class="self">self</span>.<span class="number">1</span>.<span class="ident">saturating_sub</span>(<span class="ident">amount</span>);
 		<span class="kw">if</span> <span class="ident">amount</span> <span class="op">&gt;</span> <span class="number">0</span> {
@@ -573,7 +575,8 @@
 
 	<span class="kw">fn</span> <span class="ident">buy_weight</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">weight</span>: <span class="ident">Weight</span>, <span class="ident">payment</span>: <span class="ident">Assets</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Assets</span>, <span class="ident">XcmError</span><span class="op">&gt;</span> {
 		<span class="macro">log::trace!</span>(<span class="ident">target</span>: <span class="string">&quot;xcm::weight&quot;</span>, <span class="string">&quot;UsingComponents::buy_weight weight: {:?}, payment: {:?}&quot;</span>, <span class="ident">weight</span>, <span class="ident">payment</span>);
-		<span class="kw">let</span> <span class="ident">amount</span> <span class="op">=</span> <span class="ident">WeightToFee::weight_to_fee</span>(<span class="kw-2">&amp;</span><span class="ident">weight</span>);
+		<span class="kw">let</span> <span class="ident">amount</span> <span class="op">=</span>
+			<span class="ident">WeightToFee::weight_to_fee</span>(<span class="kw-2">&amp;</span><span class="ident">frame_support::weights::Weight::from_ref_time</span>(<span class="ident">weight</span>));
 		<span class="kw">let</span> <span class="ident">u128_amount</span>: <span class="ident">u128</span> <span class="op">=</span> <span class="ident">amount</span>.<span class="ident">try_into</span>().<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">XcmError::Overflow</span>)<span class="question-mark">?</span>;
 		<span class="kw">let</span> <span class="ident">required</span> <span class="op">=</span> (<span class="ident">Concrete</span>(<span class="ident">AssetId::get</span>()), <span class="ident">u128_amount</span>).<span class="ident">into</span>();
 		<span class="kw">let</span> <span class="ident">unused</span> <span class="op">=</span> <span class="ident">payment</span>.<span class="ident">checked_sub</span>(<span class="ident">required</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">XcmError::TooExpensive</span>)<span class="question-mark">?</span>;
@@ -585,7 +588,8 @@
 	<span class="kw">fn</span> <span class="ident">refund_weight</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">weight</span>: <span class="ident">Weight</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">MultiAsset</span><span class="op">&gt;</span> {
 		<span class="macro">log::trace!</span>(<span class="ident">target</span>: <span class="string">&quot;xcm::weight&quot;</span>, <span class="string">&quot;UsingComponents::refund_weight weight: {:?}&quot;</span>, <span class="ident">weight</span>);
 		<span class="kw">let</span> <span class="ident">weight</span> <span class="op">=</span> <span class="ident">weight</span>.<span class="ident">min</span>(<span class="self">self</span>.<span class="number">0</span>);
-		<span class="kw">let</span> <span class="ident">amount</span> <span class="op">=</span> <span class="ident">WeightToFee::weight_to_fee</span>(<span class="kw-2">&amp;</span><span class="ident">weight</span>);
+		<span class="kw">let</span> <span class="ident">amount</span> <span class="op">=</span>
+			<span class="ident">WeightToFee::weight_to_fee</span>(<span class="kw-2">&amp;</span><span class="ident">frame_support::weights::Weight::from_ref_time</span>(<span class="ident">weight</span>));
 		<span class="self">self</span>.<span class="number">0</span> <span class="op">-</span><span class="op">=</span> <span class="ident">weight</span>;
 		<span class="self">self</span>.<span class="number">1</span> <span class="op">=</span> <span class="self">self</span>.<span class="number">1</span>.<span class="ident">saturating_sub</span>(<span class="ident">amount</span>);
 		<span class="kw">let</span> <span class="ident">amount</span>: <span class="ident">u128</span> <span class="op">=</span> <span class="ident">amount</span>.<span class="ident">saturated_into</span>();
