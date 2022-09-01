@@ -236,7 +236,7 @@
 		(<span class="ident">Runtime::Kusama</span>, <span class="ident">Command::SanityCheck</span>) =&gt; {
 			<span class="kw">use</span> <span class="ident">kusama_runtime</span>::{<span class="ident">Block</span>, <span class="ident">Runtime</span>};
 			<span class="kw">use</span> <span class="ident">kusama_runtime_constants::currency::UNITS</span>;
-			<span class="ident">sanity_check::execute</span>::<span class="op">&lt;</span><span class="ident">Runtime</span>, <span class="ident">Block</span><span class="op">&gt;</span>(<span class="ident">UNITS</span> <span class="kw">as</span> <span class="ident">u64</span>, <span class="string">&quot;KSM&quot;</span>, <span class="ident">options</span>.<span class="ident">uri</span>.<span class="ident">clone</span>()).<span class="kw">await</span>;
+			<span class="ident">try_state::execute</span>::<span class="op">&lt;</span><span class="ident">Runtime</span>, <span class="ident">Block</span><span class="op">&gt;</span>(<span class="ident">UNITS</span> <span class="kw">as</span> <span class="ident">u64</span>, <span class="string">&quot;KSM&quot;</span>, <span class="ident">options</span>.<span class="ident">uri</span>.<span class="ident">clone</span>()).<span class="kw">await</span>;
 		},
 		(<span class="ident">Runtime::Kusama</span>, <span class="ident">Command::Snapshot</span>) =&gt; {
 			<span class="kw">use</span> <span class="ident">kusama_runtime</span>::{<span class="ident">Block</span>, <span class="ident">Runtime</span>};
@@ -257,7 +257,7 @@
 		(<span class="ident">Runtime::Westend</span>, <span class="ident">Command::SanityCheck</span>) =&gt; {
 			<span class="kw">use</span> <span class="ident">westend_runtime</span>::{<span class="ident">Block</span>, <span class="ident">Runtime</span>};
 			<span class="kw">use</span> <span class="ident">westend_runtime_constants::currency::UNITS</span>;
-			<span class="ident">sanity_check::execute</span>::<span class="op">&lt;</span><span class="ident">Runtime</span>, <span class="ident">Block</span><span class="op">&gt;</span>(<span class="ident">UNITS</span> <span class="kw">as</span> <span class="ident">u64</span>, <span class="string">&quot;WND&quot;</span>, <span class="ident">options</span>.<span class="ident">uri</span>.<span class="ident">clone</span>()).<span class="kw">await</span>;
+			<span class="ident">try_state::execute</span>::<span class="op">&lt;</span><span class="ident">Runtime</span>, <span class="ident">Block</span><span class="op">&gt;</span>(<span class="ident">UNITS</span> <span class="kw">as</span> <span class="ident">u64</span>, <span class="string">&quot;WND&quot;</span>, <span class="ident">options</span>.<span class="ident">uri</span>.<span class="ident">clone</span>()).<span class="kw">await</span>;
 		},
 		(<span class="ident">Runtime::Westend</span>, <span class="ident">Command::Snapshot</span>) =&gt; {
 			<span class="kw">use</span> <span class="ident">westend_runtime</span>::{<span class="ident">Block</span>, <span class="ident">Runtime</span>};
@@ -278,7 +278,7 @@
 		(<span class="ident">Runtime::Polkadot</span>, <span class="ident">Command::SanityCheck</span>) =&gt; {
 			<span class="kw">use</span> <span class="ident">polkadot_runtime</span>::{<span class="ident">Block</span>, <span class="ident">Runtime</span>};
 			<span class="kw">use</span> <span class="ident">polkadot_runtime_constants::currency::UNITS</span>;
-			<span class="ident">sanity_check::execute</span>::<span class="op">&lt;</span><span class="ident">Runtime</span>, <span class="ident">Block</span><span class="op">&gt;</span>(<span class="ident">UNITS</span> <span class="kw">as</span> <span class="ident">u64</span>, <span class="string">&quot;DOT&quot;</span>, <span class="ident">options</span>.<span class="ident">uri</span>.<span class="ident">clone</span>()).<span class="kw">await</span>;
+			<span class="ident">try_state::execute</span>::<span class="op">&lt;</span><span class="ident">Runtime</span>, <span class="ident">Block</span><span class="op">&gt;</span>(<span class="ident">UNITS</span> <span class="kw">as</span> <span class="ident">u64</span>, <span class="string">&quot;DOT&quot;</span>, <span class="ident">options</span>.<span class="ident">uri</span>.<span class="ident">clone</span>()).<span class="kw">await</span>;
 		},
 		(<span class="ident">Runtime::Polkadot</span>, <span class="ident">Command::Snapshot</span>) =&gt; {
 			<span class="kw">use</span> <span class="ident">polkadot_runtime</span>::{<span class="ident">Block</span>, <span class="ident">Runtime</span>};
