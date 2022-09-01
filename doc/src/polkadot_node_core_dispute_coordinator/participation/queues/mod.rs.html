@@ -357,14 +357,6 @@
 <span id="351">351</span>
 <span id="352">352</span>
 <span id="353">353</span>
-<span id="354">354</span>
-<span id="355">355</span>
-<span id="356">356</span>
-<span id="357">357</span>
-<span id="358">358</span>
-<span id="359">359</span>
-<span id="360">360</span>
-<span id="361">361</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -445,7 +437,6 @@
 	<span class="ident">candidate_hash</span>: <span class="ident">CandidateHash</span>,
 	<span class="ident">candidate_receipt</span>: <span class="ident">CandidateReceipt</span>,
 	<span class="ident">session</span>: <span class="ident">SessionIndex</span>,
-	<span class="ident">n_validators</span>: <span class="ident">usize</span>,
 }
 
 <span class="doccomment">/// Whether a `ParticipationRequest` should be put on best-effort or the priority queue.</span>
@@ -489,12 +480,8 @@
 
 <span class="kw">impl</span> <span class="ident">ParticipationRequest</span> {
 	<span class="doccomment">/// Create a new `ParticipationRequest` to be queued.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(
-		<span class="ident">candidate_receipt</span>: <span class="ident">CandidateReceipt</span>,
-		<span class="ident">session</span>: <span class="ident">SessionIndex</span>,
-		<span class="ident">n_validators</span>: <span class="ident">usize</span>,
-	) -&gt; <span class="self">Self</span> {
-		<span class="self">Self</span> { <span class="ident">candidate_hash</span>: <span class="ident">candidate_receipt</span>.<span class="ident">hash</span>(), <span class="ident">candidate_receipt</span>, <span class="ident">session</span>, <span class="ident">n_validators</span> }
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">candidate_receipt</span>: <span class="ident">CandidateReceipt</span>, <span class="ident">session</span>: <span class="ident">SessionIndex</span>) -&gt; <span class="self">Self</span> {
+		<span class="self">Self</span> { <span class="ident">candidate_hash</span>: <span class="ident">candidate_receipt</span>.<span class="ident">hash</span>(), <span class="ident">candidate_receipt</span>, <span class="ident">session</span> }
 	}
 
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">candidate_receipt</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;_</span> <span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;_</span> <span class="ident">CandidateReceipt</span> {
@@ -505,9 +492,6 @@
 	}
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">session</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">SessionIndex</span> {
 		<span class="self">self</span>.<span class="ident">session</span>
-	}
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">n_validators</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">usize</span> {
-		<span class="self">self</span>.<span class="ident">n_validators</span>
 	}
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">into_candidate_info</span>(<span class="self">self</span>) -&gt; (<span class="ident">CandidateHash</span>, <span class="ident">CandidateReceipt</span>) {
 		<span class="kw">let</span> <span class="self">Self</span> { <span class="ident">candidate_hash</span>, <span class="ident">candidate_receipt</span>, .. } <span class="op">=</span> <span class="self">self</span>;
