@@ -2687,7 +2687,7 @@
 }
 
 <span class="macro">parameter_types!</span> {
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">FirstMessageFactorPercent</span>: <span class="ident">Weight</span> <span class="op">=</span> <span class="ident">Weight::from_ref_time</span>(<span class="number">100</span>);
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">FirstMessageFactorPercent</span>: <span class="ident">u64</span> <span class="op">=</span> <span class="number">100</span>;
 }
 
 <span class="kw">impl</span> <span class="ident">parachains_ump::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {

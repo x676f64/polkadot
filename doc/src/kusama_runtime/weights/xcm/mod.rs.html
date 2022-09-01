@@ -257,8 +257,8 @@
 					<span class="ident">AssetTypes::Balances</span> =&gt; <span class="ident">balances_weight</span>,
 					<span class="ident">AssetTypes::Unknown</span> =&gt; <span class="ident">Weight::MAX</span>,
 				})
-				.<span class="ident">fold</span>(<span class="ident">Weight::new</span>(), <span class="op">|</span><span class="ident">acc</span>, <span class="ident">x</span><span class="op">|</span> <span class="ident">acc</span>.<span class="ident">saturating_add</span>(<span class="ident">x</span>)),
-			<span class="ident"><span class="self">Self</span>::Wild</span>(<span class="kw">_</span>) =&gt; <span class="ident">balances_weight</span>.<span class="ident">scalar_saturating_mul</span>(<span class="ident">MAX_ASSETS</span> <span class="kw">as</span> <span class="ident">u64</span>),
+				.<span class="ident">fold</span>(<span class="ident">Weight::zero</span>(), <span class="op">|</span><span class="ident">acc</span>, <span class="ident">x</span><span class="op">|</span> <span class="ident">acc</span>.<span class="ident">saturating_add</span>(<span class="ident">x</span>)),
+			<span class="ident"><span class="self">Self</span>::Wild</span>(<span class="kw">_</span>) =&gt; <span class="ident">balances_weight</span>.<span class="ident">saturating_mul</span>(<span class="ident">MAX_ASSETS</span> <span class="kw">as</span> <span class="ident">u64</span>),
 		};
 
 		<span class="ident">weight</span>.<span class="ident">ref_time</span>()
@@ -275,7 +275,7 @@
 				<span class="ident">AssetTypes::Balances</span> =&gt; <span class="ident">balances_weight</span>,
 				<span class="ident">AssetTypes::Unknown</span> =&gt; <span class="ident">Weight::MAX</span>,
 			})
-			.<span class="ident">fold</span>(<span class="ident">Weight::new</span>(), <span class="op">|</span><span class="ident">acc</span>, <span class="ident">x</span><span class="op">|</span> <span class="ident">acc</span>.<span class="ident">saturating_add</span>(<span class="ident">x</span>));
+			.<span class="ident">fold</span>(<span class="ident">Weight::zero</span>(), <span class="op">|</span><span class="ident">acc</span>, <span class="ident">x</span><span class="op">|</span> <span class="ident">acc</span>.<span class="ident">saturating_add</span>(<span class="ident">x</span>));
 
 		<span class="ident">weight</span>.<span class="ident">ref_time</span>()
 	}

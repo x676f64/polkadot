@@ -2507,7 +2507,7 @@
 	}
 
 	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">prune_hrmp</span>(<span class="ident">recipient</span>: <span class="ident">ParaId</span>, <span class="ident">new_hrmp_watermark</span>: <span class="ident">T::BlockNumber</span>) -&gt; <span class="ident">Weight</span> {
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">weight</span> <span class="op">=</span> <span class="ident">Weight::new</span>();
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">weight</span> <span class="op">=</span> <span class="ident">Weight::zero</span>();
 
 		<span class="comment">// sift through the incoming messages digest to collect the paras that sent at least one</span>
 		<span class="comment">// message to this parachain between the old and new watermarks.</span>
@@ -2574,7 +2574,7 @@
 		<span class="ident">sender</span>: <span class="ident">ParaId</span>,
 		<span class="ident">out_hrmp_msgs</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">OutboundHrmpMessage</span><span class="op">&lt;</span><span class="ident">ParaId</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	) -&gt; <span class="ident">Weight</span> {
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">weight</span> <span class="op">=</span> <span class="ident">Weight::new</span>();
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">weight</span> <span class="op">=</span> <span class="ident">Weight::zero</span>();
 		<span class="kw">let</span> <span class="ident">now</span> <span class="op">=</span> <span class="op">&lt;</span><span class="ident">frame_system::Pallet</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="ident">::block_number</span>();
 
 		<span class="kw">for</span> <span class="ident">out_msg</span> <span class="kw">in</span> <span class="ident">out_hrmp_msgs</span> {

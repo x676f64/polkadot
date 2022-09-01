@@ -196,7 +196,6 @@
 <span id="190">190</span>
 <span id="191">191</span>
 <span id="192">192</span>
-<span id="193">193</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -218,7 +217,6 @@
 <span class="kw">use</span> <span class="ident">frame_support</span>::{
 	<span class="ident">construct_runtime</span>, <span class="ident">parameter_types</span>,
 	<span class="ident">traits</span>::{<span class="ident">Everything</span>, <span class="ident">Nothing</span>},
-	<span class="ident">weights::Weight</span>,
 };
 <span class="kw">use</span> <span class="ident">sp_core::H256</span>;
 <span class="kw">use</span> <span class="ident">sp_runtime</span>::{<span class="ident">testing::Header</span>, <span class="ident">traits::IdentityLookup</span>, <span class="ident">AccountId32</span>};
@@ -361,7 +359,7 @@
 }
 
 <span class="macro">parameter_types!</span> {
-	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">FirstMessageFactorPercent</span>: <span class="ident">Weight</span> <span class="op">=</span> <span class="ident">Weight::from_ref_time</span>(<span class="number">100</span>);
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">FirstMessageFactorPercent</span>: <span class="ident">u64</span> <span class="op">=</span> <span class="number">100</span>;
 }
 
 <span class="kw">impl</span> <span class="ident">ump::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
