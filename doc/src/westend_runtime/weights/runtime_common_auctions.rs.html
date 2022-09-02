@@ -136,7 +136,7 @@
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">unused_parens</span>)]</span>
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">unused_imports</span>)]</span>
 
-<span class="kw">use</span> <span class="ident">frame_support</span>::{<span class="ident">traits::Get</span>, <span class="ident">weights</span>::{<span class="ident">RefTimeWeight</span>, <span class="ident">Weight</span>}};
+<span class="kw">use</span> <span class="ident">frame_support</span>::{<span class="ident">traits::Get</span>, <span class="ident">weights::Weight</span>};
 <span class="kw">use</span> <span class="ident">sp_std::marker::PhantomData</span>;
 
 <span class="doccomment">/// Weight functions for `runtime_common::auctions`.</span>
@@ -145,9 +145,9 @@
 	<span class="comment">// Storage: Auctions AuctionInfo (r:1 w:1)</span>
 	<span class="comment">// Storage: Auctions AuctionCounter (r:1 w:1)</span>
 	<span class="kw">fn</span> <span class="ident">new_auction</span>() -&gt; <span class="ident">Weight</span> {
-		<span class="ident">Weight::from_ref_time</span>(<span class="number">15_096_000</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>)
-			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">reads</span>(<span class="number">2</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>))
-			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">writes</span>(<span class="number">2</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>))
+		<span class="ident">Weight::from_ref_time</span>(<span class="number">15_096_000</span> <span class="kw">as</span> <span class="ident">u64</span>)
+			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">reads</span>(<span class="number">2</span> <span class="kw">as</span> <span class="ident">u64</span>))
+			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">writes</span>(<span class="number">2</span> <span class="kw">as</span> <span class="ident">u64</span>))
 	}
 	<span class="comment">// Storage: Paras ParaLifecycles (r:1 w:0)</span>
 	<span class="comment">// Storage: Auctions AuctionCounter (r:1 w:0)</span>
@@ -157,9 +157,9 @@
 	<span class="comment">// Storage: Auctions ReservedAmounts (r:2 w:2)</span>
 	<span class="comment">// Storage: System Account (r:1 w:1)</span>
 	<span class="kw">fn</span> <span class="ident">bid</span>() -&gt; <span class="ident">Weight</span> {
-		<span class="ident">Weight::from_ref_time</span>(<span class="number">69_901_000</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>)
-			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">reads</span>(<span class="number">8</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>))
-			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">writes</span>(<span class="number">4</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>))
+		<span class="ident">Weight::from_ref_time</span>(<span class="number">69_901_000</span> <span class="kw">as</span> <span class="ident">u64</span>)
+			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">reads</span>(<span class="number">8</span> <span class="kw">as</span> <span class="ident">u64</span>))
+			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">writes</span>(<span class="number">4</span> <span class="kw">as</span> <span class="ident">u64</span>))
 	}
 	<span class="comment">// Storage: Auctions AuctionInfo (r:1 w:1)</span>
 	<span class="comment">// Storage: Babe NextRandomness (r:1 w:0)</span>
@@ -174,18 +174,18 @@
 	<span class="comment">// Storage: Paras ActionsQueue (r:1 w:1)</span>
 	<span class="comment">// Storage: Registrar Paras (r:1 w:1)</span>
 	<span class="kw">fn</span> <span class="ident">on_initialize</span>() -&gt; <span class="ident">Weight</span> {
-		<span class="ident">Weight::from_ref_time</span>(<span class="number">15_323_740_000</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>)
-			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">reads</span>(<span class="number">3688</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>))
-			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">writes</span>(<span class="number">3683</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>))
+		<span class="ident">Weight::from_ref_time</span>(<span class="number">15_323_740_000</span> <span class="kw">as</span> <span class="ident">u64</span>)
+			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">reads</span>(<span class="number">3688</span> <span class="kw">as</span> <span class="ident">u64</span>))
+			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">writes</span>(<span class="number">3683</span> <span class="kw">as</span> <span class="ident">u64</span>))
 	}
 	<span class="comment">// Storage: Auctions ReservedAmounts (r:37 w:36)</span>
 	<span class="comment">// Storage: System Account (r:36 w:36)</span>
 	<span class="comment">// Storage: Auctions Winning (r:0 w:3600)</span>
 	<span class="comment">// Storage: Auctions AuctionInfo (r:0 w:1)</span>
 	<span class="kw">fn</span> <span class="ident">cancel_auction</span>() -&gt; <span class="ident">Weight</span> {
-		<span class="ident">Weight::from_ref_time</span>(<span class="number">4_582_728_000</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>)
-			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">reads</span>(<span class="number">73</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>))
-			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">writes</span>(<span class="number">3673</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>))
+		<span class="ident">Weight::from_ref_time</span>(<span class="number">4_582_728_000</span> <span class="kw">as</span> <span class="ident">u64</span>)
+			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">reads</span>(<span class="number">73</span> <span class="kw">as</span> <span class="ident">u64</span>))
+			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">writes</span>(<span class="number">3673</span> <span class="kw">as</span> <span class="ident">u64</span>))
 	}
 }
 </code></pre></div>

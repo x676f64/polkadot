@@ -217,7 +217,7 @@
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">unused_parens</span>)]</span>
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">unused_imports</span>)]</span>
 
-<span class="kw">use</span> <span class="ident">frame_support</span>::{<span class="ident">traits::Get</span>, <span class="ident">weights</span>::{<span class="ident">RefTimeWeight</span>, <span class="ident">Weight</span>}};
+<span class="kw">use</span> <span class="ident">frame_support</span>::{<span class="ident">traits::Get</span>, <span class="ident">weights::Weight</span>};
 <span class="kw">use</span> <span class="ident">sp_std::marker::PhantomData</span>;
 
 <span class="doccomment">/// Weight functions for `pallet_election_provider_multi_phase`.</span>
@@ -232,35 +232,35 @@
 	<span class="comment">// Storage: Staking ForceEra (r:1 w:0)</span>
 	<span class="comment">// Storage: ElectionProviderMultiPhase CurrentPhase (r:1 w:0)</span>
 	<span class="kw">fn</span> <span class="ident">on_initialize_nothing</span>() -&gt; <span class="ident">Weight</span> {
-		<span class="ident">Weight::from_ref_time</span>(<span class="number">13_511_000</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>)
-			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">reads</span>(<span class="number">8</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>))
+		<span class="ident">Weight::from_ref_time</span>(<span class="number">13_511_000</span> <span class="kw">as</span> <span class="ident">u64</span>)
+			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">reads</span>(<span class="number">8</span> <span class="kw">as</span> <span class="ident">u64</span>))
 	}
 	<span class="comment">// Storage: ElectionProviderMultiPhase Round (r:1 w:0)</span>
 	<span class="comment">// Storage: ElectionProviderMultiPhase CurrentPhase (r:0 w:1)</span>
 	<span class="kw">fn</span> <span class="ident">on_initialize_open_signed</span>() -&gt; <span class="ident">Weight</span> {
-		<span class="ident">Weight::from_ref_time</span>(<span class="number">12_448_000</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>)
-			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">reads</span>(<span class="number">1</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>))
-			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">writes</span>(<span class="number">1</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>))
+		<span class="ident">Weight::from_ref_time</span>(<span class="number">12_448_000</span> <span class="kw">as</span> <span class="ident">u64</span>)
+			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">reads</span>(<span class="number">1</span> <span class="kw">as</span> <span class="ident">u64</span>))
+			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">writes</span>(<span class="number">1</span> <span class="kw">as</span> <span class="ident">u64</span>))
 	}
 	<span class="comment">// Storage: ElectionProviderMultiPhase Round (r:1 w:0)</span>
 	<span class="comment">// Storage: ElectionProviderMultiPhase CurrentPhase (r:0 w:1)</span>
 	<span class="kw">fn</span> <span class="ident">on_initialize_open_unsigned</span>() -&gt; <span class="ident">Weight</span> {
-		<span class="ident">Weight::from_ref_time</span>(<span class="number">12_497_000</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>)
-			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">reads</span>(<span class="number">1</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>))
-			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">writes</span>(<span class="number">1</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>))
+		<span class="ident">Weight::from_ref_time</span>(<span class="number">12_497_000</span> <span class="kw">as</span> <span class="ident">u64</span>)
+			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">reads</span>(<span class="number">1</span> <span class="kw">as</span> <span class="ident">u64</span>))
+			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">writes</span>(<span class="number">1</span> <span class="kw">as</span> <span class="ident">u64</span>))
 	}
 	<span class="comment">// Storage: System Account (r:1 w:1)</span>
 	<span class="comment">// Storage: ElectionProviderMultiPhase QueuedSolution (r:0 w:1)</span>
 	<span class="kw">fn</span> <span class="ident">finalize_signed_phase_accept_solution</span>() -&gt; <span class="ident">Weight</span> {
-		<span class="ident">Weight::from_ref_time</span>(<span class="number">26_220_000</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>)
-			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">reads</span>(<span class="number">1</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>))
-			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">writes</span>(<span class="number">2</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>))
+		<span class="ident">Weight::from_ref_time</span>(<span class="number">26_220_000</span> <span class="kw">as</span> <span class="ident">u64</span>)
+			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">reads</span>(<span class="number">1</span> <span class="kw">as</span> <span class="ident">u64</span>))
+			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">writes</span>(<span class="number">2</span> <span class="kw">as</span> <span class="ident">u64</span>))
 	}
 	<span class="comment">// Storage: System Account (r:1 w:1)</span>
 	<span class="kw">fn</span> <span class="ident">finalize_signed_phase_reject_solution</span>() -&gt; <span class="ident">Weight</span> {
-		<span class="ident">Weight::from_ref_time</span>(<span class="number">20_222_000</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>)
-			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">reads</span>(<span class="number">1</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>))
-			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">writes</span>(<span class="number">1</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>))
+		<span class="ident">Weight::from_ref_time</span>(<span class="number">20_222_000</span> <span class="kw">as</span> <span class="ident">u64</span>)
+			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">reads</span>(<span class="number">1</span> <span class="kw">as</span> <span class="ident">u64</span>))
+			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">writes</span>(<span class="number">1</span> <span class="kw">as</span> <span class="ident">u64</span>))
 	}
 	<span class="comment">// Storage: ElectionProviderMultiPhase SnapshotMetadata (r:0 w:1)</span>
 	<span class="comment">// Storage: ElectionProviderMultiPhase DesiredTargets (r:0 w:1)</span>
@@ -268,12 +268,12 @@
 	<span class="doccomment">/// The range of component `v` is `[1000, 2000]`.</span>
 	<span class="doccomment">/// The range of component `t` is `[500, 1000]`.</span>
 	<span class="kw">fn</span> <span class="ident">create_snapshot_internal</span>(<span class="ident">v</span>: <span class="ident">u32</span>, <span class="ident">t</span>: <span class="ident">u32</span>, ) -&gt; <span class="ident">Weight</span> {
-		<span class="ident">Weight::from_ref_time</span>(<span class="number">37_912_000</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>)
+		<span class="ident">Weight::from_ref_time</span>(<span class="number">37_912_000</span> <span class="kw">as</span> <span class="ident">u64</span>)
 			<span class="comment">// Standard Error: 2_000</span>
-			.<span class="ident">saturating_add</span>(<span class="ident">Weight::from_ref_time</span>(<span class="number">549_000</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>).<span class="ident">saturating_mul</span>(<span class="ident">v</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>))
+			.<span class="ident">saturating_add</span>(<span class="ident">Weight::from_ref_time</span>(<span class="number">549_000</span> <span class="kw">as</span> <span class="ident">u64</span>).<span class="ident">saturating_mul</span>(<span class="ident">v</span> <span class="kw">as</span> <span class="ident">u64</span>))
 			<span class="comment">// Standard Error: 5_000</span>
-			.<span class="ident">saturating_add</span>(<span class="ident">Weight::from_ref_time</span>(<span class="number">69_000</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>).<span class="ident">saturating_mul</span>(<span class="ident">t</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>))
-			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">writes</span>(<span class="number">3</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>))
+			.<span class="ident">saturating_add</span>(<span class="ident">Weight::from_ref_time</span>(<span class="number">69_000</span> <span class="kw">as</span> <span class="ident">u64</span>).<span class="ident">saturating_mul</span>(<span class="ident">t</span> <span class="kw">as</span> <span class="ident">u64</span>))
+			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">writes</span>(<span class="number">3</span> <span class="kw">as</span> <span class="ident">u64</span>))
 	}
 	<span class="comment">// Storage: ElectionProviderMultiPhase SignedSubmissionIndices (r:1 w:1)</span>
 	<span class="comment">// Storage: ElectionProviderMultiPhase SignedSubmissionNextIndex (r:1 w:1)</span>
@@ -288,13 +288,13 @@
 	<span class="doccomment">/// The range of component `a` is `[500, 800]`.</span>
 	<span class="doccomment">/// The range of component `d` is `[200, 400]`.</span>
 	<span class="kw">fn</span> <span class="ident">elect_queued</span>(<span class="ident">a</span>: <span class="ident">u32</span>, <span class="ident">d</span>: <span class="ident">u32</span>, ) -&gt; <span class="ident">Weight</span> {
-		<span class="ident">Weight::from_ref_time</span>(<span class="number">0</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>)
+		<span class="ident">Weight::from_ref_time</span>(<span class="number">0</span> <span class="kw">as</span> <span class="ident">u64</span>)
 			<span class="comment">// Standard Error: 13_000</span>
-			.<span class="ident">saturating_add</span>(<span class="ident">Weight::from_ref_time</span>(<span class="number">1_310_000</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>).<span class="ident">saturating_mul</span>(<span class="ident">a</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>))
+			.<span class="ident">saturating_add</span>(<span class="ident">Weight::from_ref_time</span>(<span class="number">1_310_000</span> <span class="kw">as</span> <span class="ident">u64</span>).<span class="ident">saturating_mul</span>(<span class="ident">a</span> <span class="kw">as</span> <span class="ident">u64</span>))
 			<span class="comment">// Standard Error: 20_000</span>
-			.<span class="ident">saturating_add</span>(<span class="ident">Weight::from_ref_time</span>(<span class="number">246_000</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>).<span class="ident">saturating_mul</span>(<span class="ident">d</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>))
-			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">reads</span>(<span class="number">7</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>))
-			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">writes</span>(<span class="number">9</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>))
+			.<span class="ident">saturating_add</span>(<span class="ident">Weight::from_ref_time</span>(<span class="number">246_000</span> <span class="kw">as</span> <span class="ident">u64</span>).<span class="ident">saturating_mul</span>(<span class="ident">d</span> <span class="kw">as</span> <span class="ident">u64</span>))
+			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">reads</span>(<span class="number">7</span> <span class="kw">as</span> <span class="ident">u64</span>))
+			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">writes</span>(<span class="number">9</span> <span class="kw">as</span> <span class="ident">u64</span>))
 	}
 	<span class="comment">// Storage: ElectionProviderMultiPhase CurrentPhase (r:1 w:0)</span>
 	<span class="comment">// Storage: ElectionProviderMultiPhase SnapshotMetadata (r:1 w:0)</span>
@@ -303,9 +303,9 @@
 	<span class="comment">// Storage: ElectionProviderMultiPhase SignedSubmissionNextIndex (r:1 w:1)</span>
 	<span class="comment">// Storage: ElectionProviderMultiPhase SignedSubmissionsMap (r:0 w:1)</span>
 	<span class="kw">fn</span> <span class="ident">submit</span>() -&gt; <span class="ident">Weight</span> {
-		<span class="ident">Weight::from_ref_time</span>(<span class="number">48_687_000</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>)
-			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">reads</span>(<span class="number">5</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>))
-			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">writes</span>(<span class="number">3</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>))
+		<span class="ident">Weight::from_ref_time</span>(<span class="number">48_687_000</span> <span class="kw">as</span> <span class="ident">u64</span>)
+			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">reads</span>(<span class="number">5</span> <span class="kw">as</span> <span class="ident">u64</span>))
+			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">writes</span>(<span class="number">3</span> <span class="kw">as</span> <span class="ident">u64</span>))
 	}
 	<span class="comment">// Storage: ElectionProviderMultiPhase CurrentPhase (r:1 w:0)</span>
 	<span class="comment">// Storage: ElectionProviderMultiPhase Round (r:1 w:0)</span>
@@ -319,15 +319,15 @@
 	<span class="doccomment">/// The range of component `a` is `[500, 800]`.</span>
 	<span class="doccomment">/// The range of component `d` is `[200, 400]`.</span>
 	<span class="kw">fn</span> <span class="ident">submit_unsigned</span>(<span class="ident">v</span>: <span class="ident">u32</span>, <span class="ident">_t</span>: <span class="ident">u32</span>, <span class="ident">a</span>: <span class="ident">u32</span>, <span class="ident">d</span>: <span class="ident">u32</span>, ) -&gt; <span class="ident">Weight</span> {
-		<span class="ident">Weight::from_ref_time</span>(<span class="number">196_420_000</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>)
+		<span class="ident">Weight::from_ref_time</span>(<span class="number">196_420_000</span> <span class="kw">as</span> <span class="ident">u64</span>)
 			<span class="comment">// Standard Error: 7_000</span>
-			.<span class="ident">saturating_add</span>(<span class="ident">Weight::from_ref_time</span>(<span class="number">887_000</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>).<span class="ident">saturating_mul</span>(<span class="ident">v</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>))
+			.<span class="ident">saturating_add</span>(<span class="ident">Weight::from_ref_time</span>(<span class="number">887_000</span> <span class="kw">as</span> <span class="ident">u64</span>).<span class="ident">saturating_mul</span>(<span class="ident">v</span> <span class="kw">as</span> <span class="ident">u64</span>))
 			<span class="comment">// Standard Error: 24_000</span>
-			.<span class="ident">saturating_add</span>(<span class="ident">Weight::from_ref_time</span>(<span class="number">10_943_000</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>).<span class="ident">saturating_mul</span>(<span class="ident">a</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>))
+			.<span class="ident">saturating_add</span>(<span class="ident">Weight::from_ref_time</span>(<span class="number">10_943_000</span> <span class="kw">as</span> <span class="ident">u64</span>).<span class="ident">saturating_mul</span>(<span class="ident">a</span> <span class="kw">as</span> <span class="ident">u64</span>))
 			<span class="comment">// Standard Error: 36_000</span>
-			.<span class="ident">saturating_add</span>(<span class="ident">Weight::from_ref_time</span>(<span class="number">1_604_000</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>).<span class="ident">saturating_mul</span>(<span class="ident">d</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>))
-			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">reads</span>(<span class="number">7</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>))
-			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">writes</span>(<span class="number">1</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>))
+			.<span class="ident">saturating_add</span>(<span class="ident">Weight::from_ref_time</span>(<span class="number">1_604_000</span> <span class="kw">as</span> <span class="ident">u64</span>).<span class="ident">saturating_mul</span>(<span class="ident">d</span> <span class="kw">as</span> <span class="ident">u64</span>))
+			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">reads</span>(<span class="number">7</span> <span class="kw">as</span> <span class="ident">u64</span>))
+			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">writes</span>(<span class="number">1</span> <span class="kw">as</span> <span class="ident">u64</span>))
 	}
 	<span class="comment">// Storage: ElectionProviderMultiPhase Round (r:1 w:0)</span>
 	<span class="comment">// Storage: ElectionProviderMultiPhase DesiredTargets (r:1 w:0)</span>
@@ -338,16 +338,16 @@
 	<span class="doccomment">/// The range of component `a` is `[500, 800]`.</span>
 	<span class="doccomment">/// The range of component `d` is `[200, 400]`.</span>
 	<span class="kw">fn</span> <span class="ident">feasibility_check</span>(<span class="ident">v</span>: <span class="ident">u32</span>, <span class="ident">t</span>: <span class="ident">u32</span>, <span class="ident">a</span>: <span class="ident">u32</span>, <span class="ident">d</span>: <span class="ident">u32</span>, ) -&gt; <span class="ident">Weight</span> {
-		<span class="ident">Weight::from_ref_time</span>(<span class="number">0</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>)
+		<span class="ident">Weight::from_ref_time</span>(<span class="number">0</span> <span class="kw">as</span> <span class="ident">u64</span>)
 			<span class="comment">// Standard Error: 5_000</span>
-			.<span class="ident">saturating_add</span>(<span class="ident">Weight::from_ref_time</span>(<span class="number">907_000</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>).<span class="ident">saturating_mul</span>(<span class="ident">v</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>))
+			.<span class="ident">saturating_add</span>(<span class="ident">Weight::from_ref_time</span>(<span class="number">907_000</span> <span class="kw">as</span> <span class="ident">u64</span>).<span class="ident">saturating_mul</span>(<span class="ident">v</span> <span class="kw">as</span> <span class="ident">u64</span>))
 			<span class="comment">// Standard Error: 11_000</span>
-			.<span class="ident">saturating_add</span>(<span class="ident">Weight::from_ref_time</span>(<span class="number">64_000</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>).<span class="ident">saturating_mul</span>(<span class="ident">t</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>))
+			.<span class="ident">saturating_add</span>(<span class="ident">Weight::from_ref_time</span>(<span class="number">64_000</span> <span class="kw">as</span> <span class="ident">u64</span>).<span class="ident">saturating_mul</span>(<span class="ident">t</span> <span class="kw">as</span> <span class="ident">u64</span>))
 			<span class="comment">// Standard Error: 19_000</span>
-			.<span class="ident">saturating_add</span>(<span class="ident">Weight::from_ref_time</span>(<span class="number">8_768_000</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>).<span class="ident">saturating_mul</span>(<span class="ident">a</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>))
+			.<span class="ident">saturating_add</span>(<span class="ident">Weight::from_ref_time</span>(<span class="number">8_768_000</span> <span class="kw">as</span> <span class="ident">u64</span>).<span class="ident">saturating_mul</span>(<span class="ident">a</span> <span class="kw">as</span> <span class="ident">u64</span>))
 			<span class="comment">// Standard Error: 29_000</span>
-			.<span class="ident">saturating_add</span>(<span class="ident">Weight::from_ref_time</span>(<span class="number">912_000</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>).<span class="ident">saturating_mul</span>(<span class="ident">d</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>))
-			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">reads</span>(<span class="number">4</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>))
+			.<span class="ident">saturating_add</span>(<span class="ident">Weight::from_ref_time</span>(<span class="number">912_000</span> <span class="kw">as</span> <span class="ident">u64</span>).<span class="ident">saturating_mul</span>(<span class="ident">d</span> <span class="kw">as</span> <span class="ident">u64</span>))
+			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">reads</span>(<span class="number">4</span> <span class="kw">as</span> <span class="ident">u64</span>))
 	}
 }
 </code></pre></div>

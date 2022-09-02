@@ -152,7 +152,7 @@
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">unused_parens</span>)]</span>
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">unused_imports</span>)]</span>
 
-<span class="kw">use</span> <span class="ident">frame_support</span>::{<span class="ident">traits::Get</span>, <span class="ident">weights</span>::{<span class="ident">RefTimeWeight</span>, <span class="ident">Weight</span>}};
+<span class="kw">use</span> <span class="ident">frame_support</span>::{<span class="ident">traits::Get</span>, <span class="ident">weights::Weight</span>};
 <span class="kw">use</span> <span class="ident">sp_std::marker::PhantomData</span>;
 
 <span class="doccomment">/// Weight functions for `runtime_common::paras_registrar`.</span>
@@ -162,9 +162,9 @@
 	<span class="comment">// Storage: Registrar Paras (r:1 w:1)</span>
 	<span class="comment">// Storage: Paras ParaLifecycles (r:1 w:0)</span>
 	<span class="kw">fn</span> <span class="ident">reserve</span>() -&gt; <span class="ident">Weight</span> {
-		<span class="ident">Weight::from_ref_time</span>(<span class="number">27_099_000</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>)
-			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">reads</span>(<span class="number">3</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>))
-			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">writes</span>(<span class="number">2</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>))
+		<span class="ident">Weight::from_ref_time</span>(<span class="number">27_099_000</span> <span class="kw">as</span> <span class="ident">u64</span>)
+			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">reads</span>(<span class="number">3</span> <span class="kw">as</span> <span class="ident">u64</span>))
+			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">writes</span>(<span class="number">2</span> <span class="kw">as</span> <span class="ident">u64</span>))
 	}
 	<span class="comment">// Storage: Registrar Paras (r:1 w:1)</span>
 	<span class="comment">// Storage: Paras ParaLifecycles (r:1 w:1)</span>
@@ -177,9 +177,9 @@
 	<span class="comment">// Storage: Paras CurrentCodeHash (r:0 w:1)</span>
 	<span class="comment">// Storage: Paras UpcomingParasGenesis (r:0 w:1)</span>
 	<span class="kw">fn</span> <span class="ident">register</span>() -&gt; <span class="ident">Weight</span> {
-		<span class="ident">Weight::from_ref_time</span>(<span class="number">8_586_789_000</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>)
-			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">reads</span>(<span class="number">8</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>))
-			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">writes</span>(<span class="number">7</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>))
+		<span class="ident">Weight::from_ref_time</span>(<span class="number">8_586_789_000</span> <span class="kw">as</span> <span class="ident">u64</span>)
+			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">reads</span>(<span class="number">8</span> <span class="kw">as</span> <span class="ident">u64</span>))
+			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">writes</span>(<span class="number">7</span> <span class="kw">as</span> <span class="ident">u64</span>))
 	}
 	<span class="comment">// Storage: Registrar Paras (r:1 w:1)</span>
 	<span class="comment">// Storage: Paras ParaLifecycles (r:1 w:1)</span>
@@ -192,9 +192,9 @@
 	<span class="comment">// Storage: Paras CurrentCodeHash (r:0 w:1)</span>
 	<span class="comment">// Storage: Paras UpcomingParasGenesis (r:0 w:1)</span>
 	<span class="kw">fn</span> <span class="ident">force_register</span>() -&gt; <span class="ident">Weight</span> {
-		<span class="ident">Weight::from_ref_time</span>(<span class="number">8_584_794_000</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>)
-			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">reads</span>(<span class="number">8</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>))
-			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">writes</span>(<span class="number">7</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>))
+		<span class="ident">Weight::from_ref_time</span>(<span class="number">8_584_794_000</span> <span class="kw">as</span> <span class="ident">u64</span>)
+			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">reads</span>(<span class="number">8</span> <span class="kw">as</span> <span class="ident">u64</span>))
+			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">writes</span>(<span class="number">7</span> <span class="kw">as</span> <span class="ident">u64</span>))
 	}
 	<span class="comment">// Storage: Registrar Paras (r:1 w:1)</span>
 	<span class="comment">// Storage: Paras ParaLifecycles (r:1 w:1)</span>
@@ -203,9 +203,9 @@
 	<span class="comment">// Storage: Paras ActionsQueue (r:1 w:1)</span>
 	<span class="comment">// Storage: Registrar PendingSwap (r:0 w:1)</span>
 	<span class="kw">fn</span> <span class="ident">deregister</span>() -&gt; <span class="ident">Weight</span> {
-		<span class="ident">Weight::from_ref_time</span>(<span class="number">42_239_000</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>)
-			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">reads</span>(<span class="number">5</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>))
-			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">writes</span>(<span class="number">4</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>))
+		<span class="ident">Weight::from_ref_time</span>(<span class="number">42_239_000</span> <span class="kw">as</span> <span class="ident">u64</span>)
+			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">reads</span>(<span class="number">5</span> <span class="kw">as</span> <span class="ident">u64</span>))
+			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">writes</span>(<span class="number">4</span> <span class="kw">as</span> <span class="ident">u64</span>))
 	}
 	<span class="comment">// Storage: Registrar Paras (r:1 w:0)</span>
 	<span class="comment">// Storage: Paras ParaLifecycles (r:2 w:2)</span>
@@ -215,9 +215,9 @@
 	<span class="comment">// Storage: Crowdloan Funds (r:2 w:2)</span>
 	<span class="comment">// Storage: Slots Leases (r:2 w:2)</span>
 	<span class="kw">fn</span> <span class="ident">swap</span>() -&gt; <span class="ident">Weight</span> {
-		<span class="ident">Weight::from_ref_time</span>(<span class="number">37_029_000</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>)
-			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">reads</span>(<span class="number">10</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>))
-			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">writes</span>(<span class="number">8</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>))
+		<span class="ident">Weight::from_ref_time</span>(<span class="number">37_029_000</span> <span class="kw">as</span> <span class="ident">u64</span>)
+			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">reads</span>(<span class="number">10</span> <span class="kw">as</span> <span class="ident">u64</span>))
+			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">writes</span>(<span class="number">8</span> <span class="kw">as</span> <span class="ident">u64</span>))
 	}
 }
 </code></pre></div>

@@ -146,7 +146,7 @@
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">unused_parens</span>)]</span>
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">unused_imports</span>)]</span>
 
-<span class="kw">use</span> <span class="ident">frame_support</span>::{<span class="ident">traits::Get</span>, <span class="ident">weights</span>::{<span class="ident">RefTimeWeight</span>, <span class="ident">Weight</span>}};
+<span class="kw">use</span> <span class="ident">frame_support</span>::{<span class="ident">traits::Get</span>, <span class="ident">weights::Weight</span>};
 <span class="kw">use</span> <span class="ident">sp_std::marker::PhantomData</span>;
 
 <span class="doccomment">/// Weight functions for `runtime_common::claims`.</span>
@@ -160,18 +160,18 @@
 	<span class="comment">// Storage: System Account (r:1 w:0)</span>
 	<span class="comment">// Storage: Balances Locks (r:1 w:1)</span>
 	<span class="kw">fn</span> <span class="ident">claim</span>() -&gt; <span class="ident">Weight</span> {
-		<span class="ident">Weight::from_ref_time</span>(<span class="number">139_399_000</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>)
-			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">reads</span>(<span class="number">7</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>))
-			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">writes</span>(<span class="number">6</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>))
+		<span class="ident">Weight::from_ref_time</span>(<span class="number">139_399_000</span> <span class="kw">as</span> <span class="ident">u64</span>)
+			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">reads</span>(<span class="number">7</span> <span class="kw">as</span> <span class="ident">u64</span>))
+			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">writes</span>(<span class="number">6</span> <span class="kw">as</span> <span class="ident">u64</span>))
 	}
 	<span class="comment">// Storage: Claims Total (r:1 w:1)</span>
 	<span class="comment">// Storage: Claims Vesting (r:0 w:1)</span>
 	<span class="comment">// Storage: Claims Claims (r:0 w:1)</span>
 	<span class="comment">// Storage: Claims Signing (r:0 w:1)</span>
 	<span class="kw">fn</span> <span class="ident">mint_claim</span>() -&gt; <span class="ident">Weight</span> {
-		<span class="ident">Weight::from_ref_time</span>(<span class="number">9_284_000</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>)
-			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">reads</span>(<span class="number">1</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>))
-			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">writes</span>(<span class="number">4</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>))
+		<span class="ident">Weight::from_ref_time</span>(<span class="number">9_284_000</span> <span class="kw">as</span> <span class="ident">u64</span>)
+			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">reads</span>(<span class="number">1</span> <span class="kw">as</span> <span class="ident">u64</span>))
+			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">writes</span>(<span class="number">4</span> <span class="kw">as</span> <span class="ident">u64</span>))
 	}
 	<span class="comment">// Storage: Claims Claims (r:1 w:1)</span>
 	<span class="comment">// Storage: Claims Signing (r:1 w:1)</span>
@@ -181,9 +181,9 @@
 	<span class="comment">// Storage: System Account (r:1 w:0)</span>
 	<span class="comment">// Storage: Balances Locks (r:1 w:1)</span>
 	<span class="kw">fn</span> <span class="ident">claim_attest</span>() -&gt; <span class="ident">Weight</span> {
-		<span class="ident">Weight::from_ref_time</span>(<span class="number">143_329_000</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>)
-			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">reads</span>(<span class="number">7</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>))
-			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">writes</span>(<span class="number">6</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>))
+		<span class="ident">Weight::from_ref_time</span>(<span class="number">143_329_000</span> <span class="kw">as</span> <span class="ident">u64</span>)
+			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">reads</span>(<span class="number">7</span> <span class="kw">as</span> <span class="ident">u64</span>))
+			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">writes</span>(<span class="number">6</span> <span class="kw">as</span> <span class="ident">u64</span>))
 	}
 	<span class="comment">// Storage: Claims Preclaims (r:1 w:1)</span>
 	<span class="comment">// Storage: Claims Signing (r:1 w:1)</span>
@@ -194,18 +194,18 @@
 	<span class="comment">// Storage: System Account (r:1 w:0)</span>
 	<span class="comment">// Storage: Balances Locks (r:1 w:1)</span>
 	<span class="kw">fn</span> <span class="ident">attest</span>() -&gt; <span class="ident">Weight</span> {
-		<span class="ident">Weight::from_ref_time</span>(<span class="number">63_456_000</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>)
-			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">reads</span>(<span class="number">8</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>))
-			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">writes</span>(<span class="number">7</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>))
+		<span class="ident">Weight::from_ref_time</span>(<span class="number">63_456_000</span> <span class="kw">as</span> <span class="ident">u64</span>)
+			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">reads</span>(<span class="number">8</span> <span class="kw">as</span> <span class="ident">u64</span>))
+			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">writes</span>(<span class="number">7</span> <span class="kw">as</span> <span class="ident">u64</span>))
 	}
 	<span class="comment">// Storage: Claims Claims (r:1 w:2)</span>
 	<span class="comment">// Storage: Claims Vesting (r:1 w:2)</span>
 	<span class="comment">// Storage: Claims Signing (r:1 w:2)</span>
 	<span class="comment">// Storage: Claims Preclaims (r:1 w:1)</span>
 	<span class="kw">fn</span> <span class="ident">move_claim</span>() -&gt; <span class="ident">Weight</span> {
-		<span class="ident">Weight::from_ref_time</span>(<span class="number">19_434_000</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>)
-			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">reads</span>(<span class="number">4</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>))
-			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">writes</span>(<span class="number">7</span> <span class="kw">as</span> <span class="ident">RefTimeWeight</span>))
+		<span class="ident">Weight::from_ref_time</span>(<span class="number">19_434_000</span> <span class="kw">as</span> <span class="ident">u64</span>)
+			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">reads</span>(<span class="number">4</span> <span class="kw">as</span> <span class="ident">u64</span>))
+			.<span class="ident">saturating_add</span>(<span class="ident">T::DbWeight::get</span>().<span class="ident">writes</span>(<span class="number">7</span> <span class="kw">as</span> <span class="ident">u64</span>))
 	}
 }
 </code></pre></div>
