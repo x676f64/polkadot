@@ -375,13 +375,6 @@
 <span id="369">369</span>
 <span id="370">370</span>
 <span id="371">371</span>
-<span id="372">372</span>
-<span id="373">373</span>
-<span id="374">374</span>
-<span id="375">375</span>
-<span id="376">376</span>
-<span id="377">377</span>
-<span id="378">378</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -558,12 +551,9 @@
 		<span class="ident">PeerId</span>,
 	};
 	<span class="kw">use</span> <span class="ident">polkadot_primitives::v2::Hash</span>;
-	<span class="kw">use</span> <span class="ident">sc_network</span>::{<span class="ident">Event</span> <span class="kw">as</span> <span class="ident">NetworkEvent</span>, <span class="ident">IfDisconnected</span>};
+	<span class="kw">use</span> <span class="ident">sc_network</span>::{<span class="ident">Event</span> <span class="kw">as</span> <span class="ident">NetworkEvent</span>, <span class="ident">IfDisconnected</span>, <span class="ident">ProtocolName</span>};
 	<span class="kw">use</span> <span class="ident">sp_keyring::Sr25519Keyring</span>;
-	<span class="kw">use</span> <span class="ident">std</span>::{
-		<span class="ident">borrow::Cow</span>,
-		<span class="ident">collections</span>::{<span class="ident">HashMap</span>, <span class="ident">HashSet</span>},
-	};
+	<span class="kw">use</span> <span class="ident">std::collections</span>::{<span class="ident">HashMap</span>, <span class="ident">HashSet</span>};
 
 	<span class="kw">fn</span> <span class="ident">new_service</span>() -&gt; <span class="ident">Service</span><span class="op">&lt;</span><span class="ident">TestNetwork</span>, <span class="ident">TestAuthorityDiscovery</span><span class="op">&gt;</span> {
 		<span class="kw">let</span> <span class="ident">genesis_hash</span> <span class="op">=</span> <span class="ident">Hash::repeat_byte</span>(<span class="number">0xff</span>);
@@ -616,18 +606,14 @@
 
 		<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">set_reserved_peers</span>(
 			<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
-			<span class="ident">_protocol</span>: <span class="ident">Cow</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span>, <span class="ident">str</span><span class="op">&gt;</span>,
+			<span class="ident">_protocol</span>: <span class="ident">ProtocolName</span>,
 			<span class="ident">multiaddresses</span>: <span class="ident">HashSet</span><span class="op">&lt;</span><span class="ident">Multiaddr</span><span class="op">&gt;</span>,
 		) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">String</span><span class="op">&gt;</span> {
 			<span class="self">self</span>.<span class="ident">peers_set</span> <span class="op">=</span> <span class="ident">extract_peer_ids</span>(<span class="ident">multiaddresses</span>.<span class="ident">into_iter</span>());
 			<span class="prelude-val">Ok</span>(())
 		}
 
-		<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">remove_from_peers_set</span>(
-			<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
-			<span class="ident">_protocol</span>: <span class="ident">Cow</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span>, <span class="ident">str</span><span class="op">&gt;</span>,
-			<span class="ident">peers</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">PeerId</span><span class="op">&gt;</span>,
-		) {
+		<span class="kw">async</span> <span class="kw">fn</span> <span class="ident">remove_from_peers_set</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">_protocol</span>: <span class="ident">ProtocolName</span>, <span class="ident">peers</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">PeerId</span><span class="op">&gt;</span>) {
 			<span class="self">self</span>.<span class="ident">peers_set</span>.<span class="ident">retain</span>(<span class="op">|</span><span class="ident">elem</span><span class="op">|</span> <span class="op">!</span><span class="ident">peers</span>.<span class="ident">contains</span>(<span class="ident">elem</span>));
 		}
 
@@ -644,11 +630,11 @@
 			<span class="macro">panic!</span>()
 		}
 
-		<span class="kw">fn</span> <span class="ident">disconnect_peer</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw">_</span>: <span class="ident">PeerId</span>, <span class="kw">_</span>: <span class="ident">Cow</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span>, <span class="ident">str</span><span class="op">&gt;</span>) {
+		<span class="kw">fn</span> <span class="ident">disconnect_peer</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw">_</span>: <span class="ident">PeerId</span>, <span class="kw">_</span>: <span class="ident">ProtocolName</span>) {
 			<span class="macro">panic!</span>()
 		}
 
-		<span class="kw">fn</span> <span class="ident">write_notification</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw">_</span>: <span class="ident">PeerId</span>, <span class="kw">_</span>: <span class="ident">Cow</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span>, <span class="ident">str</span><span class="op">&gt;</span>, <span class="kw">_</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>) {
+		<span class="kw">fn</span> <span class="ident">write_notification</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw">_</span>: <span class="ident">PeerId</span>, <span class="kw">_</span>: <span class="ident">ProtocolName</span>, <span class="kw">_</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>) {
 			<span class="macro">panic!</span>()
 		}
 	}

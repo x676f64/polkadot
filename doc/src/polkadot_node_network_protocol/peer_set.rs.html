@@ -539,6 +539,8 @@
 <span id="533">533</span>
 <span id="534">534</span>
 <span id="535">535</span>
+<span id="536">536</span>
+<span id="537">537</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -559,9 +561,11 @@
 
 <span class="kw">use</span> <span class="ident">derive_more::Display</span>;
 <span class="kw">use</span> <span class="ident">polkadot_primitives::v2::Hash</span>;
-<span class="kw">use</span> <span class="ident">sc_network::config</span>::{<span class="ident">NonDefaultSetConfig</span>, <span class="ident">SetConfig</span>};
+<span class="kw">use</span> <span class="ident">sc_network</span>::{
+	<span class="ident">config</span>::{<span class="ident">NonDefaultSetConfig</span>, <span class="ident">SetConfig</span>},
+	<span class="ident">ProtocolName</span>,
+};
 <span class="kw">use</span> <span class="ident">std</span>::{
-	<span class="ident">borrow::Cow</span>,
 	<span class="ident">collections</span>::{<span class="ident">hash_map::Entry</span>, <span class="ident">HashMap</span>},
 	<span class="ident">ops</span>::{<span class="ident">Index</span>, <span class="ident">IndexMut</span>},
 };
@@ -772,8 +776,8 @@
 <span class="doccomment">/// On the wire protocol name to [`PeerSet`] mapping.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">PeerSetProtocolNames</span> {
-	<span class="ident">protocols</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">Cow</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span>, <span class="ident">str</span><span class="op">&gt;</span>, (<span class="ident">PeerSet</span>, <span class="ident">ProtocolVersion</span>)<span class="op">&gt;</span>,
-	<span class="ident">names</span>: <span class="ident">HashMap</span><span class="op">&lt;</span>(<span class="ident">PeerSet</span>, <span class="ident">ProtocolVersion</span>), <span class="ident">Cow</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span>, <span class="ident">str</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+	<span class="ident">protocols</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">ProtocolName</span>, (<span class="ident">PeerSet</span>, <span class="ident">ProtocolVersion</span>)<span class="op">&gt;</span>,
+	<span class="ident">names</span>: <span class="ident">HashMap</span><span class="op">&lt;</span>(<span class="ident">PeerSet</span>, <span class="ident">ProtocolVersion</span>), <span class="ident">ProtocolName</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">PeerSetProtocolNames</span> {
@@ -813,8 +817,8 @@
 
 	<span class="doccomment">/// Helper function to register main protocol.</span>
 	<span class="kw">fn</span> <span class="ident">register_main_protocol</span>(
-		<span class="ident">protocols</span>: <span class="kw-2">&amp;mut</span> <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">Cow</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span>, <span class="ident">str</span><span class="op">&gt;</span>, (<span class="ident">PeerSet</span>, <span class="ident">ProtocolVersion</span>)<span class="op">&gt;</span>,
-		<span class="ident">names</span>: <span class="kw-2">&amp;mut</span> <span class="ident">HashMap</span><span class="op">&lt;</span>(<span class="ident">PeerSet</span>, <span class="ident">ProtocolVersion</span>), <span class="ident">Cow</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span>, <span class="ident">str</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+		<span class="ident">protocols</span>: <span class="kw-2">&amp;mut</span> <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">ProtocolName</span>, (<span class="ident">PeerSet</span>, <span class="ident">ProtocolVersion</span>)<span class="op">&gt;</span>,
+		<span class="ident">names</span>: <span class="kw-2">&amp;mut</span> <span class="ident">HashMap</span><span class="op">&lt;</span>(<span class="ident">PeerSet</span>, <span class="ident">ProtocolVersion</span>), <span class="ident">ProtocolName</span><span class="op">&gt;</span>,
 		<span class="ident">protocol</span>: <span class="ident">PeerSet</span>,
 		<span class="ident">version</span>: <span class="ident">ProtocolVersion</span>,
 		<span class="ident">genesis_hash</span>: <span class="kw-2">&amp;</span><span class="ident">Hash</span>,
@@ -827,7 +831,7 @@
 
 	<span class="doccomment">/// Helper function to register legacy protocol.</span>
 	<span class="kw">fn</span> <span class="ident">register_legacy_protocol</span>(
-		<span class="ident">protocols</span>: <span class="kw-2">&amp;mut</span> <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">Cow</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span>, <span class="ident">str</span><span class="op">&gt;</span>, (<span class="ident">PeerSet</span>, <span class="ident">ProtocolVersion</span>)<span class="op">&gt;</span>,
+		<span class="ident">protocols</span>: <span class="kw-2">&amp;mut</span> <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">ProtocolName</span>, (<span class="ident">PeerSet</span>, <span class="ident">ProtocolVersion</span>)<span class="op">&gt;</span>,
 		<span class="ident">protocol</span>: <span class="ident">PeerSet</span>,
 	) {
 		<span class="ident"><span class="self">Self</span>::insert_protocol_or_panic</span>(
@@ -840,8 +844,8 @@
 
 	<span class="doccomment">/// Helper function to make sure no protocols have the same name.</span>
 	<span class="kw">fn</span> <span class="ident">insert_protocol_or_panic</span>(
-		<span class="ident">protocols</span>: <span class="kw-2">&amp;mut</span> <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">Cow</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span>, <span class="ident">str</span><span class="op">&gt;</span>, (<span class="ident">PeerSet</span>, <span class="ident">ProtocolVersion</span>)<span class="op">&gt;</span>,
-		<span class="ident">name</span>: <span class="ident">Cow</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span>, <span class="ident">str</span><span class="op">&gt;</span>,
+		<span class="ident">protocols</span>: <span class="kw-2">&amp;mut</span> <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">ProtocolName</span>, (<span class="ident">PeerSet</span>, <span class="ident">ProtocolVersion</span>)<span class="op">&gt;</span>,
+		<span class="ident">name</span>: <span class="ident">ProtocolName</span>,
 		<span class="ident">protocol</span>: <span class="ident">PeerSet</span>,
 		<span class="ident">version</span>: <span class="ident">ProtocolVersion</span>,
 	) {
@@ -863,18 +867,18 @@
 	}
 
 	<span class="doccomment">/// Lookup the protocol using its on the wire name.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">try_get_protocol</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">Cow</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span>, <span class="ident">str</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">PeerSet</span>, <span class="ident">ProtocolVersion</span>)<span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">try_get_protocol</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">name</span>: <span class="kw-2">&amp;</span><span class="ident">ProtocolName</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span>(<span class="ident">PeerSet</span>, <span class="ident">ProtocolVersion</span>)<span class="op">&gt;</span> {
 		<span class="self">self</span>.<span class="ident">protocols</span>.<span class="ident">get</span>(<span class="ident">name</span>).<span class="ident">map</span>(<span class="ident">ToOwned::to_owned</span>)
 	}
 
 	<span class="doccomment">/// Get the main protocol name. It&#39;s used by the networking for keeping track</span>
 	<span class="doccomment">/// of peersets and connections.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_main_name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">protocol</span>: <span class="ident">PeerSet</span>) -&gt; <span class="ident">Cow</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span>, <span class="ident">str</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_main_name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">protocol</span>: <span class="ident">PeerSet</span>) -&gt; <span class="ident">ProtocolName</span> {
 		<span class="self">self</span>.<span class="ident">get_name</span>(<span class="ident">protocol</span>, <span class="ident">protocol</span>.<span class="ident">get_main_version</span>())
 	}
 
 	<span class="doccomment">/// Get the protocol name for specific version.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">protocol</span>: <span class="ident">PeerSet</span>, <span class="ident">version</span>: <span class="ident">ProtocolVersion</span>) -&gt; <span class="ident">Cow</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span>, <span class="ident">str</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">protocol</span>: <span class="ident">PeerSet</span>, <span class="ident">version</span>: <span class="ident">ProtocolVersion</span>) -&gt; <span class="ident">ProtocolName</span> {
 		<span class="self">self</span>.<span class="ident">names</span>
 			.<span class="ident">get</span>(<span class="kw-2">&amp;</span>(<span class="ident">protocol</span>, <span class="ident">version</span>))
 			.<span class="ident">expect</span>(<span class="string">&quot;Protocols &amp; versions are specified via enums defined above, and they are all registered in `new()`; qed&quot;</span>)
@@ -887,7 +891,7 @@
 		<span class="ident">fork_id</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span>,
 		<span class="ident">protocol</span>: <span class="ident">PeerSet</span>,
 		<span class="ident">version</span>: <span class="ident">ProtocolVersion</span>,
-	) -&gt; <span class="ident">Cow</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span>, <span class="ident">str</span><span class="op">&gt;</span> {
+	) -&gt; <span class="ident">ProtocolName</span> {
 		<span class="kw">let</span> <span class="ident">prefix</span> <span class="op">=</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">fork_id</span>) <span class="op">=</span> <span class="ident">fork_id</span> {
 			<span class="macro">format!</span>(<span class="string">&quot;/{}/{}&quot;</span>, <span class="ident">hex::encode</span>(<span class="ident">genesis_hash</span>), <span class="ident">fork_id</span>)
 		} <span class="kw">else</span> {
@@ -903,7 +907,7 @@
 	}
 
 	<span class="doccomment">/// Get the legacy protocol name, only `LEGACY_PROTOCOL_VERSION` = 1 is supported.</span>
-	<span class="kw">fn</span> <span class="ident">get_legacy_name</span>(<span class="ident">protocol</span>: <span class="ident">PeerSet</span>) -&gt; <span class="ident">Cow</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span>, <span class="ident">str</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">get_legacy_name</span>(<span class="ident">protocol</span>: <span class="ident">PeerSet</span>) -&gt; <span class="ident">ProtocolName</span> {
 		<span class="kw">match</span> <span class="ident">protocol</span> {
 			<span class="ident">PeerSet::Validation</span> =&gt; <span class="ident">LEGACY_VALIDATION_PROTOCOL_V1</span>,
 			<span class="ident">PeerSet::Collation</span> =&gt; <span class="ident">LEGACY_COLLATION_PROTOCOL_V1</span>,
@@ -913,7 +917,7 @@
 
 	<span class="doccomment">/// Get the protocol fallback names. Currently only holds the legacy name</span>
 	<span class="doccomment">/// for `LEGACY_PROTOCOL_VERSION` = 1.</span>
-	<span class="kw">fn</span> <span class="ident">get_fallback_names</span>(<span class="ident">protocol</span>: <span class="ident">PeerSet</span>) -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Cow</span><span class="op">&lt;</span><span class="lifetime">&#39;static</span>, <span class="ident">str</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">get_fallback_names</span>(<span class="ident">protocol</span>: <span class="ident">PeerSet</span>) -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ProtocolName</span><span class="op">&gt;</span> {
 		<span class="ident">std::iter::once</span>(<span class="ident"><span class="self">Self</span>::get_legacy_name</span>(<span class="ident">protocol</span>)).<span class="ident">collect</span>()
 	}
 }
@@ -947,7 +951,7 @@
 		);
 		<span class="kw">let</span> <span class="ident">expected</span> <span class="op">=</span>
 			<span class="string">&quot;/7ac8741de8b7146d8a5617fd462914557fe63c265a7f1c10e7dae32858eebb80/validation/3&quot;</span>;
-		<span class="macro">assert_eq!</span>(<span class="ident">name</span>, <span class="ident">expected</span>);
+		<span class="macro">assert_eq!</span>(<span class="ident">name</span>, <span class="ident">expected</span>.<span class="ident">into</span>());
 
 		<span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">PeerSetProtocolNames::generate_name</span>(
 			<span class="kw-2">&amp;</span><span class="ident">genesis_hash</span>,
@@ -957,7 +961,7 @@
 		);
 		<span class="kw">let</span> <span class="ident">expected</span> <span class="op">=</span>
 			<span class="string">&quot;/7ac8741de8b7146d8a5617fd462914557fe63c265a7f1c10e7dae32858eebb80/collation/5&quot;</span>;
-		<span class="macro">assert_eq!</span>(<span class="ident">name</span>, <span class="ident">expected</span>);
+		<span class="macro">assert_eq!</span>(<span class="ident">name</span>, <span class="ident">expected</span>.<span class="ident">into</span>());
 
 		<span class="kw">let</span> <span class="ident">fork_id</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="string">&quot;test-fork&quot;</span>);
 		<span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">PeerSetProtocolNames::generate_name</span>(
@@ -968,7 +972,7 @@
 		);
 		<span class="kw">let</span> <span class="ident">expected</span> <span class="op">=</span>
 			<span class="string">&quot;/7ac8741de8b7146d8a5617fd462914557fe63c265a7f1c10e7dae32858eebb80/test-fork/validation/7&quot;</span>;
-		<span class="macro">assert_eq!</span>(<span class="ident">name</span>, <span class="ident">expected</span>);
+		<span class="macro">assert_eq!</span>(<span class="ident">name</span>, <span class="ident">expected</span>.<span class="ident">into</span>());
 
 		<span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">PeerSetProtocolNames::generate_name</span>(
 			<span class="kw-2">&amp;</span><span class="ident">genesis_hash</span>,
@@ -978,7 +982,7 @@
 		);
 		<span class="kw">let</span> <span class="ident">expected</span> <span class="op">=</span>
 			<span class="string">&quot;/7ac8741de8b7146d8a5617fd462914557fe63c265a7f1c10e7dae32858eebb80/test-fork/collation/11&quot;</span>;
-		<span class="macro">assert_eq!</span>(<span class="ident">name</span>, <span class="ident">expected</span>);
+		<span class="macro">assert_eq!</span>(<span class="ident">name</span>, <span class="ident">expected</span>.<span class="ident">into</span>());
 	}
 
 	<span class="attribute">#[<span class="ident">test</span>]</span>
