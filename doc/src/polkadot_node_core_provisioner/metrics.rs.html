@@ -160,6 +160,12 @@
 <span id="154">154</span>
 <span id="155">155</span>
 <span id="156">156</span>
+<span id="157">157</span>
+<span id="158">158</span>
+<span id="159">159</span>
+<span id="160">160</span>
+<span id="161">161</span>
+<span id="162">162</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -180,9 +186,13 @@
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
 <span class="kw">struct</span> <span class="ident">MetricsInner</span> {
+	<span class="doccomment">/// Tracks successful/unsuccessful inherent data requests</span>
 	<span class="ident">inherent_data_requests</span>: <span class="ident">prometheus::CounterVec</span><span class="op">&lt;</span><span class="ident">prometheus::U64</span><span class="op">&gt;</span>,
-	<span class="ident">request_inherent_data</span>: <span class="ident">prometheus::Histogram</span>,
-	<span class="ident">provisionable_data</span>: <span class="ident">prometheus::Histogram</span>,
+	<span class="doccomment">/// How much time the `RequestInherentData` processing takes</span>
+	<span class="ident">request_inherent_data_duration</span>: <span class="ident">prometheus::Histogram</span>,
+	<span class="doccomment">/// How much time `ProvisionableData` processing takes</span>
+	<span class="ident">provisionable_data_duration</span>: <span class="ident">prometheus::Histogram</span>,
+	<span class="doccomment">/// Bitfields array length in `ProvisionerInherentData` (the result for `RequestInherentData`)</span>
 	<span class="ident">inherent_data_response_bitfields</span>: <span class="ident">prometheus::Histogram</span>,
 
 	<span class="doccomment">/// The following metrics track how many disputes/votes the runtime will have to process. These will count</span>
@@ -216,14 +226,16 @@
 	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">time_request_inherent_data</span>(
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 	) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">metrics::prometheus::prometheus::HistogramTimer</span><span class="op">&gt;</span> {
-		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">as_ref</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">metrics</span><span class="op">|</span> <span class="ident">metrics</span>.<span class="ident">request_inherent_data</span>.<span class="ident">start_timer</span>())
+		<span class="self">self</span>.<span class="number">0</span>
+			.<span class="ident">as_ref</span>()
+			.<span class="ident">map</span>(<span class="op">|</span><span class="ident">metrics</span><span class="op">|</span> <span class="ident">metrics</span>.<span class="ident">request_inherent_data_duration</span>.<span class="ident">start_timer</span>())
 	}
 
 	<span class="doccomment">/// Provide a timer for `provisionable_data` which observes on drop.</span>
 	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">time_provisionable_data</span>(
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
 	) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">metrics::prometheus::prometheus::HistogramTimer</span><span class="op">&gt;</span> {
-		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">as_ref</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">metrics</span><span class="op">|</span> <span class="ident">metrics</span>.<span class="ident">provisionable_data</span>.<span class="ident">start_timer</span>())
+		<span class="self">self</span>.<span class="number">0</span>.<span class="ident">as_ref</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">metrics</span><span class="op">|</span> <span class="ident">metrics</span>.<span class="ident">provisionable_data_duration</span>.<span class="ident">start_timer</span>())
 	}
 
 	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">observe_inherent_data_bitfields_count</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">bitfields_count</span>: <span class="ident">usize</span>) {
@@ -272,14 +284,14 @@
 				)<span class="question-mark">?</span>,
 				<span class="ident">registry</span>,
 			)<span class="question-mark">?</span>,
-			<span class="ident">request_inherent_data</span>: <span class="ident">prometheus::register</span>(
+			<span class="ident">request_inherent_data_duration</span>: <span class="ident">prometheus::register</span>(
 				<span class="ident">prometheus::Histogram::with_opts</span>(<span class="ident">prometheus::HistogramOpts::new</span>(
 					<span class="string">&quot;polkadot_parachain_provisioner_request_inherent_data_time&quot;</span>,
 					<span class="string">&quot;Time spent within `provisioner::request_inherent_data`&quot;</span>,
 				))<span class="question-mark">?</span>,
 				<span class="ident">registry</span>,
 			)<span class="question-mark">?</span>,
-			<span class="ident">provisionable_data</span>: <span class="ident">prometheus::register</span>(
+			<span class="ident">provisionable_data_duration</span>: <span class="ident">prometheus::register</span>(
 				<span class="ident">prometheus::Histogram::with_opts</span>(<span class="ident">prometheus::HistogramOpts::new</span>(
 					<span class="string">&quot;polkadot_parachain_provisioner_provisionable_data_time&quot;</span>,
 					<span class="string">&quot;Time spent within `provisioner::provisionable_data`&quot;</span>,
