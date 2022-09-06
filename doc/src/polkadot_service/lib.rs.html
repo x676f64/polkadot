@@ -2090,7 +2090,7 @@
 			<span class="ident">client</span>.<span class="ident">clone</span>(),
 		);
 
-	<span class="kw">let</span> <span class="ident">babe_config</span> <span class="op">=</span> <span class="ident">babe::Config::get</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">client</span>)<span class="question-mark">?</span>;
+	<span class="kw">let</span> <span class="ident">babe_config</span> <span class="op">=</span> <span class="ident">babe::configuration</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">client</span>)<span class="question-mark">?</span>;
 	<span class="kw">let</span> (<span class="ident">block_import</span>, <span class="ident">babe_link</span>) <span class="op">=</span>
 		<span class="ident">babe::block_import</span>(<span class="ident">babe_config</span>.<span class="ident">clone</span>(), <span class="ident">beefy_block_import</span>, <span class="ident">client</span>.<span class="ident">clone</span>())<span class="question-mark">?</span>;
 
