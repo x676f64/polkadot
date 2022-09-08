@@ -1998,6 +1998,24 @@
 <span id="1992">1992</span>
 <span id="1993">1993</span>
 <span id="1994">1994</span>
+<span id="1995">1995</span>
+<span id="1996">1996</span>
+<span id="1997">1997</span>
+<span id="1998">1998</span>
+<span id="1999">1999</span>
+<span id="2000">2000</span>
+<span id="2001">2001</span>
+<span id="2002">2002</span>
+<span id="2003">2003</span>
+<span id="2004">2004</span>
+<span id="2005">2005</span>
+<span id="2006">2006</span>
+<span id="2007">2007</span>
+<span id="2008">2008</span>
+<span id="2009">2009</span>
+<span id="2010">2010</span>
+<span id="2011">2011</span>
+<span id="2012">2012</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -3048,26 +3066,35 @@
 				})
 				.<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>(),
 		},
+		<span class="ident">phragmen_election</span>: <span class="ident">Default::default</span>(),
 		<span class="ident">babe</span>: <span class="ident">rococo_runtime::BabeConfig</span> {
 			<span class="ident">authorities</span>: <span class="ident">Default::default</span>(),
 			<span class="ident">epoch_config</span>: <span class="prelude-val">Some</span>(<span class="ident">rococo_runtime::BABE_GENESIS_EPOCH_CONFIG</span>),
 		},
 		<span class="ident">grandpa</span>: <span class="ident">Default::default</span>(),
 		<span class="ident">im_online</span>: <span class="ident">Default::default</span>(),
-		<span class="ident">collective</span>: <span class="ident">Default::default</span>(),
-		<span class="ident">membership</span>: <span class="ident">Default::default</span>(),
+		<span class="ident">democracy</span>: <span class="ident">rococo_runtime::DemocracyConfig::default</span>(),
+		<span class="ident">council</span>: <span class="ident">rococo::CouncilConfig</span> { <span class="ident">members</span>: <span class="macro">vec!</span>[], <span class="ident">phantom</span>: <span class="ident">Default::default</span>() },
+		<span class="ident">technical_committee</span>: <span class="ident">rococo::TechnicalCommitteeConfig</span> {
+			<span class="ident">members</span>: <span class="macro">vec!</span>[],
+			<span class="ident">phantom</span>: <span class="ident">Default::default</span>(),
+		},
+		<span class="ident">technical_membership</span>: <span class="ident">Default::default</span>(),
+		<span class="ident">treasury</span>: <span class="ident">Default::default</span>(),
 		<span class="ident">authority_discovery</span>: <span class="ident">rococo_runtime::AuthorityDiscoveryConfig</span> { <span class="ident">keys</span>: <span class="macro">vec!</span>[] },
+		<span class="ident">claims</span>: <span class="ident">rococo::ClaimsConfig</span> { <span class="ident">claims</span>: <span class="macro">vec!</span>[], <span class="ident">vesting</span>: <span class="macro">vec!</span>[] },
+		<span class="ident">vesting</span>: <span class="ident">rococo::VestingConfig</span> { <span class="ident">vesting</span>: <span class="macro">vec!</span>[] },
 		<span class="ident">sudo</span>: <span class="ident">rococo_runtime::SudoConfig</span> { <span class="ident">key</span>: <span class="prelude-val">Some</span>(<span class="ident">endowed_accounts</span>[<span class="number">0</span>].<span class="ident">clone</span>()) },
 		<span class="ident">paras</span>: <span class="ident">rococo_runtime::ParasConfig</span> { <span class="ident">paras</span>: <span class="macro">vec!</span>[] },
 		<span class="ident">hrmp</span>: <span class="ident">Default::default</span>(),
 		<span class="ident">configuration</span>: <span class="ident">rococo_runtime::ConfigurationConfig</span> {
 			<span class="ident">config</span>: <span class="ident">default_parachains_host_configuration</span>(),
 		},
+		<span class="ident">gilt</span>: <span class="ident">Default::default</span>(),
 		<span class="ident">registrar</span>: <span class="ident">rococo_runtime::RegistrarConfig</span> {
 			<span class="ident">next_free_para_id</span>: <span class="ident">polkadot_primitives::v2::LOWEST_PUBLIC_ID</span>,
 		},
 		<span class="ident">xcm_pallet</span>: <span class="ident">Default::default</span>(),
-		<span class="ident">transaction_payment</span>: <span class="ident">Default::default</span>(),
 	}
 }
 
@@ -3599,8 +3626,17 @@
 		},
 		<span class="ident">grandpa</span>: <span class="ident">Default::default</span>(),
 		<span class="ident">im_online</span>: <span class="ident">Default::default</span>(),
-		<span class="ident">collective</span>: <span class="ident">Default::default</span>(),
-		<span class="ident">membership</span>: <span class="ident">Default::default</span>(),
+		<span class="ident">phragmen_election</span>: <span class="ident">Default::default</span>(),
+		<span class="ident">democracy</span>: <span class="ident">rococo::DemocracyConfig::default</span>(),
+		<span class="ident">council</span>: <span class="ident">rococo::CouncilConfig</span> { <span class="ident">members</span>: <span class="macro">vec!</span>[], <span class="ident">phantom</span>: <span class="ident">Default::default</span>() },
+		<span class="ident">technical_committee</span>: <span class="ident">rococo::TechnicalCommitteeConfig</span> {
+			<span class="ident">members</span>: <span class="macro">vec!</span>[],
+			<span class="ident">phantom</span>: <span class="ident">Default::default</span>(),
+		},
+		<span class="ident">technical_membership</span>: <span class="ident">Default::default</span>(),
+		<span class="ident">treasury</span>: <span class="ident">Default::default</span>(),
+		<span class="ident">claims</span>: <span class="ident">rococo::ClaimsConfig</span> { <span class="ident">claims</span>: <span class="macro">vec!</span>[], <span class="ident">vesting</span>: <span class="macro">vec!</span>[] },
+		<span class="ident">vesting</span>: <span class="ident">rococo::VestingConfig</span> { <span class="ident">vesting</span>: <span class="macro">vec!</span>[] },
 		<span class="ident">authority_discovery</span>: <span class="ident">rococo_runtime::AuthorityDiscoveryConfig</span> { <span class="ident">keys</span>: <span class="macro">vec!</span>[] },
 		<span class="ident">sudo</span>: <span class="ident">rococo_runtime::SudoConfig</span> { <span class="ident">key</span>: <span class="prelude-val">Some</span>(<span class="ident">root_key</span>.<span class="ident">clone</span>()) },
 		<span class="ident">hrmp</span>: <span class="ident">Default::default</span>(),
@@ -3610,12 +3646,12 @@
 				..<span class="ident">default_parachains_host_configuration</span>()
 			},
 		},
+		<span class="ident">gilt</span>: <span class="ident">Default::default</span>(),
 		<span class="ident">paras</span>: <span class="ident">rococo_runtime::ParasConfig</span> { <span class="ident">paras</span>: <span class="macro">vec!</span>[] },
 		<span class="ident">registrar</span>: <span class="ident">rococo_runtime::RegistrarConfig</span> {
 			<span class="ident">next_free_para_id</span>: <span class="ident">polkadot_primitives::v2::LOWEST_PUBLIC_ID</span>,
 		},
 		<span class="ident">xcm_pallet</span>: <span class="ident">Default::default</span>(),
-		<span class="ident">transaction_payment</span>: <span class="ident">Default::default</span>(),
 	}
 }
 

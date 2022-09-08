@@ -2739,7 +2739,7 @@
 
 <span class="kw">impl</span> <span class="ident">parachains_disputes::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
 	<span class="kw">type</span> <span class="ident">Event</span> <span class="op">=</span> <span class="ident">Event</span>;
-	<span class="kw">type</span> <span class="ident">RewardValidators</span> <span class="op">=</span> ();
+	<span class="kw">type</span> <span class="ident">RewardValidators</span> <span class="op">=</span> <span class="ident">parachains_reward_points::RewardValidatorsWithEraPoints</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>;
 	<span class="kw">type</span> <span class="ident">PunishValidators</span> <span class="op">=</span> ();
 	<span class="kw">type</span> <span class="ident">WeightInfo</span> <span class="op">=</span> <span class="ident">weights::runtime_parachains_disputes::WeightInfo</span><span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>;
 }
