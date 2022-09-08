@@ -2059,11 +2059,6 @@
 <span id="2053">2053</span>
 <span id="2054">2054</span>
 <span id="2055">2055</span>
-<span id="2056">2056</span>
-<span id="2057">2057</span>
-<span id="2058">2058</span>
-<span id="2059">2059</span>
-<span id="2060">2060</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -2944,16 +2939,11 @@
 		<span class="doccomment">/// Includes a statement for a PVF pre-checking vote. Potentially, finalizes the vote and</span>
 		<span class="doccomment">/// enacts the results if that was the last vote before achieving the supermajority.</span>
 		<span class="attribute">#[<span class="ident">pallet::weight</span>(
-			<span class="ident">sp_std::cmp::max</span>(
-				<span class="ident">sp_std::cmp::max</span>(
-					<span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">Config</span><span class="op">&gt;</span><span class="ident">::WeightInfo::include_pvf_check_statement_finalize_upgrade_accept</span>(),
-					<span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">Config</span><span class="op">&gt;</span><span class="ident">::WeightInfo::include_pvf_check_statement_finalize_upgrade_reject</span>(),
-				),
-				<span class="ident">sp_std::cmp::max</span>(
-					<span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">Config</span><span class="op">&gt;</span><span class="ident">::WeightInfo::include_pvf_check_statement_finalize_onboarding_accept</span>(),
-					<span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">Config</span><span class="op">&gt;</span><span class="ident">::WeightInfo::include_pvf_check_statement_finalize_onboarding_reject</span>(),
+			<span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">Config</span><span class="op">&gt;</span><span class="ident">::WeightInfo::include_pvf_check_statement_finalize_upgrade_accept</span>()
+				.<span class="ident">max</span>(<span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">Config</span><span class="op">&gt;</span><span class="ident">::WeightInfo::include_pvf_check_statement_finalize_upgrade_reject</span>())
+				.<span class="ident">max</span>(<span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">Config</span><span class="op">&gt;</span><span class="ident">::WeightInfo::include_pvf_check_statement_finalize_onboarding_accept</span>()
+					.<span class="ident">max</span>(<span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">Config</span><span class="op">&gt;</span><span class="ident">::WeightInfo::include_pvf_check_statement_finalize_onboarding_reject</span>())
 				)
-			)
 		)]</span>
 		<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">include_pvf_check_statement</span>(
 			<span class="ident">origin</span>: <span class="ident">OriginFor</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
