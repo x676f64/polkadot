@@ -730,7 +730,7 @@
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">candidate_events</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">F</span><span class="op">&gt;</span>(<span class="ident">extract_event</span>: <span class="ident">F</span>) -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">CandidateEvent</span><span class="op">&lt;</span><span class="ident">T::Hash</span><span class="op">&gt;</span><span class="op">&gt;</span>
 <span class="kw">where</span>
 	<span class="ident">T</span>: <span class="ident">initializer::Config</span>,
-	<span class="ident">F</span>: <span class="ident">Fn</span>(<span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">frame_system::Config</span><span class="op">&gt;</span><span class="ident">::Event</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">inclusion::Event</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+	<span class="ident">F</span>: <span class="ident">Fn</span>(<span class="op">&lt;</span><span class="ident">T</span> <span class="kw">as</span> <span class="ident">frame_system::Config</span><span class="op">&gt;</span><span class="ident">::RuntimeEvent</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">inclusion::Event</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 {
 	<span class="kw">use</span> <span class="ident">inclusion::Event</span> <span class="kw">as</span> <span class="ident">RawEvent</span>;
 

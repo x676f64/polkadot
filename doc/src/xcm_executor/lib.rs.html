@@ -520,6 +520,9 @@
 <span id="514">514</span>
 <span id="515">515</span>
 <span id="516">516</span>
+<span id="517">517</span>
+<span id="518">518</span>
+<span id="519">519</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -573,9 +576,9 @@
 	<span class="doccomment">/// the weight of dynamically determined instructions such as `Transact`).</span>
 	<span class="kw">pub</span> <span class="ident">total_surplus</span>: <span class="ident">u64</span>,
 	<span class="kw">pub</span> <span class="ident">total_refunded</span>: <span class="ident">u64</span>,
-	<span class="kw">pub</span> <span class="ident">error_handler</span>: <span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">Config::Call</span><span class="op">&gt;</span>,
+	<span class="kw">pub</span> <span class="ident">error_handler</span>: <span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">Config::RuntimeCall</span><span class="op">&gt;</span>,
 	<span class="kw">pub</span> <span class="ident">error_handler_weight</span>: <span class="ident">u64</span>,
-	<span class="kw">pub</span> <span class="ident">appendix</span>: <span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">Config::Call</span><span class="op">&gt;</span>,
+	<span class="kw">pub</span> <span class="ident">appendix</span>: <span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">Config::RuntimeCall</span><span class="op">&gt;</span>,
 	<span class="kw">pub</span> <span class="ident">appendix_weight</span>: <span class="ident">u64</span>,
 	<span class="ident">_config</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="ident">Config</span><span class="op">&gt;</span>,
 }
@@ -583,10 +586,10 @@
 <span class="doccomment">/// The maximum recursion limit for `execute_xcm` and `execute_effects`.</span>
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MAX_RECURSION_LIMIT</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">8</span>;
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Config</span>: <span class="ident">config::Config</span><span class="op">&gt;</span> <span class="ident">ExecuteXcm</span><span class="op">&lt;</span><span class="ident">Config::Call</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">XcmExecutor</span><span class="op">&lt;</span><span class="ident">Config</span><span class="op">&gt;</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Config</span>: <span class="ident">config::Config</span><span class="op">&gt;</span> <span class="ident">ExecuteXcm</span><span class="op">&lt;</span><span class="ident">Config::RuntimeCall</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">XcmExecutor</span><span class="op">&lt;</span><span class="ident">Config</span><span class="op">&gt;</span> {
 	<span class="kw">fn</span> <span class="ident">execute_xcm_in_credit</span>(
 		<span class="ident">origin</span>: <span class="kw">impl</span> <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">MultiLocation</span><span class="op">&gt;</span>,
-		<span class="kw-2">mut</span> <span class="ident">message</span>: <span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">Config::Call</span><span class="op">&gt;</span>,
+		<span class="kw-2">mut</span> <span class="ident">message</span>: <span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">Config::RuntimeCall</span><span class="op">&gt;</span>,
 		<span class="ident">weight_limit</span>: <span class="ident">Weight</span>,
 		<span class="kw-2">mut</span> <span class="ident">weight_credit</span>: <span class="ident">Weight</span>,
 	) -&gt; <span class="ident">Outcome</span> {
@@ -702,7 +705,7 @@
 
 	<span class="doccomment">/// Execute the XCM program fragment and report back the error and which instruction caused it,</span>
 	<span class="doccomment">/// or `Ok` if there was no error.</span>
-	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">execute</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">xcm</span>: <span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">Config::Call</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">ExecutorError</span><span class="op">&gt;</span> {
+	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">execute</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">xcm</span>: <span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">Config::RuntimeCall</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">ExecutorError</span><span class="op">&gt;</span> {
 		<span class="macro">log::trace!</span>(
 			<span class="ident">target</span>: <span class="string">&quot;xcm::execute&quot;</span>,
 			<span class="string">&quot;origin: {:?}, total_surplus/refunded: {:?}/{:?}, error_handler_weight: {:?}&quot;</span>,
@@ -753,8 +756,8 @@
 	}
 
 	<span class="doccomment">/// Remove the registered error handler and return it. Do not refund its weight.</span>
-	<span class="kw">fn</span> <span class="ident">take_error_handler</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">Config::Call</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">r</span> <span class="op">=</span> <span class="ident">Xcm</span>::<span class="op">&lt;</span><span class="ident">Config::Call</span><span class="op">&gt;</span>(<span class="macro">vec!</span>[]);
+	<span class="kw">fn</span> <span class="ident">take_error_handler</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">Config::RuntimeCall</span><span class="op">&gt;</span> {
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">r</span> <span class="op">=</span> <span class="ident">Xcm</span>::<span class="op">&lt;</span><span class="ident">Config::RuntimeCall</span><span class="op">&gt;</span>(<span class="macro">vec!</span>[]);
 		<span class="ident">sp_std::mem::swap</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">error_handler</span>, <span class="kw-2">&amp;mut</span> <span class="ident">r</span>);
 		<span class="self">self</span>.<span class="ident">error_handler_weight</span> <span class="op">=</span> <span class="number">0</span>;
 		<span class="ident">r</span>
@@ -762,14 +765,14 @@
 
 	<span class="doccomment">/// Drop the registered error handler and refund its weight.</span>
 	<span class="kw">fn</span> <span class="ident">drop_error_handler</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) {
-		<span class="self">self</span>.<span class="ident">error_handler</span> <span class="op">=</span> <span class="ident">Xcm</span>::<span class="op">&lt;</span><span class="ident">Config::Call</span><span class="op">&gt;</span>(<span class="macro">vec!</span>[]);
+		<span class="self">self</span>.<span class="ident">error_handler</span> <span class="op">=</span> <span class="ident">Xcm</span>::<span class="op">&lt;</span><span class="ident">Config::RuntimeCall</span><span class="op">&gt;</span>(<span class="macro">vec!</span>[]);
 		<span class="self">self</span>.<span class="ident">total_surplus</span>.<span class="ident">saturating_accrue</span>(<span class="self">self</span>.<span class="ident">error_handler_weight</span>);
 		<span class="self">self</span>.<span class="ident">error_handler_weight</span> <span class="op">=</span> <span class="number">0</span>;
 	}
 
 	<span class="doccomment">/// Remove the registered appendix and return it.</span>
-	<span class="kw">fn</span> <span class="ident">take_appendix</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">Config::Call</span><span class="op">&gt;</span> {
-		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">r</span> <span class="op">=</span> <span class="ident">Xcm</span>::<span class="op">&lt;</span><span class="ident">Config::Call</span><span class="op">&gt;</span>(<span class="macro">vec!</span>[]);
+	<span class="kw">fn</span> <span class="ident">take_appendix</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">Config::RuntimeCall</span><span class="op">&gt;</span> {
+		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">r</span> <span class="op">=</span> <span class="ident">Xcm</span>::<span class="op">&lt;</span><span class="ident">Config::RuntimeCall</span><span class="op">&gt;</span>(<span class="macro">vec!</span>[]);
 		<span class="ident">sp_std::mem::swap</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>.<span class="ident">appendix</span>, <span class="kw-2">&amp;mut</span> <span class="ident">r</span>);
 		<span class="self">self</span>.<span class="ident">appendix_weight</span> <span class="op">=</span> <span class="number">0</span>;
 		<span class="ident">r</span>
@@ -787,7 +790,10 @@
 	}
 
 	<span class="doccomment">/// Process a single XCM instruction, mutating the state of the XCM virtual machine.</span>
-	<span class="kw">fn</span> <span class="ident">process_instruction</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">instr</span>: <span class="ident">Instruction</span><span class="op">&lt;</span><span class="ident">Config::Call</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">XcmError</span><span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">process_instruction</span>(
+		<span class="kw-2">&amp;mut</span> <span class="self">self</span>,
+		<span class="ident">instr</span>: <span class="ident">Instruction</span><span class="op">&lt;</span><span class="ident">Config::RuntimeCall</span><span class="op">&gt;</span>,
+	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">XcmError</span><span class="op">&gt;</span> {
 		<span class="kw">match</span> <span class="ident">instr</span> {
 			<span class="ident">WithdrawAsset</span>(<span class="ident">assets</span>) =&gt; {
 				<span class="comment">// Take `assets` from the origin account (on-chain) and place in holding.</span>

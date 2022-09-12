@@ -389,6 +389,10 @@
 <span id="383">383</span>
 <span id="384">384</span>
 <span id="385">385</span>
+<span id="386">386</span>
+<span id="387">387</span>
+<span id="388">388</span>
+<span id="389">389</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -488,8 +492,8 @@
 <span class="attribute">#[<span class="ident">derivative</span>(<span class="ident">Clone</span>(<span class="ident">bound</span> <span class="op">=</span> <span class="string">&quot;&quot;</span>), <span class="ident">Eq</span>(<span class="ident">bound</span> <span class="op">=</span> <span class="string">&quot;&quot;</span>), <span class="ident">PartialEq</span>(<span class="ident">bound</span> <span class="op">=</span> <span class="string">&quot;&quot;</span>), <span class="ident">Debug</span>(<span class="ident">bound</span> <span class="op">=</span> <span class="string">&quot;&quot;</span>))]</span>
 <span class="attribute">#[<span class="ident">codec</span>(<span class="ident">encode_bound</span>())]</span>
 <span class="attribute">#[<span class="ident">codec</span>(<span class="ident">decode_bound</span>())]</span>
-<span class="attribute">#[<span class="ident">scale_info</span>(<span class="ident">bounds</span>(), <span class="ident">skip_type_params</span>(<span class="ident">Call</span>))]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span> {
+<span class="attribute">#[<span class="ident">scale_info</span>(<span class="ident">bounds</span>(), <span class="ident">skip_type_params</span>(<span class="ident">RuntimeCall</span>))]</span>
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Withdraw asset(s) (`assets`) from the ownership of `origin` and place them into `holding`. Execute the</span>
 	<span class="doccomment">/// orders (`effects`).</span>
 	<span class="doccomment">///</span>
@@ -500,7 +504,7 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Errors:</span>
 	<span class="attribute">#[<span class="ident">codec</span>(<span class="ident">index</span> <span class="op">=</span> <span class="number">0</span>)]</span>
-	<span class="ident">WithdrawAsset</span> { <span class="ident">assets</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">MultiAsset</span><span class="op">&gt;</span>, <span class="ident">effects</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Order</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span><span class="op">&gt;</span> },
+	<span class="ident">WithdrawAsset</span> { <span class="ident">assets</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">MultiAsset</span><span class="op">&gt;</span>, <span class="ident">effects</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Order</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span><span class="op">&gt;</span> },
 
 	<span class="doccomment">/// Asset(s) (`assets`) have been received into the ownership of this system on the `origin` system.</span>
 	<span class="doccomment">///</span>
@@ -517,7 +521,7 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Errors:</span>
 	<span class="attribute">#[<span class="ident">codec</span>(<span class="ident">index</span> <span class="op">=</span> <span class="number">1</span>)]</span>
-	<span class="ident">ReserveAssetDeposit</span> { <span class="ident">assets</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">MultiAsset</span><span class="op">&gt;</span>, <span class="ident">effects</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Order</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span><span class="op">&gt;</span> },
+	<span class="ident">ReserveAssetDeposit</span> { <span class="ident">assets</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">MultiAsset</span><span class="op">&gt;</span>, <span class="ident">effects</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Order</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span><span class="op">&gt;</span> },
 
 	<span class="doccomment">/// Asset(s) (`assets`) have been destroyed on the `origin` system and equivalent assets should be</span>
 	<span class="doccomment">/// created on this system.</span>
@@ -535,7 +539,7 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Errors:</span>
 	<span class="attribute">#[<span class="ident">codec</span>(<span class="ident">index</span> <span class="op">=</span> <span class="number">2</span>)]</span>
-	<span class="ident">TeleportAsset</span> { <span class="ident">assets</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">MultiAsset</span><span class="op">&gt;</span>, <span class="ident">effects</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Order</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span><span class="op">&gt;</span> },
+	<span class="ident">TeleportAsset</span> { <span class="ident">assets</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">MultiAsset</span><span class="op">&gt;</span>, <span class="ident">effects</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Order</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span><span class="op">&gt;</span> },
 
 	<span class="doccomment">/// Indication of the contents of the holding account corresponding to the `QueryHolding` order of `query_id`.</span>
 	<span class="doccomment">///</span>
@@ -600,7 +604,11 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Errors:</span>
 	<span class="attribute">#[<span class="ident">codec</span>(<span class="ident">index</span> <span class="op">=</span> <span class="number">6</span>)]</span>
-	<span class="ident">Transact</span> { <span class="ident">origin_type</span>: <span class="ident">OriginKind</span>, <span class="ident">require_weight_at_most</span>: <span class="ident">u64</span>, <span class="ident">call</span>: <span class="ident">DoubleEncoded</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span> },
+	<span class="ident">Transact</span> {
+		<span class="ident">origin_type</span>: <span class="ident">OriginKind</span>,
+		<span class="ident">require_weight_at_most</span>: <span class="ident">u64</span>,
+		<span class="ident">call</span>: <span class="ident">DoubleEncoded</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span>,
+	},
 
 	<span class="doccomment">/// A message to notify about a new incoming HRMP channel. This message is meant to be sent by the</span>
 	<span class="doccomment">/// relay-chain to a para.</span>
@@ -667,10 +675,10 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Errors:</span>
 	<span class="attribute">#[<span class="ident">codec</span>(<span class="ident">index</span> <span class="op">=</span> <span class="number">10</span>)]</span>
-	<span class="ident">RelayedFrom</span> { <span class="ident">who</span>: <span class="ident">MultiLocation</span>, <span class="ident">message</span>: <span class="ident">alloc::boxed::Box</span><span class="op">&lt;</span><span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span><span class="op">&gt;</span> },
+	<span class="ident">RelayedFrom</span> { <span class="ident">who</span>: <span class="ident">MultiLocation</span>, <span class="ident">message</span>: <span class="ident">alloc::boxed::Box</span><span class="op">&lt;</span><span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span><span class="op">&gt;</span> },
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span> <span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span> <span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span> {
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">into</span><span class="op">&lt;</span><span class="ident">C</span><span class="op">&gt;</span>(<span class="self">self</span>) -&gt; <span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">C</span><span class="op">&gt;</span> {
 		<span class="ident">Xcm::from</span>(<span class="self">self</span>)
 	}
@@ -721,9 +729,9 @@
 	}
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span> <span class="ident">TryFrom</span><span class="op">&lt;</span><span class="ident">Xcm1</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span> <span class="ident">TryFrom</span><span class="op">&lt;</span><span class="ident">Xcm1</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span> {
 	<span class="kw">type</span> <span class="ident">Error</span> <span class="op">=</span> ();
-	<span class="kw">fn</span> <span class="ident">try_from</span>(<span class="ident">x</span>: <span class="ident">Xcm1</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span>) -&gt; <span class="ident">result::Result</span><span class="op">&lt;</span><span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span>, ()<span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">try_from</span>(<span class="ident">x</span>: <span class="ident">Xcm1</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span>) -&gt; <span class="ident">result::Result</span><span class="op">&lt;</span><span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span>, ()<span class="op">&gt;</span> {
 		<span class="kw">use</span> <span class="ident">Xcm</span>::<span class="kw-2">*</span>;
 		<span class="prelude-val">Ok</span>(<span class="kw">match</span> <span class="ident">x</span> {
 			<span class="ident">Xcm1::WithdrawAsset</span> { <span class="ident">assets</span>, <span class="ident">effects</span> } =&gt; <span class="ident">WithdrawAsset</span> {

@@ -281,8 +281,8 @@
 	}
 }
 
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">KusamaXcmWeight</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span>(<span class="ident">core::marker::PhantomData</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span>);
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span> <span class="ident">XcmWeightInfo</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">KusamaXcmWeight</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">KusamaXcmWeight</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span>(<span class="ident">core::marker::PhantomData</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span>);
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span> <span class="ident">XcmWeightInfo</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">KusamaXcmWeight</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span> {
 	<span class="kw">fn</span> <span class="ident">withdraw_asset</span>(<span class="ident">assets</span>: <span class="kw-2">&amp;</span><span class="ident">MultiAssets</span>) -&gt; <span class="ident">XCMWeight</span> {
 		<span class="ident">assets</span>.<span class="ident">weigh_multi_assets</span>(<span class="ident">XcmBalancesWeight</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span><span class="ident">::withdraw_asset</span>())
 	}
@@ -308,7 +308,7 @@
 	<span class="kw">fn</span> <span class="ident">transact</span>(
 		<span class="ident">_origin_type</span>: <span class="kw-2">&amp;</span><span class="ident">OriginKind</span>,
 		<span class="ident">_require_weight_at_most</span>: <span class="kw-2">&amp;</span><span class="ident">u64</span>,
-		<span class="ident">_call</span>: <span class="kw-2">&amp;</span><span class="ident">DoubleEncoded</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span>,
+		<span class="ident">_call</span>: <span class="kw-2">&amp;</span><span class="ident">DoubleEncoded</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span>,
 	) -&gt; <span class="ident">XCMWeight</span> {
 		<span class="ident">XcmGeneric</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span><span class="ident">::transact</span>().<span class="ident">ref_time</span>()
 	}
@@ -388,10 +388,10 @@
 	<span class="kw">fn</span> <span class="ident">refund_surplus</span>() -&gt; <span class="ident">XCMWeight</span> {
 		<span class="ident">XcmGeneric</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span><span class="ident">::refund_surplus</span>().<span class="ident">ref_time</span>()
 	}
-	<span class="kw">fn</span> <span class="ident">set_error_handler</span>(<span class="ident">_xcm</span>: <span class="kw-2">&amp;</span><span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span>) -&gt; <span class="ident">XCMWeight</span> {
+	<span class="kw">fn</span> <span class="ident">set_error_handler</span>(<span class="ident">_xcm</span>: <span class="kw-2">&amp;</span><span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span>) -&gt; <span class="ident">XCMWeight</span> {
 		<span class="ident">XcmGeneric</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span><span class="ident">::set_error_handler</span>().<span class="ident">ref_time</span>()
 	}
-	<span class="kw">fn</span> <span class="ident">set_appendix</span>(<span class="ident">_xcm</span>: <span class="kw-2">&amp;</span><span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span>) -&gt; <span class="ident">XCMWeight</span> {
+	<span class="kw">fn</span> <span class="ident">set_appendix</span>(<span class="ident">_xcm</span>: <span class="kw-2">&amp;</span><span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span>) -&gt; <span class="ident">XCMWeight</span> {
 		<span class="ident">XcmGeneric</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span><span class="ident">::set_appendix</span>().<span class="ident">ref_time</span>()
 	}
 	<span class="kw">fn</span> <span class="ident">clear_error</span>() -&gt; <span class="ident">XCMWeight</span> {

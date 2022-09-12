@@ -210,8 +210,8 @@
 }
 
 <span class="kw">impl</span> <span class="ident">pallet_democracy::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
-	<span class="kw">type</span> <span class="ident">Proposal</span> <span class="op">=</span> <span class="ident">Call</span>;
-	<span class="kw">type</span> <span class="ident">Event</span> <span class="op">=</span> <span class="ident">Event</span>;
+	<span class="kw">type</span> <span class="ident">Proposal</span> <span class="op">=</span> <span class="ident">RuntimeCall</span>;
+	<span class="kw">type</span> <span class="ident">RuntimeEvent</span> <span class="op">=</span> <span class="ident">RuntimeEvent</span>;
 	<span class="kw">type</span> <span class="ident">Currency</span> <span class="op">=</span> <span class="ident">Balances</span>;
 	<span class="kw">type</span> <span class="ident">EnactmentPeriod</span> <span class="op">=</span> <span class="ident">EnactmentPeriod</span>;
 	<span class="kw">type</span> <span class="ident">VoteLockingPeriod</span> <span class="op">=</span> <span class="ident">EnactmentPeriod</span>;
@@ -271,8 +271,8 @@
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">CouncilCollective</span> <span class="op">=</span> <span class="ident">pallet_collective::Instance1</span>;
 <span class="kw">impl</span> <span class="ident">pallet_collective::Config</span><span class="op">&lt;</span><span class="ident">CouncilCollective</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
 	<span class="kw">type</span> <span class="ident">Origin</span> <span class="op">=</span> <span class="ident">Origin</span>;
-	<span class="kw">type</span> <span class="ident">Proposal</span> <span class="op">=</span> <span class="ident">Call</span>;
-	<span class="kw">type</span> <span class="ident">Event</span> <span class="op">=</span> <span class="ident">Event</span>;
+	<span class="kw">type</span> <span class="ident">Proposal</span> <span class="op">=</span> <span class="ident">RuntimeCall</span>;
+	<span class="kw">type</span> <span class="ident">RuntimeEvent</span> <span class="op">=</span> <span class="ident">RuntimeEvent</span>;
 	<span class="kw">type</span> <span class="ident">MotionDuration</span> <span class="op">=</span> <span class="ident">CouncilMotionDuration</span>;
 	<span class="kw">type</span> <span class="ident">MaxProposals</span> <span class="op">=</span> <span class="ident">CouncilMaxProposals</span>;
 	<span class="kw">type</span> <span class="ident">MaxMembers</span> <span class="op">=</span> <span class="ident">CouncilMaxMembers</span>;
@@ -299,7 +299,7 @@
 <span class="macro">const_assert!</span>(<span class="ident">DesiredMembers::get</span>() <span class="op">&lt;</span><span class="op">=</span> <span class="ident">CouncilMaxMembers::get</span>());
 
 <span class="kw">impl</span> <span class="ident">pallet_elections_phragmen::Config</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
-	<span class="kw">type</span> <span class="ident">Event</span> <span class="op">=</span> <span class="ident">Event</span>;
+	<span class="kw">type</span> <span class="ident">RuntimeEvent</span> <span class="op">=</span> <span class="ident">RuntimeEvent</span>;
 	<span class="kw">type</span> <span class="ident">Currency</span> <span class="op">=</span> <span class="ident">Balances</span>;
 	<span class="kw">type</span> <span class="ident">ChangeMembers</span> <span class="op">=</span> <span class="ident">Council</span>;
 	<span class="kw">type</span> <span class="ident">InitializeMembers</span> <span class="op">=</span> <span class="ident">Council</span>;
@@ -327,8 +327,8 @@
 <span class="kw">pub</span> <span class="kw">type</span> <span class="ident">TechnicalCollective</span> <span class="op">=</span> <span class="ident">pallet_collective::Instance2</span>;
 <span class="kw">impl</span> <span class="ident">pallet_collective::Config</span><span class="op">&lt;</span><span class="ident">TechnicalCollective</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
 	<span class="kw">type</span> <span class="ident">Origin</span> <span class="op">=</span> <span class="ident">Origin</span>;
-	<span class="kw">type</span> <span class="ident">Proposal</span> <span class="op">=</span> <span class="ident">Call</span>;
-	<span class="kw">type</span> <span class="ident">Event</span> <span class="op">=</span> <span class="ident">Event</span>;
+	<span class="kw">type</span> <span class="ident">Proposal</span> <span class="op">=</span> <span class="ident">RuntimeCall</span>;
+	<span class="kw">type</span> <span class="ident">RuntimeEvent</span> <span class="op">=</span> <span class="ident">RuntimeEvent</span>;
 	<span class="kw">type</span> <span class="ident">MotionDuration</span> <span class="op">=</span> <span class="ident">TechnicalMotionDuration</span>;
 	<span class="kw">type</span> <span class="ident">MaxProposals</span> <span class="op">=</span> <span class="ident">TechnicalMaxProposals</span>;
 	<span class="kw">type</span> <span class="ident">MaxMembers</span> <span class="op">=</span> <span class="ident">TechnicalMaxMembers</span>;
@@ -337,7 +337,7 @@
 }
 
 <span class="kw">impl</span> <span class="ident">pallet_membership::Config</span><span class="op">&lt;</span><span class="ident">pallet_membership::Instance1</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
-	<span class="kw">type</span> <span class="ident">Event</span> <span class="op">=</span> <span class="ident">Event</span>;
+	<span class="kw">type</span> <span class="ident">RuntimeEvent</span> <span class="op">=</span> <span class="ident">RuntimeEvent</span>;
 	<span class="kw">type</span> <span class="ident">AddOrigin</span> <span class="op">=</span> <span class="ident">MoreThanHalfCouncil</span>;
 	<span class="kw">type</span> <span class="ident">RemoveOrigin</span> <span class="op">=</span> <span class="ident">MoreThanHalfCouncil</span>;
 	<span class="kw">type</span> <span class="ident">SwapOrigin</span> <span class="op">=</span> <span class="ident">MoreThanHalfCouncil</span>;

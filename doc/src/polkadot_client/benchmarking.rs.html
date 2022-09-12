@@ -446,9 +446,9 @@
 	<span class="kw">fn</span> <span class="ident">build</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">nonce</span>: <span class="ident">u32</span>) -&gt; <span class="ident">std::result::Result</span><span class="op">&lt;</span><span class="ident">OpaqueExtrinsic</span>, <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span><span class="op">&gt;</span> {
 		<span class="macro">with_client!</span> {
 			<span class="self">self</span>.<span class="ident">client</span>.<span class="ident">as_ref</span>(), <span class="ident">client</span>, {
-				<span class="kw">use</span> <span class="ident">runtime</span>::{<span class="ident">Call</span>, <span class="ident">SystemCall</span>};
+				<span class="kw">use</span> <span class="ident">runtime</span>::{<span class="ident">RuntimeCall</span>, <span class="ident">SystemCall</span>};
 
-				<span class="kw">let</span> <span class="ident">call</span> <span class="op">=</span> <span class="ident">Call::System</span>(<span class="ident">SystemCall::remark</span> { <span class="ident">remark</span>: <span class="macro">vec!</span>[] });
+				<span class="kw">let</span> <span class="ident">call</span> <span class="op">=</span> <span class="ident">RuntimeCall::System</span>(<span class="ident">SystemCall::remark</span> { <span class="ident">remark</span>: <span class="macro">vec!</span>[] });
 				<span class="kw">let</span> <span class="ident">signer</span> <span class="op">=</span> <span class="ident">Sr25519Keyring::Bob</span>.<span class="ident">pair</span>();
 
 				<span class="kw">let</span> <span class="ident">period</span> <span class="op">=</span> <span class="ident">polkadot_runtime_common::BlockHashCount::get</span>().<span class="ident">checked_next_power_of_two</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">c</span><span class="op">|</span> <span class="ident">c</span> <span class="op">/</span> <span class="number">2</span>).<span class="ident">unwrap_or</span>(<span class="number">2</span>) <span class="kw">as</span> <span class="ident">u64</span>;
@@ -489,9 +489,9 @@
 	<span class="kw">fn</span> <span class="ident">build</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">nonce</span>: <span class="ident">u32</span>) -&gt; <span class="ident">std::result::Result</span><span class="op">&lt;</span><span class="ident">OpaqueExtrinsic</span>, <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span><span class="op">&gt;</span> {
 		<span class="macro">with_client!</span> {
 			<span class="self">self</span>.<span class="ident">client</span>.<span class="ident">as_ref</span>(), <span class="ident">client</span>, {
-				<span class="kw">use</span> <span class="ident">runtime</span>::{<span class="ident">Call</span>, <span class="ident">BalancesCall</span>};
+				<span class="kw">use</span> <span class="ident">runtime</span>::{<span class="ident">RuntimeCall</span>, <span class="ident">BalancesCall</span>};
 
-				<span class="kw">let</span> <span class="ident">call</span> <span class="op">=</span> <span class="ident">Call::Balances</span>(<span class="ident">BalancesCall::transfer_keep_alive</span> {
+				<span class="kw">let</span> <span class="ident">call</span> <span class="op">=</span> <span class="ident">RuntimeCall::Balances</span>(<span class="ident">BalancesCall::transfer_keep_alive</span> {
 					<span class="ident">dest</span>: <span class="self">self</span>.<span class="ident">dest</span>.<span class="ident">clone</span>().<span class="ident">into</span>(),
 					<span class="ident">value</span>: <span class="self">self</span>.<span class="ident">value</span>.<span class="ident">into</span>(),
 				});
@@ -510,14 +510,14 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// Should only be used for benchmarking since it makes strong assumptions</span>
 <span class="doccomment">/// about the chain state that these calls will be valid for.</span>
-<span class="kw">trait</span> <span class="ident">BenchmarkCallSigner</span><span class="op">&lt;</span><span class="ident">Call</span>: <span class="ident">Encode</span> <span class="op">+</span> <span class="ident">Clone</span>, <span class="ident">Signer</span>: <span class="ident">Pair</span><span class="op">&gt;</span> {
+<span class="kw">trait</span> <span class="ident">BenchmarkCallSigner</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span>: <span class="ident">Encode</span> <span class="op">+</span> <span class="ident">Clone</span>, <span class="ident">Signer</span>: <span class="ident">Pair</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Signs a call together with the signed extensions of the specific runtime.</span>
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Only works if the current block is the genesis block since the</span>
 	<span class="doccomment">/// `CheckMortality` check is mocked by using the genesis block.</span>
 	<span class="kw">fn</span> <span class="ident">sign_call</span>(
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
-		<span class="ident">call</span>: <span class="ident">Call</span>,
+		<span class="ident">call</span>: <span class="ident">RuntimeCall</span>,
 		<span class="ident">nonce</span>: <span class="ident">u32</span>,
 		<span class="ident">current_block</span>: <span class="ident">u64</span>,
 		<span class="ident">period</span>: <span class="ident">u64</span>,
@@ -527,12 +527,12 @@
 }
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;polkadot&quot;</span>)]</span>
-<span class="kw">impl</span> <span class="ident">BenchmarkCallSigner</span><span class="op">&lt;</span><span class="ident">polkadot_runtime::Call</span>, <span class="ident">sp_core::sr25519::Pair</span><span class="op">&gt;</span>
+<span class="kw">impl</span> <span class="ident">BenchmarkCallSigner</span><span class="op">&lt;</span><span class="ident">polkadot_runtime::RuntimeCall</span>, <span class="ident">sp_core::sr25519::Pair</span><span class="op">&gt;</span>
 	<span class="kw">for</span> <span class="ident">FullClient</span><span class="op">&lt;</span><span class="ident">polkadot_runtime::RuntimeApi</span>, <span class="ident">PolkadotExecutorDispatch</span><span class="op">&gt;</span>
 {
 	<span class="kw">fn</span> <span class="ident">sign_call</span>(
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
-		<span class="ident">call</span>: <span class="ident">polkadot_runtime::Call</span>,
+		<span class="ident">call</span>: <span class="ident">polkadot_runtime::RuntimeCall</span>,
 		<span class="ident">nonce</span>: <span class="ident">u32</span>,
 		<span class="ident">current_block</span>: <span class="ident">u64</span>,
 		<span class="ident">period</span>: <span class="ident">u64</span>,
@@ -583,12 +583,12 @@
 }
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;westend&quot;</span>)]</span>
-<span class="kw">impl</span> <span class="ident">BenchmarkCallSigner</span><span class="op">&lt;</span><span class="ident">westend_runtime::Call</span>, <span class="ident">sp_core::sr25519::Pair</span><span class="op">&gt;</span>
+<span class="kw">impl</span> <span class="ident">BenchmarkCallSigner</span><span class="op">&lt;</span><span class="ident">westend_runtime::RuntimeCall</span>, <span class="ident">sp_core::sr25519::Pair</span><span class="op">&gt;</span>
 	<span class="kw">for</span> <span class="ident">FullClient</span><span class="op">&lt;</span><span class="ident">westend_runtime::RuntimeApi</span>, <span class="ident">WestendExecutorDispatch</span><span class="op">&gt;</span>
 {
 	<span class="kw">fn</span> <span class="ident">sign_call</span>(
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
-		<span class="ident">call</span>: <span class="ident">westend_runtime::Call</span>,
+		<span class="ident">call</span>: <span class="ident">westend_runtime::RuntimeCall</span>,
 		<span class="ident">nonce</span>: <span class="ident">u32</span>,
 		<span class="ident">current_block</span>: <span class="ident">u64</span>,
 		<span class="ident">period</span>: <span class="ident">u64</span>,
@@ -637,12 +637,12 @@
 }
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;kusama&quot;</span>)]</span>
-<span class="kw">impl</span> <span class="ident">BenchmarkCallSigner</span><span class="op">&lt;</span><span class="ident">kusama_runtime::Call</span>, <span class="ident">sp_core::sr25519::Pair</span><span class="op">&gt;</span>
+<span class="kw">impl</span> <span class="ident">BenchmarkCallSigner</span><span class="op">&lt;</span><span class="ident">kusama_runtime::RuntimeCall</span>, <span class="ident">sp_core::sr25519::Pair</span><span class="op">&gt;</span>
 	<span class="kw">for</span> <span class="ident">FullClient</span><span class="op">&lt;</span><span class="ident">kusama_runtime::RuntimeApi</span>, <span class="ident">KusamaExecutorDispatch</span><span class="op">&gt;</span>
 {
 	<span class="kw">fn</span> <span class="ident">sign_call</span>(
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
-		<span class="ident">call</span>: <span class="ident">kusama_runtime::Call</span>,
+		<span class="ident">call</span>: <span class="ident">kusama_runtime::RuntimeCall</span>,
 		<span class="ident">nonce</span>: <span class="ident">u32</span>,
 		<span class="ident">current_block</span>: <span class="ident">u64</span>,
 		<span class="ident">period</span>: <span class="ident">u64</span>,
@@ -691,12 +691,12 @@
 }
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;rococo&quot;</span>)]</span>
-<span class="kw">impl</span> <span class="ident">BenchmarkCallSigner</span><span class="op">&lt;</span><span class="ident">rococo_runtime::Call</span>, <span class="ident">sp_core::sr25519::Pair</span><span class="op">&gt;</span>
+<span class="kw">impl</span> <span class="ident">BenchmarkCallSigner</span><span class="op">&lt;</span><span class="ident">rococo_runtime::RuntimeCall</span>, <span class="ident">sp_core::sr25519::Pair</span><span class="op">&gt;</span>
 	<span class="kw">for</span> <span class="ident">FullClient</span><span class="op">&lt;</span><span class="ident">rococo_runtime::RuntimeApi</span>, <span class="ident">RococoExecutorDispatch</span><span class="op">&gt;</span>
 {
 	<span class="kw">fn</span> <span class="ident">sign_call</span>(
 		<span class="kw-2">&amp;</span><span class="self">self</span>,
-		<span class="ident">call</span>: <span class="ident">rococo_runtime::Call</span>,
+		<span class="ident">call</span>: <span class="ident">rococo_runtime::RuntimeCall</span>,
 		<span class="ident">nonce</span>: <span class="ident">u32</span>,
 		<span class="ident">current_block</span>: <span class="ident">u64</span>,
 		<span class="ident">period</span>: <span class="ident">u64</span>,

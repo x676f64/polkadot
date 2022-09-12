@@ -425,13 +425,13 @@
 }
 
 <span class="doccomment">/// Type of XCM message executor.</span>
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">ExecuteXcm</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">ExecuteXcm</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Execute some XCM `message` from `origin` using no more than `weight_limit` weight. The weight limit is</span>
 	<span class="doccomment">/// a basic hard-limit and the implementation may place further restrictions or requirements on weight and</span>
 	<span class="doccomment">/// other aspects.</span>
 	<span class="kw">fn</span> <span class="ident">execute_xcm</span>(
 		<span class="ident">origin</span>: <span class="kw">impl</span> <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">MultiLocation</span><span class="op">&gt;</span>,
-		<span class="ident">message</span>: <span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span>,
+		<span class="ident">message</span>: <span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span>,
 		<span class="ident">weight_limit</span>: <span class="ident">Weight</span>,
 	) -&gt; <span class="ident">Outcome</span> {
 		<span class="kw">let</span> <span class="ident">origin</span> <span class="op">=</span> <span class="ident">origin</span>.<span class="ident">into</span>();
@@ -451,7 +451,7 @@
 	<span class="doccomment">/// execution without associated payment.</span>
 	<span class="kw">fn</span> <span class="ident">execute_xcm_in_credit</span>(
 		<span class="ident">origin</span>: <span class="kw">impl</span> <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">MultiLocation</span><span class="op">&gt;</span>,
-		<span class="ident">message</span>: <span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span>,
+		<span class="ident">message</span>: <span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span>,
 		<span class="ident">weight_limit</span>: <span class="ident">Weight</span>,
 		<span class="ident">weight_credit</span>: <span class="ident">Weight</span>,
 	) -&gt; <span class="ident">Outcome</span>;

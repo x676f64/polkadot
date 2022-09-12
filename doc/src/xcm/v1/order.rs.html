@@ -294,6 +294,8 @@
 <span id="288">288</span>
 <span id="289">289</span>
 <span id="290">290</span>
+<span id="291">291</span>
+<span id="292">292</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -325,8 +327,8 @@
 <span class="attribute">#[<span class="ident">derivative</span>(<span class="ident">Clone</span>(<span class="ident">bound</span> <span class="op">=</span> <span class="string">&quot;&quot;</span>), <span class="ident">Eq</span>(<span class="ident">bound</span> <span class="op">=</span> <span class="string">&quot;&quot;</span>), <span class="ident">PartialEq</span>(<span class="ident">bound</span> <span class="op">=</span> <span class="string">&quot;&quot;</span>), <span class="ident">Debug</span>(<span class="ident">bound</span> <span class="op">=</span> <span class="string">&quot;&quot;</span>))]</span>
 <span class="attribute">#[<span class="ident">codec</span>(<span class="ident">encode_bound</span>())]</span>
 <span class="attribute">#[<span class="ident">codec</span>(<span class="ident">decode_bound</span>())]</span>
-<span class="attribute">#[<span class="ident">scale_info</span>(<span class="ident">bounds</span>(), <span class="ident">skip_type_params</span>(<span class="ident">Call</span>))]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Order</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span> {
+<span class="attribute">#[<span class="ident">scale_info</span>(<span class="ident">bounds</span>(), <span class="ident">skip_type_params</span>(<span class="ident">RuntimeCall</span>))]</span>
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Order</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Do nothing. Not generally used.</span>
 	<span class="attribute">#[<span class="ident">codec</span>(<span class="ident">index</span> <span class="op">=</span> <span class="number">0</span>)]</span>
 	<span class="ident">Noop</span>,
@@ -444,7 +446,7 @@
 		<span class="ident">weight</span>: <span class="ident">u64</span>,
 		<span class="ident">debt</span>: <span class="ident">u64</span>,
 		<span class="ident">halt_on_error</span>: <span class="ident">bool</span>,
-		<span class="ident">instructions</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+		<span class="ident">instructions</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	},
 }
 
@@ -452,7 +454,7 @@
 	<span class="kw">pub</span> <span class="kw">type</span> <span class="ident">Order</span> <span class="op">=</span> <span class="ident"><span class="kw">super</span>::Order</span><span class="op">&lt;</span>()<span class="op">&gt;</span>;
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span> <span class="ident">Order</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span> <span class="ident">Order</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span> {
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">into</span><span class="op">&lt;</span><span class="ident">C</span><span class="op">&gt;</span>(<span class="self">self</span>) -&gt; <span class="ident">Order</span><span class="op">&lt;</span><span class="ident">C</span><span class="op">&gt;</span> {
 		<span class="ident">Order::from</span>(<span class="self">self</span>)
 	}
@@ -478,9 +480,9 @@
 	}
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span> <span class="ident">TryFrom</span><span class="op">&lt;</span><span class="ident">OldOrder</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Order</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span> <span class="ident">TryFrom</span><span class="op">&lt;</span><span class="ident">OldOrder</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Order</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span> {
 	<span class="kw">type</span> <span class="ident">Error</span> <span class="op">=</span> ();
-	<span class="kw">fn</span> <span class="ident">try_from</span>(<span class="ident">old</span>: <span class="ident">OldOrder</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span>) -&gt; <span class="ident">result::Result</span><span class="op">&lt;</span><span class="ident">Order</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span>, ()<span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">try_from</span>(<span class="ident">old</span>: <span class="ident">OldOrder</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span>) -&gt; <span class="ident">result::Result</span><span class="op">&lt;</span><span class="ident">Order</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span>, ()<span class="op">&gt;</span> {
 		<span class="kw">use</span> <span class="ident">Order</span>::<span class="kw-2">*</span>;
 		<span class="prelude-val">Ok</span>(<span class="kw">match</span> <span class="ident">old</span> {
 			<span class="ident">OldOrder::Null</span> =&gt; <span class="ident">Noop</span>,
@@ -520,17 +522,19 @@
 			<span class="ident">OldOrder::QueryHolding</span> { <span class="ident">query_id</span>, <span class="ident">dest</span>, <span class="ident">assets</span> } =&gt;
 				<span class="ident">QueryHolding</span> { <span class="ident">query_id</span>, <span class="ident">dest</span>: <span class="ident">dest</span>.<span class="ident">try_into</span>()<span class="question-mark">?</span>, <span class="ident">assets</span>: <span class="ident">assets</span>.<span class="ident">try_into</span>()<span class="question-mark">?</span> },
 			<span class="ident">OldOrder::BuyExecution</span> { <span class="ident">fees</span>, <span class="ident">weight</span>, <span class="ident">debt</span>, <span class="ident">halt_on_error</span>, <span class="ident">xcm</span> } =&gt; {
-				<span class="kw">let</span> <span class="ident">instructions</span> <span class="op">=</span>
-					<span class="ident">xcm</span>.<span class="ident">into_iter</span>().<span class="ident">map</span>(<span class="ident">Xcm</span>::<span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span><span class="ident">::try_from</span>).<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">result::Result</span><span class="op">&lt;</span><span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>;
+				<span class="kw">let</span> <span class="ident">instructions</span> <span class="op">=</span> <span class="ident">xcm</span>
+					.<span class="ident">into_iter</span>()
+					.<span class="ident">map</span>(<span class="ident">Xcm</span>::<span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span><span class="ident">::try_from</span>)
+					.<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">result::Result</span><span class="op">&lt;</span><span class="kw">_</span>, <span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>()<span class="question-mark">?</span>;
 				<span class="ident">BuyExecution</span> { <span class="ident">fees</span>: <span class="ident">fees</span>.<span class="ident">try_into</span>()<span class="question-mark">?</span>, <span class="ident">weight</span>, <span class="ident">debt</span>, <span class="ident">halt_on_error</span>, <span class="ident">instructions</span> }
 			},
 		})
 	}
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span> <span class="ident">TryFrom</span><span class="op">&lt;</span><span class="ident">Instruction</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Order</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span> <span class="ident">TryFrom</span><span class="op">&lt;</span><span class="ident">Instruction</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Order</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span> {
 	<span class="kw">type</span> <span class="ident">Error</span> <span class="op">=</span> ();
-	<span class="kw">fn</span> <span class="ident">try_from</span>(<span class="ident">old</span>: <span class="ident">Instruction</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span>) -&gt; <span class="ident">result::Result</span><span class="op">&lt;</span><span class="ident">Order</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span>, ()<span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">try_from</span>(<span class="ident">old</span>: <span class="ident">Instruction</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span>) -&gt; <span class="ident">result::Result</span><span class="op">&lt;</span><span class="ident">Order</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span>, ()<span class="op">&gt;</span> {
 		<span class="kw">use</span> <span class="ident">Order</span>::<span class="kw-2">*</span>;
 		<span class="prelude-val">Ok</span>(<span class="kw">match</span> <span class="ident">old</span> {
 			<span class="ident">Instruction::DepositAsset</span> { <span class="ident">assets</span>, <span class="ident">max_assets</span>, <span class="ident">beneficiary</span> } =&gt;

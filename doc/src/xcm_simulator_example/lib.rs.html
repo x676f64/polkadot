@@ -322,6 +322,7 @@
 <span id="316">316</span>
 <span id="317">317</span>
 <span id="318">318</span>
+<span id="319">319</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -442,10 +443,9 @@
 	<span class="kw">fn</span> <span class="ident">dmp</span>() {
 		<span class="ident">MockNet::reset</span>();
 
-		<span class="kw">let</span> <span class="ident">remark</span> <span class="op">=</span>
-			<span class="ident">parachain::Call::System</span>(<span class="ident">frame_system::Call</span>::<span class="op">&lt;</span><span class="ident">parachain::Runtime</span><span class="op">&gt;</span><span class="ident">::remark_with_event</span> {
-				<span class="ident">remark</span>: <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>],
-			});
+		<span class="kw">let</span> <span class="ident">remark</span> <span class="op">=</span> <span class="ident">parachain::RuntimeCall::System</span>(
+			<span class="ident">frame_system::Call</span>::<span class="op">&lt;</span><span class="ident">parachain::Runtime</span><span class="op">&gt;</span><span class="ident">::remark_with_event</span> { <span class="ident">remark</span>: <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>] },
+		);
 		<span class="ident">Relay::execute_with</span>(<span class="op">|</span><span class="op">|</span> {
 			<span class="macro">assert_ok!</span>(<span class="ident">RelayChainPalletXcm::send_xcm</span>(
 				<span class="ident">Here</span>,
@@ -459,10 +459,11 @@
 		});
 
 		<span class="ident">ParaA::execute_with</span>(<span class="op">|</span><span class="op">|</span> {
-			<span class="kw">use</span> <span class="ident">parachain</span>::{<span class="ident">Event</span>, <span class="ident">System</span>};
-			<span class="macro">assert!</span>(<span class="ident">System::events</span>()
-				.<span class="ident">iter</span>()
-				.<span class="ident">any</span>(<span class="op">|</span><span class="ident">r</span><span class="op">|</span> <span class="macro">matches!</span>(<span class="ident">r</span>.<span class="ident">event</span>, <span class="ident">Event::System</span>(<span class="ident">frame_system::Event::Remarked</span> { .. }))));
+			<span class="kw">use</span> <span class="ident">parachain</span>::{<span class="ident">RuntimeEvent</span>, <span class="ident">System</span>};
+			<span class="macro">assert!</span>(<span class="ident">System::events</span>().<span class="ident">iter</span>().<span class="ident">any</span>(<span class="op">|</span><span class="ident">r</span><span class="op">|</span> <span class="macro">matches!</span>(
+				<span class="ident">r</span>.<span class="ident">event</span>,
+				<span class="ident">RuntimeEvent::System</span>(<span class="ident">frame_system::Event::Remarked</span> { .. })
+			)));
 		});
 	}
 
@@ -470,7 +471,7 @@
 	<span class="kw">fn</span> <span class="ident">ump</span>() {
 		<span class="ident">MockNet::reset</span>();
 
-		<span class="kw">let</span> <span class="ident">remark</span> <span class="op">=</span> <span class="ident">relay_chain::Call::System</span>(
+		<span class="kw">let</span> <span class="ident">remark</span> <span class="op">=</span> <span class="ident">relay_chain::RuntimeCall::System</span>(
 			<span class="ident">frame_system::Call</span>::<span class="op">&lt;</span><span class="ident">relay_chain::Runtime</span><span class="op">&gt;</span><span class="ident">::remark_with_event</span> { <span class="ident">remark</span>: <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>] },
 		);
 		<span class="ident">ParaA::execute_with</span>(<span class="op">|</span><span class="op">|</span> {
@@ -486,10 +487,11 @@
 		});
 
 		<span class="ident">Relay::execute_with</span>(<span class="op">|</span><span class="op">|</span> {
-			<span class="kw">use</span> <span class="ident">relay_chain</span>::{<span class="ident">Event</span>, <span class="ident">System</span>};
-			<span class="macro">assert!</span>(<span class="ident">System::events</span>()
-				.<span class="ident">iter</span>()
-				.<span class="ident">any</span>(<span class="op">|</span><span class="ident">r</span><span class="op">|</span> <span class="macro">matches!</span>(<span class="ident">r</span>.<span class="ident">event</span>, <span class="ident">Event::System</span>(<span class="ident">frame_system::Event::Remarked</span> { .. }))));
+			<span class="kw">use</span> <span class="ident">relay_chain</span>::{<span class="ident">RuntimeEvent</span>, <span class="ident">System</span>};
+			<span class="macro">assert!</span>(<span class="ident">System::events</span>().<span class="ident">iter</span>().<span class="ident">any</span>(<span class="op">|</span><span class="ident">r</span><span class="op">|</span> <span class="macro">matches!</span>(
+				<span class="ident">r</span>.<span class="ident">event</span>,
+				<span class="ident">RuntimeEvent::System</span>(<span class="ident">frame_system::Event::Remarked</span> { .. })
+			)));
 		});
 	}
 
@@ -497,10 +499,9 @@
 	<span class="kw">fn</span> <span class="ident">xcmp</span>() {
 		<span class="ident">MockNet::reset</span>();
 
-		<span class="kw">let</span> <span class="ident">remark</span> <span class="op">=</span>
-			<span class="ident">parachain::Call::System</span>(<span class="ident">frame_system::Call</span>::<span class="op">&lt;</span><span class="ident">parachain::Runtime</span><span class="op">&gt;</span><span class="ident">::remark_with_event</span> {
-				<span class="ident">remark</span>: <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>],
-			});
+		<span class="kw">let</span> <span class="ident">remark</span> <span class="op">=</span> <span class="ident">parachain::RuntimeCall::System</span>(
+			<span class="ident">frame_system::Call</span>::<span class="op">&lt;</span><span class="ident">parachain::Runtime</span><span class="op">&gt;</span><span class="ident">::remark_with_event</span> { <span class="ident">remark</span>: <span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>] },
+		);
 		<span class="ident">ParaA::execute_with</span>(<span class="op">|</span><span class="op">|</span> {
 			<span class="macro">assert_ok!</span>(<span class="ident">ParachainPalletXcm::send_xcm</span>(
 				<span class="ident">Here</span>,
@@ -514,10 +515,11 @@
 		});
 
 		<span class="ident">ParaB::execute_with</span>(<span class="op">|</span><span class="op">|</span> {
-			<span class="kw">use</span> <span class="ident">parachain</span>::{<span class="ident">Event</span>, <span class="ident">System</span>};
-			<span class="macro">assert!</span>(<span class="ident">System::events</span>()
-				.<span class="ident">iter</span>()
-				.<span class="ident">any</span>(<span class="op">|</span><span class="ident">r</span><span class="op">|</span> <span class="macro">matches!</span>(<span class="ident">r</span>.<span class="ident">event</span>, <span class="ident">Event::System</span>(<span class="ident">frame_system::Event::Remarked</span> { .. }))));
+			<span class="kw">use</span> <span class="ident">parachain</span>::{<span class="ident">RuntimeEvent</span>, <span class="ident">System</span>};
+			<span class="macro">assert!</span>(<span class="ident">System::events</span>().<span class="ident">iter</span>().<span class="ident">any</span>(<span class="op">|</span><span class="ident">r</span><span class="op">|</span> <span class="macro">matches!</span>(
+				<span class="ident">r</span>.<span class="ident">event</span>,
+				<span class="ident">RuntimeEvent::System</span>(<span class="ident">frame_system::Event::Remarked</span> { .. })
+			)));
 		});
 	}
 

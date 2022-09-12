@@ -518,6 +518,10 @@
 <span id="512">512</span>
 <span id="513">513</span>
 <span id="514">514</span>
+<span id="515">515</span>
+<span id="516">516</span>
+<span id="517">517</span>
+<span id="518">518</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -656,8 +660,8 @@
 <span class="attribute">#[<span class="ident">derivative</span>(<span class="ident">Clone</span>(<span class="ident">bound</span> <span class="op">=</span> <span class="string">&quot;&quot;</span>), <span class="ident">Eq</span>(<span class="ident">bound</span> <span class="op">=</span> <span class="string">&quot;&quot;</span>), <span class="ident">PartialEq</span>(<span class="ident">bound</span> <span class="op">=</span> <span class="string">&quot;&quot;</span>), <span class="ident">Debug</span>(<span class="ident">bound</span> <span class="op">=</span> <span class="string">&quot;&quot;</span>))]</span>
 <span class="attribute">#[<span class="ident">codec</span>(<span class="ident">encode_bound</span>())]</span>
 <span class="attribute">#[<span class="ident">codec</span>(<span class="ident">decode_bound</span>())]</span>
-<span class="attribute">#[<span class="ident">scale_info</span>(<span class="ident">bounds</span>(), <span class="ident">skip_type_params</span>(<span class="ident">Call</span>))]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span> {
+<span class="attribute">#[<span class="ident">scale_info</span>(<span class="ident">bounds</span>(), <span class="ident">skip_type_params</span>(<span class="ident">RuntimeCall</span>))]</span>
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Withdraw asset(s) (`assets`) from the ownership of `origin` and place them into `holding`. Execute the</span>
 	<span class="doccomment">/// orders (`effects`).</span>
 	<span class="doccomment">///</span>
@@ -668,7 +672,7 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Errors:</span>
 	<span class="attribute">#[<span class="ident">codec</span>(<span class="ident">index</span> <span class="op">=</span> <span class="number">0</span>)]</span>
-	<span class="ident">WithdrawAsset</span> { <span class="ident">assets</span>: <span class="ident">MultiAssets</span>, <span class="ident">effects</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Order</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span><span class="op">&gt;</span> },
+	<span class="ident">WithdrawAsset</span> { <span class="ident">assets</span>: <span class="ident">MultiAssets</span>, <span class="ident">effects</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Order</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span><span class="op">&gt;</span> },
 
 	<span class="doccomment">/// Asset(s) (`assets`) have been received into the ownership of this system on the `origin` system.</span>
 	<span class="doccomment">///</span>
@@ -685,7 +689,7 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Errors:</span>
 	<span class="attribute">#[<span class="ident">codec</span>(<span class="ident">index</span> <span class="op">=</span> <span class="number">1</span>)]</span>
-	<span class="ident">ReserveAssetDeposited</span> { <span class="ident">assets</span>: <span class="ident">MultiAssets</span>, <span class="ident">effects</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Order</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span><span class="op">&gt;</span> },
+	<span class="ident">ReserveAssetDeposited</span> { <span class="ident">assets</span>: <span class="ident">MultiAssets</span>, <span class="ident">effects</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Order</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span><span class="op">&gt;</span> },
 
 	<span class="doccomment">/// Asset(s) (`assets`) have been destroyed on the `origin` system and equivalent assets should be</span>
 	<span class="doccomment">/// created on this system.</span>
@@ -703,7 +707,7 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Errors:</span>
 	<span class="attribute">#[<span class="ident">codec</span>(<span class="ident">index</span> <span class="op">=</span> <span class="number">2</span>)]</span>
-	<span class="ident">ReceiveTeleportedAsset</span> { <span class="ident">assets</span>: <span class="ident">MultiAssets</span>, <span class="ident">effects</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Order</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span><span class="op">&gt;</span> },
+	<span class="ident">ReceiveTeleportedAsset</span> { <span class="ident">assets</span>: <span class="ident">MultiAssets</span>, <span class="ident">effects</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Order</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span><span class="op">&gt;</span> },
 
 	<span class="doccomment">/// Indication of the contents of the holding register corresponding to the `QueryHolding` order of `query_id`.</span>
 	<span class="doccomment">///</span>
@@ -769,7 +773,11 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Errors:</span>
 	<span class="attribute">#[<span class="ident">codec</span>(<span class="ident">index</span> <span class="op">=</span> <span class="number">6</span>)]</span>
-	<span class="ident">Transact</span> { <span class="ident">origin_type</span>: <span class="ident">OriginKind</span>, <span class="ident">require_weight_at_most</span>: <span class="ident">u64</span>, <span class="ident">call</span>: <span class="ident">DoubleEncoded</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span> },
+	<span class="ident">Transact</span> {
+		<span class="ident">origin_type</span>: <span class="ident">OriginKind</span>,
+		<span class="ident">require_weight_at_most</span>: <span class="ident">u64</span>,
+		<span class="ident">call</span>: <span class="ident">DoubleEncoded</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span>,
+	},
 
 	<span class="doccomment">/// A message to notify about a new incoming HRMP channel. This message is meant to be sent by the</span>
 	<span class="doccomment">/// relay-chain to a para.</span>
@@ -833,7 +841,7 @@
 	<span class="doccomment">///</span>
 	<span class="doccomment">/// Errors:</span>
 	<span class="attribute">#[<span class="ident">codec</span>(<span class="ident">index</span> <span class="op">=</span> <span class="number">10</span>)]</span>
-	<span class="ident">RelayedFrom</span> { <span class="ident">who</span>: <span class="ident">InteriorMultiLocation</span>, <span class="ident">message</span>: <span class="ident">alloc::boxed::Box</span><span class="op">&lt;</span><span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span><span class="op">&gt;</span> },
+	<span class="ident">RelayedFrom</span> { <span class="ident">who</span>: <span class="ident">InteriorMultiLocation</span>, <span class="ident">message</span>: <span class="ident">alloc::boxed::Box</span><span class="op">&lt;</span><span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span><span class="op">&gt;</span> },
 
 	<span class="doccomment">/// Ask the destination system to respond with the most recent version of XCM that they</span>
 	<span class="doccomment">/// support in a `QueryResponse` instruction. Any changes to this should also elicit similar</span>
@@ -855,7 +863,7 @@
 	<span class="ident">UnsubscribeVersion</span>,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span> <span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span> <span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span> {
 	<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">into</span><span class="op">&lt;</span><span class="ident">C</span><span class="op">&gt;</span>(<span class="self">self</span>) -&gt; <span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">C</span><span class="op">&gt;</span> {
 		<span class="ident">Xcm::from</span>(<span class="self">self</span>)
 	}
@@ -910,9 +918,9 @@
 	}
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span> <span class="ident">TryFrom</span><span class="op">&lt;</span><span class="ident">OldXcm</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span> <span class="ident">TryFrom</span><span class="op">&lt;</span><span class="ident">OldXcm</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span> {
 	<span class="kw">type</span> <span class="ident">Error</span> <span class="op">=</span> ();
-	<span class="kw">fn</span> <span class="ident">try_from</span>(<span class="ident">old</span>: <span class="ident">OldXcm</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span>) -&gt; <span class="ident">result::Result</span><span class="op">&lt;</span><span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span>, ()<span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">try_from</span>(<span class="ident">old</span>: <span class="ident">OldXcm</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span>) -&gt; <span class="ident">result::Result</span><span class="op">&lt;</span><span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span>, ()<span class="op">&gt;</span> {
 		<span class="kw">use</span> <span class="ident">Xcm</span>::<span class="kw-2">*</span>;
 		<span class="prelude-val">Ok</span>(<span class="kw">match</span> <span class="ident">old</span> {
 			<span class="ident">OldXcm::WithdrawAsset</span> { <span class="ident">assets</span>, <span class="ident">effects</span> } =&gt; <span class="ident">WithdrawAsset</span> {
@@ -963,9 +971,9 @@
 	}
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span> <span class="ident">TryFrom</span><span class="op">&lt;</span><span class="ident">NewXcm</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span> <span class="ident">TryFrom</span><span class="op">&lt;</span><span class="ident">NewXcm</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span> {
 	<span class="kw">type</span> <span class="ident">Error</span> <span class="op">=</span> ();
-	<span class="kw">fn</span> <span class="ident">try_from</span>(<span class="ident">old</span>: <span class="ident">NewXcm</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span>) -&gt; <span class="ident">result::Result</span><span class="op">&lt;</span><span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span>, ()<span class="op">&gt;</span> {
+	<span class="kw">fn</span> <span class="ident">try_from</span>(<span class="ident">old</span>: <span class="ident">NewXcm</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span>) -&gt; <span class="ident">result::Result</span><span class="op">&lt;</span><span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span>, ()<span class="op">&gt;</span> {
 		<span class="kw">use</span> <span class="ident">Xcm</span>::<span class="kw-2">*</span>;
 		<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">iter</span> <span class="op">=</span> <span class="ident">old</span>.<span class="number">0</span>.<span class="ident">into_iter</span>();
 		<span class="kw">let</span> <span class="ident">instruction</span> <span class="op">=</span> <span class="ident">iter</span>.<span class="ident">next</span>().<span class="ident">ok_or</span>(())<span class="question-mark">?</span>;

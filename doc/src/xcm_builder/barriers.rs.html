@@ -209,9 +209,9 @@
 <span class="doccomment">/// out of the local chain to another one.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">TakeWeightCredit</span>;
 <span class="kw">impl</span> <span class="ident">ShouldExecute</span> <span class="kw">for</span> <span class="ident">TakeWeightCredit</span> {
-	<span class="kw">fn</span> <span class="ident">should_execute</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span>(
+	<span class="kw">fn</span> <span class="ident">should_execute</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span>(
 		<span class="ident">_origin</span>: <span class="kw-2">&amp;</span><span class="ident">MultiLocation</span>,
-		<span class="ident">_message</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span>,
+		<span class="ident">_message</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span>,
 		<span class="ident">max_weight</span>: <span class="ident">Weight</span>,
 		<span class="ident">weight_credit</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Weight</span>,
 	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), ()<span class="op">&gt;</span> {
@@ -232,9 +232,9 @@
 <span class="doccomment">/// because they are the only ones that place assets in the Holding Register to pay for execution.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">AllowTopLevelPaidExecutionFrom</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">PhantomData</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>);
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Contains</span><span class="op">&lt;</span><span class="ident">MultiLocation</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">ShouldExecute</span> <span class="kw">for</span> <span class="ident">AllowTopLevelPaidExecutionFrom</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-	<span class="kw">fn</span> <span class="ident">should_execute</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span>(
+	<span class="kw">fn</span> <span class="ident">should_execute</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span>(
 		<span class="ident">origin</span>: <span class="kw-2">&amp;</span><span class="ident">MultiLocation</span>,
-		<span class="ident">message</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span>,
+		<span class="ident">message</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span>,
 		<span class="ident">max_weight</span>: <span class="ident">Weight</span>,
 		<span class="ident">_weight_credit</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Weight</span>,
 	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), ()<span class="op">&gt;</span> {
@@ -275,9 +275,9 @@
 <span class="doccomment">/// Use only for executions from trusted origin groups.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">AllowUnpaidExecutionFrom</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">PhantomData</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>);
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Contains</span><span class="op">&lt;</span><span class="ident">MultiLocation</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">ShouldExecute</span> <span class="kw">for</span> <span class="ident">AllowUnpaidExecutionFrom</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-	<span class="kw">fn</span> <span class="ident">should_execute</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span>(
+	<span class="kw">fn</span> <span class="ident">should_execute</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span>(
 		<span class="ident">origin</span>: <span class="kw-2">&amp;</span><span class="ident">MultiLocation</span>,
-		<span class="ident">_message</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span>,
+		<span class="ident">_message</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span>,
 		<span class="ident">_max_weight</span>: <span class="ident">Weight</span>,
 		<span class="ident">_weight_credit</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Weight</span>,
 	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), ()<span class="op">&gt;</span> {
@@ -306,9 +306,9 @@
 <span class="doccomment">/// Allows only messages if the generic `ResponseHandler` expects them via `expecting_response`.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">AllowKnownQueryResponses</span><span class="op">&lt;</span><span class="ident">ResponseHandler</span><span class="op">&gt;</span>(<span class="ident">PhantomData</span><span class="op">&lt;</span><span class="ident">ResponseHandler</span><span class="op">&gt;</span>);
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">ResponseHandler</span>: <span class="ident">OnResponse</span><span class="op">&gt;</span> <span class="ident">ShouldExecute</span> <span class="kw">for</span> <span class="ident">AllowKnownQueryResponses</span><span class="op">&lt;</span><span class="ident">ResponseHandler</span><span class="op">&gt;</span> {
-	<span class="kw">fn</span> <span class="ident">should_execute</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span>(
+	<span class="kw">fn</span> <span class="ident">should_execute</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span>(
 		<span class="ident">origin</span>: <span class="kw-2">&amp;</span><span class="ident">MultiLocation</span>,
-		<span class="ident">message</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span>,
+		<span class="ident">message</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span>,
 		<span class="ident">_max_weight</span>: <span class="ident">Weight</span>,
 		<span class="ident">_weight_credit</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Weight</span>,
 	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), ()<span class="op">&gt;</span> {
@@ -330,9 +330,9 @@
 <span class="doccomment">/// `UnsubscribeVersion` instruction.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">AllowSubscriptionsFrom</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">PhantomData</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>);
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Contains</span><span class="op">&lt;</span><span class="ident">MultiLocation</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">ShouldExecute</span> <span class="kw">for</span> <span class="ident">AllowSubscriptionsFrom</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-	<span class="kw">fn</span> <span class="ident">should_execute</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span>(
+	<span class="kw">fn</span> <span class="ident">should_execute</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span>(
 		<span class="ident">origin</span>: <span class="kw-2">&amp;</span><span class="ident">MultiLocation</span>,
-		<span class="ident">message</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span>,
+		<span class="ident">message</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span>,
 		<span class="ident">_max_weight</span>: <span class="ident">Weight</span>,
 		<span class="ident">_weight_credit</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Weight</span>,
 	) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), ()<span class="op">&gt;</span> {

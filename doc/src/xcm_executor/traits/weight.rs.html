@@ -115,14 +115,14 @@
 <span class="kw">use</span> <span class="ident">xcm::latest</span>::{<span class="ident">prelude</span>::<span class="kw-2">*</span>, <span class="ident">Weight</span>};
 
 <span class="doccomment">/// Determine the weight of an XCM message.</span>
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">WeightBounds</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">WeightBounds</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span> {
 	<span class="doccomment">/// Return the maximum amount of weight that an attempted execution of this message could</span>
 	<span class="doccomment">/// consume.</span>
-	<span class="kw">fn</span> <span class="ident">weight</span>(<span class="ident">message</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Weight</span>, ()<span class="op">&gt;</span>;
+	<span class="kw">fn</span> <span class="ident">weight</span>(<span class="ident">message</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Xcm</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Weight</span>, ()<span class="op">&gt;</span>;
 
 	<span class="doccomment">/// Return the maximum amount of weight that an attempted execution of this instruction could</span>
 	<span class="doccomment">/// consume.</span>
-	<span class="kw">fn</span> <span class="ident">instr_weight</span>(<span class="ident">instruction</span>: <span class="kw-2">&amp;</span><span class="ident">Instruction</span><span class="op">&lt;</span><span class="ident">Call</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Weight</span>, ()<span class="op">&gt;</span>;
+	<span class="kw">fn</span> <span class="ident">instr_weight</span>(<span class="ident">instruction</span>: <span class="kw-2">&amp;</span><span class="ident">Instruction</span><span class="op">&lt;</span><span class="ident">RuntimeCall</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Weight</span>, ()<span class="op">&gt;</span>;
 }
 
 <span class="doccomment">/// A means of getting approximate weight consumption for a given destination message executor and a</span>
