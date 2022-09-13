@@ -308,6 +308,7 @@
 <span id="302">302</span>
 <span id="303">303</span>
 <span id="304">304</span>
+<span id="305">305</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -325,8 +326,9 @@
 <span class="comment">// along with Polkadot.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
 
 <span class="kw">use</span> <span class="ident">frame_support</span>::{
+	<span class="ident">dispatch::GetDispatchInfo</span>,
 	<span class="ident">traits</span>::{<span class="ident">tokens::currency::Currency</span> <span class="kw">as</span> <span class="ident">CurrencyT</span>, <span class="ident">Get</span>, <span class="ident">OnUnbalanced</span> <span class="kw">as</span> <span class="ident">OnUnbalancedT</span>},
-	<span class="ident">weights</span>::{<span class="ident">constants::WEIGHT_PER_SECOND</span>, <span class="ident">GetDispatchInfo</span>, <span class="ident">WeightToFee</span> <span class="kw">as</span> <span class="ident">WeightToFeeT</span>},
+	<span class="ident">weights</span>::{<span class="ident">constants::WEIGHT_PER_SECOND</span>, <span class="ident">WeightToFee</span> <span class="kw">as</span> <span class="ident">WeightToFeeT</span>},
 };
 <span class="kw">use</span> <span class="ident">parity_scale_codec::Decode</span>;
 <span class="kw">use</span> <span class="ident">sp_runtime::traits</span>::{<span class="ident">SaturatedConversion</span>, <span class="ident">Saturating</span>, <span class="ident">Zero</span>};

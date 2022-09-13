@@ -372,7 +372,7 @@
 <span class="attribute">#[<span class="ident">macro_export</span>]</span>
 <span class="macro">macro_rules!</span> <span class="ident">impl_runtime_weights</span> {
 	(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">runtime</span>:<span class="ident">ident</span>) =&gt; {
-		<span class="kw">use</span> <span class="ident">frame_support::weights</span>::{<span class="ident">DispatchClass</span>, <span class="ident">Weight</span>};
+		<span class="kw">use</span> <span class="ident">frame_support</span>::{<span class="ident">dispatch::DispatchClass</span>, <span class="ident">weights::Weight</span>};
 		<span class="kw">use</span> <span class="ident">frame_system::limits</span>;
 		<span class="kw">use</span> <span class="ident">pallet_transaction_payment</span>::{<span class="ident">Multiplier</span>, <span class="ident">TargetedFeeAdjustment</span>};
 		<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">runtime_common</span>::{

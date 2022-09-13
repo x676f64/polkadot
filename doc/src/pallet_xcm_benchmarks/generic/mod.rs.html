@@ -43,6 +43,9 @@
 <span id="37">37</span>
 <span id="38">38</span>
 <span id="39">39</span>
+<span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
 </pre><pre class="rust"><code><span class="kw">pub</span> <span class="kw">use</span> <span class="ident">pallet</span>::<span class="kw-2">*</span>;
 
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">benchmarking</span>;
@@ -52,7 +55,10 @@
 <span class="attribute">#[<span class="ident">frame_support::pallet</span>]</span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">pallet</span> {
 	<span class="kw">use</span> <span class="ident">frame_benchmarking::BenchmarkError</span>;
-	<span class="kw">use</span> <span class="ident">frame_support</span>::{<span class="ident">dispatch::Dispatchable</span>, <span class="ident">pallet_prelude::Encode</span>, <span class="ident">weights::GetDispatchInfo</span>};
+	<span class="kw">use</span> <span class="ident">frame_support</span>::{
+		<span class="ident">dispatch</span>::{<span class="ident">Dispatchable</span>, <span class="ident">GetDispatchInfo</span>},
+		<span class="ident">pallet_prelude::Encode</span>,
+	};
 	<span class="kw">use</span> <span class="ident">xcm::latest</span>::{<span class="ident">MultiAssets</span>, <span class="ident">MultiLocation</span>, <span class="ident">Response</span>};
 
 	<span class="attribute">#[<span class="ident">pallet::config</span>]</span>

@@ -4422,7 +4422,7 @@
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">test_fees</span> {
 	<span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
-	<span class="kw">use</span> <span class="ident">frame_support::weights</span>::{<span class="ident">GetDispatchInfo</span>, <span class="ident">WeightToFee</span> <span class="kw">as</span> <span class="ident">WeightToFeeT</span>};
+	<span class="kw">use</span> <span class="ident">frame_support</span>::{<span class="ident">dispatch::GetDispatchInfo</span>, <span class="ident">weights::WeightToFee</span> <span class="kw">as</span> <span class="ident">WeightToFeeT</span>};
 	<span class="kw">use</span> <span class="ident">keyring::Sr25519Keyring</span>::{<span class="ident">Alice</span>, <span class="ident">Charlie</span>};
 	<span class="kw">use</span> <span class="ident">pallet_transaction_payment::Multiplier</span>;
 	<span class="kw">use</span> <span class="ident">runtime_common::MinimumMultiplier</span>;

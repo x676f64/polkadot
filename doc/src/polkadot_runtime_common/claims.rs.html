@@ -1633,7 +1633,6 @@
 <span id="1627">1627</span>
 <span id="1628">1628</span>
 <span id="1629">1629</span>
-<span id="1630">1630</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -2351,10 +2350,9 @@
 	<span class="kw">use</span> <span class="ident">claims::Call</span> <span class="kw">as</span> <span class="ident">ClaimsCall</span>;
 	<span class="kw">use</span> <span class="ident">frame_support</span>::{
 		<span class="ident">assert_err</span>, <span class="ident">assert_noop</span>, <span class="ident">assert_ok</span>,
-		<span class="ident">dispatch::DispatchError::BadOrigin</span>,
+		<span class="ident">dispatch</span>::{<span class="ident">DispatchError::BadOrigin</span>, <span class="ident">GetDispatchInfo</span>, <span class="ident">Pays</span>},
 		<span class="ident">ord_parameter_types</span>, <span class="ident">parameter_types</span>,
 		<span class="ident">traits</span>::{<span class="ident">ExistenceRequirement</span>, <span class="ident">GenesisBuild</span>},
-		<span class="ident">weights</span>::{<span class="ident">GetDispatchInfo</span>, <span class="ident">Pays</span>},
 	};
 	<span class="kw">use</span> <span class="ident">pallet_balances</span>;
 	<span class="kw">use</span> <span class="ident">sp_runtime</span>::{
