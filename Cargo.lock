@@ -6748,6 +6748,7 @@ name = "polkadot-node-network-protocol"
 version = "0.9.28"
 dependencies = [
  "async-trait",
+ "bitvec 1.0.0",
  "derive_more",
  "fatality",
  "futures",
