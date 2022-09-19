@@ -166,6 +166,58 @@
 <span id="160">160</span>
 <span id="161">161</span>
 <span id="162">162</span>
+<span id="163">163</span>
+<span id="164">164</span>
+<span id="165">165</span>
+<span id="166">166</span>
+<span id="167">167</span>
+<span id="168">168</span>
+<span id="169">169</span>
+<span id="170">170</span>
+<span id="171">171</span>
+<span id="172">172</span>
+<span id="173">173</span>
+<span id="174">174</span>
+<span id="175">175</span>
+<span id="176">176</span>
+<span id="177">177</span>
+<span id="178">178</span>
+<span id="179">179</span>
+<span id="180">180</span>
+<span id="181">181</span>
+<span id="182">182</span>
+<span id="183">183</span>
+<span id="184">184</span>
+<span id="185">185</span>
+<span id="186">186</span>
+<span id="187">187</span>
+<span id="188">188</span>
+<span id="189">189</span>
+<span id="190">190</span>
+<span id="191">191</span>
+<span id="192">192</span>
+<span id="193">193</span>
+<span id="194">194</span>
+<span id="195">195</span>
+<span id="196">196</span>
+<span id="197">197</span>
+<span id="198">198</span>
+<span id="199">199</span>
+<span id="200">200</span>
+<span id="201">201</span>
+<span id="202">202</span>
+<span id="203">203</span>
+<span id="204">204</span>
+<span id="205">205</span>
+<span id="206">206</span>
+<span id="207">207</span>
+<span id="208">208</span>
+<span id="209">209</span>
+<span id="210">210</span>
+<span id="211">211</span>
+<span id="212">212</span>
+<span id="213">213</span>
+<span id="214">214</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -182,6 +234,7 @@
 <span class="comment">// You should have received a copy of the GNU General Public License</span>
 <span class="comment">// along with Polkadot.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
 
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::disputes::prioritized_selection::PartitionedDisputes</span>;
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem_util::metrics</span>::{<span class="self">self</span>, <span class="ident">prometheus</span>};
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
@@ -200,6 +253,9 @@
 	<span class="doccomment">/// 4 hours on Polkadot. The metrics are updated only when the node authors a block, so values vary across nodes.</span>
 	<span class="ident">inherent_data_dispute_statement_sets</span>: <span class="ident">prometheus::Counter</span><span class="op">&lt;</span><span class="ident">prometheus::U64</span><span class="op">&gt;</span>,
 	<span class="ident">inherent_data_dispute_statements</span>: <span class="ident">prometheus::CounterVec</span><span class="op">&lt;</span><span class="ident">prometheus::U64</span><span class="op">&gt;</span>,
+
+	<span class="doccomment">/// The disputes received from `disputes-coordinator` by partition</span>
+	<span class="ident">partitioned_disputes</span>: <span class="ident">prometheus::CounterVec</span><span class="op">&lt;</span><span class="ident">prometheus::U64</span><span class="op">&gt;</span>,
 }
 
 <span class="doccomment">/// Provisioner metrics.</span>
@@ -269,6 +325,44 @@
 				.<span class="ident">inc_by</span>(<span class="ident">disputes</span>.<span class="ident">try_into</span>().<span class="ident">unwrap_or</span>(<span class="number">0</span>));
 		}
 	}
+
+	<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">on_partition_recent_disputes</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">disputes</span>: <span class="kw-2">&amp;</span><span class="ident">PartitionedDisputes</span>) {
+		<span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">metrics</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span> {
+			<span class="kw">let</span> <span class="ident">PartitionedDisputes</span> {
+				<span class="ident">inactive_unknown_onchain</span>,
+				<span class="ident">inactive_unconcluded_onchain</span>: <span class="ident">inactive_unconcluded_known_onchain</span>,
+				<span class="ident">active_unknown_onchain</span>,
+				<span class="ident">active_unconcluded_onchain</span>,
+				<span class="ident">active_concluded_onchain</span>,
+				<span class="ident">inactive_concluded_onchain</span>: <span class="ident">inactive_concluded_known_onchain</span>,
+			} <span class="op">=</span> <span class="ident">disputes</span>;
+
+			<span class="ident">metrics</span>
+				.<span class="ident">partitioned_disputes</span>
+				.<span class="ident">with_label_values</span>(<span class="kw-2">&amp;</span>[<span class="string">&quot;inactive_unknown_onchain&quot;</span>])
+				.<span class="ident">inc_by</span>(<span class="ident">inactive_unknown_onchain</span>.<span class="ident">len</span>().<span class="ident">try_into</span>().<span class="ident">unwrap_or</span>(<span class="number">0</span>));
+			<span class="ident">metrics</span>
+				.<span class="ident">partitioned_disputes</span>
+				.<span class="ident">with_label_values</span>(<span class="kw-2">&amp;</span>[<span class="string">&quot;inactive_unconcluded_known_onchain&quot;</span>])
+				.<span class="ident">inc_by</span>(<span class="ident">inactive_unconcluded_known_onchain</span>.<span class="ident">len</span>().<span class="ident">try_into</span>().<span class="ident">unwrap_or</span>(<span class="number">0</span>));
+			<span class="ident">metrics</span>
+				.<span class="ident">partitioned_disputes</span>
+				.<span class="ident">with_label_values</span>(<span class="kw-2">&amp;</span>[<span class="string">&quot;active_unknown_onchain&quot;</span>])
+				.<span class="ident">inc_by</span>(<span class="ident">active_unknown_onchain</span>.<span class="ident">len</span>().<span class="ident">try_into</span>().<span class="ident">unwrap_or</span>(<span class="number">0</span>));
+			<span class="ident">metrics</span>
+				.<span class="ident">partitioned_disputes</span>
+				.<span class="ident">with_label_values</span>(<span class="kw-2">&amp;</span>[<span class="string">&quot;active_unconcluded_onchain&quot;</span>])
+				.<span class="ident">inc_by</span>(<span class="ident">active_unconcluded_onchain</span>.<span class="ident">len</span>().<span class="ident">try_into</span>().<span class="ident">unwrap_or</span>(<span class="number">0</span>));
+			<span class="ident">metrics</span>
+				.<span class="ident">partitioned_disputes</span>
+				.<span class="ident">with_label_values</span>(<span class="kw-2">&amp;</span>[<span class="string">&quot;active_concluded_onchain&quot;</span>])
+				.<span class="ident">inc_by</span>(<span class="ident">active_concluded_onchain</span>.<span class="ident">len</span>().<span class="ident">try_into</span>().<span class="ident">unwrap_or</span>(<span class="number">0</span>));
+			<span class="ident">metrics</span>
+				.<span class="ident">partitioned_disputes</span>
+				.<span class="ident">with_label_values</span>(<span class="kw-2">&amp;</span>[<span class="string">&quot;inactive_concluded_known_onchain&quot;</span>])
+				.<span class="ident">inc_by</span>(<span class="ident">inactive_concluded_known_onchain</span>.<span class="ident">len</span>().<span class="ident">try_into</span>().<span class="ident">unwrap_or</span>(<span class="number">0</span>));
+		}
+	}
 }
 
 <span class="kw">impl</span> <span class="ident">metrics::Metrics</span> <span class="kw">for</span> <span class="ident">Metrics</span> {
@@ -323,6 +417,16 @@
 					).<span class="ident">buckets</span>(<span class="macro">vec!</span>[<span class="number">0.0</span>, <span class="number">10.0</span>, <span class="number">25.0</span>, <span class="number">50.0</span>, <span class="number">75.0</span>, <span class="number">100.0</span>, <span class="number">150.0</span>, <span class="number">200.0</span>, <span class="number">250.0</span>, <span class="number">300.0</span>]),
 				)<span class="question-mark">?</span>,
 				<span class="ident">registry</span>,
+			)<span class="question-mark">?</span>,
+			<span class="ident">partitioned_disputes</span>: <span class="ident">prometheus::register</span>(
+				<span class="ident">prometheus::CounterVec::new</span>(
+					<span class="ident">prometheus::Opts::new</span>(
+						<span class="string">&quot;polkadot_parachain_provisioner_partitioned_disputes&quot;</span>,
+						<span class="string">&quot;some fancy description&quot;</span>,
+					),
+					<span class="kw-2">&amp;</span>[<span class="string">&quot;partition&quot;</span>],
+				)<span class="question-mark">?</span>,
+				<span class="kw-2">&amp;</span><span class="ident">registry</span>,
 			)<span class="question-mark">?</span>,
 		};
 		<span class="prelude-val">Ok</span>(<span class="ident">Metrics</span>(<span class="prelude-val">Some</span>(<span class="ident">metrics</span>)))

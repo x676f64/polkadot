@@ -5,27 +5,88 @@
         </a><h2 class="location"><a href="#">Module runtime_api</a></h2><div class="sidebar-elems"><section><div class="block"><ul><li><a href="#traits">Traits</a></li></ul></div></section></div></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../polkadot_primitives/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1">
                                 <a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div>
                         </div></form></nav></div><section id="main-content" class="content"><div class="main-heading">
-    <h1 class="fqn"><span class="in-band">Module <a href="../index.html">polkadot_primitives</a>::<wbr><a class="mod" href="#">runtime_api</a><button id="copy-path" onclick="copy_path(this)" title="Copy item path to clipboard"><img src="../../clipboard.svg" width="19" height="18" alt="Copy item path"></button></span></h1><span class="out-of-band"><a class="srclink" href="../../src/polkadot_primitives/runtime_api.rs.html#17-159">source</a> · <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span></div><details class="rustdoc-toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Runtime API module declares the <code>trait ParachainHost</code> which is part
+    <h1 class="fqn"><span class="in-band">Module <a href="../index.html">polkadot_primitives</a>::<wbr><a class="mod" href="#">runtime_api</a><button id="copy-path" onclick="copy_path(this)" title="Copy item path to clipboard"><img src="../../clipboard.svg" width="19" height="18" alt="Copy item path"></button></span></h1><span class="out-of-band"><a class="srclink" href="../../src/polkadot_primitives/runtime_api.rs.html#17-225">source</a> · <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span></div><details class="rustdoc-toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Runtime API module declares the <code>trait ParachainHost</code> which is part
 of the Runtime API exposed from the Runtime to the Host.</p>
 <p>The functions in trait ParachainHost` can be part of the stable API
-(which is versioned) or they can be staging (aka unstable functions).</p>
-<p>All stable API functions should use primitives from the latest version.
+(which is versioned) or they can be staging (aka unstable/testing
+functions).</p>
+<p>The separation outlined above is achieved with the versioned api feature
+of <code>decl_runtime_apis!</code> and <code>impl_runtime_apis!</code>. Before moving on let’s
+see a quick example about how api versioning works.</p>
+<h2 id="runtime-api-versioning-crash-course"><a href="#runtime-api-versioning-crash-course">Runtime api versioning crash course</a></h2>
+<p>The versioning is achieved with the <code>api_version</code> attribute. It can be
+placed on:</p>
+<ul>
+<li>trait declaration - represents the base version of the api.</li>
+<li>method declaration (inside a trait declaration) - represents a versioned
+method, which is not available in the base version.</li>
+<li>trait implementation - represents which version of the api is being
+implemented.</li>
+</ul>
+<p>Let’s see a quick example:</p>
+<div class="example-wrap"><pre class="language-rust(ignore)"><code>sp_api::decl_runtime_apis! {
+	#[api_version(2)]
+	pub trait MyApi {
+		fn fn1();
+		fn fn2();
+		#[api_version(3)]
+		fn fn3();
+		#[api_version(4)]
+		fn fn4();
+	}
+}
+
+struct Runtime {}
+
+sp_api::impl_runtime_apis! {
+    #[api_version(3)]
+    impl self::MyApi&lt;Block&gt; for Runtime {
+        fn fn1() {}
+        fn fn2() {}
+        fn fn3() {}
+    }
+}</code></pre></div>
+<p>A new api named <code>MyApi</code> is declared with <code>decl_runtime_apis!</code>. The trait declaration
+has got an <code>api_version</code> attribute which represents its base version - 2 in this case.</p>
+<p>The api has got three methods - <code>fn1</code>, <code>fn2</code>, <code>fn3</code> and <code>fn4</code>. <code>fn3</code> and <code>fn4</code> has got
+an <code>api_version</code> attribute which makes them versioned methods. These methods do not exist
+in the base version of the api. Behind the scenes the declaration above creates three
+runtime apis:</p>
+<ul>
+<li>MyApiV2 with <code>fn1</code> and <code>fn2</code></li>
+<li>MyApiV3 with <code>fn1</code>, <code>fn2</code> and <code>fn3</code>.</li>
+<li>MyApiV4 with <code>fn1</code>, <code>fn2</code>, <code>fn3</code> and <code>fn4</code>.</li>
+</ul>
+<p>Please note that v4 contains all methods from v3, v3 all methods from v2 and so on.</p>
+<p>Back to our example. At the end runtime api is implemented for <code>struct Runtime</code> with
+<code>impl_runtime_apis</code> macro. <code>api_version</code> attribute is attached to the impl block which
+means that a version different from the base one is being implemented - in our case this
+is v3.</p>
+<p>This version of the api contains three methods so the <code>impl</code> block has got definitions
+for them. Note that <code>fn4</code> is not implemented as it is not part of this version of the api.
+<code>impl_runtime_apis</code> generates a default implementation for it calling <code>unimplemented!()</code>.</p>
+<p>Hopefully this should be all you need to know in order to use versioned methods in the node.
+For more details about how the api versioning works refer to <code>spi_api</code>
+documentation <a href="https://docs.substrate.io/rustdocs/latest/sp_api/macro.decl_runtime_apis.html">here</a>.</p>
+<h2 id="how-versioned-methods-are-used-for-parachainhost"><a href="#how-versioned-methods-are-used-for-parachainhost">How versioned methods are used for <code>ParachainHost</code></a></h2>
+<p>Let’s introduce two types of <code>ParachainHost</code> api implementation:</p>
+<ul>
+<li>stable - used on stable production networks like Polkadot and Kusama. There is only one
+stable api at a single point in time.</li>
+<li>staging - used on test networks like Westend or Rococo. Depending on the development needs
+there can be zero, one or multiple staging apis.</li>
+</ul>
+<p>The stable version of <code>ParachainHost</code> is indicated by the base version of the api. Any staging
+method must use <code>api_version</code> attribute so that it is assigned to a specific version of a
+staging api. This way in a single declaration one can see what’s the stable version of
+<code>ParachainHost</code> and what staging versions/functions are available.</p>
+<p>All stable api functions should use primitives from the latest version.
 In the time of writing of this document - this is v2. So for example:</p>
 
 <div class='information'><div class='tooltip ignore'>ⓘ</div></div><div class="example-wrap"><pre class="rust rust-example-rendered ignore"><code><span class="kw">fn</span> <span class="ident">validators</span>() -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">v2::ValidatorId</span><span class="op">&gt;</span>;</code></pre></div>
 <p>indicates a function from the stable v2 API.</p>
-<p>On the other hand a staging function’s name should be prefixed with
-<code>staging_</code> like this:</p>
-
-<div class='information'><div class='tooltip ignore'>ⓘ</div></div><div class="example-wrap"><pre class="rust rust-example-rendered ignore"><code><span class="kw">fn</span> <span class="ident">staging_get_disputes</span>() -&gt; <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">vstaging::SessionIndex</span>, <span class="ident">vstaging::CandidateHash</span>, <span class="ident">vstaging::DisputeState</span><span class="op">&lt;</span><span class="ident">vstaging::BlockNumber</span><span class="op">&gt;</span>)<span class="op">&gt;</span>;</code></pre></div>
-<p>How a staging function becomes stable?</p>
-<p>Once a staging function is ready to be versioned the <code>renamed</code> macro
-should be used to rename it and version it. For the example above:</p>
-
-<div class='information'><div class='tooltip ignore'>ⓘ</div></div><div class="example-wrap"><pre class="rust rust-example-rendered ignore"><code><span class="attribute">#[<span class="ident">renamed</span>(<span class="string">&quot;staging_get_session_disputes&quot;</span>, <span class="number">3</span>)]</span>
-<span class="kw">fn</span> <span class="ident">get_session_disputes</span>() -&gt; <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">v3::SessionIndex</span>, <span class="ident">v3::CandidateHash</span>, <span class="ident">v3::DisputeState</span><span class="op">&lt;</span><span class="ident">v3::BlockNumber</span><span class="op">&gt;</span>)<span class="op">&gt;</span>;</code></pre></div>
-<p>For more details about how the API versioning works refer to <code>spi_api</code>
-documentation <a href="https://docs.substrate.io/rustdocs/latest/sp_api/macro.decl_runtime_apis.html">here</a>.</p>
+<p>All staging api functions should use primitives from vstaging. They should be clearly separated
+from the stable primitives.</p>
 </div></details><h2 id="traits" class="small-section-header"><a href="#traits">Traits</a></h2>
 <div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="trait" href="trait.ParachainHost.html" title="polkadot_primitives::runtime_api::ParachainHost trait">ParachainHost</a></div><div class="item-right docblock-short"><p>The API for querying the state of parachains on-chain.</p>
 </div></div></div></section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="polkadot_primitives" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0-nightly (7fe022f5a 2022-07-24)" ></div>

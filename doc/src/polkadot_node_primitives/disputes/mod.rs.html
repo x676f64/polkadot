@@ -243,6 +243,8 @@
 <span id="237">237</span>
 <span id="238">238</span>
 <span id="239">239</span>
+<span id="240">240</span>
+<span id="241">241</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -275,6 +277,8 @@
 <span class="doccomment">/// `DisputeMessage` and related types.</span>
 <span class="kw">mod</span> <span class="ident">message</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">message</span>::{<span class="ident">DisputeMessage</span>, <span class="ident">Error</span> <span class="kw">as</span> <span class="ident">DisputeMessageCheckError</span>, <span class="ident">UncheckedDisputeMessage</span>};
+<span class="kw">mod</span> <span class="ident">status</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">status</span>::{<span class="ident">dispute_is_inactive</span>, <span class="ident">DisputeStatus</span>, <span class="ident">Timestamp</span>, <span class="ident">ACTIVE_DURATION_SECS</span>};
 
 <span class="doccomment">/// A checked dispute statement from an associated validator.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>

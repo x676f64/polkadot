@@ -688,6 +688,7 @@
 
 <span class="doccomment">//! `V1` database for the dispute coordinator.</span>
 
+<span class="kw">use</span> <span class="ident">polkadot_node_primitives::DisputeStatus</span>;
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem</span>::{<span class="ident">SubsystemError</span>, <span class="ident">SubsystemResult</span>};
 <span class="kw">use</span> <span class="ident">polkadot_node_subsystem_util::database</span>::{<span class="ident">DBTransaction</span>, <span class="ident">Database</span>};
 <span class="kw">use</span> <span class="ident">polkadot_primitives::v2</span>::{
@@ -703,7 +704,6 @@
 	<span class="ident">backend</span>::{<span class="ident">Backend</span>, <span class="ident">BackendWriteOp</span>, <span class="ident">OverlayedBackend</span>},
 	<span class="ident">error</span>::{<span class="ident">FatalError</span>, <span class="ident">FatalResult</span>},
 	<span class="ident">metrics::Metrics</span>,
-	<span class="ident">status::DisputeStatus</span>,
 	<span class="ident">DISPUTE_WINDOW</span>, <span class="ident">LOG_TARGET</span>,
 };
 

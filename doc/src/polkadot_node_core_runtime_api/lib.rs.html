@@ -509,6 +509,7 @@
 <span id="503">503</span>
 <span id="504">504</span>
 <span id="505">505</span>
+<span id="506">506</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -664,7 +665,7 @@
 				.<span class="ident">cache_validation_code_hash</span>((<span class="ident">relay_parent</span>, <span class="ident">para_id</span>, <span class="ident">assumption</span>), <span class="ident">hash</span>),
 			<span class="ident">Version</span>(<span class="ident">relay_parent</span>, <span class="ident">version</span>) =&gt;
 				<span class="self">self</span>.<span class="ident">requests_cache</span>.<span class="ident">cache_version</span>(<span class="ident">relay_parent</span>, <span class="ident">version</span>),
-			<span class="ident">StagingDisputes</span>(<span class="ident">relay_parent</span>, <span class="ident">disputes</span>) =&gt;
+			<span class="ident">Disputes</span>(<span class="ident">relay_parent</span>, <span class="ident">disputes</span>) =&gt;
 				<span class="self">self</span>.<span class="ident">requests_cache</span>.<span class="ident">cache_disputes</span>(<span class="ident">relay_parent</span>, <span class="ident">disputes</span>),
 		}
 	}
@@ -767,8 +768,8 @@
 			<span class="ident">Request::ValidationCodeHash</span>(<span class="ident">para</span>, <span class="ident">assumption</span>, <span class="ident">sender</span>) =&gt;
 				<span class="macro">query!</span>(<span class="ident">validation_code_hash</span>(<span class="ident">para</span>, <span class="ident">assumption</span>), <span class="ident">sender</span>)
 					.<span class="ident">map</span>(<span class="op">|</span><span class="ident">sender</span><span class="op">|</span> <span class="ident">Request::ValidationCodeHash</span>(<span class="ident">para</span>, <span class="ident">assumption</span>, <span class="ident">sender</span>)),
-			<span class="ident">Request::StagingDisputes</span>(<span class="ident">sender</span>) =&gt;
-				<span class="macro">query!</span>(<span class="ident">disputes</span>(), <span class="ident">sender</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">sender</span><span class="op">|</span> <span class="ident">Request::StagingDisputes</span>(<span class="ident">sender</span>)),
+			<span class="ident">Request::Disputes</span>(<span class="ident">sender</span>) =&gt;
+				<span class="macro">query!</span>(<span class="ident">disputes</span>(), <span class="ident">sender</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">sender</span><span class="op">|</span> <span class="ident">Request::Disputes</span>(<span class="ident">sender</span>)),
 		}
 	}
 
@@ -862,8 +863,9 @@
 	<span class="kw">let</span> <span class="ident">_timer</span> <span class="op">=</span> <span class="ident">metrics</span>.<span class="ident">time_make_runtime_api_request</span>();
 
 	<span class="macro">macro_rules!</span> <span class="ident">query</span> {
-		(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">req_variant</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">api_name</span>:<span class="ident">ident</span> ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">param</span>:<span class="ident">expr</span>),<span class="kw-2">*</span>), <span class="ident">ver</span> <span class="op">=</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">version</span>:<span class="ident">literal</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">sender</span>:<span class="ident">expr</span>) =&gt; {{
+		(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">req_variant</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">api_name</span>:<span class="ident">ident</span> ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">param</span>:<span class="ident">expr</span>),<span class="kw-2">*</span>), <span class="ident">ver</span> <span class="op">=</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">version</span>:<span class="ident">expr</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">sender</span>:<span class="ident">expr</span>) =&gt; {{
 			<span class="kw">let</span> <span class="ident">sender</span> <span class="op">=</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">sender</span>;
+			<span class="kw">let</span> <span class="ident">version</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">version</span>;	<span class="comment">// enforce type for the version expression</span>
 			<span class="kw">let</span> <span class="ident">runtime_version</span> <span class="op">=</span> <span class="ident">client</span>.<span class="ident">api_version_parachain_host</span>(<span class="ident">relay_parent</span>).<span class="kw">await</span>
 				.<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> {
 					<span class="macro">gum::warn!</span>(
@@ -881,7 +883,7 @@
 					<span class="number">0</span>
 				});
 
-			<span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">runtime_version</span> <span class="op">&gt;</span><span class="op">=</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">version</span> {
+			<span class="kw">let</span> <span class="ident">res</span> <span class="op">=</span> <span class="kw">if</span> <span class="ident">runtime_version</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">version</span> {
 				<span class="ident">client</span>.<span class="macro-nonterminal">$</span><span class="macro-nonterminal">api_name</span>(<span class="ident">relay_parent</span> $(, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">param</span>.<span class="ident">clone</span>() )<span class="kw-2">*</span>).<span class="kw">await</span>
 					.<span class="ident">map_err</span>(<span class="op">|</span><span class="ident">e</span><span class="op">|</span> <span class="ident">RuntimeApiError::Execution</span> {
 						<span class="ident">runtime_api_name</span>: <span class="macro">stringify!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">api_name</span>),
@@ -1010,8 +1012,8 @@
 		},
 		<span class="ident">Request::ValidationCodeHash</span>(<span class="ident">para</span>, <span class="ident">assumption</span>, <span class="ident">sender</span>) =&gt;
 			<span class="macro">query!</span>(<span class="ident">ValidationCodeHash</span>, <span class="ident">validation_code_hash</span>(<span class="ident">para</span>, <span class="ident">assumption</span>), <span class="ident">ver</span> <span class="op">=</span> <span class="number">2</span>, <span class="ident">sender</span>),
-		<span class="ident">Request::StagingDisputes</span>(<span class="ident">sender</span>) =&gt;
-			<span class="macro">query!</span>(<span class="ident">StagingDisputes</span>, <span class="ident">staging_get_disputes</span>(), <span class="ident">ver</span> <span class="op">=</span> <span class="number">2</span>, <span class="ident">sender</span>),
+		<span class="ident">Request::Disputes</span>(<span class="ident">sender</span>) =&gt;
+			<span class="macro">query!</span>(<span class="ident">Disputes</span>, <span class="ident">disputes</span>(), <span class="ident">ver</span> <span class="op">=</span> <span class="ident">Request::DISPUTES_RUNTIME_REQUIREMENT</span>, <span class="ident">sender</span>),
 	}
 }
 </code></pre></div>

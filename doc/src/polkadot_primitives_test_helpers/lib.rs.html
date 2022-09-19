@@ -261,6 +261,10 @@
 <span id="255">255</span>
 <span id="256">256</span>
 <span id="257">257</span>
+<span id="258">258</span>
+<span id="259">259</span>
+<span id="260">260</span>
+<span id="261">261</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2021 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -517,6 +521,10 @@
 		<span class="self">self</span>.<span class="ident">fill_bytes</span>(<span class="ident">dest</span>);
 		<span class="prelude-val">Ok</span>(())
 	}
+}
+
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">dummy_signature</span>() -&gt; <span class="ident">polkadot_primitives::v2::ValidatorSignature</span> {
+	<span class="ident">sp_core::crypto::UncheckedFrom::unchecked_from</span>([<span class="number">1u8</span>; <span class="number">64</span>])
 }
 </code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="polkadot_primitives_test_helpers" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0-nightly (7fe022f5a 2022-07-24)" ></div>

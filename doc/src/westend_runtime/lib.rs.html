@@ -1811,6 +1811,7 @@
 <span id="1805">1805</span>
 <span id="1806">1806</span>
 <span id="1807">1807</span>
+<span id="1808">1808</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -3107,6 +3108,7 @@
 		}
 	}
 
+	<span class="attribute">#[<span class="ident">api_version</span>(<span class="number">3</span>)]</span>
 	<span class="kw">impl</span> <span class="ident">primitives::runtime_api::ParachainHost</span><span class="op">&lt;</span><span class="ident">Block</span>, <span class="ident">Hash</span>, <span class="ident">BlockNumber</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Runtime</span> {
 		<span class="kw">fn</span> <span class="ident">validators</span>() -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">ValidatorId</span><span class="op">&gt;</span> {
 			<span class="ident">parachains_runtime_api_impl::validators</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>()
@@ -3205,7 +3207,7 @@
 			<span class="ident">parachains_runtime_api_impl::validation_code_hash</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>(<span class="ident">para_id</span>, <span class="ident">assumption</span>)
 		}
 
-		<span class="kw">fn</span> <span class="ident">staging_get_disputes</span>() -&gt; <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">SessionIndex</span>, <span class="ident">CandidateHash</span>, <span class="ident">DisputeState</span><span class="op">&lt;</span><span class="ident">BlockNumber</span><span class="op">&gt;</span>)<span class="op">&gt;</span> {
+		<span class="kw">fn</span> <span class="ident">disputes</span>() -&gt; <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">SessionIndex</span>, <span class="ident">CandidateHash</span>, <span class="ident">DisputeState</span><span class="op">&lt;</span><span class="ident">BlockNumber</span><span class="op">&gt;</span>)<span class="op">&gt;</span> {
 			<span class="ident">runtime_parachains::runtime_api_impl::vstaging::get_session_disputes</span>::<span class="op">&lt;</span><span class="ident">Runtime</span><span class="op">&gt;</span>()
 		}
 	}

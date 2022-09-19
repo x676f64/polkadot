@@ -5,12 +5,22 @@
         </a><h2 class="location"><a href="#">Module runtime_api_impl</a></h2><div class="sidebar-elems"><section><div class="block"><ul><li><a href="#modules">Modules</a></li></ul></div></section></div></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../polkadot_runtime_parachains/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1">
                                 <a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div>
                         </div></form></nav></div><section id="main-content" class="content"><div class="main-heading">
-    <h1 class="fqn"><span class="in-band">Module <a href="../index.html">polkadot_runtime_parachains</a>::<wbr><a class="mod" href="#">runtime_api_impl</a><button id="copy-path" onclick="copy_path(this)" title="Copy item path to clipboard"><img src="../../clipboard.svg" width="19" height="18" alt="Copy item path"></button></span></h1><span class="out-of-band"><a class="srclink" href="../../src/polkadot_runtime_parachains/runtime_api_impl/mod.rs.html#17-25">source</a> · <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span></div><details class="rustdoc-toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Runtime API implementations for Parachains.</p>
+    <h1 class="fqn"><span class="in-band">Module <a href="../index.html">polkadot_runtime_parachains</a>::<wbr><a class="mod" href="#">runtime_api_impl</a><button id="copy-path" onclick="copy_path(this)" title="Copy item path to clipboard"><img src="../../clipboard.svg" width="19" height="18" alt="Copy item path"></button></span></h1><span class="out-of-band"><a class="srclink" href="../../src/polkadot_runtime_parachains/runtime_api_impl/mod.rs.html#17-30">source</a> · <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span></div><details class="rustdoc-toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Runtime API implementations for Parachains.</p>
 <p>These are exposed as different modules using different sets of primitives.
-At the moment there is only a v2 module and it is not completely clear how migration
-to a v2 would be done.</p>
+At the moment there is a v2 module for the current stable api and
+vstaging module for all staging methods.
+When new version of the stable api is released it will be based on v2 and
+will contain methods from vstaging.
+The promotion consists of the following steps:</p>
+<ol>
+<li>Bump the version of the stable module (e.g. v2 becomes v3)</li>
+<li>Move methods from vstaging to v3. The new stable version should include
+all methods from vstaging tagged with the new version number (e.g. all
+v3 methods).</li>
+</ol>
 </div></details><h2 id="modules" class="small-section-header"><a href="#modules">Modules</a></h2>
 <div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="mod" href="v2/index.html" title="polkadot_runtime_parachains::runtime_api_impl::v2 mod">v2</a></div><div class="item-right docblock-short"><p>A module exporting runtime API implementation functions for all runtime APIs using v2
 primitives.</p>
-</div></div><div class="item-row"><div class="item-left module-item"><a class="mod" href="vstaging/index.html" title="polkadot_runtime_parachains::runtime_api_impl::vstaging mod">vstaging</a></div><div class="item-right docblock-short"></div></div></div></section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="polkadot_runtime_parachains" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0-nightly (7fe022f5a 2022-07-24)" ></div>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="mod" href="vstaging/index.html" title="polkadot_runtime_parachains::runtime_api_impl::vstaging mod">vstaging</a></div><div class="item-right docblock-short"><p>Put implementations of functions from staging APIs here.</p>
+</div></div></div></section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="polkadot_runtime_parachains" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0-nightly (7fe022f5a 2022-07-24)" ></div>
 </body></html>

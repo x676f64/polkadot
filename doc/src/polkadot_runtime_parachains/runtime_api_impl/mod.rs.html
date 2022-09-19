@@ -29,6 +29,11 @@
 <span id="23">23</span>
 <span id="24">24</span>
 <span id="25">25</span>
+<span id="26">26</span>
+<span id="27">27</span>
+<span id="28">28</span>
+<span id="29">29</span>
+<span id="30">30</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -48,11 +53,16 @@
 <span class="doccomment">//! Runtime API implementations for Parachains.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! These are exposed as different modules using different sets of primitives.</span>
-<span class="doccomment">//! At the moment there is only a v2 module and it is not completely clear how migration</span>
-<span class="doccomment">//! to a v2 would be done.</span>
-
+<span class="doccomment">//! At the moment there is a v2 module for the current stable api and</span>
+<span class="doccomment">//! vstaging module for all staging methods.</span>
+<span class="doccomment">//! When new version of the stable api is released it will be based on v2 and</span>
+<span class="doccomment">//! will contain methods from vstaging.</span>
+<span class="doccomment">//! The promotion consists of the following steps:</span>
+<span class="doccomment">//! 1. Bump the version of the stable module (e.g. v2 becomes v3)</span>
+<span class="doccomment">//! 2. Move methods from vstaging to v3. The new stable version should include</span>
+<span class="doccomment">//!    all methods from vstaging tagged with the new version number (e.g. all</span>
+<span class="doccomment">//!    v3 methods).</span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">v2</span>;
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;vstaging&quot;</span>)]</span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">vstaging</span>;
 </code></pre></div>
 </section></div></main><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="polkadot_runtime_parachains" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0-nightly (7fe022f5a 2022-07-24)" ></div>

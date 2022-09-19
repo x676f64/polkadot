@@ -960,6 +960,11 @@
 <span id="954">954</span>
 <span id="955">955</span>
 <span id="956">956</span>
+<span id="957">957</span>
+<span id="958">958</span>
+<span id="959">959</span>
+<span id="960">960</span>
+<span id="961">961</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -997,8 +1002,8 @@
 <span class="kw">use</span> <span class="ident">polkadot_node_primitives</span>::{
 	<span class="ident">approval</span>::{<span class="ident">BlockApprovalMeta</span>, <span class="ident">IndirectAssignmentCert</span>, <span class="ident">IndirectSignedApprovalVote</span>},
 	<span class="ident">AvailableData</span>, <span class="ident">BabeEpoch</span>, <span class="ident">BlockWeight</span>, <span class="ident">CandidateVotes</span>, <span class="ident">CollationGenerationConfig</span>,
-	<span class="ident">CollationSecondedSignal</span>, <span class="ident">DisputeMessage</span>, <span class="ident">ErasureChunk</span>, <span class="ident">PoV</span>, <span class="ident">SignedDisputeStatement</span>,
-	<span class="ident">SignedFullStatement</span>, <span class="ident">ValidationResult</span>,
+	<span class="ident">CollationSecondedSignal</span>, <span class="ident">DisputeMessage</span>, <span class="ident">DisputeStatus</span>, <span class="ident">ErasureChunk</span>, <span class="ident">PoV</span>,
+	<span class="ident">SignedDisputeStatement</span>, <span class="ident">SignedFullStatement</span>, <span class="ident">ValidationResult</span>,
 };
 <span class="kw">use</span> <span class="ident">polkadot_primitives::v2</span>::{
 	<span class="ident">AuthorityDiscoveryId</span>, <span class="ident">BackedCandidate</span>, <span class="ident">BlockNumber</span>, <span class="ident">CandidateEvent</span>, <span class="ident">CandidateHash</span>,
@@ -1233,7 +1238,7 @@
 	<span class="doccomment">/// Fetch a list of all recent disputes the co-ordinator is aware of.</span>
 	<span class="doccomment">/// These are disputes which have occurred any time in recent sessions,</span>
 	<span class="doccomment">/// and which may have already concluded.</span>
-	<span class="ident">RecentDisputes</span>(<span class="ident">oneshot::Sender</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">SessionIndex</span>, <span class="ident">CandidateHash</span>)<span class="op">&gt;</span><span class="op">&gt;</span>),
+	<span class="ident">RecentDisputes</span>(<span class="ident">oneshot::Sender</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">SessionIndex</span>, <span class="ident">CandidateHash</span>, <span class="ident">DisputeStatus</span>)<span class="op">&gt;</span><span class="op">&gt;</span>),
 	<span class="doccomment">/// Fetch a list of all active disputes that the coordinator is aware of.</span>
 	<span class="doccomment">/// These disputes are either not yet concluded or recently concluded.</span>
 	<span class="ident">ActiveDisputes</span>(<span class="ident">oneshot::Sender</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">SessionIndex</span>, <span class="ident">CandidateHash</span>)<span class="op">&gt;</span><span class="op">&gt;</span>),
@@ -1661,10 +1666,15 @@
 		<span class="ident">OccupiedCoreAssumption</span>,
 		<span class="ident">RuntimeApiSender</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ValidationCodeHash</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 	),
-	<span class="doccomment">/// Returns all on-chain disputes at given block number.</span>
-	<span class="ident">StagingDisputes</span>(
-		<span class="ident">RuntimeApiSender</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">SessionIndex</span>, <span class="ident">CandidateHash</span>, <span class="ident">DisputeState</span><span class="op">&lt;</span><span class="ident">BlockNumber</span><span class="op">&gt;</span>)<span class="op">&gt;</span><span class="op">&gt;</span>,
-	),
+	<span class="doccomment">/// Returns all on-chain disputes at given block number. Available in v3.</span>
+	<span class="ident">Disputes</span>(<span class="ident">RuntimeApiSender</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">SessionIndex</span>, <span class="ident">CandidateHash</span>, <span class="ident">DisputeState</span><span class="op">&lt;</span><span class="ident">BlockNumber</span><span class="op">&gt;</span>)<span class="op">&gt;</span><span class="op">&gt;</span>),
+}
+
+<span class="kw">impl</span> <span class="ident">RuntimeApiRequest</span> {
+	<span class="doccomment">/// Runtime version requirements for each message</span>
+
+	<span class="doccomment">/// `Disputes`</span>
+	<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">DISPUTES_RUNTIME_REQUIREMENT</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">3</span>;
 }
 
 <span class="doccomment">/// A message to the Runtime API subsystem.</span>

@@ -517,6 +517,7 @@
 <span id="511">511</span>
 <span id="512">512</span>
 <span id="513">513</span>
+<span id="514">514</span>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2017-2020 Parity Technologies (UK) Ltd.</span>
 <span class="comment">// This file is part of Polkadot.</span>
 
@@ -565,8 +566,9 @@
 <span class="doccomment">/// Disputes related types.</span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">disputes</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">disputes</span>::{
-	<span class="ident">CandidateVotes</span>, <span class="ident">DisputeMessage</span>, <span class="ident">DisputeMessageCheckError</span>, <span class="ident">InvalidDisputeVote</span>,
-	<span class="ident">SignedDisputeStatement</span>, <span class="ident">UncheckedDisputeMessage</span>, <span class="ident">ValidDisputeVote</span>,
+	<span class="ident">dispute_is_inactive</span>, <span class="ident">CandidateVotes</span>, <span class="ident">DisputeMessage</span>, <span class="ident">DisputeMessageCheckError</span>, <span class="ident">DisputeStatus</span>,
+	<span class="ident">InvalidDisputeVote</span>, <span class="ident">SignedDisputeStatement</span>, <span class="ident">Timestamp</span>, <span class="ident">UncheckedDisputeMessage</span>,
+	<span class="ident">ValidDisputeVote</span>, <span class="ident">ACTIVE_DURATION_SECS</span>,
 };
 
 <span class="comment">// For a 16-ary Merkle Prefix Trie, we can expect at most 16 32-byte hashes per node</span>
